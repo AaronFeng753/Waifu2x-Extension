@@ -11,7 +11,7 @@ https://github.com/nihui/waifu2x-ncnn-vulkan
 # Waifu2x批量处理扩展
 适用于waifu2x-ncnn-vulkan的批量图片处理扩展
 
-这个扩展适用于waifu2x-ncnn-vulkan, 借助这个扩展, 你可以使用waifu2x-ncnn-vulkan来一次性放大多个文件夹内的图片, 而不用一个个输入文件路径和命令.并且可以显示处理每个文件夹耗费的时间.
+这个扩展适用于waifu2x-ncnn-vulkan, 借助这个扩展, 你可以使用waifu2x-ncnn-vulkan来一次性放大多个文件夹内的图片, 而不用一个个输入文件路径和命令.并且可以显示处理每个文件夹耗费的时间.并且修正了输出图片的命名方式.
 
 使用说明:把'Waifu2x-Batching process extension.py'放到waifu2x-ncnn-vulkan的文件夹内(就是和waifu2x-ncnn-vulkan.exe在一个文件夹里), 然后打开扩展脚本, 输入参数即可.
 
