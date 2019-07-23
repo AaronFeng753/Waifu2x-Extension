@@ -2,6 +2,7 @@ import os
 import time
 
 print("type 'over' to stop input more path, and input path must be a folder, not a file")
+print("No blank space in the input-path!!That could cause error!!")
 print("scaled images will be in the input-path \n")
 fileTimeCost = {}
 inputPathOver = True
