@@ -39,7 +39,11 @@ tileSize = input('tile size(>=32, default=400): ')
 
 if tileSize == '':
 	tileSize = '400'
+	
+turnoff = input('turn off computer when finished?(y/n, default=n): ')
 
+if turnoff == '':
+	turnoff = 'n'
 
 total_time_start=time.time()
 
@@ -52,8 +56,10 @@ for inputPath in inputPathList:
 			
 	folder_time_start=time.time()
 	os.mkdir(inputPath+"\\scaled\\")
+	
 	print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
 	os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+	
 	folder_time_end=time.time()
 	print('\ntime cost of '+inputPath+':  ',folder_time_end-folder_time_start,'s\n')
 	
@@ -69,5 +75,7 @@ for inputPath in inputPathList:
 total_time_end=time.time()
 
 print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
+if turnoff=='y' or turnoff=='Y':
+	os.system('shutdown -s')
 
 input('\npress any key to exit')
