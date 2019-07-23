@@ -1,7 +1,7 @@
 import os
 import time
 
-print("type 'over' to stop input more path")
+print("type 'over' to stop input more path, and input path must be a folder, not a file\n")
 
 fileTimeCost = {}
 inputPathOver = True
@@ -41,23 +41,14 @@ if tileSize == '':
 total_time_start=time.time()
 
 for inputPath in inputPathList:
-	for files in os.walk(inputPath):
-		for fileNameAndExt in files[2]:
-			fileExt=os.path.splitext(fileNameAndExt)[1]
-			if fileExt not in [".png",".jpg",".jpeg",".jfif",".tif",".tiff",".bmp",".tga"]:
-				print('error, wrong file')
-			else:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				originalFilenPathAndName = inputPath+'\\'+fileNameAndExt
-				scaledFilenPathAndName = inputPath+'\\'+fileName+'_waifu2x'+'.png'
-				file_time_start=time.time()
-				print("waifu2x-ncnn-vulkan.exe -i "+originalFilenPathAndName+" -o "+scaledFilenPathAndName+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize)
-				os.system("waifu2x-ncnn-vulkan.exe -i "+originalFilenPathAndName+" -o "+scaledFilenPathAndName+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize)
-				file_time_end=time.time()
-				fileTimeCost[fileNameAndExt]=str(file_time_end-file_time_start)
+	folder_time_start=time.time()
+	print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize)
+	os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize)
+	folder_time_end=time.time()
+	print('\ntime cost of '+inputPath+':  ',folder_time_end-folder_time_start,'s\n')
 		
 total_time_end=time.time()
+
 print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-for filename,filetime in fileTimeCost.items():
-	print(filename+' --- '+filetime+'s')
+
 input('\npress any key to exit')
