@@ -1,6 +1,8 @@
 import os
 import time
 
+print("type 'over' to stop input more path")
+
 fileTimeCost = {}
 inputPathOver = True
 inputPathList = []
