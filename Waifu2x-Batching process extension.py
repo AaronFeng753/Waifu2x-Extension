@@ -1,9 +1,9 @@
 import os
 import time
 
-print("type 'over' to stop input more path, and input path must be a folder, not a file")
+print("Type 'over' to stop input more path, and input path must be a folder, not a file")
 print("No blank space in the input-path!!That could cause error!!")
-print("scaled images will be in the input-path \n")
+print("Scaled images will be in the input-path \n")
 fileTimeCost = {}
 inputPathOver = True
 inputPathList = []
@@ -52,8 +52,8 @@ for inputPath in inputPathList:
 			
 	folder_time_start=time.time()
 	os.mkdir(inputPath+"\\scaled\\")
-	print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize)
-	os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize)
+	print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+	os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
 	folder_time_end=time.time()
 	print('\ntime cost of '+inputPath+':  ',folder_time_end-folder_time_start,'s\n')
 	
