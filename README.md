@@ -1,7 +1,7 @@
 # Waifu2x-Batching-process-extension
 Waifu2x-Batching process extension for waifu2x-ncnn-vulkan
 
-This extension is made for waifu2x-ncnn-vulkan, with this extension, you can use waifu2x to process multiple folers in one time, without input all the instruction one by one. And will show the time cost of process each folder.
+This extension is made for waifu2x-ncnn-vulkan, with this extension, you can use waifu2x to process multiple folers in one time, without input all the instruction one by one. And will show the time cost of process each folder, and the prograss of process each folder.
 
 Mode A:input folders one by one, then scale images in these folders
 
@@ -19,7 +19,7 @@ https://github.com/nihui/waifu2x-ncnn-vulkan
 # Waifu2x批量处理扩展
 适用于waifu2x-ncnn-vulkan的批量图片处理扩展
 
-这个扩展适用于waifu2x-ncnn-vulkan, 借助这个扩展, 你可以使用waifu2x-ncnn-vulkan来一次性放大多个文件夹内的多个图片, 而不用一个个输入文件路径和命令.并且可以显示处理每个文件夹耗费的时间.并且修正了输出图片的命名方式.
+这个扩展适用于waifu2x-ncnn-vulkan, 借助这个扩展, 你可以使用waifu2x-ncnn-vulkan来一次性放大多个文件夹内的多个图片, 而不用一个个输入文件路径和命令.并且可以显示处理每个文件夹耗费的时间, 以及放大每个文件夹内图片的进度.并且修正了输出图片的命名方式.
 
 模式A:一个一个的输入文件夹, 然后放大这些文件夹内的所有图片
 
