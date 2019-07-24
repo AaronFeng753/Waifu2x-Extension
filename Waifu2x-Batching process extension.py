@@ -1,9 +1,14 @@
 import os
 import time
+import threading
+import random
+import sys
+import inspect
+import ctypes
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Batching process extension v0.3')
+		print('Waifu2x-Batching process extension v0.4-beta')
 		print('----------------------------------------------')
 		print('Mode A: input folders one by one')
 		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
@@ -83,6 +88,11 @@ def ModeA():
 	
 	for inputPath in inputPathList:
 		
+		oldfilenumber=FileCount(inputPath)
+		scalepath = inputPath+"\\scaled\\"
+		thread1=PrograssBarThread(oldfilenumber,scalepath)
+		thread1.start()
+		
 		for files in os.walk(inputPath):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
@@ -95,6 +105,10 @@ def ModeA():
 		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
 		
 		folder_time_end=time.time()
+		
+		if thread1.isAlive()==True:
+			stop_thread(thread1)
+			
 		print('\ntime cost of '+inputPath+':  ',folder_time_end-folder_time_start,'s\n')
 		
 		for files in os.walk(inputPath+'\\scaled\\'):
@@ -158,6 +172,12 @@ def ModeB():
 		inputPathList.append(str(dirs[0]))
 		
 	for inputPath in inputPathList:
+		
+		oldfilenumber=FileCount(inputPath)
+		scalepath = inputPath+"\\scaled\\"
+		thread1=PrograssBarThread(oldfilenumber,scalepath)
+		thread1.start()
+		
 		for files in os.walk(inputPath):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
@@ -170,6 +190,9 @@ def ModeB():
 		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
 		
 		folder_time_end=time.time()
+		if thread1.isAlive()==True:
+			stop_thread(thread1)
+		
 		print('\ntime cost of '+inputPath+':  ',folder_time_end-folder_time_start,'s\n')
 		
 		for files in os.walk(inputPath+'\\scaled\\'):
@@ -266,6 +289,65 @@ def DeleteSpaces():
 	for dirs in os.walk(path):
 		os.rename(dirs[0],dirs[0].replace(' ', ''))
 	input('Success! Press any key to return to the menu')
+	
+#================Prograss bar==================
+def FileCount(countPath):
+	file_count=0
+	for root in os.walk(countPath):
+		for singleFile in root[2]:
+			if str(os.path.splitext(singleFile)[1]) in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
+				file_count=file_count+1
+		break
+	return file_count
+
+class PrograssBarThread (threading.Thread):
+    def __init__(self, OldFileNum, ScalePath):
+        threading.Thread.__init__(self)
+        self.OldFileNum = OldFileNum
+        self.ScalePath = ScalePath
+    def run(self):
+        PrograssBar(self.OldFileNum,self.ScalePath)
+
+
+def PrograssBar(OldFileNum,ScalePath):
+	if OldFileNum != 0:
+		NewFileNum=0
+		time.sleep(1)
+		print('\n')
+		while NewFileNum <= OldFileNum and os.path.exists(ScalePath):
+			NewFileNum=0
+			for files in os.walk(ScalePath):
+				for singleFile in files[2]:
+					if str(os.path.splitext(singleFile)[1]) in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
+						NewFileNum=NewFileNum+1
+			if NewFileNum==0:
+				NewFileNum=1
+			Percent = int(100*(NewFileNum/OldFileNum))
+			BarStr = ''
+			for x in range(0,int(Percent/2)):
+				BarStr = BarStr + '>'
+			PrograssBar = "\r"+"Prograss: ["+BarStr+"]"+str(Percent)+"%"
+			sys.stdout.write(PrograssBar)
+			sys.stdout.flush()
+			
+def _async_raise(tid, exctype):
+   """raises the exception, performs cleanup if needed"""
+   tid = ctypes.c_long(tid)
+   if not inspect.isclass(exctype):
+      exctype = type(exctype)
+   res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
+   if res == 0:
+      raise ValueError("invalid thread id")
+   elif res != 1:
+      # """if it returns a number greater than one, you're in trouble,  
+      # and you should call it again with exc=NULL to revert the effect"""  
+      ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
+      raise SystemError("PyThreadState_SetAsyncExc failed")
+
+
+def stop_thread(thread):
+   _async_raise(thread.ident, SystemExit)
+
 	
 #=================Start================
 ChooseMode()
