@@ -69,11 +69,6 @@ def ModeA():
 	if noiseLevel == '':
 		noiseLevel = '0'
 		
-	scale = input('scale(1/2, default=2): ')
-	
-	if scale == '':
-		scale = '2'
-		
 	tileSize = input('tile size(>=32, default=400): ')
 	
 	if tileSize == '':
@@ -101,8 +96,8 @@ def ModeA():
 		folder_time_start=time.time()
 		os.mkdir(inputPath+"\\scaled\\")
 		
-		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
-		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
 		
 		folder_time_end=time.time()
 		
@@ -151,11 +146,6 @@ def ModeB():
 	if noiseLevel == '':
 		noiseLevel = '0'
 		
-	scale = input('scale(1/2, default=2): ')
-	
-	if scale == '':
-		scale = '2'
-		
 	tileSize = input('tile size(>=32, default=400): ')
 	
 	if tileSize == '':
@@ -186,8 +176,8 @@ def ModeB():
 		folder_time_start=time.time()
 		os.mkdir(inputPath+"\\scaled\\")
 		
-		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
-		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
 		
 		folder_time_end=time.time()
 		if thread1.isAlive()==True:
@@ -243,11 +233,6 @@ def ModeC():
 	if noiseLevel == '':
 		noiseLevel = '0'
 		
-	scale = input('scale(1/2, default=2): ')
-	
-	if scale == '':
-		scale = '2'
-		
 	tileSize = input('tile size(>=32, default=400): ')
 	
 	if tileSize == '':
@@ -265,8 +250,8 @@ def ModeC():
 		fileNameAndExt=str(os.path.basename(inputPath))
 		folder_time_start=time.time()
 		
-		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
-		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s " +scale+" -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
 		
 		folder_time_end=time.time()
 		print('\ntime cost of scale'+fileNameAndExt+':  ',folder_time_end-folder_time_start,'s\n')
@@ -321,11 +306,13 @@ def PrograssBar(OldFileNum,ScalePath):
 					if str(os.path.splitext(singleFile)[1]) in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
 						NewFileNum=NewFileNum+1
 			if NewFileNum==0:
-				NewFileNum=1
-			Percent = int(100*(NewFileNum/OldFileNum))
-			BarStr = ''
-			for x in range(0,int(Percent/2)):
-				BarStr = BarStr + '>'
+				Percent = 0
+				BarStr = ''
+			else:
+				Percent = int(100*(NewFileNum/OldFileNum))
+				BarStr = ''
+				for x in range(0,int(Percent/2)):
+					BarStr = BarStr + '>'
 			PrograssBar = "\r"+"Prograss: ["+BarStr+"]"+str(Percent)+"%"
 			sys.stdout.write(PrograssBar)
 			sys.stdout.flush()
