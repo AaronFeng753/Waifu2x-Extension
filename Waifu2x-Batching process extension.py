@@ -13,7 +13,6 @@ def ChooseMode():
 		print('Mode A: input folders one by one')
 		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
 		print('Mode C: input images one by one')
-		print('Delete space: input one folder and delete all blank spaces in it\'s sub-folders\'name')
 		print('----------------------------------------------')
 		mode = input('(a/b/c/d) : ')
 		if mode.lower() == "a":
@@ -28,10 +27,6 @@ def ChooseMode():
 			os.system('cls')
 			ModeC()
 			os.system('cls')
-		elif mode.lower() == "d":
-			os.system('cls')
-			DeleteSpaces()
-			os.system('cls')
 		else:
 			os.system('cls')
 			input('Error : wrong input,pls press any key to return')
@@ -41,7 +36,6 @@ def ChooseMode():
 def ModeA():
 	print("=================MODE A================")
 	print("Type 'over' to stop input more path, and input path must be a folder, not a file")
-	print("No blank space in the input-path!!That could cause error!!")
 	print("Scaled images will be in the input-path \n")
 	fileTimeCost = {}
 	inputPathOver = True
@@ -101,18 +95,15 @@ def ModeA():
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				orginalFileNameAndFullname[fileName]= fileNameAndExt
 				
-		folder_time_start=time.time()
 		os.mkdir(inputPath+"\\scaled\\")
 		
-		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
-		folder_time_end=time.time()
 		
 		if thread1.isAlive()==True:
 			stop_thread(thread1)
 			
-		print('\ntime cost of '+inputPath+':  ',folder_time_end-folder_time_start,'s\n')
 		
 		for files in os.walk(inputPath+'\\scaled\\'):
 			for fileNameAndExt in files[2]:
@@ -120,8 +111,9 @@ def ModeA():
 				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
 				os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
 		orginalFileNameAndFullname = {}	
-		os.system("xcopy /s /i /q /y "+inputPath+"\\scaled\\*.* "+inputPath)
-		os.system("rd /s/q "+inputPath+"\\scaled")
+		print('')
+		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
+		os.system("rd /s/q \""+inputPath+"\\scaled\"")
 			
 	total_time_end=time.time()
 	
@@ -135,7 +127,6 @@ def ModeA():
 def ModeB():
 	print("=================MODE B================")
 	print("Input path must be a folder, not a file")
-	print("No blank space in the input-path!!That could cause error!!")
 	print("Scaled images will be in the input-path \n")
 	fileTimeCost = {}
 	inputPathList = []
@@ -190,18 +181,15 @@ def ModeB():
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				orginalFileNameAndFullname[fileName]= fileNameAndExt
 				
-		folder_time_start=time.time()
 		os.mkdir(inputPath+"\\scaled\\")
 		
-		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
-		folder_time_end=time.time()
 		
 		if thread1.isAlive()==True:
 			stop_thread(thread1)
 		
-		print('\ntime cost of '+inputPath+':  ',folder_time_end-folder_time_start,'s\n')
 		
 		for files in os.walk(inputPath+'\\scaled\\'):
 			for fileNameAndExt in files[2]:
@@ -209,8 +197,9 @@ def ModeB():
 				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
 				os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
 		orginalFileNameAndFullname = {}	
-		os.system("xcopy /s /i /q /y "+inputPath+"\\scaled\\*.* "+inputPath)
-		os.system("rd /s/q "+inputPath+"\\scaled")
+		print('')
+		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
+		os.system("rd /s/q \""+inputPath+"\\scaled\"")
 			
 	total_time_end=time.time()
 	
@@ -224,7 +213,6 @@ def ModeB():
 def ModeC():
 	print("=================MODE C================")
 	print("Type 'over' to stop input more path, and input path must be a file")
-	print("No blank space in the input-path!!That could cause error!!")
 	print("Scaled images will be in the input-path \n")
 	fileTimeCost = {}
 	inputPathOver = True
@@ -277,17 +265,13 @@ def ModeC():
 		
 		thread1=ClockThread()
 		thread1.start()
+				
+		print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
-		folder_time_start=time.time()
-		
-		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-		
-		folder_time_end=time.time()
 		if thread1.isAlive()==True:
-			stop_thread(thread1)
-		print('\ntime cost of scale'+fileNameAndExt+':  ',folder_time_end-folder_time_start,'s\n')
-		
+			stop_thread(thread1)	
+		print('')	
 			
 	total_time_end=time.time()
 	
@@ -296,20 +280,6 @@ def ModeC():
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
-	
-	
-#=================Delete Spaces================
-def DeleteSpaces():
-	print("================Delete Spaces===============")
-	path = input("path : ")
-	path=path.strip('"')
-	for dirs,useless,files in os.walk(path):
-		os.rename(dirs,dirs.replace(' ', ''))
-		dirs=dirs.replace(' ', '')
-		for filename in files:
-			os.rename(dirs+'\\'+filename,(dirs+'\\'+filename).replace(' ', ''))
-	
-	input('Success! Press any key to return to the menu')
 	
 #================Prograss bar==================
 def FileCount(countPath):
