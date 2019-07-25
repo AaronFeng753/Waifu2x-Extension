@@ -8,7 +8,7 @@ import ctypes
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Batching process extension v0.45')
+		print('Waifu2x-Batching process extension v0.46')
 		print('----------------------------------------------')
 		print('Mode A: input folders one by one')
 		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
@@ -274,12 +274,18 @@ def ModeC():
 	for inputPath in inputPathList:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 		fileNameAndExt=str(os.path.basename(inputPath))
+		
+		thread1=ClockThread()
+		thread1.start()
+		
 		folder_time_start=time.time()
 		
 		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
 		folder_time_end=time.time()
+		if thread1.isAlive()==True:
+			stop_thread(thread1)
 		print('\ntime cost of scale'+fileNameAndExt+':  ',folder_time_end-folder_time_start,'s\n')
 		
 			
@@ -327,6 +333,7 @@ class PrograssBarThread (threading.Thread):
 def PrograssBar(OldFileNum,ScalePath):
 	if OldFileNum != 0:
 		NewFileNum=0
+		time_start = time.time()
 		time.sleep(2)
 		print('\n')
 		while NewFileNum <= OldFileNum and os.path.exists(ScalePath):
@@ -343,12 +350,32 @@ def PrograssBar(OldFileNum,ScalePath):
 				BarStr = ''
 				for x in range(0,int(Percent/2)):
 					BarStr = BarStr + '>'
-			timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-			PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+timeStr+"]"
+			time_now = time.time()
+			timeCost = str(int(time_now-time_start)) + 's'
+			PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+timeCost+"]"
 			sys.stdout.write(PrograssBar)
 			sys.stdout.flush()
 			time.sleep(1)
 			
+#================Clock==================
+class ClockThread (threading.Thread):
+    def run(self):
+        Clock()
+
+def Clock():
+	startTime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+	image_time_start = time.time()
+	time.sleep(2)
+	while True:
+		image_time_now = time.time()
+		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+		timeCost = str(int(image_time_now-image_time_start)) + 's'
+		clockStr = "\r["+startTime+"]--->["+timeStr+"] = "+timeCost
+		sys.stdout.write(clockStr)
+		sys.stdout.flush()
+		time.sleep(1)
+			
+#================Multithread==================
 def _async_raise(tid, exctype):
    """raises the exception, performs cleanup if needed"""
    tid = ctypes.c_long(tid)
