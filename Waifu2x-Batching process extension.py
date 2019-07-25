@@ -8,7 +8,7 @@ import ctypes
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Batching process extension v0.46')
+		print('Waifu2x-Batching process extension v0.5')
 		print('----------------------------------------------')
 		print('Mode A: input folders one by one')
 		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
