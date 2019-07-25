@@ -9,8 +9,6 @@ Mode B:input one folder and scaled all images in it and it's sub-folders
 
 Mode C:input input images one by one, then scale them
 
-Delete space:input one folder and delete all blank spaces in it's sub-folders'name.
-
 Put 'Waifu2x-Batching process extension.py' in the folder of waifu2x-ncnn-vulkan then open the extension, enjoy.
 
 waifu2x-ncnn-vulkan:
@@ -26,8 +24,6 @@ https://github.com/nihui/waifu2x-ncnn-vulkan
 模式B:输入一个文件夹, 然后放大这个文件夹里面的图片, 以及他的子文件夹内的图片.
 
 模式C:一个一个的输入图片, 并且放大他们
-
-删除空格:删除输入路径下的子文件夹名称内的空格(因为本软件不能接收带有空格的路径)
 
 使用说明:把'Waifu2x-Batching process extension.py'放到waifu2x-ncnn-vulkan的文件夹内(就是和waifu2x-ncnn-vulkan.exe在一个文件夹里), 然后打开扩展脚本, 输入参数即可.
 
