@@ -8,7 +8,7 @@ import ctypes
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Batching process extension v0.41-stable')
+		print('Waifu2x-Batching process extension v0.45')
 		print('----------------------------------------------')
 		print('Mode A: input folders one by one')
 		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
@@ -47,6 +47,7 @@ def ModeA():
 	inputPathOver = True
 	inputPathList = []
 	orginalFileNameAndFullname = {}
+	models = 'models-upconv_7_anime_style_art_rgb'
 	
 	while inputPathOver:
 		inputPathError = True
@@ -63,6 +64,13 @@ def ModeA():
 		if inputPathOver == True:
 			inputPath=inputPath.strip('"')
 			inputPathList.append(inputPath)
+	
+	scale = input('scale(1/2, default=2): ')
+
+	if scale == '':
+		scale = '2'
+	elif scale == '1':
+		models = 'models-cunet'
 	
 	noiseLevel = input('noise-level(-1/0/1/2/3, default=0): ')
 	
@@ -96,8 +104,8 @@ def ModeA():
 		folder_time_start=time.time()
 		os.mkdir(inputPath+"\\scaled\\")
 		
-		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
-		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
 		folder_time_end=time.time()
 		
@@ -133,6 +141,8 @@ def ModeB():
 	inputPathList = []
 	orginalFileNameAndFullname = {}
 	inputPathError = True
+	models = 'models-upconv_7_anime_style_art_rgb'
+
 	while inputPathError:
 		inputPath = input('input-path: ')
 		if inputPath == '':
@@ -140,6 +150,13 @@ def ModeB():
 		else:
 			inputPathError = False
 	inputPath=inputPath.strip('"')
+	
+	scale = input('scale(1/2, default=2): ')
+
+	if scale == '':
+		scale = '2'
+	elif scale == '1':
+		models = 'models-cunet'
 	
 	noiseLevel = input('noise-level(-1/0/1/2/3, default=0): ')
 	
@@ -176,10 +193,11 @@ def ModeB():
 		folder_time_start=time.time()
 		os.mkdir(inputPath+"\\scaled\\")
 		
-		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
-		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+inputPath+"\\scaled\\"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
 		folder_time_end=time.time()
+		
 		if thread1.isAlive()==True:
 			stop_thread(thread1)
 		
@@ -211,7 +229,8 @@ def ModeC():
 	fileTimeCost = {}
 	inputPathOver = True
 	inputPathList = []
-	
+	models = 'models-upconv_7_anime_style_art_rgb'
+
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
@@ -227,6 +246,13 @@ def ModeC():
 		if inputPathOver == True:
 			inputPath=inputPath.strip('"')
 			inputPathList.append(inputPath)
+	
+	scale = input('scale(1/2, default=2): ')
+
+	if scale == '':
+		scale = '2'
+	if scale == '1':
+		models = 'models-cunet'
 	
 	noiseLevel = input('noise-level(-1/0/1/2/3, default=0): ')
 	
@@ -250,8 +276,8 @@ def ModeC():
 		fileNameAndExt=str(os.path.basename(inputPath))
 		folder_time_start=time.time()
 		
-		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
-		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s 2 -t "+tileSize+" -m models-upconv_7_anime_style_art_rgb")
+		print("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		os.system("waifu2x-ncnn-vulkan.exe -i "+inputPath+" -o "+scaledFilePath+"_Waifu2x.png"+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
 		folder_time_end=time.time()
 		print('\ntime cost of scale'+fileNameAndExt+':  ',folder_time_end-folder_time_start,'s\n')
@@ -271,8 +297,12 @@ def DeleteSpaces():
 	print("================Delete Spaces===============")
 	path = input("path : ")
 	path=path.strip('"')
-	for dirs in os.walk(path):
-		os.rename(dirs[0],dirs[0].replace(' ', ''))
+	for dirs,useless,files in os.walk(path):
+		os.rename(dirs,dirs.replace(' ', ''))
+		dirs=dirs.replace(' ', '')
+		for filename in files:
+			os.rename(dirs+'\\'+filename,(dirs+'\\'+filename).replace(' ', ''))
+	
 	input('Success! Press any key to return to the menu')
 	
 #================Prograss bar==================
@@ -297,7 +327,7 @@ class PrograssBarThread (threading.Thread):
 def PrograssBar(OldFileNum,ScalePath):
 	if OldFileNum != 0:
 		NewFileNum=0
-		time.sleep(1)
+		time.sleep(2)
 		print('\n')
 		while NewFileNum <= OldFileNum and os.path.exists(ScalePath):
 			NewFileNum=0
@@ -313,9 +343,11 @@ def PrograssBar(OldFileNum,ScalePath):
 				BarStr = ''
 				for x in range(0,int(Percent/2)):
 					BarStr = BarStr + '>'
-			PrograssBar = "\r"+"Prograss: ["+BarStr+"]"+str(Percent)+"%"
+			timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+			PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+timeStr+"]"
 			sys.stdout.write(PrograssBar)
 			sys.stdout.flush()
+			time.sleep(1)
 			
 def _async_raise(tid, exctype):
    """raises the exception, performs cleanup if needed"""
