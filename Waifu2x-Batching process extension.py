@@ -8,7 +8,7 @@ import ctypes
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Batching process extension v0.5')
+		print('Waifu2x-Batching process extension v0.52')
 		print('----------------------------------------------')
 		print('Mode A: input folders one by one')
 		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
@@ -80,6 +80,11 @@ def ModeA():
 	
 	if turnoff == '':
 		turnoff = 'n'
+		
+	delorginal = input('Delete original files?(y/n, default=n): ')
+	
+	if delorginal == '':
+		delorginal = 'n'
 	
 	total_time_start=time.time()
 	
@@ -112,6 +117,8 @@ def ModeA():
 				os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
 		orginalFileNameAndFullname = {}	
 		print('')
+		if delorginal == 'y' or delorginal == 'Y':
+			DelOrgFiles(inputPath)
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
 			
@@ -163,6 +170,11 @@ def ModeB():
 	
 	if turnoff == '':
 		turnoff = 'n'
+		
+	delorginal = input('Delete original files?(y/n, default=n): ')
+	
+	if delorginal == '':
+		delorginal = 'n'
 	
 	total_time_start=time.time()
 	
@@ -198,6 +210,8 @@ def ModeB():
 				os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
 		orginalFileNameAndFullname = {}	
 		print('')
+		if delorginal == 'y' or delorginal == 'Y':
+			DelOrgFiles(inputPath)
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
 			
@@ -259,6 +273,11 @@ def ModeC():
 	
 	total_time_start=time.time()
 	
+	delorginal = input('Delete original files?(y/n, default=n): ')
+	
+	if delorginal == '':
+		delorginal = 'n'
+	
 	for inputPath in inputPathList:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 		fileNameAndExt=str(os.path.basename(inputPath))
@@ -272,7 +291,8 @@ def ModeC():
 		if thread1.isAlive()==True:
 			stop_thread(thread1)	
 		print('')	
-			
+		if delorginal == 'y' or delorginal == 'Y':
+			os.system('del /q "'+inputPath+'"')
 	total_time_end=time.time()
 	
 	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
@@ -364,6 +384,13 @@ def _async_raise(tid, exctype):
 def stop_thread(thread):
    _async_raise(thread.ident, SystemExit)
 
+#=================DelOriginalFiles================
+def DelOrgFiles(inputPath):
+	Exts=["png","jpg","jpeg","tif","tiff","bmp","tga"]
+	for ext in Exts:
+		os.system('del /q "'+inputPath+'\\*.'+ext+'"')
+		os.system('del /q "'+inputPath+'\\*.'+ext.upper()+'"')
+		os.system('del /q "'+inputPath+'\\*.'+ext.capitalize()+'"')
 	
 #=================Start================
 ChooseMode()
