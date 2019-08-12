@@ -10,7 +10,7 @@ import imageio
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Extension v0.59')
+		print('Waifu2x-Extension v0.6')
 		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
 		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
@@ -312,7 +312,7 @@ def ModeC():
 	
 #=======================MODE D=============================
 def ModeD():
-	print("=================MODE D================")
+	print("=======================MODE D======================")
 	print("Type 'over' to stop input more path, and input path must be a file")
 	print("Scaled images will be in the input-path \n")
 	fileTimeCost = {}
@@ -375,8 +375,6 @@ def ModeD():
 	for inputPath in inputPathList:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
-		
-		
 		TIME_GAP=getDuration(inputPath)
 		splitGif(inputPath,scaledFilePath)
 		
@@ -389,10 +387,12 @@ def ModeD():
 		thread1.start()	
 		os.mkdir(scaledFilePath+'_split\\scaled')
 		print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		
 		os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		if thread1.isAlive()==True:
 			stop_thread(thread1)	
 		print('')	
+		
 		for files in os.walk(scaledFilePath+'_split\\scaled\\'):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
@@ -401,7 +401,7 @@ def ModeD():
 		orginalFileNameAndFullname = {}
 		
 		DelOrgFiles(scaledFilePath+'_split')
-	
+		
 		os.system("xcopy /s /i /q /y \""+scaledFilePath+'_split'+"\\scaled\\*.*\" \""+scaledFilePath+'_split'+"\"")
 		os.system("rd /s/q \""+scaledFilePath+'_split'+"\\scaled\"")
 		
@@ -409,11 +409,15 @@ def ModeD():
 			gifQuality = False
 		else:
 			gifQuality = True
+		
+		print('Assembling Gif.....')
 		assembleGif(scaledFilePath,TIME_GAP,gifQuality)
+		print('Gif assembled')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
 		
-		
+		if delorginal == 'y' or delorginal == 'Y':
+			os.system('del /q "'+inputPath+'"')
 		
 	total_time_end=time.time()
 	
