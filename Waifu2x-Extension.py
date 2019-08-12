@@ -5,16 +5,19 @@ import random
 import sys
 import inspect
 import ctypes
+from PIL import Image
+import imageio
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Batching process extension v0.52')
-		print('----------------------------------------------')
+		print('Waifu2x-Extension v0.59')
+		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
 		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
 		print('Mode C: input images one by one')
-		print('----------------------------------------------')
-		mode = input('(a/b/c/d) : ')
+		print('Mode D: scale gif')
+		print('---------------------------------------------------------------------------')
+		mode = input('(a/b/c/d): ')
 		if mode.lower() == "a":
 			os.system('cls')
 			ModeA()
@@ -26,6 +29,10 @@ def ChooseMode():
 		elif mode.lower() == "c":
 			os.system('cls')
 			ModeC()
+			os.system('cls')
+		elif mode.lower() == "d":
+			os.system('cls')
+			ModeD()
 			os.system('cls')
 		else:
 			os.system('cls')
@@ -293,6 +300,7 @@ def ModeC():
 		print('')	
 		if delorginal == 'y' or delorginal == 'Y':
 			os.system('del /q "'+inputPath+'"')
+			
 	total_time_end=time.time()
 	
 	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
@@ -300,6 +308,121 @@ def ModeC():
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
+	
+	
+#=======================MODE D=============================
+def ModeD():
+	print("=================MODE D================")
+	print("Type 'over' to stop input more path, and input path must be a file")
+	print("Scaled images will be in the input-path \n")
+	fileTimeCost = {}
+	inputPathOver = True
+	inputPathList = []
+	gifQuality = False
+	orginalFileNameAndFullname = {}
+	models = 'models-upconv_7_anime_style_art_rgb'
+
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			if inputPath == '':
+				print('error,input-path is invalid\n')
+			elif inputPath == 'over':
+				inputPathOver = False
+				inputPathError = False
+				break
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPath=inputPath.strip('"')
+			inputPathList.append(inputPath)
+	
+	scale = input('scale(1/2, default=2): ')
+
+	if scale == '':
+		scale = '2'
+	if scale == '1':
+		models = 'models-cunet'
+	
+	noiseLevel = input('noise-level(-1/0/1/2/3, default=0): ')
+	
+	if noiseLevel == '':
+		noiseLevel = '0'
+		
+	tileSize = input('tile size(>=32, default=400): ')
+	
+	if tileSize == '':
+		tileSize = '400'
+		
+	turnoff = input('turn off computer when finished?(y/n, default=n): ')
+	
+	highQuality = input('High quality gif?(y/n, default=y): ')
+	
+	if highQuality == '':
+		highQuality = 'y'
+	
+	if turnoff == '':
+		turnoff = 'n'
+	
+	total_time_start=time.time()
+	
+	delorginal = input('Delete original files?(y/n, default=n): ')
+	
+	if delorginal == '':
+		delorginal = 'n'
+	
+	for inputPath in inputPathList:
+		scaledFilePath = os.path.splitext(inputPath)[0]
+			
+		
+		
+		TIME_GAP=getDuration(inputPath)
+		splitGif(inputPath,scaledFilePath)
+		
+		for files in os.walk(scaledFilePath+'_split'):
+			for fileNameAndExt in files[2]:
+				fileName=os.path.splitext(fileNameAndExt)[0]
+				orginalFileNameAndFullname[fileName]= fileNameAndExt
+				
+		thread1=ClockThread()
+		thread1.start()	
+		os.mkdir(scaledFilePath+'_split\\scaled')
+		print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		if thread1.isAlive()==True:
+			stop_thread(thread1)	
+		print('')	
+		for files in os.walk(scaledFilePath+'_split\\scaled\\'):
+			for fileNameAndExt in files[2]:
+				fileName=os.path.splitext(fileNameAndExt)[0]
+				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
+				os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',originalName+".png"))
+		orginalFileNameAndFullname = {}
+		
+		DelOrgFiles(scaledFilePath+'_split')
+	
+		os.system("xcopy /s /i /q /y \""+scaledFilePath+'_split'+"\\scaled\\*.*\" \""+scaledFilePath+'_split'+"\"")
+		os.system("rd /s/q \""+scaledFilePath+'_split'+"\\scaled\"")
+		
+		if highQuality == 'y' or highQuality == 'Y':
+			gifQuality = False
+		else:
+			gifQuality = True
+		assembleGif(scaledFilePath,TIME_GAP,gifQuality)
+		
+		os.system("rd /s/q \""+scaledFilePath+'_split"')
+		
+		
+		
+	total_time_end=time.time()
+	
+	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
+	if turnoff=='y' or turnoff=='Y':
+		os.system('shutdown -s')
+	
+	input('\npress any key to exit')
+	
 	
 #================Prograss bar==================
 def FileCount(countPath):
@@ -386,11 +509,75 @@ def stop_thread(thread):
 
 #=================DelOriginalFiles================
 def DelOrgFiles(inputPath):
-	Exts=["png","jpg","jpeg","tif","tiff","bmp","tga"]
+	Exts=["png","jpg","jpeg","tif","tiff","bmp","tga","gif"]
 	for ext in Exts:
 		os.system('del /q "'+inputPath+'\\*.'+ext+'"')
 		os.system('del /q "'+inputPath+'\\*.'+ext.upper()+'"')
 		os.system('del /q "'+inputPath+'\\*.'+ext.capitalize()+'"')
+	
+#========================== GIF ==============================
+def getDuration(FILENAME):
+	PIL_Image_object = Image.open(FILENAME)
+	PIL_Image_object.seek(0)
+	frames = 0
+	duration = 0
+	while True:
+		try:
+			frames += 1
+			duration += PIL_Image_object.info['duration']
+			PIL_Image_object.seek(PIL_Image_object.tell() + 1)
+		except EOFError:
+			return (duration / 1000)/frames
+	return None
+
+def splitGif(gifFileName,scaledFilePath):
+	im = Image.open(gifFileName)
+	pngDir = scaledFilePath+'_split'
+	os.mkdir(scaledFilePath+'_split')
+	try:
+	  while True:
+	    #保存当前帧图片
+	    current = im.tell()
+	    im.save(pngDir+'/'+str(current)+'.png')
+	    #获取下一帧图片
+	    im.seek(current+1)
+	except EOFError:
+	    pass
+	
+def assembleGif(scaledFilePath,TIME_GAP,gifQuality):
+	image_list=[]
+	gif_name=scaledFilePath+'_waifu2x.gif'
+	filelist_name=[]
+	png_list_fullname=[]
+	
+	for path,useless,fnames in os.walk(scaledFilePath+'_split'):
+		for fname in fnames:
+			png_list_fullname.append(path+'\\'+fname)
+
+		break
+	
+	for png in png_list_fullname:
+		fileNameAndExt=str(os.path.basename(png))
+		filename=os.path.splitext(fileNameAndExt)[0]
+		imageio.imwrite(scaledFilePath+'_split\\'+filename+".jpg", imageio.imread(png), 'JPG')
+	
+	os.system('del /q "'+scaledFilePath+'_split'+'\\*.'+'png'+'"')
+	
+	for path,useless,fnames in os.walk(scaledFilePath+'_split'):
+		for fname in fnames:
+			filelist_name.append(int(os.path.splitext(fname)[0]))
+		break
+		
+	filelist_name.sort()
+		
+	for file_name in filelist_name:
+		image_list.append(scaledFilePath+'_split'+'\\'+str(file_name)+'.jpg')
+
+	frames = []  
+	for image_name in image_list:  
+		frames.append(imageio.imread(image_name))  
+	imageio.mimsave(gif_name, frames, 'GIF', duration = TIME_GAP,subrectangles = gifQuality)
+	
 	
 #=================Start================
 ChooseMode()
