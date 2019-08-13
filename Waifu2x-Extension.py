@@ -10,7 +10,8 @@ import imageio
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Extension v0.6')
+		print('Waifu2x-Extension v0.62')
+		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
 		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
@@ -73,15 +74,20 @@ def ModeA():
 	elif scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('noise-level(-1/0/1/2/3, default=0): ')
+	noiseLevel = input('noise-level(-1/0/1/2/3, default=2): ')
 	
 	if noiseLevel == '':
-		noiseLevel = '0'
+		noiseLevel = '2'
 		
-	tileSize = input('tile size(>=32, default=400): ')
+	tileSize = input('tile size(>=32, default=200): ')
 	
 	if tileSize == '':
-		tileSize = '400'
+		tileSize = '200'
+		
+	saveAsJPG = input('Save as .jpg? (y/n, default=y): ')
+	
+	if saveAsJPG == '':
+		saveAsJPG = 'y'
 		
 	turnoff = input('turn off computer when finished?(y/n, default=n): ')
 	
@@ -112,17 +118,30 @@ def ModeA():
 		print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
-		
 		if thread1.isAlive()==True:
 			stop_thread(thread1)
+			
+		if saveAsJPG == 'y' or saveAsJPG == 'Y':
+			for path,useless,fnames in os.walk(inputPath+'\\scaled\\'):
+				for fnameAndExt in fnames:
+					pngFile = path+'\\'+fnameAndExt
+					fname = os.path.splitext(fnameAndExt)[0]
+					jpgFile = path+'\\'+fname+'.jpg'
+					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG')
+					os.system('del /q "'+pngFile+'"')
 			
 		
 		for files in os.walk(inputPath+'\\scaled\\'):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
-				os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
-		orginalFileNameAndFullname = {}	
+				if saveAsJPG == 'y' or saveAsJPG == 'Y':
+					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.jpg"))
+				else:
+					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
+		
+		orginalFileNameAndFullname = {}
+		
 		print('')
 		if delorginal == 'y' or delorginal == 'Y':
 			DelOrgFiles(inputPath)
@@ -163,15 +182,20 @@ def ModeB():
 	elif scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('noise-level(-1/0/1/2/3, default=0): ')
+	noiseLevel = input('noise-level(-1/0/1/2/3, default=2): ')
 	
 	if noiseLevel == '':
-		noiseLevel = '0'
+		noiseLevel = '2'
 		
-	tileSize = input('tile size(>=32, default=400): ')
+	tileSize = input('tile size(>=32, default=200): ')
 	
 	if tileSize == '':
-		tileSize = '400'
+		tileSize = '200'
+		
+	saveAsJPG = input('Save as .jpg? (y/n, default=y): ')
+	
+	if saveAsJPG == '':
+		saveAsJPG = 'y'
 		
 	turnoff = input('turn off computer when finished?(y/n, default=n): ')
 	
@@ -209,12 +233,24 @@ def ModeB():
 		if thread1.isAlive()==True:
 			stop_thread(thread1)
 		
+		if saveAsJPG == 'y' or saveAsJPG == 'Y':
+			for path,useless,fnames in os.walk(inputPath+'\\scaled\\'):
+				for fnameAndExt in fnames:
+					pngFile = path+'\\'+fnameAndExt
+					fname = os.path.splitext(fnameAndExt)[0]
+					jpgFile = path+'\\'+fname+'.jpg'
+					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG')
+					os.system('del /q "'+pngFile+'"')
+					
 		
 		for files in os.walk(inputPath+'\\scaled\\'):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
-				os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
+				if saveAsJPG == 'y' or saveAsJPG == 'Y':
+					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.jpg"))
+				else:
+					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
 		orginalFileNameAndFullname = {}	
 		print('')
 		if delorginal == 'y' or delorginal == 'Y':
@@ -256,24 +292,29 @@ def ModeC():
 			inputPath=inputPath.strip('"')
 			inputPathList.append(inputPath)
 	
-	scale = input('scale(1/2, default=2): ')
+	scale = input('Scale(1/2, default=2): ')
 
 	if scale == '':
 		scale = '2'
 	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('noise-level(-1/0/1/2/3, default=0): ')
+	noiseLevel = input('Noise-level(-1/0/1/2/3, default=2): ')
 	
 	if noiseLevel == '':
-		noiseLevel = '0'
+		noiseLevel = '2'
 		
-	tileSize = input('tile size(>=32, default=400): ')
+	tileSize = input('Tile size(>=32, default=200): ')
 	
 	if tileSize == '':
-		tileSize = '400'
+		tileSize = '200'
 		
-	turnoff = input('turn off computer when finished?(y/n, default=n): ')
+	saveAsJPG = input('Save as .jpg? (y/n, default=y): ')
+	
+	if saveAsJPG == '':
+		saveAsJPG = 'y'
+		
+	turnoff = input('Turn off computer when finished?(y/n, default=n): ')
 	
 	if turnoff == '':
 		turnoff = 'n'
@@ -300,6 +341,11 @@ def ModeC():
 		print('')	
 		if delorginal == 'y' or delorginal == 'Y':
 			os.system('del /q "'+inputPath+'"')
+			
+		if saveAsJPG == 'y' or saveAsJPG == 'Y':
+			imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG')
+			os.system('del /q "'+scaledFilePath+"_Waifu2x.png"+'"')
+		
 			
 	total_time_end=time.time()
 	
@@ -345,22 +391,22 @@ def ModeD():
 	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('noise-level(-1/0/1/2/3, default=0): ')
+	noiseLevel = input('noise-level(-1/0/1/2/3, default=2): ')
 	
 	if noiseLevel == '':
-		noiseLevel = '0'
+		noiseLevel = '2'
 		
-	tileSize = input('tile size(>=32, default=400): ')
+	tileSize = input('tile size(>=32, default=200): ')
 	
 	if tileSize == '':
-		tileSize = '400'
+		tileSize = '200'
 		
-	turnoff = input('turn off computer when finished?(y/n, default=n): ')
-	
 	highQuality = input('High quality gif?(y/n, default=y): ')
 	
 	if highQuality == '':
 		highQuality = 'y'
+		
+	turnoff = input('turn off computer when finished?(y/n, default=n): ')
 	
 	if turnoff == '':
 		turnoff = 'n'
@@ -540,10 +586,8 @@ def splitGif(gifFileName,scaledFilePath):
 	os.mkdir(scaledFilePath+'_split')
 	try:
 	  while True:
-	    #保存当前帧图片
 	    current = im.tell()
 	    im.save(pngDir+'/'+str(current)+'.png')
-	    #获取下一帧图片
 	    im.seek(current+1)
 	except EOFError:
 	    pass
@@ -581,7 +625,6 @@ def assembleGif(scaledFilePath,TIME_GAP,gifQuality):
 	for image_name in image_list:  
 		frames.append(imageio.imread(image_name))  
 	imageio.mimsave(gif_name, frames, 'GIF', duration = TIME_GAP,subrectangles = gifQuality)
-	
 	
 #=================Start================
 ChooseMode()
