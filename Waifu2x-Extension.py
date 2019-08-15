@@ -10,7 +10,7 @@ import imageio
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Extension v0.62')
+		print('Waifu2x-Extension v0.63')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
@@ -127,7 +127,7 @@ def ModeA():
 					pngFile = path+'\\'+fnameAndExt
 					fname = os.path.splitext(fnameAndExt)[0]
 					jpgFile = path+'\\'+fname+'.jpg'
-					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG')
+					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = 100)
 					os.system('del /q "'+pngFile+'"')
 			
 		
@@ -239,7 +239,7 @@ def ModeB():
 					pngFile = path+'\\'+fnameAndExt
 					fname = os.path.splitext(fnameAndExt)[0]
 					jpgFile = path+'\\'+fname+'.jpg'
-					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG')
+					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = 100)
 					os.system('del /q "'+pngFile+'"')
 					
 		
@@ -343,7 +343,7 @@ def ModeC():
 			os.system('del /q "'+inputPath+'"')
 			
 		if saveAsJPG == 'y' or saveAsJPG == 'Y':
-			imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG')
+			imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = 100)
 			os.system('del /q "'+scaledFilePath+"_Waifu2x.png"+'"')
 		
 			
@@ -494,6 +494,8 @@ class PrograssBarThread (threading.Thread):
 
 
 def PrograssBar(OldFileNum,ScalePath):
+	Eta = 0
+	NewFileNum_Old=0
 	if OldFileNum != 0:
 		NewFileNum=0
 		time_start = time.time()
@@ -511,13 +513,31 @@ def PrograssBar(OldFileNum,ScalePath):
 			else:
 				Percent = int(100*(NewFileNum/OldFileNum))
 				BarStr = ''
-				for x in range(0,int(Percent/2)):
+				for x in range(0,int(Percent/3)):
 					BarStr = BarStr + '>'
 			time_now = time.time()
-			timeCost = str(int(time_now-time_start)) + 's'
-			PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+timeCost+"]"
-			sys.stdout.write(PrograssBar)
-			sys.stdout.flush()
+			timeCost_str = str(int(time_now-time_start)) + 's'
+			if NewFileNum > 0:
+				if NewFileNum > NewFileNum_Old:
+					avgTimeCost = int(time_now-time_start)/NewFileNum
+					Eta = int(avgTimeCost*(OldFileNum-NewFileNum))
+					NewFileNum_Old = NewFileNum
+				
+			if Eta != 0:
+				if Eta > 1:
+					Eta=Eta-1
+				PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"
+				sys.stdout.write(PrograssBar)
+				sys.stdout.flush()
+					
+				
+			else:
+				if Eta > 1:
+					Eta=Eta-1
+				PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"
+				sys.stdout.write(PrograssBar)
+				sys.stdout.flush()
+				
 			time.sleep(1)
 			
 #================Clock==================
@@ -607,7 +627,7 @@ def assembleGif(scaledFilePath,TIME_GAP,gifQuality):
 	for png in png_list_fullname:
 		fileNameAndExt=str(os.path.basename(png))
 		filename=os.path.splitext(fileNameAndExt)[0]
-		imageio.imwrite(scaledFilePath+'_split\\'+filename+".jpg", imageio.imread(png), 'JPG')
+		imageio.imwrite(scaledFilePath+'_split\\'+filename+".jpg", imageio.imread(png), 'JPG', quality = 100)
 	
 	os.system('del /q "'+scaledFilePath+'_split'+'\\*.'+'png'+'"')
 	
