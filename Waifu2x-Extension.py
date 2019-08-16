@@ -1,7 +1,6 @@
 import os
 import time
 import threading
-import random
 import sys
 import inspect
 import ctypes
@@ -10,7 +9,7 @@ import imageio
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Extension v0.63')
+		print('Waifu2x-Extension v0.65')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
@@ -49,6 +48,7 @@ def ModeA():
 	inputPathOver = True
 	inputPathList = []
 	orginalFileNameAndFullname = {}
+	JpgQuality=100
 	models = 'models-upconv_7_anime_style_art_rgb'
 	
 	while inputPathOver:
@@ -88,6 +88,11 @@ def ModeA():
 	
 	if saveAsJPG == '':
 		saveAsJPG = 'y'
+	
+	if saveAsJPG == 'y':
+		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=n): ')
+		if Compress == 'y' or Compress == 'Y':
+			JpgQuality=90
 		
 	turnoff = input('turn off computer when finished?(y/n, default=n): ')
 	
@@ -98,6 +103,8 @@ def ModeA():
 	
 	if delorginal == '':
 		delorginal = 'n'
+		
+	print('--------------------------------------------')
 	
 	total_time_start=time.time()
 	
@@ -119,6 +126,7 @@ def ModeA():
 		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
 		if thread1.isAlive()==True:
+			time.sleep(2)
 			stop_thread(thread1)
 			
 		if saveAsJPG == 'y' or saveAsJPG == 'Y':
@@ -127,7 +135,7 @@ def ModeA():
 					pngFile = path+'\\'+fnameAndExt
 					fname = os.path.splitext(fnameAndExt)[0]
 					jpgFile = path+'\\'+fname+'.jpg'
-					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = 100)
+					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = JpgQuality)
 					os.system('del /q "'+pngFile+'"')
 			
 		
@@ -165,6 +173,7 @@ def ModeB():
 	inputPathList = []
 	orginalFileNameAndFullname = {}
 	inputPathError = True
+	JpgQuality=100
 	models = 'models-upconv_7_anime_style_art_rgb'
 
 	while inputPathError:
@@ -196,6 +205,11 @@ def ModeB():
 	
 	if saveAsJPG == '':
 		saveAsJPG = 'y'
+	
+	if saveAsJPG == 'y':
+		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=n): ')
+		if Compress == 'y' or Compress == 'Y':
+			JpgQuality=90
 		
 	turnoff = input('turn off computer when finished?(y/n, default=n): ')
 	
@@ -206,6 +220,8 @@ def ModeB():
 	
 	if delorginal == '':
 		delorginal = 'n'
+		
+	print('--------------------------------------------')
 	
 	total_time_start=time.time()
 	
@@ -231,6 +247,7 @@ def ModeB():
 		
 		
 		if thread1.isAlive()==True:
+			time.sleep(2)
 			stop_thread(thread1)
 		
 		if saveAsJPG == 'y' or saveAsJPG == 'Y':
@@ -239,7 +256,7 @@ def ModeB():
 					pngFile = path+'\\'+fnameAndExt
 					fname = os.path.splitext(fnameAndExt)[0]
 					jpgFile = path+'\\'+fname+'.jpg'
-					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = 100)
+					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = JpgQuality)
 					os.system('del /q "'+pngFile+'"')
 					
 		
@@ -274,6 +291,7 @@ def ModeC():
 	fileTimeCost = {}
 	inputPathOver = True
 	inputPathList = []
+	JpgQuality=100
 	models = 'models-upconv_7_anime_style_art_rgb'
 
 	while inputPathOver:
@@ -314,6 +332,11 @@ def ModeC():
 	if saveAsJPG == '':
 		saveAsJPG = 'y'
 		
+	if saveAsJPG == 'y':
+		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=n): ')
+		if Compress == 'y' or Compress == 'Y':
+			JpgQuality=90
+		
 	turnoff = input('Turn off computer when finished?(y/n, default=n): ')
 	
 	if turnoff == '':
@@ -325,6 +348,8 @@ def ModeC():
 	
 	if delorginal == '':
 		delorginal = 'n'
+		
+	print('--------------------------------------------')
 	
 	for inputPath in inputPathList:
 		scaledFilePath = os.path.splitext(inputPath)[0]
@@ -343,7 +368,7 @@ def ModeC():
 			os.system('del /q "'+inputPath+'"')
 			
 		if saveAsJPG == 'y' or saveAsJPG == 'Y':
-			imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = 100)
+			imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
 			os.system('del /q "'+scaledFilePath+"_Waifu2x.png"+'"')
 		
 			
@@ -359,7 +384,7 @@ def ModeC():
 #=======================MODE D=============================
 def ModeD():
 	print("=======================MODE D======================")
-	print("Type 'over' to stop input more path, and input path must be a file")
+	print("Type 'over' to stop input more path, and input path must be a .gif file")
 	print("Scaled images will be in the input-path \n")
 	fileTimeCost = {}
 	inputPathOver = True
@@ -411,12 +436,14 @@ def ModeD():
 	if turnoff == '':
 		turnoff = 'n'
 	
-	total_time_start=time.time()
-	
 	delorginal = input('Delete original files?(y/n, default=n): ')
 	
 	if delorginal == '':
 		delorginal = 'n'
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
 	
 	for inputPath in inputPathList:
 		scaledFilePath = os.path.splitext(inputPath)[0]
@@ -435,6 +462,7 @@ def ModeD():
 		print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
 		os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		
 		if thread1.isAlive()==True:
 			stop_thread(thread1)	
 		print('')	
@@ -526,7 +554,7 @@ def PrograssBar(OldFileNum,ScalePath):
 			if Eta != 0:
 				if Eta > 1:
 					Eta=Eta-1
-				PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"
+				PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"+'   '
 				sys.stdout.write(PrograssBar)
 				sys.stdout.flush()
 					
@@ -534,7 +562,7 @@ def PrograssBar(OldFileNum,ScalePath):
 			else:
 				if Eta > 1:
 					Eta=Eta-1
-				PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"
+				PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+'          '
 				sys.stdout.write(PrograssBar)
 				sys.stdout.flush()
 				
