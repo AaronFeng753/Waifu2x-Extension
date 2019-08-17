@@ -44,7 +44,7 @@ https://github.com/nihui/waifu2x-ncnn-vulkan
 FFmpeg:
 https://ffmpeg.org/
 
-#Donate 捐赠
+# Donate 捐赠
 
 如果这个扩展程序帮助了您, 欢迎您捐赠支持开发者.
 
