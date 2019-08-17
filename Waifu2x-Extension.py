@@ -769,8 +769,8 @@ def ModeE():
 		os.system("rd /s/q \""+frames_dir+"\\scaled\"")
 				
 		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
-		
-		os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
+		if os.path.splitext(inputPath)[1] != '.mp4':
+			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
 			
 		if delorginal == 'y' or delorginal == 'Y':
 			os.system('del /q "'+inputPath+'"')	
