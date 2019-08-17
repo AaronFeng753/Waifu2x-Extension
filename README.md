@@ -11,12 +11,15 @@ Mode C:input input images one by one, then scale them
 
 Mode D: scale gif files one by one
 
-Mode E: scale video files one by one
+Mode E: scale video files one by one (need ffmpeg)
 
 Put 'Waifu2x-Extension.py' in the folder of waifu2x-ncnn-vulkan then open the extension, enjoy.
 
 waifu2x-ncnn-vulkan:
 https://github.com/nihui/waifu2x-ncnn-vulkan
+
+FFmpeg:
+https://ffmpeg.org/
 
 # Waifu2x扩展
 适用于waifu2x-ncnn-vulkan的批量图片处理扩展
@@ -31,9 +34,12 @@ https://github.com/nihui/waifu2x-ncnn-vulkan
 
 模式D:一个一个的输入GIF,并且放大他们
 
-模式E:一个一个的输入视频, 并且放大他们
+模式E:一个一个的输入视频, 并且放大他们 (需要 ffmpeg)
 
 使用说明:把'Waifu2x-Extension.py'放到waifu2x-ncnn-vulkan的文件夹内(就是和waifu2x-ncnn-vulkan.exe在一个文件夹里), 然后打开扩展脚本, 输入参数即可.
 
 waifu2x-ncnn-vulkan:
 https://github.com/nihui/waifu2x-ncnn-vulkan
+
+FFmpeg:
+https://ffmpeg.org/
