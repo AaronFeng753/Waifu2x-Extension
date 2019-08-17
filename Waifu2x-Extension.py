@@ -9,7 +9,7 @@ import imageio
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Extension v0.65')
+		print('Waifu2x-Extension v0.7')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
@@ -67,7 +67,7 @@ def ModeA():
 			inputPath=inputPath.strip('"')
 			inputPathList.append(inputPath)
 	
-	scale = input('scale(1/2, default=2): ')
+	scale = input('scale(1/2/4, default=2): ')
 
 	if scale == '':
 		scale = '2'
@@ -112,24 +112,58 @@ def ModeA():
 		
 		oldfilenumber=FileCount(inputPath)
 		scalepath = inputPath+"\\scaled\\"
-		thread1=PrograssBarThread(oldfilenumber,scalepath)
-		thread1.start()
 		
 		for files in os.walk(inputPath):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				orginalFileNameAndFullname[fileName]= fileNameAndExt
 				
+		if scale == '4':
+			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 1)
+			thread1.start()
+		else:
+			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 0)
+			thread1.start()
+				
 		os.mkdir(inputPath+"\\scaled\\")
 		
-		print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		if scale == '4':
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				stop_thread(thread1)
+			
+			File_x2=[]
+			for path,useless,filenames in os.walk(inputPath+"\\scaled\\"):
+				for filename in filenames:
+					File_x2.append(path+'\\'+filename)
+			
+			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2)
+			thread1.start()
+			
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			for f in File_x2:
+				os.system('del /q "'+f+'"')
+				
+			for files in os.walk(inputPath+'\\scaled\\'):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileName))
+			
+		else:
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
 		if thread1.isAlive()==True:
 			time.sleep(2)
 			stop_thread(thread1)
 			
 		if saveAsJPG == 'y' or saveAsJPG == 'Y':
+			print('\n Convert image..... \n')
 			for path,useless,fnames in os.walk(inputPath+'\\scaled\\'):
 				for fnameAndExt in fnames:
 					pngFile = path+'\\'+fnameAndExt
@@ -184,7 +218,7 @@ def ModeB():
 			inputPathError = False
 	inputPath=inputPath.strip('"')
 	
-	scale = input('scale(1/2, default=2): ')
+	scale = input('scale(1/2/4, default=2): ')
 
 	if scale == '':
 		scale = '2'
@@ -232,18 +266,50 @@ def ModeB():
 		
 		oldfilenumber=FileCount(inputPath)
 		scalepath = inputPath+"\\scaled\\"
-		thread1=PrograssBarThread(oldfilenumber,scalepath)
-		thread1.start()
 		
 		for files in os.walk(inputPath):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				orginalFileNameAndFullname[fileName]= fileNameAndExt
+		if scale == '4':
+			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 1)
+			thread1.start()
+		else:
+			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 0)
+			thread1.start()
 				
 		os.mkdir(inputPath+"\\scaled\\")
 		
-		print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		if scale == '4':
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				stop_thread(thread1)
+				
+			File_x2=[]
+			for path,useless,filenames in os.walk(inputPath+"\\scaled\\"):
+				for filename in filenames:
+					File_x2.append(path+'\\'+filename)
+			
+			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2)
+			thread1.start()
+			
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			for f in File_x2:
+				os.system('del /q "'+f+'"')
+			
+			for files in os.walk(inputPath+'\\scaled\\'):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileName))
+			
+		else:
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
 		
 		if thread1.isAlive()==True:
@@ -251,6 +317,7 @@ def ModeB():
 			stop_thread(thread1)
 		
 		if saveAsJPG == 'y' or saveAsJPG == 'Y':
+			print('\n Convert image..... \n')
 			for path,useless,fnames in os.walk(inputPath+'\\scaled\\'):
 				for fnameAndExt in fnames:
 					pngFile = path+'\\'+fnameAndExt
@@ -310,7 +377,7 @@ def ModeC():
 			inputPath=inputPath.strip('"')
 			inputPathList.append(inputPath)
 	
-	scale = input('Scale(1/2, default=2): ')
+	scale = input('Scale(1/2/4, default=2): ')
 
 	if scale == '':
 		scale = '2'
@@ -342,7 +409,6 @@ def ModeC():
 	if turnoff == '':
 		turnoff = 'n'
 	
-	total_time_start=time.time()
 	
 	delorginal = input('Delete original files?(y/n, default=n): ')
 	
@@ -351,15 +417,26 @@ def ModeC():
 		
 	print('--------------------------------------------')
 	
+	total_time_start=time.time()
+
+	
 	for inputPath in inputPathList:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 		fileNameAndExt=str(os.path.basename(inputPath))
 		
 		thread1=ClockThread()
 		thread1.start()
-				
-		print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		
+		if scale == '4':
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+
+		else:
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
 		if thread1.isAlive()==True:
 			stop_thread(thread1)	
@@ -368,6 +445,7 @@ def ModeC():
 			os.system('del /q "'+inputPath+'"')
 			
 		if saveAsJPG == 'y' or saveAsJPG == 'Y':
+			print('\n Convert image..... \n')
 			imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
 			os.system('del /q "'+scaledFilePath+"_Waifu2x.png"+'"')
 		
@@ -409,7 +487,7 @@ def ModeD():
 			inputPath=inputPath.strip('"')
 			inputPathList.append(inputPath)
 	
-	scale = input('scale(1/2, default=2): ')
+	scale = input('scale(1/2/4, default=2): ')
 
 	if scale == '':
 		scale = '2'
@@ -459,9 +537,29 @@ def ModeD():
 		thread1=ClockThread()
 		thread1.start()	
 		os.mkdir(scaledFilePath+'_split\\scaled')
-		print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
-		os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+		if scale == '4': 
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			File_x2=[]
+			for path,useless,filenames in os.walk(scaledFilePath+'_split\\scaled\\'):
+				for filename in filenames:
+					File_x2.append(path+'\\'+filename)
+					
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			for f in File_x2:
+				os.system('del /q "'+f+'"')
+			
+			for files in os.walk(scaledFilePath+'_split\\scaled\\'):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',fileName))
+			
+		else:
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 		
 		if thread1.isAlive()==True:
 			stop_thread(thread1)	
@@ -513,15 +611,17 @@ def FileCount(countPath):
 	return file_count
 
 class PrograssBarThread (threading.Thread):
-    def __init__(self, OldFileNum, ScalePath):
+    def __init__(self, OldFileNum, ScalePath, scale = '2', round_ = 0):
         threading.Thread.__init__(self)
         self.OldFileNum = OldFileNum
         self.ScalePath = ScalePath
+        self.scale = scale
+        self.round_ = round_
     def run(self):
-        PrograssBar(self.OldFileNum,self.ScalePath)
+        PrograssBar(self.OldFileNum,self.ScalePath,self.scale,self.round_)
 
 
-def PrograssBar(OldFileNum,ScalePath):
+def PrograssBar(OldFileNum,ScalePath,scale,round_):
 	Eta = 0
 	NewFileNum_Old=0
 	if OldFileNum != 0:
@@ -550,21 +650,32 @@ def PrograssBar(OldFileNum,ScalePath):
 					avgTimeCost = int(time_now-time_start)/NewFileNum
 					Eta = int(avgTimeCost*(OldFileNum-NewFileNum))
 					NewFileNum_Old = NewFileNum
-				
-			if Eta != 0:
-				if Eta > 1:
-					Eta=Eta-1
-				PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"+'   '
+			
+			if round_ == 2:
+				PrograssBar = "\r"+"Round = "+str(round_)+"  ["+'Time cost: '+timeCost_str+"]"
 				sys.stdout.write(PrograssBar)
 				sys.stdout.flush()
-					
-				
 			else:
-				if Eta > 1:
-					Eta=Eta-1
-				PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+'          '
-				sys.stdout.write(PrograssBar)
-				sys.stdout.flush()
+				if Eta != 0:
+					if Eta > 1:
+						Eta=Eta-1
+					if scale == '4':
+						PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"+'   '
+					else:
+						PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"+'   '
+					sys.stdout.write(PrograssBar)
+					sys.stdout.flush()
+						
+					
+				else:
+					if Eta > 1:
+						Eta=Eta-1
+					if scale == '4':
+						PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+'          '
+					else:
+						PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+'          '
+					sys.stdout.write(PrograssBar)
+					sys.stdout.flush()
 				
 			time.sleep(1)
 			
