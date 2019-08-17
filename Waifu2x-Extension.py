@@ -12,7 +12,7 @@ import cv2
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Extension v0.99 2019/8/17')
+		print('Waifu2x-Extension v1.0-stable 2019/8/17')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
@@ -141,7 +141,8 @@ def ModeA():
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
-				stop_thread(thread1)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
 			
 			File_x2=[]
 			for path,useless,filenames in os.walk(inputPath+"\\scaled\\"):
@@ -156,7 +157,8 @@ def ModeA():
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
-				stop_thread(thread1)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
 			
 			for f in File_x2:
 				os.system('del /q "'+f+'"')
@@ -172,7 +174,8 @@ def ModeA():
 		
 		if thread1.isAlive()==True:
 			time.sleep(2)
-			stop_thread(thread1)
+			if thread1.isAlive()==True:
+				stop_thread(thread1)
 			
 		if saveAsJPG == 'y' or saveAsJPG == 'Y':
 			print('\n Convert image..... \n')
@@ -298,7 +301,8 @@ def ModeB():
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
-				stop_thread(thread1)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
 				
 			File_x2=[]
 			for path,useless,filenames in os.walk(inputPath+"\\scaled\\"):
@@ -313,7 +317,8 @@ def ModeB():
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
-				stop_thread(thread1)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
 			
 			for f in File_x2:
 				os.system('del /q "'+f+'"')
@@ -330,7 +335,8 @@ def ModeB():
 		
 		if thread1.isAlive()==True:
 			time.sleep(2)
-			stop_thread(thread1)
+			if thread1.isAlive()==True:
+				stop_thread(thread1)
 		
 		if saveAsJPG == 'y' or saveAsJPG == 'Y':
 			print('\n Convert image..... \n')
@@ -545,28 +551,40 @@ def ModeD():
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
 		TIME_GAP=getDuration(inputPath)
+		print('Split gif.....')
 		splitGif(inputPath,scaledFilePath)
+		
+		oldfilenumber=FileCount(scaledFilePath+'_split')
 		
 		for files in os.walk(scaledFilePath+'_split'):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				orginalFileNameAndFullname[fileName]= fileNameAndExt
 				
-		thread1=ClockThread()
-		thread1.start()	
+	
 		os.mkdir(scaledFilePath+'_split\\scaled')
-		
+		print('scal images.....')
 		if scale == '4': 
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
+			thread1.start()
 			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
 			File_x2=[]
 			for path,useless,filenames in os.walk(scaledFilePath+'_split\\scaled\\'):
 				for filename in filenames:
 					File_x2.append(path+'\\'+filename)
-					
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
+			thread1.start()		
 			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
 			for f in File_x2:
 				os.system('del /q "'+f+'"')
 			
@@ -576,11 +594,14 @@ def ModeD():
 					os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',fileName))
 			
 		else:
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
+			thread1.start()
 			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-		
-		if thread1.isAlive()==True:
-			stop_thread(thread1)	
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
 		print('')	
 		
 		for files in os.walk(scaledFilePath+'_split\\scaled\\'):
@@ -696,7 +717,8 @@ def ModeE():
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
-				stop_thread(thread2)
+				if thread2.isAlive()==True:
+					stop_thread(thread2)
 			
 			for files in os.walk(frames_dir+"\\scaled"):
 				for fileNameAndExt in files[2]:
@@ -716,7 +738,8 @@ def ModeE():
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
-				stop_thread(thread2)
+				if thread2.isAlive()==True:
+					stop_thread(thread2)
 			
 			for f in File_x2:
 				os.system('del /q "'+f+'"')
@@ -734,7 +757,8 @@ def ModeE():
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 			if thread2.isAlive()==True:
 				time.sleep(2)
-				stop_thread(thread2)
+				if thread2.isAlive()==True:
+					stop_thread(thread2)
 			for files in os.walk(frames_dir+"\\scaled"):
 				for fileNameAndExt in files[2]:
 					fileName=os.path.splitext(fileNameAndExt)[0]
@@ -950,8 +974,8 @@ def video2images(inputpath):
 	if os.path.exists(frames_dir) == False:
 		os.mkdir(frames_dir)
 	
-	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:03 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
-	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:03 "'+video_dir+'audio.mp3"')
+	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:02 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
+	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:02 "'+video_dir+'audio.mp3"')
 
 	os.system('ffmpeg -i "'+inputpath+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
 	os.system('ffmpeg -i "'+inputpath+'" "'+video_dir+'audio.mp3"')
@@ -963,7 +987,9 @@ def images2video(inputpath):
 	frames_dir = video_dir+'frames\\'
 	cap = cv2.VideoCapture(inputpath)
 	fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
-	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_dir+'%05d.png" -i "'+video_dir+'audio.mp3" -r '+str(fps)+' "'+video_path_filename+'_waifu2x'+video_ext+'"')
+	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+	frame_figures = len(str(frame_counter))
+	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio.mp3" -r '+str(fps)+' "'+video_path_filename+'_waifu2x'+video_ext+'"')
 	os.system('del /q "'+video_dir+'audio.mp3"')
 	os.system('rd /s/q "'+video_dir+'frames'+'"')
 	
