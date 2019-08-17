@@ -980,11 +980,11 @@ def video2images(inputpath):
 	if os.path.exists(frames_dir) == False:
 		os.mkdir(frames_dir)
 	
-	os.system('ffmpeg -i "'+inputpath+'" -ss 01:49 -t 00:02 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
-	os.system('ffmpeg -i "'+inputpath+'" -ss 01:49 -t 00:02 "'+video_dir+'audio.mp3"')
+	#os.system('ffmpeg -i "'+inputpath+'" -ss 01:49 -t 00:02 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
+	#os.system('ffmpeg -i "'+inputpath+'" -ss 01:49 -t 00:02 "'+video_dir+'audio.mp3"')
 
-	#os.system('ffmpeg -i "'+inputpath+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
-	#os.system('ffmpeg -i "'+inputpath+'" "'+video_dir+'audio.mp3"')
+	os.system('ffmpeg -i "'+inputpath+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
+	os.system('ffmpeg -i "'+inputpath+'" "'+video_dir+'audio.mp3"')
 
 def images2video(inputpath):
 	video_path_filename = os.path.splitext(inputpath)[0]
