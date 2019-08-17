@@ -12,7 +12,7 @@ import cv2
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Extension v1.0-stable 2019/8/17')
+		print('Waifu2x-Extension v1.01-stable 2019/8/17')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
@@ -768,7 +768,9 @@ def ModeE():
 		os.system("xcopy /s /i /q /y \""+frames_dir+"\\scaled\\*.*\" \""+frames_dir+"\"")
 		os.system("rd /s/q \""+frames_dir+"\\scaled\"")
 				
-		images2video(inputPath)#合成视频	
+		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+		
+		os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
 			
 		if delorginal == 'y' or delorginal == 'Y':
 			os.system('del /q "'+inputPath+'"')	
@@ -965,6 +967,10 @@ def assembleGif(scaledFilePath,TIME_GAP,gifQuality):
 #====================== Video ==============================
 def video2images(inputpath):
 	video_dir = os.path.dirname(inputpath)+'\\'
+	video_path_filename = os.path.splitext(inputpath)[0]
+	video_ext = os.path.splitext(inputpath)[1]
+	if video_ext != '.mp4':
+		os.system('ffmpeg -i "'+inputpath+'" "'+video_path_filename+'.mp4"')
 	frames_dir = video_dir+'frames\\'
 	
 	cap = cv2.VideoCapture(inputpath)
@@ -974,11 +980,11 @@ def video2images(inputpath):
 	if os.path.exists(frames_dir) == False:
 		os.mkdir(frames_dir)
 	
-	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:02 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
-	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:02 "'+video_dir+'audio.mp3"')
+	os.system('ffmpeg -i "'+inputpath+'" -ss 01:49 -t 00:02 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
+	os.system('ffmpeg -i "'+inputpath+'" -ss 01:49 -t 00:02 "'+video_dir+'audio.mp3"')
 
-	os.system('ffmpeg -i "'+inputpath+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
-	os.system('ffmpeg -i "'+inputpath+'" "'+video_dir+'audio.mp3"')
+	#os.system('ffmpeg -i "'+inputpath+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
+	#os.system('ffmpeg -i "'+inputpath+'" "'+video_dir+'audio.mp3"')
 
 def images2video(inputpath):
 	video_path_filename = os.path.splitext(inputpath)[0]
