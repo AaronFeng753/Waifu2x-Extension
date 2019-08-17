@@ -1,3 +1,5 @@
+print('Loading.....')
+
 import os
 import time
 import threading
@@ -17,7 +19,7 @@ def ChooseMode():
 		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
 		print('Mode C: input images one by one')
 		print('Mode D: scale gif')
-		print('Mode E: scale video')
+		print('Mode E: scale video (Experimental)')
 		print('---------------------------------------------------------------------------')
 		mode = input('(a/b/c/d/e): ')
 		if mode.lower() == "a":
@@ -620,6 +622,7 @@ def ModeE():
 	print("=================MODE E================")
 	print("Type 'over' to stop input more path, and input path must be a video file")
 	print("Scaled files will be in the input-path \n")
+	print("This mode is experimental, probably won't work with some video files. \n")
 	fileTimeCost = {}
 	inputPathOver = True
 	inputPathList = []
@@ -965,4 +968,5 @@ def images2video(inputpath):
 	os.system('rd /s/q "'+video_dir+'frames'+'"')
 	
 #=================Start================
+os.system('cls')
 ChooseMode()
