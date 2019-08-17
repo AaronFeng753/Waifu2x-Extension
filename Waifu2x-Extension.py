@@ -10,7 +10,7 @@ import cv2
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Extension v0.98 2019/8/17')
+		print('Waifu2x-Extension v0.99 2019/8/17')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
@@ -151,6 +151,10 @@ def ModeA():
 			
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				stop_thread(thread1)
 			
 			for f in File_x2:
 				os.system('del /q "'+f+'"')
@@ -304,6 +308,10 @@ def ModeB():
 			
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				stop_thread(thread1)
 			
 			for f in File_x2:
 				os.system('del /q "'+f+'"')
@@ -668,17 +676,25 @@ def ModeE():
 	
 	for inputPath in inputPathList:
 		
-		thread1=ClockThread()
-		thread1.start()
-		
 		video2images(inputPath) #拆解视频
 		
 		frames_dir = os.path.dirname(inputPath)+'\\'+'frames'
+		
+		oldfilenumber=FileCount(frames_dir)
+		
 		os.mkdir(frames_dir+"\\scaled\\")
 		
 		if scale == '4':
+			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
+			thread2.start()
+			
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			if thread2.isAlive()==True:
+				time.sleep(2)
+				stop_thread(thread2)
+			
 			for files in os.walk(frames_dir+"\\scaled"):
 				for fileNameAndExt in files[2]:
 					fileName=os.path.splitext(fileNameAndExt)[0]
@@ -689,8 +705,15 @@ def ModeE():
 				for filename in filenames:
 					File_x2.append(path+'\\'+filename)
 			
+			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
+			thread2.start()
+			
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			if thread2.isAlive()==True:
+				time.sleep(2)
+				stop_thread(thread2)
 			
 			for f in File_x2:
 				os.system('del /q "'+f+'"')
@@ -702,8 +725,13 @@ def ModeE():
 			
 		
 		else:
+			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+			thread2.start()
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			if thread2.isAlive()==True:
+				time.sleep(2)
+				stop_thread(thread2)
 			for files in os.walk(frames_dir+"\\scaled"):
 				for fileNameAndExt in files[2]:
 					fileName=os.path.splitext(fileNameAndExt)[0]
@@ -713,10 +741,7 @@ def ModeE():
 		os.system("xcopy /s /i /q /y \""+frames_dir+"\\scaled\\*.*\" \""+frames_dir+"\"")
 		os.system("rd /s/q \""+frames_dir+"\\scaled\"")
 				
-		images2video(inputPath)#合成视频
-				
-		if thread1.isAlive()==True:
-			stop_thread(thread1)		
+		images2video(inputPath)#合成视频	
 			
 		if delorginal == 'y' or delorginal == 'Y':
 			os.system('del /q "'+inputPath+'"')	
@@ -764,6 +789,9 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 				for singleFile in files[2]:
 					if str(os.path.splitext(singleFile)[1]) in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
 						NewFileNum=NewFileNum+1
+			if round_ == 2:
+				NewFileNum=NewFileNum-OldFileNum
+				
 			if NewFileNum==0:
 				Percent = 0
 				BarStr = ''
@@ -779,32 +807,24 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 					avgTimeCost = int(time_now-time_start)/NewFileNum
 					Eta = int(avgTimeCost*(OldFileNum-NewFileNum))
 					NewFileNum_Old = NewFileNum
-			
-			if round_ == 2:
-				PrograssBar = "\r"+"Round = "+str(round_)+"  ["+'Time cost: '+timeCost_str+"]"
+			if Eta != 0:
+				if Eta > 1:
+					Eta=Eta-1
+				if scale == '4':
+					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"+'   '
+				else:
+					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"+'   '
 				sys.stdout.write(PrograssBar)
 				sys.stdout.flush()
-			else:
-				if Eta != 0:
-					if Eta > 1:
-						Eta=Eta-1
-					if scale == '4':
-						PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"+'   '
-					else:
-						PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"+'   '
-					sys.stdout.write(PrograssBar)
-					sys.stdout.flush()
-						
 					
+				
+			else:
+				if scale == '4':
+					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+'          '
 				else:
-					if Eta > 1:
-						Eta=Eta-1
-					if scale == '4':
-						PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+'          '
-					else:
-						PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+'          '
-					sys.stdout.write(PrograssBar)
-					sys.stdout.flush()
+					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+'          '
+				sys.stdout.write(PrograssBar)
+				sys.stdout.flush()
 				
 			time.sleep(1)
 			
@@ -920,10 +940,17 @@ def video2images(inputpath):
 	video_dir = os.path.dirname(inputpath)+'\\'
 	frames_dir = video_dir+'frames\\'
 	
+	cap = cv2.VideoCapture(inputpath)
+	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+	frame_figures = len(str(frame_counter))
+	
 	if os.path.exists(frames_dir) == False:
 		os.mkdir(frames_dir)
 	
-	os.system('ffmpeg -i "'+inputpath+'" "'+frames_dir+'%05d.png"')
+	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:03 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
+	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:03 "'+video_dir+'audio.mp3"')
+
+	os.system('ffmpeg -i "'+inputpath+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
 	os.system('ffmpeg -i "'+inputpath+'" "'+video_dir+'audio.mp3"')
 
 def images2video(inputpath):
