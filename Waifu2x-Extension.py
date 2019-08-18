@@ -12,7 +12,7 @@ import cv2
 
 def ChooseMode():
 	while True:
-		print('Waifu2x-Extension v1.01-stable 2019/8/17')
+		print('Waifu2x-Extension v1.03-stable 2019/8/18')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
@@ -611,10 +611,6 @@ def ModeD():
 				os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',originalName+".png"))
 		orginalFileNameAndFullname = {}
 		
-		DelOrgFiles(scaledFilePath+'_split')
-		
-		os.system("xcopy /s /i /q /y \""+scaledFilePath+'_split'+"\\scaled\\*.*\" \""+scaledFilePath+'_split'+"\"")
-		os.system("rd /s/q \""+scaledFilePath+'_split'+"\\scaled\"")
 		
 		if highQuality == 'y' or highQuality == 'Y':
 			gifQuality = False
@@ -763,12 +759,11 @@ def ModeE():
 				for fileNameAndExt in files[2]:
 					fileName=os.path.splitext(fileNameAndExt)[0]
 					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-			
-		os.system('del /q "'+frames_dir+'\\*.*"')
-		os.system("xcopy /s /i /q /y \""+frames_dir+"\\scaled\\*.*\" \""+frames_dir+"\"")
-		os.system("rd /s/q \""+frames_dir+"\\scaled\"")
-				
+		
 		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+		
+		os.system("rd /s/q \""+frames_dir+"\"")
+				
 		if os.path.splitext(inputPath)[1] != '.mp4':
 			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
 			
@@ -935,7 +930,7 @@ def assembleGif(scaledFilePath,TIME_GAP,gifQuality):
 	filelist_name=[]
 	png_list_fullname=[]
 	
-	for path,useless,fnames in os.walk(scaledFilePath+'_split'):
+	for path,useless,fnames in os.walk(scaledFilePath+'_split\\scaled'):
 		for fname in fnames:
 			png_list_fullname.append(path+'\\'+fname)
 
@@ -944,11 +939,11 @@ def assembleGif(scaledFilePath,TIME_GAP,gifQuality):
 	for png in png_list_fullname:
 		fileNameAndExt=str(os.path.basename(png))
 		filename=os.path.splitext(fileNameAndExt)[0]
-		imageio.imwrite(scaledFilePath+'_split\\'+filename+".jpg", imageio.imread(png), 'JPG', quality = 100)
+		imageio.imwrite(scaledFilePath+'_split\\scaled\\'+filename+".jpg", imageio.imread(png), 'JPG', quality = 100)
 	
-	os.system('del /q "'+scaledFilePath+'_split'+'\\*.'+'png'+'"')
+	os.system('del /q "'+scaledFilePath+'_split'+'\\scaled\\*.'+'png'+'"')
 	
-	for path,useless,fnames in os.walk(scaledFilePath+'_split'):
+	for path,useless,fnames in os.walk(scaledFilePath+'_split\\scaled'):
 		for fname in fnames:
 			filelist_name.append(int(os.path.splitext(fname)[0]))
 		break
@@ -956,7 +951,7 @@ def assembleGif(scaledFilePath,TIME_GAP,gifQuality):
 	filelist_name.sort()
 		
 	for file_name in filelist_name:
-		image_list.append(scaledFilePath+'_split'+'\\'+str(file_name)+'.jpg')
+		image_list.append(scaledFilePath+'_split\\scaled'+'\\'+str(file_name)+'.jpg')
 
 	frames = []  
 	for image_name in image_list:  
@@ -980,8 +975,8 @@ def video2images(inputpath):
 	if os.path.exists(frames_dir) == False:
 		os.mkdir(frames_dir)
 	
-	#os.system('ffmpeg -i "'+inputpath+'" -ss 01:49 -t 00:02 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
-	#os.system('ffmpeg -i "'+inputpath+'" -ss 01:49 -t 00:02 "'+video_dir+'audio.mp3"')
+	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:02 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
+	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:02 "'+video_dir+'audio.mp3"')
 
 	os.system('ffmpeg -i "'+inputpath+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
 	os.system('ffmpeg -i "'+inputpath+'" "'+video_dir+'audio.mp3"')
@@ -990,12 +985,12 @@ def images2video(inputpath):
 	video_path_filename = os.path.splitext(inputpath)[0]
 	video_ext = os.path.splitext(inputpath)[1]
 	video_dir = os.path.dirname(inputpath)+'\\'
-	frames_dir = video_dir+'frames\\'
+	frames_scaled_dir = video_dir+'frames\\scaled\\'
 	cap = cv2.VideoCapture(inputpath)
 	fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
-	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio.mp3" -r '+str(fps)+' "'+video_path_filename+'_waifu2x'+video_ext+'"')
+	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio.mp3" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
 	os.system('del /q "'+video_dir+'audio.mp3"')
 	os.system('rd /s/q "'+video_dir+'frames'+'"')
 	
