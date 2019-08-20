@@ -10,46 +10,129 @@ from PIL import Image
 import imageio
 import cv2
 
-def ChooseMode():
+def ChooseFormat():
 	while True:
 		print('Waifu2x-Extension v1.03-stable 2019/8/18')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
-		print('---------------------------------------------------------------------------')
-		print('Mode A: input folders one by one')
-		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders')
-		print('Mode C: input images one by one')
-		print('Mode D: scale gif')
-		print('Mode E: scale video (Experimental)')
-		print('---------------------------------------------------------------------------')
-		mode = input('(a/b/c/d/e): ')
+		print('---------------------------')
+		print('Mode I : Scale image.')
+		print('Mode G : Scale gif.')
+		print('Mode V : Scale video.')
+		print('E : Exit.')
+		print('---------------------------')
+		mode = input('(i/g/v/e): ')
+		mode = mode.lower()
+		if mode == "i":
+			os.system('cls')
+			Image_()
+			os.system('cls')
+		elif mode == "g":
+			os.system('cls')
+			Gif_()
+			os.system('cls')
+		elif mode == "v":
+			os.system('cls')
+			Video_()
+			os.system('cls')
+		elif mode == "e":
+			os.system('cls')
+			return 0
+		else:
+			os.system('cls')
+			input('Error : wrong input,pls press any key to return')
+			os.system('cls')
+
+def Image_():
+	while True:
+		print('Image')
+		print('-----------------------------------------------------------------------------')
+		print('Mode A: input folders one by one and scaled all images in them.')
+		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders.')
+		print('Mode C: input images one by one.')
+		print('R : return to the main menu')
+		print('-----------------------------------------------------------------------------')
+		mode = input('(a/b/c/r): ')
 		if mode.lower() == "a":
 			os.system('cls')
-			ModeA()
+			Image_ModeA()
 			os.system('cls')
 		elif mode.lower() == "b":
 			os.system('cls')
-			ModeB()
+			Image_ModeB()
 			os.system('cls')
 		elif mode.lower() == "c":
 			os.system('cls')
-			ModeC()
+			Image_ModeC()
 			os.system('cls')
-		elif mode.lower() == "d":
+		elif mode.lower() == "r":
+			break
+		else:
 			os.system('cls')
-			ModeD()
+			input('Error : wrong input,pls press any key to return')
 			os.system('cls')
-		elif mode.lower() == "e":
+			
+def Gif_():
+	while True:
+		print('GIF')
+		print('---------------------------------------------------------------------------')
+		print('Mode A: input folders one by one')
+		print('Mode B: input one folder and scaled all gif in it and it\'s sub-folders')
+		print('Mode C: input gif one by one')
+		print('R : return to the main menu')
+		print('---------------------------------------------------------------------------')
+		mode = input('(a/b/c/r): ')
+		if mode.lower() == "a":
 			os.system('cls')
-			ModeE()
+			Gif_ModeA()
 			os.system('cls')
+		elif mode.lower() == "b":
+			os.system('cls')
+			Gif_ModeB()
+			os.system('cls')
+		elif mode.lower() == "c":
+			os.system('cls')
+			Gif_ModeC()
+			os.system('cls')
+		elif mode.lower() == "r":
+			break
+		else:
+			os.system('cls')
+			input('Error : wrong input,pls press any key to return')
+			os.system('cls')
+			
+def Video_():
+	while True:
+		print('Video')
+		print('---------------------------------------------------------------------------')
+		print('Mode A: input folders one by one')
+		print('Mode B: input one folder and scaled all video in it and it\'s sub-folders')
+		print('Mode C: input video one by one')
+		print('R : return to the main menu')
+		print('---------------------------------------------------------------------------')
+		mode = input('(a/b/c/r): ')
+		if mode.lower() == "a":
+			os.system('cls')
+			Video_ModeA()
+			os.system('cls')
+		elif mode.lower() == "b":
+			os.system('cls')
+			Video_ModeB()
+			os.system('cls')
+		elif mode.lower() == "c":
+			os.system('cls')
+			Video_ModeC()
+			os.system('cls')
+		elif mode.lower() == "r":
+			break
 		else:
 			os.system('cls')
 			input('Error : wrong input,pls press any key to return')
 			os.system('cls')
 		
-#=================MODE A================
-def ModeA():
-	print("=================MODE A================")
+#=================Image_MODE A================
+def Image_ModeA():
+	print("=================Image_MODE A================")
+	print("Type 'return' to return to the previous menu")
 	print("Type 'over' to stop input more path, and input path must be a folder, not a file")
 	print("Scaled images will be in the input-path \n")
 	fileTimeCost = {}
@@ -65,6 +148,8 @@ def ModeA():
 			inputPath = input('input-path: ')
 			if inputPath == '':
 				print('error,input-path is invalid\n')
+			elif inputPath == 'return':
+				return 1
 			elif inputPath == 'over':
 				inputPathOver = False
 				inputPathError = False
@@ -213,9 +298,10 @@ def ModeA():
 	
 	input('\npress any key to exit')
 	
-#=================MODE B================
-def ModeB():
-	print("=================MODE B================")
+#=================Image_MODE B================
+def Image_ModeB():
+	print("=================Image_MODE B================")
+	print("Type 'return' to return to the previous menu")
 	print("Input path must be a folder, not a file")
 	print("Scaled images will be in the input-path \n")
 	fileTimeCost = {}
@@ -229,6 +315,8 @@ def ModeB():
 		inputPath = input('input-path: ')
 		if inputPath == '':
 			print('error,input-path is invalid\n')
+		elif inputPath == 'return':
+			return 1
 		else:
 			inputPathError = False
 	inputPath=inputPath.strip('"')
@@ -374,9 +462,10 @@ def ModeB():
 	
 	input('\npress any key to exit')
 	
-#=================MODE C================
-def ModeC():
-	print("=================MODE C================")
+#=================Image_MODE C================
+def Image_ModeC():
+	print("=================Image_MODE C================")
+	print("Type 'return' to return to the previous menu")
 	print("Type 'over' to stop input more path, and input path must be a file")
 	print("Scaled images will be in the input-path \n")
 	fileTimeCost = {}
@@ -391,6 +480,8 @@ def ModeC():
 			inputPath = input('input-path: ')
 			if inputPath == '':
 				print('error,input-path is invalid\n')
+			elif inputPath == 'return':
+				return 1
 			elif inputPath == 'over':
 				inputPathOver = False
 				inputPathError = False
@@ -481,14 +572,14 @@ def ModeC():
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
-	
-	
-#=======================MODE D=============================
-def ModeD():
-	print("=======================MODE D======================")
-	print("Type 'over' to stop input more path, and input path must be a .gif file")
+
+
+#=======================Gif_MODE A=============================
+def Gif_ModeA():
+	print("====================== Gif_MODE A =====================")
+	print("Type 'return' to return to the previous menu")
+	print("Type 'over' to stop input more path, and input path must be a folder")
 	print("Scaled images will be in the input-path \n")
-	fileTimeCost = {}
 	inputPathOver = True
 	inputPathList = []
 	gifQuality = False
@@ -501,6 +592,319 @@ def ModeD():
 			inputPath = input('input-path: ')
 			if inputPath == '':
 				print('error,input-path is invalid\n')
+			elif inputPath == 'return':
+				return 1
+			elif inputPath == 'over':
+				inputPathOver = False
+				inputPathError = False
+				break
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPath=inputPath.strip('"')
+			inputPathList.append(inputPath)
+	
+	scale = input('scale(1/2/4, default=2): ')
+
+	if scale == '':
+		scale = '2'
+	if scale == '1':
+		models = 'models-cunet'
+	
+	noiseLevel = input('noise-level(-1/0/1/2/3, default=2): ')
+	
+	if noiseLevel == '':
+		noiseLevel = '2'
+		
+	tileSize = input('tile size(>=32, default=200): ')
+	
+	if tileSize == '':
+		tileSize = '200'
+		
+	highQuality = input('High quality gif?(y/n, default=y): ')
+	
+	if highQuality == '':
+		highQuality = 'y'
+		
+	turnoff = input('turn off computer when finished?(y/n, default=n): ')
+	
+	if turnoff == '':
+		turnoff = 'n'
+	
+	delorginal = input('Delete original files?(y/n, default=n): ')
+	
+	if delorginal == '':
+		delorginal = 'n'
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+	
+	inputPathList_files = []
+	for folders in inputPathList:
+		for path,useless,fnames in os.walk(folders):
+			for fname in fnames:
+				if os.path.splitext(fname)[1] == '.gif':
+					inputPathList_files.append(path+'\\'+fname)
+			break
+	
+	for inputPath in inputPathList_files:
+		scaledFilePath = os.path.splitext(inputPath)[0]
+			
+		TIME_GAP=getDuration(inputPath)
+		print('Split gif.....')
+		splitGif(inputPath,scaledFilePath)
+		
+		oldfilenumber=FileCount(scaledFilePath+'_split')
+		
+		for files in os.walk(scaledFilePath+'_split'):
+			for fileNameAndExt in files[2]:
+				fileName=os.path.splitext(fileNameAndExt)[0]
+				orginalFileNameAndFullname[fileName]= fileNameAndExt
+				
+	
+		os.mkdir(scaledFilePath+'_split\\scaled')
+		print('scal images.....')
+		if scale == '4': 
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
+			thread1.start()
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
+			File_x2=[]
+			for path,useless,filenames in os.walk(scaledFilePath+'_split\\scaled\\'):
+				for filename in filenames:
+					File_x2.append(path+'\\'+filename)
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
+			thread1.start()		
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
+			for f in File_x2:
+				os.system('del /q "'+f+'"')
+			
+			for files in os.walk(scaledFilePath+'_split\\scaled\\'):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',fileName))
+			
+		else:
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
+			thread1.start()
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
+		print('')	
+		
+		for files in os.walk(scaledFilePath+'_split\\scaled\\'):
+			for fileNameAndExt in files[2]:
+				fileName=os.path.splitext(fileNameAndExt)[0]
+				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
+				os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',originalName+".png"))
+		orginalFileNameAndFullname = {}
+		
+		
+		if highQuality == 'y' or highQuality == 'Y':
+			gifQuality = False
+		else:
+			gifQuality = True
+		
+		print('Assembling Gif.....')
+		assembleGif(scaledFilePath,TIME_GAP,gifQuality)
+		print('Gif assembled')
+		
+		os.system("rd /s/q \""+scaledFilePath+'_split"')
+		
+		if delorginal == 'y' or delorginal == 'Y':
+			os.system('del /q "'+inputPath+'"')
+		
+	total_time_end=time.time()
+	
+	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
+	if turnoff=='y' or turnoff=='Y':
+		os.system('shutdown -s')
+	
+	input('\npress any key to exit')
+
+#=======================Gif_MODE B=============================
+def Gif_ModeB():
+	print("====================== Gif_MODE B =====================")
+	print("Type 'return' to return to the previous menu")
+	print("Input path must be a folder")
+	print("Scaled images will be in it's original path \n")
+	inputPathOver = True
+	inputPath_ = ''
+	gifQuality = False
+	orginalFileNameAndFullname = {}
+	models = 'models-upconv_7_anime_style_art_rgb'
+	inputPathError = True
+	while inputPathError:
+		inputPath_ = input('input-path: ')
+		if inputPath_ == '':
+			print('error,input-path is invalid\n')
+		else:
+			inputPath_=inputPath_.strip('"')
+			inputPathError = False
+	
+	scale = input('scale(1/2/4, default=2): ')
+
+	if scale == '':
+		scale = '2'
+	if scale == '1':
+		models = 'models-cunet'
+	
+	noiseLevel = input('noise-level(-1/0/1/2/3, default=2): ')
+	
+	if noiseLevel == '':
+		noiseLevel = '2'
+		
+	tileSize = input('tile size(>=32, default=200): ')
+	
+	if tileSize == '':
+		tileSize = '200'
+		
+	highQuality = input('High quality gif?(y/n, default=y): ')
+	
+	if highQuality == '':
+		highQuality = 'y'
+		
+	turnoff = input('turn off computer when finished?(y/n, default=n): ')
+	
+	if turnoff == '':
+		turnoff = 'n'
+	
+	delorginal = input('Delete original files?(y/n, default=n): ')
+	
+	if delorginal == '':
+		delorginal = 'n'
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+	
+	inputPathList_files = []
+	for path,useless,fnames in os.walk(inputPath_):
+		for fname in fnames:
+			if os.path.splitext(fname)[1] == '.gif':
+				inputPathList_files.append(path+'\\'+fname)
+	
+	for inputPath in inputPathList_files:
+		scaledFilePath = os.path.splitext(inputPath)[0]
+			
+		TIME_GAP=getDuration(inputPath)
+		print('Split gif.....')
+		splitGif(inputPath,scaledFilePath)
+		
+		oldfilenumber=FileCount(scaledFilePath+'_split')
+		
+		for files in os.walk(scaledFilePath+'_split'):
+			for fileNameAndExt in files[2]:
+				fileName=os.path.splitext(fileNameAndExt)[0]
+				orginalFileNameAndFullname[fileName]= fileNameAndExt
+				
+	
+		os.mkdir(scaledFilePath+'_split\\scaled')
+		print('scal images.....')
+		if scale == '4': 
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
+			thread1.start()
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
+			File_x2=[]
+			for path,useless,filenames in os.walk(scaledFilePath+'_split\\scaled\\'):
+				for filename in filenames:
+					File_x2.append(path+'\\'+filename)
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
+			thread1.start()		
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
+			for f in File_x2:
+				os.system('del /q "'+f+'"')
+			
+			for files in os.walk(scaledFilePath+'_split\\scaled\\'):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',fileName))
+			
+		else:
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
+			thread1.start()
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			if thread1.isAlive()==True:
+				time.sleep(2)
+				if thread1.isAlive()==True:
+					stop_thread(thread1)
+		print('')	
+		
+		for files in os.walk(scaledFilePath+'_split\\scaled\\'):
+			for fileNameAndExt in files[2]:
+				fileName=os.path.splitext(fileNameAndExt)[0]
+				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
+				os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',originalName+".png"))
+		orginalFileNameAndFullname = {}
+		
+		
+		if highQuality == 'y' or highQuality == 'Y':
+			gifQuality = False
+		else:
+			gifQuality = True
+		
+		print('Assembling Gif.....')
+		assembleGif(scaledFilePath,TIME_GAP,gifQuality)
+		print('Gif assembled')
+		
+		os.system("rd /s/q \""+scaledFilePath+'_split"')
+		
+		if delorginal == 'y' or delorginal == 'Y':
+			os.system('del /q "'+inputPath+'"')
+		
+	total_time_end=time.time()
+	
+	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
+	if turnoff=='y' or turnoff=='Y':
+		os.system('shutdown -s')
+	
+	input('\npress any key to exit')
+
+
+#=======================Gif_MODE C=============================
+def Gif_ModeC():
+	print("====================== Gif_MODE C =====================")
+	print("Type 'return' to return to the previous menu")
+	print("Type 'over' to stop input more path, and input path must be a .gif file")
+	print("Scaled images will be in the input-path \n")
+	inputPathOver = True
+	inputPathList = []
+	gifQuality = False
+	orginalFileNameAndFullname = {}
+	models = 'models-upconv_7_anime_style_art_rgb'
+
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			if inputPath == '':
+				print('error,input-path is invalid\n')
+			elif inputPath == 'return':
+				return 1
 			elif inputPath == 'over':
 				inputPathOver = False
 				inputPathError = False
@@ -633,14 +1037,14 @@ def ModeD():
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
-	
-#==================MODE E=============================
-def ModeE():
-	print("=================MODE E================")
-	print("Type 'over' to stop input more path, and input path must be a video file")
+
+
+#================== Video_MODE A =============================
+def Video_ModeA():
+	print("================ Video_MODE A ===============")
+	print("Type 'return' to return to the previous menu")
+	print("Type 'over' to stop input more path, and input path must be a folder")
 	print("Scaled files will be in the input-path \n")
-	print("This mode is experimental, probably won't work with some video files. \n")
-	fileTimeCost = {}
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=100
@@ -656,6 +1060,302 @@ def ModeE():
 				inputPathOver = False
 				inputPathError = False
 				break
+			elif inputPath == 'return':
+				return 1
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPath=inputPath.strip('"')
+			inputPathList.append(inputPath)
+	
+	scale = input('Scale(1/2/4, default=2): ')
+
+	if scale == '':
+		scale = '2'
+	if scale == '1':
+		models = 'models-cunet'
+	
+	noiseLevel = input('Noise-level(-1/0/1/2/3, default=2): ')
+	
+	if noiseLevel == '':
+		noiseLevel = '2'
+		
+	tileSize = input('Tile size(>=32, default=200): ')
+	
+	if tileSize == '':
+		tileSize = '200'
+		
+	delorginal = input('Delete original files?(y/n, default=n): ')
+	
+	if delorginal == '':
+		delorginal = 'n'
+		
+	turnoff = input('Turn off computer when finished?(y/n, default=n): ')
+	
+	if turnoff == '':
+		turnoff = 'n'
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+	
+	inputPathList_files = []
+	for folders in inputPathList:
+		for path,useless,fnames in os.walk(folders):
+			for fname in fnames:
+				inputPathList_files.append(path+'\\'+fname)
+			break
+	
+	for inputPath in inputPathList_files:
+		
+		video2images(inputPath) #拆解视频
+		
+		frames_dir = os.path.dirname(inputPath)+'\\'+'frames'
+		
+		oldfilenumber=FileCount(frames_dir)
+		
+		os.mkdir(frames_dir+"\\scaled\\")
+		
+		if scale == '4':
+			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
+			thread2.start()
+			
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			if thread2.isAlive()==True:
+				time.sleep(2)
+				if thread2.isAlive()==True:
+					stop_thread(thread2)
+			
+			for files in os.walk(frames_dir+"\\scaled"):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					
+			File_x2=[]
+			for path,useless,filenames in os.walk(frames_dir+"\\scaled"):
+				for filename in filenames:
+					File_x2.append(path+'\\'+filename)
+			
+			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
+			thread2.start()
+			
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			if thread2.isAlive()==True:
+				time.sleep(2)
+				if thread2.isAlive()==True:
+					stop_thread(thread2)
+			
+			for f in File_x2:
+				os.system('del /q "'+f+'"')
+			
+			for files in os.walk(frames_dir+"\\scaled"):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+			
+		
+		else:
+			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+			thread2.start()
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			if thread2.isAlive()==True:
+				time.sleep(2)
+				if thread2.isAlive()==True:
+					stop_thread(thread2)
+			for files in os.walk(frames_dir+"\\scaled"):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+		
+		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+		
+
+				
+		if os.path.splitext(inputPath)[1] != '.mp4':
+			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
+			
+		if delorginal == 'y' or delorginal == 'Y':
+			os.system('del /q "'+inputPath+'"')	
+			
+	total_time_end=time.time()
+	
+	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
+	if turnoff=='y' or turnoff=='Y':
+		os.system('shutdown -s')
+	
+	input('\npress any key to exit')
+
+#================== Video_MODE B =============================
+def Video_ModeB():
+	print("================ Video_MODE B ===============")
+	print("Type 'return' to return to the previous menu")
+	print("Input path must be a folder")
+	print("Scaled files will be in the input-path \n")
+	print("This mode is experimental, probably won't work with some video files. \n")
+	inputPathOver = True
+	inputPath_ = ''
+	JpgQuality=100
+	models = 'models-upconv_7_anime_style_art_rgb'
+
+	inputPathError = True
+	while inputPathError:
+		inputPath_ = input('input-path: ')
+		if inputPath_ == '':
+			print('error,input-path is invalid\n')
+		else:
+			inputPath_=inputPath_.strip('"')
+			inputPathError = False
+	
+	scale = input('Scale(1/2/4, default=2): ')
+
+	if scale == '':
+		scale = '2'
+	if scale == '1':
+		models = 'models-cunet'
+	
+	noiseLevel = input('Noise-level(-1/0/1/2/3, default=2): ')
+	
+	if noiseLevel == '':
+		noiseLevel = '2'
+		
+	tileSize = input('Tile size(>=32, default=200): ')
+	
+	if tileSize == '':
+		tileSize = '200'
+		
+	delorginal = input('Delete original files?(y/n, default=n): ')
+	
+	if delorginal == '':
+		delorginal = 'n'
+		
+	turnoff = input('Turn off computer when finished?(y/n, default=n): ')
+	
+	if turnoff == '':
+		turnoff = 'n'
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+	
+	inputPathList_files = []
+	for path,useless,fnames in os.walk(inputPath_):
+		for fname in fnames:
+			inputPathList_files.append(path+'\\'+fname)
+
+	
+	for inputPath in inputPathList_files:
+		
+		video2images(inputPath) #拆解视频
+		
+		frames_dir = os.path.dirname(inputPath)+'\\'+'frames'
+		
+		oldfilenumber=FileCount(frames_dir)
+		
+		os.mkdir(frames_dir+"\\scaled\\")
+		
+		if scale == '4':
+			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
+			thread2.start()
+			
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			if thread2.isAlive()==True:
+				time.sleep(2)
+				if thread2.isAlive()==True:
+					stop_thread(thread2)
+			
+			for files in os.walk(frames_dir+"\\scaled"):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					
+			File_x2=[]
+			for path,useless,filenames in os.walk(frames_dir+"\\scaled"):
+				for filename in filenames:
+					File_x2.append(path+'\\'+filename)
+			
+			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
+			thread2.start()
+			
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			
+			if thread2.isAlive()==True:
+				time.sleep(2)
+				if thread2.isAlive()==True:
+					stop_thread(thread2)
+			
+			for f in File_x2:
+				os.system('del /q "'+f+'"')
+			
+			for files in os.walk(frames_dir+"\\scaled"):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+			
+		
+		else:
+			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+			thread2.start()
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			if thread2.isAlive()==True:
+				time.sleep(2)
+				if thread2.isAlive()==True:
+					stop_thread(thread2)
+			for files in os.walk(frames_dir+"\\scaled"):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+		
+		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+		
+
+				
+		if os.path.splitext(inputPath)[1] != '.mp4':
+			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
+			
+		if delorginal == 'y' or delorginal == 'Y':
+			os.system('del /q "'+inputPath+'"')	
+			
+	total_time_end=time.time()
+	
+	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
+	if turnoff=='y' or turnoff=='Y':
+		os.system('shutdown -s')
+	
+	input('\npress any key to exit')
+
+#================== Video_MODE C =============================
+def Video_ModeC():
+	print("================ Video_MODE C ===============")
+	print("Type 'return' to return to the previous menu")
+	print("Type 'over' to stop input more path, and input path must be a video file")
+	print("Scaled files will be in the input-path \n")
+	print("This mode is experimental, probably won't work with some video files. \n")
+	inputPathOver = True
+	inputPathList = []
+	JpgQuality=100
+	models = 'models-upconv_7_anime_style_art_rgb'
+
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			if inputPath == '':
+				print('error,input-path is invalid\n')
+			elif inputPath == 'over':
+				inputPathOver = False
+				inputPathError = False
+				break
+			elif inputPath == 'return':
+				return 1
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -998,4 +1698,4 @@ def images2video(inputpath):
 	
 #=================Start================
 os.system('cls')
-ChooseMode()
+ChooseFormat()
