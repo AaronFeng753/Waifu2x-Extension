@@ -762,7 +762,7 @@ def ModeE():
 		
 		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
 		
-		os.system("rd /s/q \""+frames_dir+"\"")
+
 				
 		if os.path.splitext(inputPath)[1] != '.mp4':
 			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
@@ -991,7 +991,9 @@ def images2video(inputpath):
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
 	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio.mp3" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
+
 	os.system('del /q "'+video_dir+'audio.mp3"')
+
 	os.system('rd /s/q "'+video_dir+'frames'+'"')
 	
 #=================Start================
