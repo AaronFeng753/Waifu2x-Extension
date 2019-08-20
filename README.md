@@ -3,7 +3,10 @@ Waifu2x-Extension for waifu2x-ncnn-vulkan
 
 This extension is made for waifu2x-ncnn-vulkan, with this extension, you can use waifu2x to process multiple folers in one time, without input all the instruction one by one. And will show the time cost of process each folder, and the prograss of process each folder.And gif scale support.
 
-
+![mainmenu](/screenshot/mainmenu.png)
+![imagemenu](/screenshot/imagemenu.png)
+![gifmenu](/screenshot/gifmenu.png)
+![videomenu](/screenshot/videomenu.png)
 
 Put 'Waifu2x-Extension.py' in the folder of waifu2x-ncnn-vulkan then open the extension, enjoy.
 
