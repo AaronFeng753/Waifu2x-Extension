@@ -12,12 +12,12 @@ import cv2
 
 def ChooseFormat():
 	while True:
-		print('Waifu2x-Extension v1.03-stable 2019/8/18')
+		print('Waifu2x-Extension v1.11 2019/8/20')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('---------------------------')
 		print('Mode I : Scale image.')
 		print('Mode G : Scale gif.')
-		print('Mode V : Scale video.')
+		print('Mode V : Scale video. (Experimental)')
 		print('E : Exit.')
 		print('---------------------------')
 		mode = input('(i/g/v/e): ')
@@ -102,7 +102,7 @@ def Gif_():
 			
 def Video_():
 	while True:
-		print('Video')
+		print('Video (Experimental)')
 		print('---------------------------------------------------------------------------')
 		print('Mode A: input folders one by one')
 		print('Mode B: input one folder and scaled all video in it and it\'s sub-folders')
@@ -751,6 +751,8 @@ def Gif_ModeB():
 		inputPath_ = input('input-path: ')
 		if inputPath_ == '':
 			print('error,input-path is invalid\n')
+		elif inputPath_ == 'return':
+			return 1
 		else:
 			inputPath_=inputPath_.strip('"')
 			inputPathError = False
@@ -1196,7 +1198,6 @@ def Video_ModeB():
 	print("Type 'return' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Scaled files will be in the input-path \n")
-	print("This mode is experimental, probably won't work with some video files. \n")
 	inputPathOver = True
 	inputPath_ = ''
 	JpgQuality=100
@@ -1207,6 +1208,8 @@ def Video_ModeB():
 		inputPath_ = input('input-path: ')
 		if inputPath_ == '':
 			print('error,input-path is invalid\n')
+		if inputPath_ == 'return':
+			return 1
 		else:
 			inputPath_=inputPath_.strip('"')
 			inputPathError = False
@@ -1338,7 +1341,6 @@ def Video_ModeC():
 	print("Type 'return' to return to the previous menu")
 	print("Type 'over' to stop input more path, and input path must be a video file")
 	print("Scaled files will be in the input-path \n")
-	print("This mode is experimental, probably won't work with some video files. \n")
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=100
