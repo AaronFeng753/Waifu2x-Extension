@@ -18,7 +18,10 @@ https://ffmpeg.org/
 
 这个扩展适用于waifu2x-ncnn-vulkan, 借助这个扩展, 你可以使用waifu2x-ncnn-vulkan来一次性放大多个文件夹内的多个图片, 而不用一个个输入文件路径和命令.并且可以显示处理每个文件夹耗费的时间和剩余时间, 以及放大每个文件夹内图片的进度.修正了输出图片的命名方式.加入了GIF和视频放大支持.加入4倍放大支持.
 
-
+![mainmenu](/screenshot/mainmenu.png)
+![imagemenu](/screenshot/imagemenu.png)
+![gifmenu](/screenshot/gifmenu.png)
+![videomenu](/screenshot/videomenu.png)
 
 使用说明:把'Waifu2x-Extension.py'放到waifu2x-ncnn-vulkan的文件夹内(就是和waifu2x-ncnn-vulkan.exe在一个文件夹里), 然后打开扩展脚本, 输入参数即可.
 
