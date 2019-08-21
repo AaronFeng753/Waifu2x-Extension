@@ -12,14 +12,14 @@ import cv2
 
 def ChooseFormat():
 	while True:
-		print('Waifu2x-Extension v1.11 2019/8/20')
+		print('Waifu2x-Extension | v1.12 | 2019/8/21 | Author: Aaron Feng')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
-		print('---------------------------')
+		print('--------------------------------------')
 		print('Mode I : Scale image.')
 		print('Mode G : Scale gif.')
 		print('Mode V : Scale video. (Experimental)')
 		print('E : Exit.')
-		print('---------------------------')
+		print('--------------------------------------')
 		mode = input('(i/g/v/e): ')
 		mode = mode.lower()
 		if mode == "i":
@@ -1680,8 +1680,8 @@ def video2images(inputpath):
 	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:02 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
 	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:02 "'+video_dir+'audio.mp3"')
 
-	os.system('ffmpeg -i "'+inputpath+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
-	os.system('ffmpeg -i "'+inputpath+'" "'+video_dir+'audio.mp3"')
+	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
+	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+video_dir+'audio.mp3"')
 
 def images2video(inputpath):
 	video_path_filename = os.path.splitext(inputpath)[0]
