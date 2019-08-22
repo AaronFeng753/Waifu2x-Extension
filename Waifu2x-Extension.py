@@ -16,17 +16,18 @@ import re
 
 def ChooseFormat():
 	while True:
-		Version_current='v1.2'
+		Version_current='v1.21'
 		print('Waifu2x-Extension | '+Version_current+' | 2019/8/22 | Author: Aaron Feng')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('--------------------------------------')
-		print('Mode I : Scale image.')
-		print('Mode G : Scale gif.')
-		print('Mode V : Scale video. (Experimental)')
-		print('U : Check update.')
-		print('E : Exit.')
+		print(' I : Scale image.\n')
+		print(' G : Scale gif.\n')
+		print(' V : Scale video. (Experimental)\n')
+		print(' U : Check update.\n')
+		print(' R : Readme.\n')
+		print(' E : Exit.')
 		print('--------------------------------------')
-		mode = input('(i/g/v/e/u): ')
+		mode = input('(i/g/v/u/r/e): ')
 		mode = mode.lower()
 		if mode == "i":
 			os.system('cls')
@@ -53,6 +54,9 @@ def ChooseFormat():
 		elif mode == "u":
 			os.system('cls')
 			checkUpdate(Version_current)
+			os.system('cls')
+		elif mode == "r":
+			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README.md')
 			os.system('cls')
 		else:
 			os.system('cls')
@@ -451,7 +455,7 @@ def Image_ModeB():
 	
 	input('\npress any key to exit')
 	
-#=================Image_MODE C================
+#=============================Image_MODE C=====================================
 def Image_ModeC():
 	print("=================Image_MODE C================")
 	print("Type 'return' to return to the previous menu")
@@ -506,12 +510,13 @@ def Image_ModeC():
 	
 	total_time_start=time.time()
 
-	
+	TotalFileNum = len(inputPathList)
+	FinishedFileNum = 1
 	for inputPath in inputPathList:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 		fileNameAndExt=str(os.path.basename(inputPath))
 		
-		thread1=ClockThread()
+		thread1=ClockThread(TotalFileNum,FinishedFileNum)
 		thread1.start()
 		
 		if scale == '4':
@@ -535,7 +540,7 @@ def Image_ModeC():
 			print('\n Convert image..... \n')
 			imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
 			os.system('del /q "'+scaledFilePath+"_Waifu2x.png"+'"')
-		
+		FinishedFileNum = FinishedFileNum+1
 			
 	total_time_end=time.time()
 	
@@ -1073,7 +1078,6 @@ def Video_ModeA():
 					fileName=os.path.splitext(fileNameAndExt)[0]
 					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
 			
-		
 		else:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
 			thread2.start()
@@ -1443,10 +1447,15 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 			
 #================Clock==================
 class ClockThread (threading.Thread):
-    def run(self):
-        Clock()
+	def __init__(self, TotalFileNum, FinishedFileNum):
+		threading.Thread.__init__(self)
+		self.TotalFileNum = TotalFileNum
+		self.FinishedFileNum = FinishedFileNum
+        
+	def run(self):
+		Clock(self.TotalFileNum,self.FinishedFileNum)
 
-def Clock():
+def Clock(TotalFileNum,FinishedFileNum):
 	startTime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 	image_time_start = time.time()
 	time.sleep(2)
@@ -1454,7 +1463,7 @@ def Clock():
 		image_time_now = time.time()
 		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 		timeCost = str(int(image_time_now-image_time_start)) + 's'
-		clockStr = "\r["+startTime+"]--->["+timeStr+"] = "+timeCost
+		clockStr = "\r"+"Prograss:("+str(FinishedFileNum)+'/'+str(TotalFileNum)+") "+"["+startTime+"]--->["+timeStr+"] = "+timeCost
 		sys.stdout.write(clockStr)
 		sys.stdout.flush()
 		time.sleep(1)
@@ -1731,9 +1740,52 @@ def checkUpdate(Version_current):
 		os.system('cls')
 		print('No new update')
 		input('press any key to return')
-#=================Start================
+
+#========================Verify Files=====================
+def VerifyFiles():
+	FilesList = ['ffmpeg.exe', 'msvcp140.dll', 'vcomp140.dll', 
+	'vcruntime140.dll', 'vulkan-1.dll', 'waifu2x-ncnn-vulkan.exe', 
+	'noise0_model.bin', 'noise0_model.param', 'noise0_scale2.0x_model.bin', 
+	'noise0_scale2.0x_model.param', 'noise1_model.bin', 'noise1_model.param', 
+	'noise1_scale2.0x_model.bin', 'noise1_scale2.0x_model.param', 'noise2_model.bin', 
+	'noise2_model.param', 'noise2_scale2.0x_model.bin', 'noise2_scale2.0x_model.param', 
+	'noise3_model.bin', 'noise3_model.param', 'noise3_scale2.0x_model.bin', 
+	'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param', 
+	'noise0_scale2.0x_model.bin', 'noise0_scale2.0x_model.param', 'noise1_scale2.0x_model.bin', 
+	'noise1_scale2.0x_model.param', 'noise2_scale2.0x_model.bin', 'noise2_scale2.0x_model.param', 
+	'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param']
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	FilesList_current = []
+	for path,useless,fnames in os.walk(current_dir):
+		for fname in fnames:
+			FilesList_current.append(fname)
+	FileNotFound = False
+	for fname in FilesList:
+		if fname not in FilesList_current:
+			FileNotFound = True
+			print('Error: "'+fname+'" not found.')
+	if FileNotFound == True:
+		return 'error'
+	else:
+		return 'verified'
+	
+#=================  Init  ================
 os.system('title = Waifu2x-Extension by Aaron Feng')
 os.system('color 0b')
-os.system('mode con cols=125 lines=30')
+#os.system('mode con cols=125 lines=30')
 os.system('cls')
-ChooseFormat()
+if VerifyFiles() == 'verified':
+	os.system('cls')
+	ChooseFormat()
+else:
+	os.system('color 0c')
+	print('-'*40)
+	download_latest = input('Do you wanna download the latest package?(y/n): ')
+	if download_latest.lower() == 'y':
+		webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
+	os.system('cls')
+	input('Press any key to exit.')
+	os.system('cls')
+	os.system('color 07')
+	
