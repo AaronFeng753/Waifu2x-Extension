@@ -1,4 +1,4 @@
-print('Loading.....')
+print('Loading.......')
 
 import os
 import time
@@ -9,37 +9,56 @@ import ctypes
 from PIL import Image
 import imageio
 import cv2
+import webbrowser
+import requests
+from bs4 import BeautifulSoup
+import re
 
 def ChooseFormat():
 	while True:
-		print('Waifu2x-Extension | v1.12 | 2019/8/21 | Author: Aaron Feng')
+		Version_current='v1.2'
+		print('Waifu2x-Extension | '+Version_current+' | 2019/8/22 | Author: Aaron Feng')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('--------------------------------------')
 		print('Mode I : Scale image.')
 		print('Mode G : Scale gif.')
 		print('Mode V : Scale video. (Experimental)')
+		print('U : Check update.')
 		print('E : Exit.')
 		print('--------------------------------------')
-		mode = input('(i/g/v/e): ')
+		mode = input('(i/g/v/e/u): ')
 		mode = mode.lower()
 		if mode == "i":
 			os.system('cls')
+			os.system('color 0a')
 			Image_()
 			os.system('cls')
+			os.system('color 0b')
 		elif mode == "g":
 			os.system('cls')
+			os.system('color 0e')
 			Gif_()
 			os.system('cls')
+			os.system('color 0b')
 		elif mode == "v":
 			os.system('cls')
+			os.system('color 09')
 			Video_()
 			os.system('cls')
+			os.system('color 0b')
 		elif mode == "e":
+			os.system('color 07')
 			os.system('cls')
 			return 0
+		elif mode == "u":
+			os.system('cls')
+			checkUpdate(Version_current)
+			os.system('cls')
 		else:
 			os.system('cls')
+			os.system('color 0c')
 			input('Error : wrong input,pls press any key to return')
+			os.system('color 0b')
 			os.system('cls')
 
 def Image_():
@@ -68,7 +87,9 @@ def Image_():
 			break
 		else:
 			os.system('cls')
+			os.system('color 0c')
 			input('Error : wrong input,pls press any key to return')
+			os.system('color 0a')
 			os.system('cls')
 			
 def Gif_():
@@ -97,7 +118,9 @@ def Gif_():
 			break
 		else:
 			os.system('cls')
+			os.system('color 0c')
 			input('Error : wrong input,pls press any key to return')
+			os.system('color 0e')
 			os.system('cls')
 			
 def Video_():
@@ -126,7 +149,9 @@ def Video_():
 			break
 		else:
 			os.system('cls')
+			os.system('color 0c')
 			input('Error : wrong input,pls press any key to return')
+			os.system('color 09')
 			os.system('cls')
 		
 #=================Image_MODE A================
@@ -135,7 +160,6 @@ def Image_ModeA():
 	print("Type 'return' to return to the previous menu")
 	print("Type 'over' to stop input more path, and input path must be a folder, not a file")
 	print("Scaled images will be in the input-path \n")
-	fileTimeCost = {}
 	inputPathOver = True
 	inputPathList = []
 	orginalFileNameAndFullname = {}
@@ -146,56 +170,38 @@ def Image_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			if inputPath == '':
-				print('error,input-path is invalid\n')
-			elif inputPath == 'return':
+			inputPath=inputPath.strip('"')
+			if inputPath.lower() == 'return':
 				return 1
-			elif inputPath == 'over':
+			elif inputPath.lower() == 'over':
 				inputPathOver = False
 				inputPathError = False
 				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
-			inputPath=inputPath.strip('"')
 			inputPathList.append(inputPath)
-	
-	scale = input('scale(1/2/4, default=2): ')
-
-	if scale == '':
-		scale = '2'
-	elif scale == '1':
+	 
+	scale = input_scale()
+	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('noise-level(-1/0/1/2/3, default=2): ')
-	
-	if noiseLevel == '':
-		noiseLevel = '2'
+	noiseLevel = input_noiseLevel()
 		
-	tileSize = input('tile size(>=32, default=200): ')
-	
-	if tileSize == '':
-		tileSize = '200'
+	tileSize = input_tileSize()
 		
-	saveAsJPG = input('Save as .jpg? (y/n, default=y): ')
-	
-	if saveAsJPG == '':
-		saveAsJPG = 'y'
+	saveAsJPG = input_saveAsJPG()
 	
 	if saveAsJPG == 'y':
-		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=n): ')
-		if Compress == 'y' or Compress == 'Y':
+		Compress = input_Compress()
+		if Compress.lower() == 'y':
 			JpgQuality=90
 		
-	turnoff = input('turn off computer when finished?(y/n, default=n): ')
-	
-	if turnoff == '':
-		turnoff = 'n'
+	turnoff = input_turnoff()
 		
-	delorginal = input('Delete original files?(y/n, default=n): ')
-	
-	if delorginal == '':
-		delorginal = 'n'
+	delorginal = input_delorginal()
 		
 	print('--------------------------------------------')
 	
@@ -262,7 +268,7 @@ def Image_ModeA():
 			if thread1.isAlive()==True:
 				stop_thread(thread1)
 			
-		if saveAsJPG == 'y' or saveAsJPG == 'Y':
+		if saveAsJPG.lower() == 'y':
 			print('\n Convert image..... \n')
 			for path,useless,fnames in os.walk(inputPath+'\\scaled\\'):
 				for fnameAndExt in fnames:
@@ -277,7 +283,7 @@ def Image_ModeA():
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
-				if saveAsJPG == 'y' or saveAsJPG == 'Y':
+				if saveAsJPG.lower() == 'y':
 					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.jpg"))
 				else:
 					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
@@ -285,15 +291,15 @@ def Image_ModeA():
 		orginalFileNameAndFullname = {}
 		
 		print('')
-		if delorginal == 'y' or delorginal == 'Y':
+		if delorginal.lower() == 'y':
 			DelOrgFiles(inputPath)
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-	if turnoff=='y' or turnoff=='Y':
+	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
@@ -304,59 +310,42 @@ def Image_ModeB():
 	print("Type 'return' to return to the previous menu")
 	print("Input path must be a folder, not a file")
 	print("Scaled images will be in the input-path \n")
-	fileTimeCost = {}
 	inputPathList = []
 	orginalFileNameAndFullname = {}
 	inputPathError = True
 	JpgQuality=100
 	models = 'models-upconv_7_anime_style_art_rgb'
-
+	
 	while inputPathError:
 		inputPath = input('input-path: ')
-		if inputPath == '':
-			print('error,input-path is invalid\n')
-		elif inputPath == 'return':
+		inputPath=inputPath.strip('"')
+		if inputPath.lower() == 'return':
 			return 1
+		elif inputPath == '' or os.path.exists(inputPath) == False:
+			print('error,input-path is invalid\n')
 		else:
 			inputPathError = False
-	inputPath=inputPath.strip('"')
-	
-	scale = input('scale(1/2/4, default=2): ')
 
-	if scale == '':
-		scale = '2'
-	elif scale == '1':
+	
+	 
+	scale = input_scale()
+	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('noise-level(-1/0/1/2/3, default=2): ')
-	
-	if noiseLevel == '':
-		noiseLevel = '2'
+	noiseLevel = input_noiseLevel()
 		
-	tileSize = input('tile size(>=32, default=200): ')
-	
-	if tileSize == '':
-		tileSize = '200'
+	tileSize = input_tileSize()
 		
-	saveAsJPG = input('Save as .jpg? (y/n, default=y): ')
-	
-	if saveAsJPG == '':
-		saveAsJPG = 'y'
+	saveAsJPG = input_saveAsJPG()
 	
 	if saveAsJPG == 'y':
-		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=n): ')
-		if Compress == 'y' or Compress == 'Y':
+		Compress = input_Compress()
+		if Compress.lower() == 'y':
 			JpgQuality=90
 		
-	turnoff = input('turn off computer when finished?(y/n, default=n): ')
-	
-	if turnoff == '':
-		turnoff = 'n'
+	turnoff = input_turnoff()
 		
-	delorginal = input('Delete original files?(y/n, default=n): ')
-	
-	if delorginal == '':
-		delorginal = 'n'
+	delorginal = input_delorginal()
 		
 	print('--------------------------------------------')
 	
@@ -426,7 +415,7 @@ def Image_ModeB():
 			if thread1.isAlive()==True:
 				stop_thread(thread1)
 		
-		if saveAsJPG == 'y' or saveAsJPG == 'Y':
+		if saveAsJPG.lower() == 'y':
 			print('\n Convert image..... \n')
 			for path,useless,fnames in os.walk(inputPath+'\\scaled\\'):
 				for fnameAndExt in fnames:
@@ -441,7 +430,7 @@ def Image_ModeB():
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
-				if saveAsJPG == 'y' or saveAsJPG == 'Y':
+				if saveAsJPG.lower() == 'y':
 					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.jpg"))
 				else:
 					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
@@ -449,15 +438,15 @@ def Image_ModeB():
 		
 		
 		print('')
-		if delorginal == 'y' or delorginal == 'Y':
+		if delorginal.lower() == 'y':
 			DelOrgFiles(inputPath)
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-	if turnoff=='y' or turnoff=='Y':
+	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
@@ -468,7 +457,6 @@ def Image_ModeC():
 	print("Type 'return' to return to the previous menu")
 	print("Type 'over' to stop input more path, and input path must be a file")
 	print("Scaled images will be in the input-path \n")
-	fileTimeCost = {}
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=100
@@ -478,57 +466,41 @@ def Image_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			if inputPath == '':
-				print('error,input-path is invalid\n')
-			elif inputPath == 'return':
+			inputPath=inputPath.strip('"')
+			
+			if inputPath.lower() == 'return':
 				return 1
-			elif inputPath == 'over':
+			elif inputPath.lower() == 'over':
 				inputPathOver = False
 				inputPathError = False
 				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
-			inputPath=inputPath.strip('"')
 			inputPathList.append(inputPath)
 	
-	scale = input('Scale(1/2/4, default=2): ')
-
-	if scale == '':
-		scale = '2'
+	 
+	scale = input_scale()
 	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('Noise-level(-1/0/1/2/3, default=2): ')
-	
-	if noiseLevel == '':
-		noiseLevel = '2'
+	noiseLevel = input_noiseLevel()
 		
-	tileSize = input('Tile size(>=32, default=200): ')
-	
-	if tileSize == '':
-		tileSize = '200'
+	tileSize = input_tileSize()
 		
-	saveAsJPG = input('Save as .jpg? (y/n, default=y): ')
-	
-	if saveAsJPG == '':
-		saveAsJPG = 'y'
+	saveAsJPG = input_saveAsJPG()
 		
 	if saveAsJPG == 'y':
-		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=n): ')
-		if Compress == 'y' or Compress == 'Y':
+		Compress = input_Compress()
+		if Compress.lower() == 'y':
 			JpgQuality=90
 		
-	turnoff = input('Turn off computer when finished?(y/n, default=n): ')
-	
-	if turnoff == '':
-		turnoff = 'n'
+	turnoff = input_turnoff()
 	
 	
-	delorginal = input('Delete original files?(y/n, default=n): ')
-	
-	if delorginal == '':
-		delorginal = 'n'
+	delorginal = input_delorginal()
 		
 	print('--------------------------------------------')
 	
@@ -556,10 +528,10 @@ def Image_ModeC():
 		if thread1.isAlive()==True:
 			stop_thread(thread1)	
 		print('')	
-		if delorginal == 'y' or delorginal == 'Y':
+		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')
 			
-		if saveAsJPG == 'y' or saveAsJPG == 'Y':
+		if saveAsJPG.lower() == 'y':
 			print('\n Convert image..... \n')
 			imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
 			os.system('del /q "'+scaledFilePath+"_Waifu2x.png"+'"')
@@ -567,8 +539,8 @@ def Image_ModeC():
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-	if turnoff=='y' or turnoff=='Y':
+	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
@@ -590,51 +562,36 @@ def Gif_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			if inputPath == '':
-				print('error,input-path is invalid\n')
-			elif inputPath == 'return':
+			inputPath=inputPath.strip('"')
+			
+			if inputPath.lower() == 'return':
 				return 1
-			elif inputPath == 'over':
+			elif inputPath.lower() == 'over':
 				inputPathOver = False
 				inputPathError = False
 				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
-			inputPath=inputPath.strip('"')
+
 			inputPathList.append(inputPath)
 	
-	scale = input('scale(1/2/4, default=2): ')
-
-	if scale == '':
-		scale = '2'
+	 
+	scale = input_scale()
 	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('noise-level(-1/0/1/2/3, default=2): ')
-	
-	if noiseLevel == '':
-		noiseLevel = '2'
+	noiseLevel = input_noiseLevel()
 		
-	tileSize = input('tile size(>=32, default=200): ')
-	
-	if tileSize == '':
-		tileSize = '200'
+	tileSize = input_tileSize()
 		
-	highQuality = input('High quality gif?(y/n, default=y): ')
-	
-	if highQuality == '':
-		highQuality = 'y'
+	highQuality = input_highQuality()
 		
-	turnoff = input('turn off computer when finished?(y/n, default=n): ')
+	turnoff = input_turnoff()
 	
-	if turnoff == '':
-		turnoff = 'n'
-	
-	delorginal = input('Delete original files?(y/n, default=n): ')
-	
-	if delorginal == '':
-		delorginal = 'n'
+	delorginal = input_delorginal()
 		
 	print('--------------------------------------------')
 	
@@ -713,7 +670,7 @@ def Gif_ModeA():
 		orginalFileNameAndFullname = {}
 		
 		
-		if highQuality == 'y' or highQuality == 'Y':
+		if highQuality.lower() == 'y':
 			gifQuality = False
 		else:
 			gifQuality = True
@@ -724,13 +681,13 @@ def Gif_ModeA():
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
 		
-		if delorginal == 'y' or delorginal == 'Y':
+		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')
 		
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-	if turnoff=='y' or turnoff=='Y':
+	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
@@ -749,45 +706,29 @@ def Gif_ModeB():
 	inputPathError = True
 	while inputPathError:
 		inputPath_ = input('input-path: ')
-		if inputPath_ == '':
-			print('error,input-path is invalid\n')
-		elif inputPath_ == 'return':
+		
+		if inputPath_.lower() == 'return':
 			return 1
+		elif inputPath_ == '' or os.path.exists(inputPath_) == False:
+			print('error,input-path is invalid\n')
 		else:
 			inputPath_=inputPath_.strip('"')
 			inputPathError = False
 	
-	scale = input('scale(1/2/4, default=2): ')
-
-	if scale == '':
-		scale = '2'
+	 
+	scale = input_scale()
 	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('noise-level(-1/0/1/2/3, default=2): ')
-	
-	if noiseLevel == '':
-		noiseLevel = '2'
+	noiseLevel = input_noiseLevel()
 		
-	tileSize = input('tile size(>=32, default=200): ')
-	
-	if tileSize == '':
-		tileSize = '200'
+	tileSize = input_tileSize()
 		
-	highQuality = input('High quality gif?(y/n, default=y): ')
-	
-	if highQuality == '':
-		highQuality = 'y'
+	highQuality = input_highQuality()
 		
-	turnoff = input('turn off computer when finished?(y/n, default=n): ')
+	turnoff = input_turnoff()
 	
-	if turnoff == '':
-		turnoff = 'n'
-	
-	delorginal = input('Delete original files?(y/n, default=n): ')
-	
-	if delorginal == '':
-		delorginal = 'n'
+	delorginal = input_delorginal()
 		
 	print('--------------------------------------------')
 	
@@ -864,7 +805,7 @@ def Gif_ModeB():
 		orginalFileNameAndFullname = {}
 		
 		
-		if highQuality == 'y' or highQuality == 'Y':
+		if highQuality.lower() == 'y':
 			gifQuality = False
 		else:
 			gifQuality = True
@@ -875,13 +816,13 @@ def Gif_ModeB():
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
 		
-		if delorginal == 'y' or delorginal == 'Y':
+		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')
 		
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-	if turnoff=='y' or turnoff=='Y':
+	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
@@ -903,51 +844,36 @@ def Gif_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			if inputPath == '':
-				print('error,input-path is invalid\n')
-			elif inputPath == 'return':
+			inputPath=inputPath.strip('"')
+			
+			if inputPath.lower() == 'return':
 				return 1
-			elif inputPath == 'over':
+			elif inputPath.lower() == 'over':
 				inputPathOver = False
 				inputPathError = False
 				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
-			inputPath=inputPath.strip('"')
+
 			inputPathList.append(inputPath)
 	
-	scale = input('scale(1/2/4, default=2): ')
-
-	if scale == '':
-		scale = '2'
+	 
+	scale = input_scale()
 	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('noise-level(-1/0/1/2/3, default=2): ')
-	
-	if noiseLevel == '':
-		noiseLevel = '2'
+	noiseLevel = input_noiseLevel()
 		
-	tileSize = input('tile size(>=32, default=200): ')
-	
-	if tileSize == '':
-		tileSize = '200'
+	tileSize = input_tileSize()
 		
-	highQuality = input('High quality gif?(y/n, default=y): ')
-	
-	if highQuality == '':
-		highQuality = 'y'
+	highQuality = input_highQuality()
 		
-	turnoff = input('turn off computer when finished?(y/n, default=n): ')
+	turnoff = input_turnoff()
 	
-	if turnoff == '':
-		turnoff = 'n'
-	
-	delorginal = input('Delete original files?(y/n, default=n): ')
-	
-	if delorginal == '':
-		delorginal = 'n'
+	delorginal = input_delorginal()
 		
 	print('--------------------------------------------')
 	
@@ -1018,7 +944,7 @@ def Gif_ModeC():
 		orginalFileNameAndFullname = {}
 		
 		
-		if highQuality == 'y' or highQuality == 'Y':
+		if highQuality.lower() == 'y':
 			gifQuality = False
 		else:
 			gifQuality = True
@@ -1029,13 +955,13 @@ def Gif_ModeC():
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
 		
-		if delorginal == 'y' or delorginal == 'Y':
+		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')
 		
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-	if turnoff=='y' or turnoff=='Y':
+	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
@@ -1056,46 +982,34 @@ def Video_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			if inputPath == '':
-				print('error,input-path is invalid\n')
-			elif inputPath == 'over':
+			inputPath=inputPath.strip('"')
+			
+			if inputPath.lower() == 'over':
 				inputPathOver = False
 				inputPathError = False
 				break
-			elif inputPath == 'return':
+			elif inputPath.lower() == 'return':
 				return 1
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
-			inputPath=inputPath.strip('"')
+
 			inputPathList.append(inputPath)
 	
-	scale = input('Scale(1/2/4, default=2): ')
-
-	if scale == '':
-		scale = '2'
+	 
+	scale = input_scale()
 	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('Noise-level(-1/0/1/2/3, default=2): ')
-	
-	if noiseLevel == '':
-		noiseLevel = '2'
+	noiseLevel = input_noiseLevel()
 		
-	tileSize = input('Tile size(>=32, default=200): ')
-	
-	if tileSize == '':
-		tileSize = '200'
+	tileSize = input_tileSize()
 		
-	delorginal = input('Delete original files?(y/n, default=n): ')
-	
-	if delorginal == '':
-		delorginal = 'n'
+	delorginal = input_delorginal()
 		
-	turnoff = input('Turn off computer when finished?(y/n, default=n): ')
-	
-	if turnoff == '':
-		turnoff = 'n'
+	turnoff = input_turnoff()
 		
 	print('--------------------------------------------')
 	
@@ -1181,13 +1095,13 @@ def Video_ModeA():
 		if os.path.splitext(inputPath)[1] != '.mp4':
 			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
 			
-		if delorginal == 'y' or delorginal == 'Y':
+		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')	
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-	if turnoff=='y' or turnoff=='Y':
+	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
@@ -1206,40 +1120,27 @@ def Video_ModeB():
 	inputPathError = True
 	while inputPathError:
 		inputPath_ = input('input-path: ')
-		if inputPath_ == '':
-			print('error,input-path is invalid\n')
-		if inputPath_ == 'return':
+		inputPath_=inputPath_.strip('"')
+		
+		if inputPath_.lower() == 'return':
 			return 1
+		elif inputPath_ == '' or os.path.exists(inputPath_) == False:
+			print('error,input-path is invalid\n')
 		else:
-			inputPath_=inputPath_.strip('"')
 			inputPathError = False
 	
-	scale = input('Scale(1/2/4, default=2): ')
-
-	if scale == '':
-		scale = '2'
+	 
+	scale = input_scale()
 	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('Noise-level(-1/0/1/2/3, default=2): ')
-	
-	if noiseLevel == '':
-		noiseLevel = '2'
+	noiseLevel = input_noiseLevel()
 		
-	tileSize = input('Tile size(>=32, default=200): ')
-	
-	if tileSize == '':
-		tileSize = '200'
+	tileSize = input_tileSize()
 		
-	delorginal = input('Delete original files?(y/n, default=n): ')
-	
-	if delorginal == '':
-		delorginal = 'n'
+	delorginal = input_delorginal()
 		
-	turnoff = input('Turn off computer when finished?(y/n, default=n): ')
-	
-	if turnoff == '':
-		turnoff = 'n'
+	turnoff = input_turnoff()
 		
 	print('--------------------------------------------')
 	
@@ -1324,13 +1225,13 @@ def Video_ModeB():
 		if os.path.splitext(inputPath)[1] != '.mp4':
 			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
 			
-		if delorginal == 'y' or delorginal == 'Y':
+		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')	
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-	if turnoff=='y' or turnoff=='Y':
+	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
@@ -1350,46 +1251,32 @@ def Video_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			if inputPath == '':
-				print('error,input-path is invalid\n')
-			elif inputPath == 'over':
+			inputPath=inputPath.strip('"')
+			
+			if inputPath.lower() == 'over':
 				inputPathOver = False
 				inputPathError = False
 				break
-			elif inputPath == 'return':
+			elif inputPath.lower() == 'return':
 				return 1
+			if inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
-			inputPath=inputPath.strip('"')
 			inputPathList.append(inputPath)
 	
-	scale = input('Scale(1/2/4, default=2): ')
-
-	if scale == '':
-		scale = '2'
+	scale = input_scale()
 	if scale == '1':
 		models = 'models-cunet'
 	
-	noiseLevel = input('Noise-level(-1/0/1/2/3, default=2): ')
-	
-	if noiseLevel == '':
-		noiseLevel = '2'
+	noiseLevel = input_noiseLevel()
 		
-	tileSize = input('Tile size(>=32, default=200): ')
-	
-	if tileSize == '':
-		tileSize = '200'
+	tileSize = input_tileSize()
 		
-	delorginal = input('Delete original files?(y/n, default=n): ')
-	
-	if delorginal == '':
-		delorginal = 'n'
+	delorginal = input_delorginal()
 		
-	turnoff = input('Turn off computer when finished?(y/n, default=n): ')
-	
-	if turnoff == '':
-		turnoff = 'n'
+	turnoff = input_turnoff()
 		
 	print('--------------------------------------------')
 	
@@ -1469,13 +1356,13 @@ def Video_ModeC():
 		if os.path.splitext(inputPath)[1] != '.mp4':
 			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
 			
-		if delorginal == 'y' or delorginal == 'Y':
+		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')	
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-	if turnoff=='y' or turnoff=='Y':
+	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
@@ -1698,6 +1585,155 @@ def images2video(inputpath):
 
 	os.system('rd /s/q "'+video_dir+'frames'+'"')
 	
+#====================== input ============================
+def input_scale():
+	while True:
+		scale = input('scale(1/2/4, default=2): ')
+		if scale in ['1','2','4','']:
+			break
+		else:
+			print('Error : wrong input, pls input again')
+	
+	if scale == '':
+		scale = '2'
+	elif scale == '1':
+		models = 'models-cunet'
+	return scale
+	
+def input_tileSize():
+	while True:
+		tileSize = input('Tile size(>=32, default=200): ')
+		if tileSize.isdigit():
+			if int(tileSize) > 0:
+				break
+			else:
+				print('wrong input, pls input again')
+		elif tileSize == '':
+			break
+		else:
+			print('wrong input, pls input again')
+		
+	if tileSize == '':
+		tileSize = '200'
+	return tileSize
+	
+def input_noiseLevel():
+	while True:
+		noiseLevel = input('Noise-level(-1/0/1/2/3, default=2): ')
+		if noiseLevel in ['-1','0','1','2','3','']:
+			break
+		else:
+			print('wrong input, pls input again')
+	
+	if noiseLevel == '':
+		noiseLevel = '2'
+	return noiseLevel
+		
+def input_delorginal():
+	while True:
+		delorginal = input('Delete original files?(y/n, default=n): ')
+		if delorginal in ['y','n','Y','N','']:
+			break
+		else:
+			print('wrong input, pls input again')
+	
+	if delorginal == '':
+		delorginal = 'n'
+	return delorginal
+	
+def input_turnoff():
+	while True:
+		turnoff = input('turn off computer when finished?(y/n, default=n): ')
+		if turnoff in ['y','n','Y','N','']:
+			break
+		else:
+			print('wrong input, pls input again')
+	
+	if turnoff == '':
+		turnoff = 'n'
+	return turnoff
+
+def input_saveAsJPG():
+	while True:
+		saveAsJPG = input('Save as .jpg? (y/n, default=y): ')
+		if saveAsJPG in ['y','n','Y','N','']:
+			break
+		else:
+			print('wrong input, pls input again')
+	
+	if saveAsJPG == '':
+		saveAsJPG = 'y'
+	return saveAsJPG
+	
+def input_Compress():
+	while True:
+		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=n): ')
+		if Compress in ['y','n','Y','N','']:
+			break
+		else:
+			print('wrong input, pls input again')
+	if Compress == '':
+		Compress = 'n'
+	return Compress
+
+def input_highQuality():
+	while True:
+		highQuality = input('High quality gif?(y/n, default=y): ')
+		if highQuality in ['y','n','Y','N','']:
+			break
+		else:
+			print('wrong input, pls input again')
+	
+	if highQuality == '':
+		highQuality = 'y'
+		
+	return highQuality
+	
+#======================== Seconds 2 h:m:s =========================
+def TotalTimeCost(seconds):
+	if seconds > 59 and seconds < 3600:
+		minutes = int(seconds/60)
+		seconds = seconds - (60*minutes)
+		return str(minutes)+'m : '+str(seconds)+'s'
+	elif seconds > 3599:
+		hours = int(seconds/3600)
+		seconds = seconds - (3600*hours)
+		minutes = int(seconds/60)
+		seconds = seconds - (60*minutes)
+		return str(hours)+'h : '+str(minutes)+'m : '+str(seconds)+'s'
+	else:
+		return str(seconds)+'s'
+#============================= Check Update =====================
+def checkUpdate(Version_current):
+	print('Checking update....')
+	headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
+	r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
+	
+	soup = BeautifulSoup(r1.text,'lxml')
+			
+	title = soup.title.string
+	p_split_name = re.compile(r' ')
+	
+	Version_latest = p_split_name.split(title)[1]
+	
+	if Version_current != Version_latest:
+		os.system('cls')
+		print('New update : '+Version_latest)
+		while True:
+			download_update = input('Do you wanna download the update?(y/n): ')
+			if download_update in ['y','n','Y','N']:
+				break
+			else:
+				print('wrong input, pls input again')
+		if download_update.lower() == 'y':
+			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
+	else:
+		os.system('cls')
+		print('No new update')
+		input('press any key to return')
 #=================Start================
+os.system('title = Waifu2x-Extension by Aaron Feng')
+os.system('color 0b')
+os.system('mode con cols=125 lines=30')
 os.system('cls')
 ChooseFormat()
