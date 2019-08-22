@@ -31,7 +31,7 @@ https://ffmpeg.org/
 waifu2x-ncnn-vulkan:
 https://github.com/nihui/waifu2x-ncnn-vulkan
 
-FFmpeg:
+FFmpeg: 
 https://ffmpeg.org/
 
 # Donate 捐赠
