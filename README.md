@@ -1,7 +1,16 @@
 # Waifu2x-Extension
 Waifu2x-Extension for waifu2x-ncnn-vulkan
 
-This extension is made for waifu2x-ncnn-vulkan, with this extension, you can use waifu2x to process multiple folers in one time, without input all the instruction one by one. And will show the time cost of process each folder, and the prograss of process each folder.And gif scale support.
+New features brought by this extension:
+1. More friendly way of interaction
+2. Batch enlargement of still pictures (three batch processing modes)
+3. Batch enlargement of dynamic pictures (three batch processing modes)
+4. Batch enlarge video files (three batch processing modes)
+5. Personalization
+6. Online update
+7. Save the enlarged image target as .jpg
+8. Lossless compression of the .jpg image after the target is saved
+9. Adjust the quality of the enlarged dynamic picture
 
 ![mainmenu](/screenshot/mainmenu.png)
 ![imagemenu](/screenshot/imagemenu.png)
@@ -20,7 +29,16 @@ https://ffmpeg.org/
 # Waifu2x扩展
 适用于waifu2x-ncnn-vulkan的批量图片处理扩展
 
-这个扩展适用于waifu2x-ncnn-vulkan, 借助这个扩展, 你可以使用waifu2x-ncnn-vulkan来一次性放大多个文件夹内的多个图片, 而不用一个个输入文件路径和命令.并且可以显示处理每个文件夹耗费的时间和剩余时间, 以及放大每个文件夹内图片的进度.修正了输出图片的命名方式.加入了GIF和视频放大支持.加入4倍放大支持.
+扩展带来的新功能有:
+1.更友好的交互方式
+2.批量放大静态图片(三种批量处理模式)
+3.批量放大动态图片(三种批量处理模式)
+4.批量放大视频文件(三种批量处理模式)
+5.个性化设置
+6.在线更新
+7.将放大后的图片目标另存为.jpg
+8.对目标另存为后的.jpg图片进行无损压缩
+9.调整放大后动态图片的质量
 
 ![mainmenu](/screenshot/mainmenu.png)
 ![imagemenu](/screenshot/imagemenu.png)
