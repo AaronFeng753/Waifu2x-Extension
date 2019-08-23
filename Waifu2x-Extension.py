@@ -1,5 +1,7 @@
 print('Loading.......')
 
+Version_current='v1.3'
+
 import os
 import time
 import threading
@@ -13,21 +15,22 @@ import webbrowser
 import requests
 from bs4 import BeautifulSoup
 import re
+import json
 
-def ChooseFormat():
+def ChooseFormat(Version_current):
 	while True:
-		Version_current='v1.21'
-		print('Waifu2x-Extension | '+Version_current+' | 2019/8/22 | Author: Aaron Feng')
+		print('Waifu2x-Extension | '+Version_current+' | 2019/8/23 | Author: Aaron Feng')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('--------------------------------------')
 		print(' I : Scale image.\n')
 		print(' G : Scale gif.\n')
 		print(' V : Scale video. (Experimental)\n')
+		print(' S : Settings.\n')
 		print(' U : Check update.\n')
 		print(' R : Readme.\n')
 		print(' E : Exit.')
 		print('--------------------------------------')
-		mode = input('(i/g/v/u/r/e): ')
+		mode = input('(i/g/v/s/u/r/e): ')
 		mode = mode.lower()
 		if mode == "i":
 			os.system('cls')
@@ -45,6 +48,12 @@ def ChooseFormat():
 			os.system('cls')
 			os.system('color 09')
 			Video_()
+			os.system('cls')
+			os.system('color 0b')
+		elif mode == "s":
+			os.system('cls')
+			os.system('color 07')
+			Settings()
 			os.system('cls')
 			os.system('color 0b')
 		elif mode == "e":
@@ -69,10 +78,10 @@ def Image_():
 	while True:
 		print('Image')
 		print('-----------------------------------------------------------------------------')
-		print('Mode A: input folders one by one and scaled all images in them.')
-		print('Mode B: input one folder and scaled all images in it and it\'s sub-folders.')
-		print('Mode C: input images one by one.')
-		print('R : return to the main menu')
+		print(' Mode A: input folders one by one and scaled all images in them.\n')
+		print(' Mode B: input one folder and scaled all images in it and it\'s sub-folders.\n')
+		print(' Mode C: input images one by one.\n')
+		print(' R : return to the main menu')
 		print('-----------------------------------------------------------------------------')
 		mode = input('(a/b/c/r): ')
 		if mode.lower() == "a":
@@ -100,10 +109,10 @@ def Gif_():
 	while True:
 		print('GIF')
 		print('---------------------------------------------------------------------------')
-		print('Mode A: input folders one by one')
-		print('Mode B: input one folder and scaled all gif in it and it\'s sub-folders')
-		print('Mode C: input gif one by one')
-		print('R : return to the main menu')
+		print(' Mode A: input folders one by one\n')
+		print(' Mode B: input one folder and scaled all gif in it and it\'s sub-folders\n')
+		print(' Mode C: input gif one by one\n')
+		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
 		mode = input('(a/b/c/r): ')
 		if mode.lower() == "a":
@@ -131,10 +140,10 @@ def Video_():
 	while True:
 		print('Video (Experimental)')
 		print('---------------------------------------------------------------------------')
-		print('Mode A: input folders one by one')
-		print('Mode B: input one folder and scaled all video in it and it\'s sub-folders')
-		print('Mode C: input video one by one')
-		print('R : return to the main menu')
+		print(' Mode A: input folders one by one\n')
+		print(' Mode B: input one folder and scaled all video in it and it\'s sub-folders\n')
+		print(' Mode C: input video one by one\n')
+		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
 		mode = input('(a/b/c/r): ')
 		if mode.lower() == "a":
@@ -158,7 +167,7 @@ def Video_():
 			os.system('color 09')
 			os.system('cls')
 		
-#=================Image_MODE A================
+#=============================Image_MODE A===============================
 def Image_ModeA():
 	print("=================Image_MODE A================")
 	print("Type 'return' to return to the previous menu")
@@ -302,13 +311,13 @@ def Image_ModeA():
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
-	input('\npress any key to exit')
+	input('\npress any key to return to the menu')
 	
-#=================Image_MODE B================
+#=====================================Image_MODE B======================================
 def Image_ModeB():
 	print("=================Image_MODE B================")
 	print("Type 'return' to return to the previous menu")
@@ -449,11 +458,11 @@ def Image_ModeB():
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
-	input('\npress any key to exit')
+	input('\npress any key to return to the menu')
 	
 #=============================Image_MODE C=====================================
 def Image_ModeC():
@@ -544,14 +553,14 @@ def Image_ModeC():
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
-	input('\npress any key to exit')
+	input('\npress any key to return to the menu')
 
 
-#=======================Gif_MODE A=============================
+#======================================Gif_MODE A========================================
 def Gif_ModeA():
 	print("====================== Gif_MODE A =====================")
 	print("Type 'return' to return to the previous menu")
@@ -691,13 +700,13 @@ def Gif_ModeA():
 		
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
 
-#=======================Gif_MODE B=============================
+#===================================Gif_MODE B========================================
 def Gif_ModeB():
 	print("====================== Gif_MODE B =====================")
 	print("Type 'return' to return to the previous menu")
@@ -826,14 +835,14 @@ def Gif_ModeB():
 		
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
 
 
-#=======================Gif_MODE C=============================
+#===================================Gif_MODE C======================================
 def Gif_ModeC():
 	print("====================== Gif_MODE C =====================")
 	print("Type 'return' to return to the previous menu")
@@ -965,14 +974,14 @@ def Gif_ModeC():
 		
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
 	input('\npress any key to exit')
 
 
-#================== Video_MODE A =============================
+#=============================== Video_MODE A ==============================
 def Video_ModeA():
 	print("================ Video_MODE A ===============")
 	print("Type 'return' to return to the previous menu")
@@ -1104,7 +1113,7 @@ def Video_ModeA():
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
@@ -1234,7 +1243,7 @@ def Video_ModeB():
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
@@ -1365,7 +1374,7 @@ def Video_ModeC():
 			
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',TotalTimeCost(round(total_time_end-total_time_start)),'\n')
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	
@@ -1418,7 +1427,7 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 				for x in range(0,int(Percent/3)):
 					BarStr = BarStr + '>'
 			time_now = time.time()
-			timeCost_str = str(int(time_now-time_start)) + 's'
+			timeCost_str = Seconds2hms(int(time_now-time_start))
 			if NewFileNum > 0:
 				if NewFileNum > NewFileNum_Old:
 					avgTimeCost = int(time_now-time_start)/NewFileNum
@@ -1428,18 +1437,18 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 				if Eta > 1:
 					Eta=Eta-1
 				if scale == '4':
-					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"+'   '
+					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+"  "+"["+'ETA: '+Seconds2hms(Eta)+" ]"+'   '
 				else:
-					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+"  "+"["+'ETA: '+str(Eta)+"s]"+'   '
+					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+"  "+"["+'ETA: '+Seconds2hms(Eta)+" ]"+'   '
 				sys.stdout.write(PrograssBar)
 				sys.stdout.flush()
 					
 				
 			else:
 				if scale == '4':
-					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+'          '
+					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+'          '
 				else:
-					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+"]"+'          '
+					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+'          '
 				sys.stdout.write(PrograssBar)
 				sys.stdout.flush()
 				
@@ -1462,8 +1471,8 @@ def Clock(TotalFileNum,FinishedFileNum):
 	while True:
 		image_time_now = time.time()
 		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-		timeCost = str(int(image_time_now-image_time_start)) + 's'
-		clockStr = "\r"+"Prograss:("+str(FinishedFileNum)+'/'+str(TotalFileNum)+") "+"["+startTime+"]--->["+timeStr+"] = "+timeCost
+		timeCost = int(image_time_now-image_time_start)
+		clockStr = "\r"+"Prograss:("+str(FinishedFileNum)+'/'+str(TotalFileNum)+") "+"["+startTime+"]--->["+timeStr+"] = "+Seconds2hms(timeCost)
 		sys.stdout.write(clockStr)
 		sys.stdout.flush()
 		time.sleep(1)
@@ -1596,22 +1605,27 @@ def images2video(inputpath):
 	
 #====================== input ============================
 def input_scale():
+	settings_values = ReadSettings()
+	default_value = settings_values['scale']
+
 	while True:
-		scale = input('scale(1/2/4, default=2): ')
+		scale = input('scale(1/2/4, default='+default_value+'): ')
 		if scale in ['1','2','4','']:
 			break
 		else:
 			print('Error : wrong input, pls input again')
 	
 	if scale == '':
-		scale = '2'
+		scale = default_value
 	elif scale == '1':
 		models = 'models-cunet'
 	return scale
 	
 def input_tileSize():
+	settings_values = ReadSettings()
+	default_value = settings_values['tileSize']
 	while True:
-		tileSize = input('Tile size(>=32, default=200): ')
+		tileSize = input('Tile size(>=32, default='+default_value+'): ')
 		if tileSize.isdigit():
 			if int(tileSize) > 0:
 				break
@@ -1623,31 +1637,35 @@ def input_tileSize():
 			print('wrong input, pls input again')
 		
 	if tileSize == '':
-		tileSize = '200'
+		tileSize = default_value
 	return tileSize
 	
 def input_noiseLevel():
+	settings_values = ReadSettings()
+	default_value = settings_values['noiseLevel']
 	while True:
-		noiseLevel = input('Noise-level(-1/0/1/2/3, default=2): ')
+		noiseLevel = input('Noise-level(-1/0/1/2/3, default='+default_value+'): ')
 		if noiseLevel in ['-1','0','1','2','3','']:
 			break
 		else:
 			print('wrong input, pls input again')
 	
 	if noiseLevel == '':
-		noiseLevel = '2'
+		noiseLevel = default_value
 	return noiseLevel
 		
 def input_delorginal():
+	settings_values = ReadSettings()
+	default_value = settings_values['delorginal']
 	while True:
-		delorginal = input('Delete original files?(y/n, default=n): ')
+		delorginal = input('Delete original files?(y/n, default='+default_value+'): ')
 		if delorginal in ['y','n','Y','N','']:
 			break
 		else:
 			print('wrong input, pls input again')
 	
 	if delorginal == '':
-		delorginal = 'n'
+		delorginal = default_value
 	return delorginal
 	
 def input_turnoff():
@@ -1663,43 +1681,49 @@ def input_turnoff():
 	return turnoff
 
 def input_saveAsJPG():
+	settings_values = ReadSettings()
+	default_value = settings_values['saveAsJPG']
 	while True:
-		saveAsJPG = input('Save as .jpg? (y/n, default=y): ')
+		saveAsJPG = input('Save as .jpg? (y/n, default='+default_value+'): ')
 		if saveAsJPG in ['y','n','Y','N','']:
 			break
 		else:
 			print('wrong input, pls input again')
 	
 	if saveAsJPG == '':
-		saveAsJPG = 'y'
+		saveAsJPG = default_value
 	return saveAsJPG
 	
 def input_Compress():
+	settings_values = ReadSettings()
+	default_value = settings_values['Compress']
 	while True:
-		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=n): ')
+		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default='+default_value+'): ')
 		if Compress in ['y','n','Y','N','']:
 			break
 		else:
 			print('wrong input, pls input again')
 	if Compress == '':
-		Compress = 'n'
+		Compress = default_value
 	return Compress
 
 def input_highQuality():
+	settings_values = ReadSettings()
+	default_value = settings_values['highQuality']
 	while True:
-		highQuality = input('High quality gif?(y/n, default=y): ')
+		highQuality = input('High quality gif?(y/n, default='+default_value+'): ')
 		if highQuality in ['y','n','Y','N','']:
 			break
 		else:
 			print('wrong input, pls input again')
 	
 	if highQuality == '':
-		highQuality = 'y'
+		highQuality = default_value
 		
 	return highQuality
 	
 #======================== Seconds 2 h:m:s =========================
-def TotalTimeCost(seconds):
+def Seconds2hms(seconds):
 	if seconds > 59 and seconds < 3600:
 		minutes = int(seconds/60)
 		seconds = seconds - (60*minutes)
@@ -1740,6 +1764,32 @@ def checkUpdate(Version_current):
 		os.system('cls')
 		print('No new update')
 		input('press any key to return')
+		
+def checkUpdate_start(Version_current):
+	headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
+	r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
+	
+	soup = BeautifulSoup(r1.text,'lxml')
+			
+	title = soup.title.string
+	p_split_name = re.compile(r' ')
+	
+	Version_latest = p_split_name.split(title)[1]
+	
+	if Version_current != Version_latest:
+		os.system('cls')
+		print('New update : '+Version_latest)
+		while True:
+			print('If you don\'t wanna check for updates at startup. You can change the settings.')
+			download_update = input('Do you wanna download the update?(y/n): ')
+			if download_update in ['y','n','Y','N']:
+				break
+			else:
+				print('wrong input, pls input again')
+		if download_update.lower() == 'y':
+			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
+	else:
+		os.system('cls')
 
 #========================Verify Files=====================
 def VerifyFiles():
@@ -1769,23 +1819,205 @@ def VerifyFiles():
 		return 'error'
 	else:
 		return 'verified'
-	
+
+#=================  Settings  ================
+def Settings():
+	while True:
+		settings_values = {}
+		with open('waifu2x-extension-setting','r+') as f:
+			settings_values = json.load(f)
+		print('Settings')
+		print('-----------------------------------------------------------------------------')
+		print(' 1: Check for updates at startup. Current value: '+settings_values['CheckUpdate']+'\n')
+		print(' 2: Default value of "scale". Current value: '+settings_values['scale']+'\n')
+		print(' 3: Default value of "tileSize". Current value: '+settings_values['tileSize']+'\n')
+		print(' 4: Default value of "noiseLevel". Current value: '+settings_values['noiseLevel']+'\n')
+		print(' 5: Save the result image as .jpg file? Current default value: '+settings_values['saveAsJPG']+'\n')
+		print(' 6: Compress the result image?(when saved as .jpg) Current default value: '+settings_values['Compress']+'\n')
+		print(' 7: Delete original files when finished?? Current default value: '+settings_values['delorginal']+'\n')
+		print(' 8: Save high quality gif?? Current default value: '+settings_values['highQuality']+'\n')
+		print(' R : Return to the main menu.')
+		print('-----------------------------------------------------------------------------')
+		mode = input('(1/2/3/4/5/6/7/8/r): ')
+		if mode.lower() == "1":
+			os.system('cls')
+			
+			while True:
+				value_ = input('New value(y/n): ').lower()
+				if value_ in ['y','n']:
+					break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['CheckUpdate']=value_
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+		
+		elif mode.lower() == "2":
+			os.system('cls')
+			
+			while True:
+				value_ = input('New value(1/2/4): ').lower()
+				if value_ in ['1','2','4']:
+					break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['scale']=value_
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+		
+		elif mode.lower() == "3":
+			os.system('cls')
+			
+			while True:
+				value_ = input('New value: ')
+				if value_.isdigit():
+					if int(value_) > 0:
+						break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['tileSize']=str(int(value_))
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+			
+		elif mode.lower() == "4":
+			os.system('cls')
+			
+			while True:
+				value_ = input('New value(-1/0/1/2/3): ').lower()
+				if value_ in ['-1','0','1','2','3']:
+					break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['noiseLevel']=value_
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+			
+		elif mode.lower() == "5":
+			os.system('cls')
+			
+			while True:
+				value_ = input('New value(y/n): ').lower()
+				if value_ in ['y','n']:
+					break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['saveAsJPG']=value_
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+			
+		elif mode.lower() == "6":
+			os.system('cls')
+			
+			while True:
+				value_ = input('New value(y/n): ').lower()
+				if value_ in ['y','n']:
+					break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['Compress']=value_
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+			
+		elif mode.lower() == "7":
+			os.system('cls')
+			
+			while True:
+				value_ = input('New value(y/n): ').lower()
+				if value_ in ['y','n']:
+					break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['delorginal']=value_
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+			
+		elif mode.lower() == "8":
+			os.system('cls')
+			
+			while True:
+				value_ = input('New value(y/n): ').lower()
+				if value_ in ['y','n']:
+					break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['highQuality']=value_
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+			
+		elif mode.lower() == "r":
+			break
+		else:
+			os.system('cls')
+			os.system('color 0c')
+			input('Error : wrong input,pls press any key to return')
+			os.system('color 0a')
+			os.system('cls')
+
+def ReadSettings():
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
+	if os.path.exists(settingPath) == False:
+		default_values = {'CheckUpdate':'y','scale':'2','tileSize':'200',
+						'noiseLevel':'2','saveAsJPG':'y',
+						'Compress':'n','delorginal':'n','highQuality':'y'}
+		with open('waifu2x-extension-setting','w+') as f:
+			json.dump(default_values,f)
+		return default_values
+	else:
+		settings_values = {}
+		with open('waifu2x-extension-setting','r+') as f:
+			settings_values = json.load(f)
+		return settings_values
+
 #=================  Init  ================
-os.system('title = Waifu2x-Extension by Aaron Feng')
-os.system('color 0b')
-#os.system('mode con cols=125 lines=30')
-os.system('cls')
-if VerifyFiles() == 'verified':
-	os.system('cls')
-	ChooseFormat()
-else:
-	os.system('color 0c')
-	print('-'*40)
-	download_latest = input('Do you wanna download the latest package?(y/n): ')
-	if download_latest.lower() == 'y':
-		webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
-	os.system('cls')
-	input('Press any key to exit.')
-	os.system('cls')
-	os.system('color 07')
+def init():
+	os.system('title = Waifu2x-Extension by Aaron Feng')
+	os.system('color 0b')
+	os.system('mode con cols=130 lines=32')
+	
+	settings_values = ReadSettings()
+	
+	if settings_values['CheckUpdate'] == 'y':
+		checkUpdate_start(Version_current)
+		
+	if VerifyFiles() == 'verified':
+		os.system('cls')
+		ChooseFormat(Version_current)
+	else:
+		os.system('cls')
+		os.system('color 0c')
+		print('-'*40)
+		download_latest = input('Do you wanna download the latest package?(y/n): ')
+		if download_latest.lower() == 'y':
+			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
+		os.system('cls')
+		input('Press any key to exit.')
+		os.system('cls')
+		os.system('color 07')
+#======================== Start ========================
+init()
 	
