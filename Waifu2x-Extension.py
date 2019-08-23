@@ -1739,57 +1739,66 @@ def Seconds2hms(seconds):
 #============================= Check Update =====================
 def checkUpdate(Version_current):
 	print('Checking update....')
-	headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
-	r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
-	
-	soup = BeautifulSoup(r1.text,'lxml')
-			
-	title = soup.title.string
-	p_split_name = re.compile(r' ')
-	
-	Version_latest = p_split_name.split(title)[1]
-	
-	if Version_current != Version_latest:
+	try:
+		headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
+		r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
+		
+		soup = BeautifulSoup(r1.text,'lxml')
+				
+		title = soup.title.string
+		p_split_name = re.compile(r' ')
+		
+		Version_latest = p_split_name.split(title)[1]
+		
+		if Version_current != Version_latest:
+			os.system('cls')
+			print('New update : '+Version_latest)
+			while True:
+				download_update = input('Do you wanna download the update?(y/n): ')
+				if download_update in ['y','n','Y','N']:
+					break
+				else:
+					print('wrong input, pls input again')
+			if download_update.lower() == 'y':
+				webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
+		else:
+			os.system('cls')
+			print('No new update')
+			input('press any key to return')
+	except BaseException:
 		os.system('cls')
-		print('New update : '+Version_latest)
-		while True:
-			download_update = input('Do you wanna download the update?(y/n): ')
-			if download_update in ['y','n','Y','N']:
-				break
-			else:
-				print('wrong input, pls input again')
-		if download_update.lower() == 'y':
-			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
-	else:
+		input('Failed to establish connection, pls check your internet, press any key to return....')
 		os.system('cls')
-		print('No new update')
-		input('press any key to return')
+	
 		
 def checkUpdate_start(Version_current):
 	print('Checking update....')
-	headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
-	r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
-	
-	soup = BeautifulSoup(r1.text,'lxml')
-			
-	title = soup.title.string
-	p_split_name = re.compile(r' ')
-	
-	Version_latest = p_split_name.split(title)[1]
-	
-	if Version_current != Version_latest:
-		os.system('cls')
-		print('New update : '+Version_latest)
-		while True:
-			print('If you don\'t wanna check for updates at startup. You can change the settings.')
-			download_update = input('Do you wanna download the update?(y/n): ')
-			if download_update in ['y','n','Y','N']:
-				break
-			else:
-				print('wrong input, pls input again')
-		if download_update.lower() == 'y':
-			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
-	else:
+	try:
+		headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
+		r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
+		
+		soup = BeautifulSoup(r1.text,'lxml')
+				
+		title = soup.title.string
+		p_split_name = re.compile(r' ')
+		
+		Version_latest = p_split_name.split(title)[1]
+		
+		if Version_current != Version_latest:
+			os.system('cls')
+			print('New update : '+Version_latest)
+			while True:
+				print('If you don\'t wanna check for updates at startup. You can change the settings.')
+				download_update = input('Do you wanna download the update?(y/n): ')
+				if download_update in ['y','n','Y','N']:
+					break
+				else:
+					print('wrong input, pls input again')
+			if download_update.lower() == 'y':
+				webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
+		else:
+			os.system('cls')
+	except BaseException:
 		os.system('cls')
 
 #========================Verify Files=====================
