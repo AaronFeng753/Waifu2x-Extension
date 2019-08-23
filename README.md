@@ -4,7 +4,7 @@ Waifu2x-Extension for waifu2x-ncnn-vulkan
 New features brought by this extension:
 1. More friendly way of interaction
 2. Batch enlargement of still pictures (three batch processing modes)
-3. Batch enlargement of dynamic pictures (three batch processing modes)
+3. Batch enlargement of dynamic pictures (.gif) (three batch processing modes)
 4. Batch enlarge video files (three batch processing modes)
 5. Personalization
 6. Online update
@@ -37,7 +37,7 @@ https://ffmpeg.org/
 
 2.批量放大静态图片(三种批量处理模式)
 
-3.批量放大动态图片(三种批量处理模式)
+3.批量放大动态图片(.gif)(三种批量处理模式)
 
 4.批量放大视频文件(三种批量处理模式)
 
