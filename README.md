@@ -3,16 +3,17 @@ Waifu2x-Extension for waifu2x-ncnn-vulkan
 
 New features brought by this extension:
 1. More friendly way of interaction
-2. Batch enlargement of still pictures (three batch processing modes)
-3. Batch enlargement of dynamic pictures (.gif) (three batch processing modes)
-4. Batch enlarge video files (three batch processing modes)
-5. Personalization
-6. Online update
-7. Save the enlarged image target as .jpg
-8. Lossless compression of the .jpg image after the target is saved
-9. Adjust the quality of the enlarged dynamic picture
-10. Display processing progress and remaining time
-11. Smart selection of models
+2. Support 4 times magnification
+3. Batch enlargement of still pictures (three batch processing modes)
+4. Batch enlargement of dynamic pictures (.gif) (three batch processing modes)
+5. Batch enlarge video files (three batch processing modes)
+6. Personalization
+7. Online update
+8. Save the enlarged image target as .jpg
+9. Lossless compression of the .jpg image after the target is saved
+10. Adjust the quality of the enlarged dynamic picture
+11. Display processing progress and remaining time
+12. Smart selection of models
 
 ![mainmenu](/screenshot/mainmenu.png)
 ![imagemenu](/screenshot/imagemenu.png)
