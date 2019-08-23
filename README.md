@@ -11,6 +11,8 @@ New features brought by this extension:
 7. Save the enlarged image target as .jpg
 8. Lossless compression of the .jpg image after the target is saved
 9. Adjust the quality of the enlarged dynamic picture
+10. Display processing progress and remaining time
+11. Smart selection of models
 
 ![mainmenu](/screenshot/mainmenu.png)
 ![imagemenu](/screenshot/imagemenu.png)
@@ -48,6 +50,10 @@ https://ffmpeg.org/
 8.对目标另存为后的.jpg图片进行无损压缩
 
 9.调整放大后动态图片的质量
+
+10.显示处理进度以及剩余时间
+
+11.智能选择models
 
 ![mainmenu](/screenshot/mainmenu.png)
 ![imagemenu](/screenshot/imagemenu.png)
