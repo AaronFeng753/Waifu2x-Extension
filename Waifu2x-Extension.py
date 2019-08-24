@@ -1,6 +1,6 @@
 print('Loading.......')
 
-Version_current='v1.3'
+Version_current='v1.35'
 
 import os
 import time
@@ -19,18 +19,23 @@ import json
 
 def ChooseFormat(Version_current):
 	while True:
-		print('Waifu2x-Extension | '+Version_current+' | 2019/8/23 | Author: Aaron Feng')
+		print('Waifu2x-Extension | '+Version_current+' | 2019/8/24 | Author: Aaron Feng')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('--------------------------------------')
 		print(' I : Scale image.\n')
 		print(' G : Scale gif.\n')
-		print(' V : Scale video. (Experimental)\n')
+		print(' V : Scale video.\n')
+		print(' C : Compress image(Lossless).')
+		print('--------------------------------------')
 		print(' S : Settings.\n')
 		print(' U : Check update.\n')
 		print(' R : Readme.\n')
+		print('\033[1;31;40m'+' ---------------------------------'+'\033[0m')
+		print('\033[1;31;40m'+' |D : Donate 捐赠 (Alipay 支付宝)|'+'\033[0m')
+		print('\033[1;31;40m'+' ---------------------------------\n'+'\033[0m')
 		print(' E : Exit.')
 		print('--------------------------------------')
-		mode = input('(i/g/v/s/u/r/e): ')
+		mode = input('(i/g/v/c/s/u/r/d/e): '.upper())
 		mode = mode.lower()
 		if mode == "i":
 			os.system('cls')
@@ -50,6 +55,12 @@ def ChooseFormat(Version_current):
 			Video_()
 			os.system('cls')
 			os.system('color 0b')
+		elif mode == "c":
+			os.system('cls')
+			os.system('color 09')
+			Compress_()
+			os.system('cls')
+			os.system('color 0b')
 		elif mode == "s":
 			os.system('cls')
 			os.system('color 07')
@@ -67,6 +78,11 @@ def ChooseFormat(Version_current):
 		elif mode == "r":
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README.md')
 			os.system('cls')
+		elif mode == "d":
+			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/donate.jpg')
+			os.system('cls')
+			print('Thank you!!! :)')
+			print('---------------')
 		else:
 			os.system('cls')
 			os.system('color 0c')
@@ -74,6 +90,7 @@ def ChooseFormat(Version_current):
 			os.system('color 0b')
 			os.system('cls')
 
+#============================= IMAGE Menu ===============================
 def Image_():
 	while True:
 		print('Image')
@@ -83,7 +100,7 @@ def Image_():
 		print(' Mode C: input images one by one.\n')
 		print(' R : return to the main menu')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(a/b/c/r): ')
+		mode = input('(a/b/c/r): '.upper())
 		if mode.lower() == "a":
 			os.system('cls')
 			Image_ModeA()
@@ -105,6 +122,7 @@ def Image_():
 			os.system('color 0a')
 			os.system('cls')
 			
+#============================= GIF Menu ===============================
 def Gif_():
 	while True:
 		print('GIF')
@@ -114,7 +132,7 @@ def Gif_():
 		print(' Mode C: input gif one by one\n')
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
-		mode = input('(a/b/c/r): ')
+		mode = input('(a/b/c/r): '.upper())
 		if mode.lower() == "a":
 			os.system('cls')
 			Gif_ModeA()
@@ -136,16 +154,17 @@ def Gif_():
 			os.system('color 0e')
 			os.system('cls')
 			
+#============================= Video Menu ===============================
 def Video_():
 	while True:
-		print('Video (Experimental)')
+		print('Video')
 		print('---------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one\n')
 		print(' Mode B: input one folder and scaled all video in it and it\'s sub-folders\n')
 		print(' Mode C: input video one by one\n')
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
-		mode = input('(a/b/c/r): ')
+		mode = input('(a/b/c/r): '.upper())
 		if mode.lower() == "a":
 			os.system('cls')
 			Video_ModeA()
@@ -166,6 +185,80 @@ def Video_():
 			input('Error : wrong input,pls press any key to return')
 			os.system('color 09')
 			os.system('cls')
+			
+#============================= Compress ===============================
+def Compress_():
+	print("================= Compress Image ================")
+	print("Type 'return' to return to the previous menu")
+	print("Type 'over' to stop input more path, and input path must be a image")
+	print("Compressed images will be in the input-path \n")
+	inputPathOver = True
+	inputPathList = []
+	JpgQuality=90
+
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			inputPath=inputPath.strip('"')
+			
+			if inputPath.lower() == 'return':
+				return 1
+			elif inputPath.lower() == 'over':
+				inputPathOver = False
+				inputPathError = False
+				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPathList.append(inputPath)
+	
+	delorginal = input_delorginal()
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+
+	TotalFileNum = len(inputPathList)
+	FinishedFileNum = 1
+	saved_size_total=0
+	for inputPath in inputPathList:
+		scaledFilePath = os.path.splitext(inputPath)[0]
+		fileNameAndExt=str(os.path.basename(inputPath))
+		
+		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+		
+		print(inputPath)
+		print('Original size:'+original_size)
+		print('Compressing.....')
+		
+		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
+		
+		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
+		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
+		saved_size_total = saved_size_total+saved_size
+		saved_size_str = str(saved_size)+'KB'
+		print('Compressed size:'+compressed_size)
+		print('Save '+saved_size_str+' !')
+		
+		
+		print('original size:'+original_size)
+		
+		print('')	
+		if delorginal.lower() == 'y':
+			os.system('del /q "'+inputPath+'"')
+			
+		FinishedFileNum = FinishedFileNum+1
+		print('--------------------------------------------')
+		
+			
+	total_time_end=time.time()
+	
+	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+	print('\nTotal saved space: ',saved_size_total,'KB\n')
+	input('\nPress any key to return to the menu')
 		
 #=============================Image_MODE A===============================
 def Image_ModeA():
@@ -1844,11 +1937,11 @@ def Settings():
 		print(' 4: Default value of "noiseLevel". Current value: '+settings_values['noiseLevel']+'\n')
 		print(' 5: Save the result image as .jpg file? Current default value: '+settings_values['saveAsJPG']+'\n')
 		print(' 6: Compress the result image?(when saved as .jpg) Current default value: '+settings_values['Compress']+'\n')
-		print(' 7: Delete original files when finished?? Current default value: '+settings_values['delorginal']+'\n')
-		print(' 8: Save high quality gif?? Current default value: '+settings_values['highQuality']+'\n')
+		print(' 7: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
+		print(' 8: Save high quality gif? Current default value: '+settings_values['highQuality']+'\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/4/5/6/7/8/r): ')
+		mode = input('(1/2/3/4/5/6/7/8/r): '.upper())
 		if mode.lower() == "1":
 			os.system('cls')
 			
