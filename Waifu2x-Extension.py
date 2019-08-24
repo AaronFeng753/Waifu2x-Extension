@@ -2100,7 +2100,7 @@ def ReadSettings():
 def init():
 	os.system('title = Waifu2x-Extension by Aaron Feng')
 	os.system('color 0b')
-	os.system('mode con cols=130 lines=32')
+	#os.system('mode con cols=130 lines=32')
 	
 	settings_values = ReadSettings()
 	
@@ -2114,7 +2114,7 @@ def init():
 		os.system('cls')
 		os.system('color 0c')
 		print('-'*40)
-		download_latest = input('Do you wanna download the latest package?(y/n): ')
+		download_latest = input('Some files are missing. Do you wanna download the latest package?(y/n): ')
 		if download_latest.lower() == 'y':
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
 		os.system('cls')
