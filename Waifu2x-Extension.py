@@ -37,7 +37,7 @@ def ChooseFormat(Version_current):
 		print(' E : Exit.')
 		print('------------------------------------------')
 		mode = input('( i / g / v / c / s / l / u / r / d / e ): '.upper())
-		mode = mode.lower()
+		mode = mode.lower().strip(' ')
 		if mode == "i":
 			os.system('cls')
 			os.system('color 0a')
@@ -108,7 +108,7 @@ def Image_():
 		print(' R : return to the main menu')
 		print('-----------------------------------------------------------------------------')
 		mode = input('(a/b/c/r): '.upper())
-		mode = mode.lower()
+		mode = mode.lower().strip(' ')
 		if mode == "a":
 			os.system('cls')
 			Image_ModeA()
@@ -141,7 +141,7 @@ def Gif_():
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
 		mode = input('(a/b/c/r): '.upper())
-		mode = mode.lower()
+		mode = mode.lower().strip(' ')
 		if mode == "a":
 			os.system('cls')
 			Gif_ModeA()
@@ -174,7 +174,7 @@ def Video_():
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
 		mode = input('(a/b/c/r): '.upper())
-		mode = mode.lower()
+		mode = mode.lower().strip(' ')
 		if mode == "a":
 			os.system('cls')
 			Video_ModeA()
@@ -207,7 +207,7 @@ def Compress_():
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
 		mode = input('(a/b/c/r): '.upper())
-		mode = mode.lower()
+		mode = mode.lower().strip(' ')
 		if mode == "a":
 			os.system('cls')
 			Compress_ModeA()
@@ -245,7 +245,7 @@ def Image_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"')
+			inputPath=inputPath.strip('"').strip('\\')
 			if inputPath.lower() == 'return':
 				return 1
 			elif inputPath.lower() == 'over':
@@ -393,7 +393,7 @@ def Image_ModeB():
 	
 	while inputPathError:
 		inputPath = input('input-path: ')
-		inputPath=inputPath.strip('"')
+		inputPath=inputPath.strip('"').strip('\\')
 		if inputPath.lower() == 'return':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
@@ -541,7 +541,7 @@ def Image_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"')
+			inputPath=inputPath.strip('"').strip('\\')
 			
 			if inputPath.lower() == 'return':
 				return 1
@@ -638,7 +638,7 @@ def Gif_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"')
+			inputPath=inputPath.strip('"').strip('\\')
 			
 			if inputPath.lower() == 'return':
 				return 1
@@ -788,7 +788,7 @@ def Gif_ModeB():
 		elif inputPath_ == '' or os.path.exists(inputPath_) == False:
 			print('error,input-path is invalid\n')
 		else:
-			inputPath_=inputPath_.strip('"')
+			inputPath_=inputPath_.strip('"').strip('\\')
 			inputPathError = False
 	
 	 
@@ -920,7 +920,7 @@ def Gif_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"')
+			inputPath=inputPath.strip('"').strip('\\')
 			
 			if inputPath.lower() == 'return':
 				return 1
@@ -1058,7 +1058,7 @@ def Video_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"')
+			inputPath=inputPath.strip('"').strip('\\')
 			
 			if inputPath.lower() == 'over':
 				inputPathOver = False
@@ -1194,7 +1194,7 @@ def Video_ModeB():
 	inputPathError = True
 	while inputPathError:
 		inputPath_ = input('input-path: ')
-		inputPath_=inputPath_.strip('"')
+		inputPath_=inputPath_.strip('"').strip('\\')
 		
 		if inputPath_.lower() == 'return':
 			return 1
@@ -1325,7 +1325,7 @@ def Video_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"')
+			inputPath=inputPath.strip('"').strip('\\')
 			
 			if inputPath.lower() == 'over':
 				inputPathOver = False
@@ -1455,7 +1455,7 @@ def Compress_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"')
+			inputPath=inputPath.strip('"').strip('\\')
 			
 			if inputPath.lower() == 'return':
 				return 1
@@ -1537,7 +1537,7 @@ def Compress_ModeB():
 
 	while True:
 		inputPath = input('input-path: ')
-		inputPath =inputPath.strip('"')
+		inputPath =inputPath.strip('"').strip('\\')
 		if inputPath.lower() == 'return':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
@@ -1611,7 +1611,7 @@ def Compress_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"')
+			inputPath=inputPath.strip('"').strip('\\')
 			
 			if inputPath.lower() == 'return':
 				return 1
@@ -2285,7 +2285,7 @@ def Settings():
 				
 			with open('Error_Log_Waifu2x-Extension.log','a+') as f:
 				timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-				f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n')
+				f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Error log reseted by user.\n')
 			
 			input('Error log reseted, press any key to return.')
 			
@@ -2326,7 +2326,7 @@ def init():
 	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
 	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
 		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-		f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n')
+		f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Start running\n')
 		
 	settings_values = ReadSettings()
 	
@@ -2372,10 +2372,6 @@ def Error_Log():
 	else:
 		print('Error : error log file is missing.')
 		input('Press any key to return.')
-	# ~ with open('Error_Log_Waifu2x-Extension.log','r+') as f:
-		# ~ for line in f:
-			# ~ print(line)
-	# ~ input('1111111111111111')
 		
 #======================== Start ========================
 init()
