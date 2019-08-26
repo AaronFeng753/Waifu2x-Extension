@@ -1,6 +1,6 @@
 print('Loading.......')
 
-Version_current='v1.35'
+Version_current='v1.4'
 
 import os
 import time
@@ -19,23 +19,24 @@ import json
 
 def ChooseFormat(Version_current):
 	while True:
-		print('Waifu2x-Extension | '+Version_current+' | 2019/8/24 | Author: Aaron Feng')
+		print('Waifu2x-Extension | '+Version_current+' | 2019/8/26 | Author: Aaron Feng')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
-		print('--------------------------------------')
+		print('------------------------------------------')
 		print(' I : Scale image.\n')
 		print(' G : Scale gif.\n')
 		print(' V : Scale video.\n')
-		print(' C : Compress image(Lossless).')
-		print('--------------------------------------')
+		print(' C : Compress image (Lossless).')
+		print('------------------------------------------')
 		print(' S : Settings.\n')
+		print(' L : Read error log.\n')
 		print(' U : Check update.\n')
 		print(' R : Readme.\n')
 		print('\033[1;31;40m'+' ---------------------------------'+'\033[0m')
 		print('\033[1;31;40m'+' |D : Donate 捐赠 (Alipay 支付宝)|'+'\033[0m')
 		print('\033[1;31;40m'+' ---------------------------------\n'+'\033[0m')
 		print(' E : Exit.')
-		print('--------------------------------------')
-		mode = input('(i/g/v/c/s/u/r/d/e): '.upper())
+		print('------------------------------------------')
+		mode = input('( i / g / v / c / s / l / u / r / d / e ): '.upper())
 		mode = mode.lower()
 		if mode == "i":
 			os.system('cls')
@@ -71,6 +72,12 @@ def ChooseFormat(Version_current):
 			os.system('color 07')
 			os.system('cls')
 			return 0
+		elif mode == "l":
+			os.system('cls')
+			os.system('color 07')
+			Error_Log()
+			os.system('cls')
+			os.system('color 0b')
 		elif mode == "u":
 			os.system('cls')
 			checkUpdate(Version_current)
@@ -101,19 +108,20 @@ def Image_():
 		print(' R : return to the main menu')
 		print('-----------------------------------------------------------------------------')
 		mode = input('(a/b/c/r): '.upper())
-		if mode.lower() == "a":
+		mode = mode.lower()
+		if mode == "a":
 			os.system('cls')
 			Image_ModeA()
 			os.system('cls')
-		elif mode.lower() == "b":
+		elif mode == "b":
 			os.system('cls')
 			Image_ModeB()
 			os.system('cls')
-		elif mode.lower() == "c":
+		elif mode == "c":
 			os.system('cls')
 			Image_ModeC()
 			os.system('cls')
-		elif mode.lower() == "r":
+		elif mode == "r":
 			break
 		else:
 			os.system('cls')
@@ -133,19 +141,20 @@ def Gif_():
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
 		mode = input('(a/b/c/r): '.upper())
-		if mode.lower() == "a":
+		mode = mode.lower()
+		if mode == "a":
 			os.system('cls')
 			Gif_ModeA()
 			os.system('cls')
-		elif mode.lower() == "b":
+		elif mode == "b":
 			os.system('cls')
 			Gif_ModeB()
 			os.system('cls')
-		elif mode.lower() == "c":
+		elif mode == "c":
 			os.system('cls')
 			Gif_ModeC()
 			os.system('cls')
-		elif mode.lower() == "r":
+		elif mode == "r":
 			break
 		else:
 			os.system('cls')
@@ -165,19 +174,20 @@ def Video_():
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
 		mode = input('(a/b/c/r): '.upper())
-		if mode.lower() == "a":
+		mode = mode.lower()
+		if mode == "a":
 			os.system('cls')
 			Video_ModeA()
 			os.system('cls')
-		elif mode.lower() == "b":
+		elif mode == "b":
 			os.system('cls')
 			Video_ModeB()
 			os.system('cls')
-		elif mode.lower() == "c":
+		elif mode == "c":
 			os.system('cls')
 			Video_ModeC()
 			os.system('cls')
-		elif mode.lower() == "r":
+		elif mode == "r":
 			break
 		else:
 			os.system('cls')
@@ -186,79 +196,38 @@ def Video_():
 			os.system('color 09')
 			os.system('cls')
 			
-#============================= Compress ===============================
+#============================= Compress Menu ===============================
 def Compress_():
-	print("================= Compress Image ================")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a image")
-	print("Compressed images will be in the input-path \n")
-	inputPathOver = True
-	inputPathList = []
-	JpgQuality=90
-
-	while inputPathOver:
-		inputPathError = True
-		while inputPathError:
-			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"')
-			
-			if inputPath.lower() == 'return':
-				return 1
-			elif inputPath.lower() == 'over':
-				inputPathOver = False
-				inputPathError = False
-				break
-			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
-			else:
-				inputPathError = False
-		if inputPathOver == True:
-			inputPathList.append(inputPath)
-	
-	delorginal = input_delorginal()
-		
-	print('--------------------------------------------')
-	
-	total_time_start=time.time()
-
-	TotalFileNum = len(inputPathList)
-	FinishedFileNum = 1
-	saved_size_total=0
-	for inputPath in inputPathList:
-		scaledFilePath = os.path.splitext(inputPath)[0]
-		fileNameAndExt=str(os.path.basename(inputPath))
-		
-		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-		
-		print(inputPath)
-		print('Original size:'+original_size)
-		print('Compressing.....')
-		
-		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
-		
-		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
-		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
-		saved_size_total = saved_size_total+saved_size
-		saved_size_str = str(saved_size)+'KB'
-		print('Compressed size:'+compressed_size)
-		print('Save '+saved_size_str+' !')
-		
-		
-		print('original size:'+original_size)
-		
-		print('')	
-		if delorginal.lower() == 'y':
-			os.system('del /q "'+inputPath+'"')
-			
-		FinishedFileNum = FinishedFileNum+1
-		print('--------------------------------------------')
-		
-			
-	total_time_end=time.time()
-	
-	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-	print('\nTotal saved space: ',saved_size_total,'KB\n')
-	input('\nPress any key to return to the menu')
+	while True:
+		print('Compress image')
+		print('---------------------------------------------------------------------------')
+		print(' Mode A: input folders one by one\n')
+		print(' Mode B: input one folder and compress all images in it and it\'s sub-folders\n')
+		print(' Mode C: input images one by one\n')
+		print(' R : return to the main menu')
+		print('---------------------------------------------------------------------------')
+		mode = input('(a/b/c/r): '.upper())
+		mode = mode.lower()
+		if mode == "a":
+			os.system('cls')
+			Compress_ModeA()
+			os.system('cls')
+		elif mode == "b":
+			os.system('cls')
+			Compress_ModeB()
+			os.system('cls')
+		elif mode == "c":
+			os.system('cls')
+			Compress_ModeC()
+			os.system('cls')
+		elif mode == "r":
+			break
+		else:
+			os.system('cls')
+			os.system('color 0c')
+			input('Error : wrong input,pls press any key to return')
+			os.system('color 09')
+			os.system('cls')
 		
 #=============================Image_MODE A===============================
 def Image_ModeA():
@@ -1102,7 +1071,6 @@ def Video_ModeA():
 			else:
 				inputPathError = False
 		if inputPathOver == True:
-
 			inputPathList.append(inputPath)
 	
 	 
@@ -1473,7 +1441,237 @@ def Video_ModeC():
 	
 	input('\npress any key to exit')
 
-#================Prograss bar==================
+#============================= Compress_ModeA ===============================
+def Compress_ModeA():
+	print("================= Compress_ModeA ================")
+	print("Type 'return' to return to the previous menu")
+	print("Type 'over' to stop input more path, and input path must be a folder")
+	print("Compressed images will be in the input-path \n")
+	inputPathOver = True
+	inputPathList = []
+	JpgQuality=90
+
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			inputPath=inputPath.strip('"')
+			
+			if inputPath.lower() == 'return':
+				return 1
+			elif inputPath.lower() == 'over':
+				inputPathOver = False
+				inputPathError = False
+				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPathList.append(inputPath)
+	
+	delorginal = input_delorginal()
+	
+	
+	
+	print('--------------------------------------------')
+	
+	
+	total_time_start=time.time()
+	
+	inputPathList_files = []
+	for folders in inputPathList:
+		for path,useless,fnames in os.walk(folders):
+			for fname in fnames:
+				inputPathList_files.append(path+'\\'+fname)
+			break
+
+	TotalFileNum = len(inputPathList_files)
+	FinishedFileNum = 1
+	saved_size_total=0
+	
+	for inputPath in inputPathList_files:
+		scaledFilePath = os.path.splitext(inputPath)[0]
+		fileNameAndExt=str(os.path.basename(inputPath))
+		
+		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+		
+		print(inputPath)
+		print('Original size:'+original_size)
+		print('Compressing.....')
+		
+		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
+		
+		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
+		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
+		if saved_size <= 0:
+			os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
+			print('Failed to compress '+inputPath)
+		else:
+			saved_size_total = saved_size_total+saved_size
+			saved_size_str = str(saved_size)+'KB'
+			print('Compressed size:'+compressed_size)
+			print('Save '+saved_size_str+' !')
+			print('')	
+			if delorginal.lower() == 'y':
+				os.system('del /q "'+inputPath+'"')
+			
+		FinishedFileNum = FinishedFileNum+1
+		print('--------------------------------------------')
+		
+			
+	total_time_end=time.time()
+	
+	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+	print('\nTotal saved space: ',saved_size_total,'KB\n')
+	input('\nPress any key to return to the menu')
+
+#============================= Compress_ModeB ===============================
+def Compress_ModeB():
+	print("================= Compress_ModeB ================")
+	print("Type 'return' to return to the previous menu")
+	print("Input path must be a folder")
+	print("Compressed images will be in the input-path \n")
+	inputPathOver = True
+	JpgQuality=90
+
+	while True:
+		inputPath = input('input-path: ')
+		inputPath =inputPath.strip('"')
+		if inputPath.lower() == 'return':
+			return 1
+		elif inputPath == '' or os.path.exists(inputPath) == False:
+			print('error,input-path is invalid\n')
+		else:
+			break
+	
+	delorginal = input_delorginal()
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+	
+	inputPathList_files = []
+	for path,useless,fnames in os.walk(inputPath):
+		for fname in fnames:
+			inputPathList_files.append(path+'\\'+fname)
+	
+	TotalFileNum = len(inputPathList_files)
+	FinishedFileNum = 1
+	saved_size_total=0
+	for inputPath in inputPathList_files:
+		scaledFilePath = os.path.splitext(inputPath)[0]
+		fileNameAndExt=str(os.path.basename(inputPath))
+		
+		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+		
+		print(inputPath)
+		print('Original size:'+original_size)
+		print('Compressing.....')
+		
+		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
+		
+		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
+		
+		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
+		if saved_size <= 0:
+			os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
+			print('Failed to compress '+inputPath)
+		else:
+			saved_size_total = saved_size_total+saved_size
+			saved_size_str = str(saved_size)+'KB'
+			print('Compressed size:'+compressed_size)
+			print('Save '+saved_size_str+' !')
+			print('')	
+			if delorginal.lower() == 'y':
+				os.system('del /q "'+inputPath+'"')
+			
+		FinishedFileNum = FinishedFileNum+1
+		print('--------------------------------------------')
+		
+			
+	total_time_end=time.time()
+	
+	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+	print('\nTotal saved space: ',saved_size_total,'KB\n')
+	input('\nPress any key to return to the menu')
+
+
+#============================= Compress_ModeC ===============================
+def Compress_ModeC():
+	print("================= Compress_ModeC ================")
+	print("Type 'return' to return to the previous menu")
+	print("Type 'over' to stop input more path, and input path must be a image")
+	print("Compressed images will be in the input-path \n")
+	inputPathOver = True
+	inputPathList = []
+	JpgQuality=90
+
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			inputPath=inputPath.strip('"')
+			
+			if inputPath.lower() == 'return':
+				return 1
+			elif inputPath.lower() == 'over':
+				inputPathOver = False
+				inputPathError = False
+				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPathList.append(inputPath)
+	
+	delorginal = input_delorginal()
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+
+	TotalFileNum = len(inputPathList)
+	FinishedFileNum = 1
+	saved_size_total=0
+	for inputPath in inputPathList:
+		scaledFilePath = os.path.splitext(inputPath)[0]
+		fileNameAndExt=str(os.path.basename(inputPath))
+		
+		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+		
+		print(inputPath)
+		print('Original size:'+original_size)
+		print('Compressing.....')
+		
+		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
+		
+		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
+		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
+		if saved_size <= 0:
+			os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
+			print('Failed to compress '+inputPath)
+		else:
+			saved_size_total = saved_size_total+saved_size
+			saved_size_str = str(saved_size)+'KB'
+			print('Compressed size:'+compressed_size)
+			print('Save '+saved_size_str+' !')
+			print('')	
+			if delorginal.lower() == 'y':
+				os.system('del /q "'+inputPath+'"')
+			
+		FinishedFileNum = FinishedFileNum+1
+		print('--------------------------------------------')
+		
+			
+	total_time_end=time.time()
+	
+	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+	print('\nTotal saved space: ',saved_size_total,'KB\n')
+	input('\nPress any key to return to the menu')
+
+#=============================Prograss bar==========================
 def FileCount(countPath):
 	file_count=0
 	for root in os.walk(countPath):
@@ -1514,11 +1712,15 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 			if NewFileNum==0:
 				Percent = 0
 				BarStr = ''
+				for x in range(0,int(100/3)):
+					BarStr = BarStr + '□'
 			else:
 				Percent = int(100*(NewFileNum/OldFileNum))
 				BarStr = ''
 				for x in range(0,int(Percent/3)):
-					BarStr = BarStr + '>'
+					BarStr = BarStr + '■'
+				for x in range(0,int(100/3)-int(Percent/3)):
+					BarStr = BarStr + '□'
 			time_now = time.time()
 			timeCost_str = Seconds2hms(int(time_now-time_start))
 			if NewFileNum > 0:
@@ -1895,6 +2097,7 @@ def checkUpdate_start(Version_current):
 		os.system('cls')
 
 #========================Verify Files=====================
+
 def VerifyFiles():
 	FilesList = ['ffmpeg.exe', 'msvcp140.dll', 'vcomp140.dll', 
 	'vcruntime140.dll', 'vulkan-1.dll', 'waifu2x-ncnn-vulkan.exe', 
@@ -1924,6 +2127,7 @@ def VerifyFiles():
 		return 'verified'
 
 #=================  Settings  ================
+
 def Settings():
 	while True:
 		settings_values = {}
@@ -1939,10 +2143,12 @@ def Settings():
 		print(' 6: Compress the result image?(when saved as .jpg) Current default value: '+settings_values['Compress']+'\n')
 		print(' 7: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
 		print(' 8: Save high quality gif? Current default value: '+settings_values['highQuality']+'\n')
+		print(' 9: Reset error log.\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/4/5/6/7/8/r): '.upper())
-		if mode.lower() == "1":
+		mode = input('(1/2/3/4/5/6/7/8/9/r): '.upper())
+		mode = mode.lower()
+		if mode == "1":
 			os.system('cls')
 			
 			while True:
@@ -1958,7 +2164,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode.lower() == "2":
+		elif mode== "2":
 			os.system('cls')
 			
 			while True:
@@ -1974,7 +2180,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode.lower() == "3":
+		elif mode == "3":
 			os.system('cls')
 			
 			while True:
@@ -1991,7 +2197,7 @@ def Settings():
 				
 			os.system('cls')
 			
-		elif mode.lower() == "4":
+		elif mode == "4":
 			os.system('cls')
 			
 			while True:
@@ -2007,7 +2213,7 @@ def Settings():
 				
 			os.system('cls')
 			
-		elif mode.lower() == "5":
+		elif mode == "5":
 			os.system('cls')
 			
 			while True:
@@ -2023,7 +2229,7 @@ def Settings():
 				
 			os.system('cls')
 			
-		elif mode.lower() == "6":
+		elif mode == "6":
 			os.system('cls')
 			
 			while True:
@@ -2039,7 +2245,7 @@ def Settings():
 				
 			os.system('cls')
 			
-		elif mode.lower() == "7":
+		elif mode == "7":
 			os.system('cls')
 			
 			while True:
@@ -2055,7 +2261,7 @@ def Settings():
 				
 			os.system('cls')
 			
-		elif mode.lower() == "8":
+		elif mode == "8":
 			os.system('cls')
 			
 			while True:
@@ -2071,7 +2277,21 @@ def Settings():
 				
 			os.system('cls')
 			
-		elif mode.lower() == "r":
+		elif mode == "9":
+			os.system('cls')
+			
+			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
+				f.write('')
+				
+			with open('Error_Log_Waifu2x-Extension.log','a+') as f:
+				timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+				f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n')
+			
+			input('Error log reseted, press any key to return.')
+			
+			os.system('cls')
+			
+		elif mode == "r":
 			break
 		else:
 			os.system('cls')
@@ -2097,11 +2317,17 @@ def ReadSettings():
 		return settings_values
 
 #=================  Init  ================
+
 def init():
 	os.system('title = Waifu2x-Extension by Aaron Feng')
 	os.system('color 0b')
-	#os.system('mode con cols=130 lines=32')
+	os.system('mode con cols=150 lines=35')
 	
+	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
+	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
+		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+		f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n')
+		
 	settings_values = ReadSettings()
 	
 	if settings_values['CheckUpdate'] == 'y':
@@ -2121,6 +2347,36 @@ def init():
 		input('Press any key to exit.')
 		os.system('cls')
 		os.system('color 07')
+		
+#======================== Logger =============================
+
+class Logger(object):
+	def __init__(self, filename='default.log', stream=sys.stdout):
+		self.terminal = stream
+		self.log = open(filename, 'a')
+
+	def write(self, message):
+		self.terminal.write(message)
+		self.log.write(message)
+
+	def flush(self):
+		pass
+
+#============================= Error_Log ====================================
+
+def Error_Log():
+	if os.path.exists('Error_Log_Waifu2x-Extension.log') == True:
+		print('You can reset error log in the setting menu.')
+		print('\033[1;31;40m'+'Close the notepad to continue.'+'\033[0m')
+		os.system('notepad Error_Log_Waifu2x-Extension.log')
+	else:
+		print('Error : error log file is missing.')
+		input('Press any key to return.')
+	# ~ with open('Error_Log_Waifu2x-Extension.log','r+') as f:
+		# ~ for line in f:
+			# ~ print(line)
+	# ~ input('1111111111111111')
+		
 #======================== Start ========================
 init()
 	
