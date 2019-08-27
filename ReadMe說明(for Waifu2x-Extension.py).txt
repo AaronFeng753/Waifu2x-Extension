@@ -1,0 +1,1 @@
+﻿https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README.md
