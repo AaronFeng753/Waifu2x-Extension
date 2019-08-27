@@ -14,6 +14,7 @@ New features brought by this extension:
 10. Adjust the quality of the enlarged dynamic picture
 11. Display processing progress and remaining time
 12. Smart selection of models
+13. Gif compression
 
 ![mainmenu](/screenshot/mainmenu.png) 
 
@@ -53,6 +54,8 @@ https://ffmpeg.org/
 11.显示处理进度以及剩余时间
 
 12.智能选择models
+
+13. Gif 压缩
 
 ![mainmenu](/screenshot/mainmenu.png) 
 
