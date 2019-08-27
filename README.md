@@ -26,6 +26,9 @@ https://github.com/nihui/waifu2x-ncnn-vulkan
 FFmpeg:
 https://ffmpeg.org/
 
+Gifsicle:
+https://www.lcdf.org/gifsicle/
+
 # Waifu2x扩展
 适用于waifu2x-ncnn-vulkan的批量图片处理扩展
 
@@ -66,6 +69,9 @@ https://github.com/nihui/waifu2x-ncnn-vulkan
 
 FFmpeg: 
 https://ffmpeg.org/
+
+Gifsicle:
+https://www.lcdf.org/gifsicle/
 
 # Donate 捐赠
 
