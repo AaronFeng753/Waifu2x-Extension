@@ -16,10 +16,6 @@ New features brought by this extension:
 12. Smart selection of models
 
 ![mainmenu](/screenshot/mainmenu.png)
-![imagemenu](/screenshot/imagemenu.png)
-![gifmenu](/screenshot/gifmenu.png)
-![videomenu](/screenshot/videomenu.png)
-![settingsmenu](/screenshot/settingsmenu.png)
 
 Put 'Waifu2x-Extension.py' in the folder of waifu2x-ncnn-vulkan then open the extension, enjoy.
 
@@ -59,10 +55,6 @@ https://ffmpeg.org/
 12.智能选择models
 
 ![mainmenu](/screenshot/mainmenu.png)
-![imagemenu](/screenshot/imagemenu.png)
-![gifmenu](/screenshot/gifmenu.png)
-![videomenu](/screenshot/videomenu.png)
-![settingsmenu](/screenshot/settingsmenu.png)
 
 使用说明:把'Waifu2x-Extension.py'放到waifu2x-ncnn-vulkan的文件夹内(就是和waifu2x-ncnn-vulkan.exe在一个文件夹里), 然后打开扩展脚本, 输入参数即可.
 
