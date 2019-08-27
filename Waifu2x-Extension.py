@@ -1,6 +1,6 @@
 print('Loading.......')
 
-Version_current='v1.4'
+Version_current='v1.48'
 
 import os
 import time
@@ -19,13 +19,15 @@ import json
 
 def ChooseFormat(Version_current):
 	while True:
-		print('Waifu2x-Extension | '+Version_current+' | 2019/8/26 | Author: Aaron Feng')
+		print('Waifu2x-Extension | '+Version_current+' | 2019/8/27 | Author: Aaron Feng')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
+		print('\033[1;31;40m'+'Attention: This software is only designed for process 2D illust files(image,gif,video)'+'\033[0m')
 		print('------------------------------------------')
 		print(' I : Scale image.\n')
 		print(' G : Scale gif.\n')
 		print(' V : Scale video.\n')
-		print(' C : Compress image (Lossless).')
+		print(' CI : Compress image (Almost lossless).\n')
+		print(' CG : Compress gif.')
 		print('------------------------------------------')
 		print(' S : Settings.\n')
 		print(' L : Read error log.\n')
@@ -36,7 +38,8 @@ def ChooseFormat(Version_current):
 		print('\033[1;31;40m'+' ---------------------------------\n'+'\033[0m')
 		print(' E : Exit.')
 		print('------------------------------------------')
-		mode = input('( i / g / v / c / s / l / u / r / d / e ): '.upper())
+		print('( i / g / v / ci / cg / s / l / u / r / d / e ): '.upper())
+		mode = input()
 		mode = mode.lower().strip(' ')
 		if mode == "i":
 			os.system('cls')
@@ -56,10 +59,16 @@ def ChooseFormat(Version_current):
 			Video_()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "c":
+		elif mode == "ci":
 			os.system('cls')
 			os.system('color 09')
-			Compress_()
+			Compress_image()
+			os.system('cls')
+			os.system('color 0b')
+		elif mode == "cg":
+			os.system('cls')
+			os.system('color 0e')
+			Compress_gif()
 			os.system('cls')
 			os.system('color 0b')
 		elif mode == "s":
@@ -196,8 +205,8 @@ def Video_():
 			os.system('color 09')
 			os.system('cls')
 			
-#============================= Compress Menu ===============================
-def Compress_():
+#============================= Compress_image Menu ===============================
+def Compress_image():
 	while True:
 		print('Compress image')
 		print('---------------------------------------------------------------------------')
@@ -210,15 +219,48 @@ def Compress_():
 		mode = mode.lower().strip(' ')
 		if mode == "a":
 			os.system('cls')
-			Compress_ModeA()
+			Compress_image_ModeA()
 			os.system('cls')
 		elif mode == "b":
 			os.system('cls')
-			Compress_ModeB()
+			Compress_image_ModeB()
 			os.system('cls')
 		elif mode == "c":
 			os.system('cls')
-			Compress_ModeC()
+			Compress_image_ModeC()
+			os.system('cls')
+		elif mode == "r":
+			break
+		else:
+			os.system('cls')
+			os.system('color 0c')
+			input('Error : wrong input,pls press any key to return')
+			os.system('color 09')
+			os.system('cls')
+
+#============================= Compress_gif Menu ===============================
+def Compress_gif():
+	while True:
+		print('Compress gif')
+		print('---------------------------------------------------------------------------')
+		print(' Mode A: input folders one by one\n')
+		print(' Mode B: input one folder and compress all gifs in it and it\'s sub-folders\n')
+		print(' Mode C: input gifs one by one\n')
+		print(' R : return to the main menu')
+		print('---------------------------------------------------------------------------')
+		mode = input('(a/b/c/r): '.upper())
+		mode = mode.lower().strip(' ')
+		if mode == "a":
+			os.system('cls')
+			Compress_gif_ModeA()
+			os.system('cls')
+		elif mode == "b":
+			os.system('cls')
+			Compress_gif_ModeB()
+			os.system('cls')
+		elif mode == "c":
+			os.system('cls')
+			Compress_gif_ModeC()
 			os.system('cls')
 		elif mode == "r":
 			break
@@ -281,7 +323,7 @@ def Image_ModeA():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	
+	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
 	for inputPath in inputPathList:
 		
 		oldfilenumber=FileCount(inputPath)
@@ -425,6 +467,7 @@ def Image_ModeB():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
+	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
 	
 	for dirs in os.walk(inputPath):
 		inputPathList.append(str(dirs[0]))
@@ -580,6 +623,7 @@ def Image_ModeC():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
+	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
 
 	TotalFileNum = len(inputPathList)
 	FinishedFileNum = 1
@@ -630,7 +674,7 @@ def Gif_ModeA():
 	print("Scaled images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
-	gifQuality = False
+	gifCompresslevel =''
 	orginalFileNameAndFullname = {}
 	models = 'models-upconv_7_anime_style_art_rgb'
 
@@ -664,6 +708,8 @@ def Gif_ModeA():
 	tileSize = input_tileSize()
 		
 	highQuality = input_highQuality()
+	if highQuality.lower() == 'n':
+		gifCompresslevel = input_gifCompresslevel()
 		
 	turnoff = input_turnoff()
 	
@@ -672,7 +718,7 @@ def Gif_ModeA():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	
+	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
 	inputPathList_files = []
 	for folders in inputPathList:
 		for path,useless,fnames in os.walk(folders):
@@ -746,13 +792,8 @@ def Gif_ModeA():
 		orginalFileNameAndFullname = {}
 		
 		
-		if highQuality.lower() == 'y':
-			gifQuality = False
-		else:
-			gifQuality = True
-		
 		print('Assembling Gif.....')
-		assembleGif(scaledFilePath,TIME_GAP,gifQuality)
+		assembleGif(scaledFilePath,TIME_GAP)
 		print('Gif assembled')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
@@ -760,6 +801,14 @@ def Gif_ModeA():
 		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')
 		
+		
+		if highQuality.lower() == 'n':
+			print('Compressing gif....')
+			compress_gif(scaledFilePath+'_waifu2x.gif',gifCompresslevel)
+			os.system('del /q "'+scaledFilePath+'_waifu2x.gif'+'"')
+			print('Gif compressed\n')
+		else:
+			print('')
 	total_time_end=time.time()
 	
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
@@ -776,7 +825,7 @@ def Gif_ModeB():
 	print("Scaled images will be in it's original path \n")
 	inputPathOver = True
 	inputPath_ = ''
-	gifQuality = False
+	gifCompresslevel =''
 	orginalFileNameAndFullname = {}
 	models = 'models-upconv_7_anime_style_art_rgb'
 	inputPathError = True
@@ -801,6 +850,8 @@ def Gif_ModeB():
 	tileSize = input_tileSize()
 		
 	highQuality = input_highQuality()
+	if highQuality.lower() == 'n':
+		gifCompresslevel = input_gifCompresslevel()
 		
 	turnoff = input_turnoff()
 	
@@ -809,7 +860,7 @@ def Gif_ModeB():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	
+	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
 	inputPathList_files = []
 	for path,useless,fnames in os.walk(inputPath_):
 		for fname in fnames:
@@ -880,20 +931,22 @@ def Gif_ModeB():
 				os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',originalName+".png"))
 		orginalFileNameAndFullname = {}
 		
-		
-		if highQuality.lower() == 'y':
-			gifQuality = False
-		else:
-			gifQuality = True
-		
 		print('Assembling Gif.....')
-		assembleGif(scaledFilePath,TIME_GAP,gifQuality)
+		assembleGif(scaledFilePath,TIME_GAP)
 		print('Gif assembled')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
 		
 		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')
+		
+		if highQuality.lower() == 'n':
+			print('Compressing gif....')
+			compress_gif(scaledFilePath+'_waifu2x.gif',gifCompresslevel)
+			os.system('del /q "'+scaledFilePath+'_waifu2x.gif'+'"')
+			print('Gif compressed\n')
+		else:
+			print('')
 		
 	total_time_end=time.time()
 	
@@ -912,7 +965,7 @@ def Gif_ModeC():
 	print("Scaled images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
-	gifQuality = False
+	gifCompresslevel =''
 	orginalFileNameAndFullname = {}
 	models = 'models-upconv_7_anime_style_art_rgb'
 
@@ -946,6 +999,8 @@ def Gif_ModeC():
 	tileSize = input_tileSize()
 		
 	highQuality = input_highQuality()
+	if highQuality.lower() == 'n':
+		gifCompresslevel = input_gifCompresslevel()
 		
 	turnoff = input_turnoff()
 	
@@ -954,7 +1009,7 @@ def Gif_ModeC():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	
+	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
 	for inputPath in inputPathList:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
@@ -1019,20 +1074,22 @@ def Gif_ModeC():
 				os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',originalName+".png"))
 		orginalFileNameAndFullname = {}
 		
-		
-		if highQuality.lower() == 'y':
-			gifQuality = False
-		else:
-			gifQuality = True
-		
 		print('Assembling Gif.....')
-		assembleGif(scaledFilePath,TIME_GAP,gifQuality)
+		assembleGif(scaledFilePath,TIME_GAP)
 		print('Gif assembled')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
 		
 		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')
+			
+		if highQuality.lower() == 'n':
+			print('Compressing gif....')
+			compress_gif(scaledFilePath+'_waifu2x.gif',gifCompresslevel)
+			os.system('del /q "'+scaledFilePath+'_waifu2x.gif'+'"')
+			print('Gif compressed\n')
+		else:
+			print('')
 		
 	total_time_end=time.time()
 	
@@ -1089,7 +1146,7 @@ def Video_ModeA():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	
+	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
 	inputPathList_files = []
 	for folders in inputPathList:
 		for path,useless,fnames in os.walk(folders):
@@ -1219,7 +1276,7 @@ def Video_ModeB():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	
+	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
 	inputPathList_files = []
 	for path,useless,fnames in os.walk(inputPath_):
 		for fname in fnames:
@@ -1356,7 +1413,7 @@ def Video_ModeC():
 	
 	total_time_start=time.time()
 
-	
+	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
 	for inputPath in inputPathList:
 		
 		video2images(inputPath) #拆解视频
@@ -1441,9 +1498,9 @@ def Video_ModeC():
 	
 	input('\npress any key to exit')
 
-#============================= Compress_ModeA ===============================
-def Compress_ModeA():
-	print("================= Compress_ModeA ================")
+#============================= Compress_image_ModeA ===============================
+def Compress_image_ModeA():
+	print("================= Compress_image_ModeA ================")
 	print("Type 'return' to return to the previous menu")
 	print("Type 'over' to stop input more path, and input path must be a folder")
 	print("Compressed images will be in the input-path \n")
@@ -1526,9 +1583,9 @@ def Compress_ModeA():
 	print('\nTotal saved space: ',saved_size_total,'KB\n')
 	input('\nPress any key to return to the menu')
 
-#============================= Compress_ModeB ===============================
-def Compress_ModeB():
-	print("================= Compress_ModeB ================")
+#============================= Compress_image_ModeB ===============================
+def Compress_image_ModeB():
+	print("================= Compress_image_ModeB ================")
 	print("Type 'return' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Compressed images will be in the input-path \n")
@@ -1597,9 +1654,9 @@ def Compress_ModeB():
 	input('\nPress any key to return to the menu')
 
 
-#============================= Compress_ModeC ===============================
-def Compress_ModeC():
-	print("================= Compress_ModeC ================")
+#============================= Compress_image_ModeC ===============================
+def Compress_image_ModeC():
+	print("================= Compress_image_ModeC ================")
 	print("Type 'return' to return to the previous menu")
 	print("Type 'over' to stop input more path, and input path must be a image")
 	print("Compressed images will be in the input-path \n")
@@ -1651,6 +1708,236 @@ def Compress_ModeC():
 		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
 		if saved_size <= 0:
 			os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
+			print('Failed to compress '+inputPath)
+		else:
+			saved_size_total = saved_size_total+saved_size
+			saved_size_str = str(saved_size)+'KB'
+			print('Compressed size:'+compressed_size)
+			print('Save '+saved_size_str+' !')
+			print('')	
+			if delorginal.lower() == 'y':
+				os.system('del /q "'+inputPath+'"')
+			
+		FinishedFileNum = FinishedFileNum+1
+		print('--------------------------------------------')
+		
+			
+	total_time_end=time.time()
+	
+	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+	print('\nTotal saved space: ',saved_size_total,'KB\n')
+	input('\nPress any key to return to the menu')
+	
+#============================= Compress_gif_ModeA ===============================
+def Compress_gif_ModeA():
+	print("================= Compress_gif_ModeA ================")
+	print("Type 'return' to return to the previous menu")
+	print("Type 'over' to stop input more path, and input path must be a folder")
+	print("Compressed images will be in the input-path \n")
+	inputPathOver = True
+	inputPathList = []
+
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			inputPath=inputPath.strip('"').strip('\\')
+			
+			if inputPath.lower() == 'return':
+				return 1
+			elif inputPath.lower() == 'over':
+				inputPathOver = False
+				inputPathError = False
+				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPathList.append(inputPath)
+	
+	gifCompresslevel=input_gifCompresslevel()
+	
+	delorginal = input_delorginal()
+	
+	
+	
+	print('--------------------------------------------')
+	
+	
+	total_time_start=time.time()
+	
+	inputPathList_files = []
+	for folders in inputPathList:
+		for path,useless,fnames in os.walk(folders):
+			for fname in fnames:
+				inputPathList_files.append(path+'\\'+fname)
+			break
+
+	TotalFileNum = len(inputPathList_files)
+	FinishedFileNum = 1
+	saved_size_total=0
+	
+	for inputPath in inputPathList_files:
+		scaledFilePath = os.path.splitext(inputPath)[0]
+		fileNameAndExt=str(os.path.basename(inputPath))
+		
+		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+		
+		print(inputPath)
+		print('Original size:'+original_size)
+		print('Compressing.....')
+		
+		compress_gif(inputPath,gifCompresslevel)
+		
+		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
+		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
+		if saved_size <= 0:
+			os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
+			print('Failed to compress '+inputPath)
+		else:
+			saved_size_total = saved_size_total+saved_size
+			saved_size_str = str(saved_size)+'KB'
+			print('Compressed size:'+compressed_size)
+			print('Save '+saved_size_str+' !')
+			print('')	
+			if delorginal.lower() == 'y':
+				os.system('del /q "'+inputPath+'"')
+			
+		FinishedFileNum = FinishedFileNum+1
+		print('--------------------------------------------')
+		
+			
+	total_time_end=time.time()
+	
+	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+	print('\nTotal saved space: ',saved_size_total,'KB\n')
+	input('\nPress any key to return to the menu')
+
+#============================= Compress_gif_ModeB ===============================
+def Compress_gif_ModeB():
+	print("================= Compress_gif_ModeB ================")
+	print("Type 'return' to return to the previous menu")
+	print("Input path must be a folder")
+	print("Compressed images will be in the input-path \n")
+	inputPathOver = True
+
+	while True:
+		inputPath = input('input-path: ')
+		inputPath =inputPath.strip('"').strip('\\')
+		if inputPath.lower() == 'return':
+			return 1
+		elif inputPath == '' or os.path.exists(inputPath) == False:
+			print('error,input-path is invalid\n')
+		else:
+			break
+	
+	gifCompresslevel=input_gifCompresslevel()
+	delorginal = input_delorginal()
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+	
+	inputPathList_files = []
+	for path,useless,fnames in os.walk(inputPath):
+		for fname in fnames:
+			inputPathList_files.append(path+'\\'+fname)
+	
+	TotalFileNum = len(inputPathList_files)
+	FinishedFileNum = 1
+	saved_size_total=0
+	for inputPath in inputPathList_files:
+		scaledFilePath = os.path.splitext(inputPath)[0]
+		fileNameAndExt=str(os.path.basename(inputPath))
+		
+		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+		
+		print(inputPath)
+		print('Original size:'+original_size)
+		print('Compressing.....')
+		
+		compress_gif(inputPath,gifCompresslevel)
+		
+		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
+		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
+		if saved_size <= 0:
+			os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
+			print('Failed to compress '+inputPath)
+		else:
+			saved_size_total = saved_size_total+saved_size
+			saved_size_str = str(saved_size)+'KB'
+			print('Compressed size:'+compressed_size)
+			print('Save '+saved_size_str+' !')
+			print('')	
+			if delorginal.lower() == 'y':
+				os.system('del /q "'+inputPath+'"')
+			
+		FinishedFileNum = FinishedFileNum+1
+		print('--------------------------------------------')
+		
+			
+	total_time_end=time.time()
+	
+	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+	print('\nTotal saved space: ',saved_size_total,'KB\n')
+	input('\nPress any key to return to the menu')
+
+
+#============================= Compress_gif_ModeC ===============================
+def Compress_gif_ModeC():
+	print("================= Compress_gif_ModeC ================")
+	print("Type 'return' to return to the previous menu")
+	print("Type 'over' to stop input more path, and input path must be a gif")
+	print("Compressed images will be in the input-path \n")
+	inputPathOver = True
+	inputPathList = []
+
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			inputPath=inputPath.strip('"').strip('\\')
+			
+			if inputPath.lower() == 'return':
+				return 1
+			elif inputPath.lower() == 'over':
+				inputPathOver = False
+				inputPathError = False
+				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('error,input-path is invalid\n')
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPathList.append(inputPath)
+			
+	gifCompresslevel=input_gifCompresslevel()
+	delorginal = input_delorginal()
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+
+	TotalFileNum = len(inputPathList)
+	FinishedFileNum = 1
+	saved_size_total=0
+	for inputPath in inputPathList:
+		scaledFilePath = os.path.splitext(inputPath)[0]
+		fileNameAndExt=str(os.path.basename(inputPath))
+		
+		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+		
+		print(inputPath)
+		print('Original size:'+original_size)
+		print('Compressing.....')
+		
+		compress_gif(inputPath,gifCompresslevel)
+		
+		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
+		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
+		if saved_size <= 0:
+			os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
 			print('Failed to compress '+inputPath)
 		else:
 			saved_size_total = saved_size_total+saved_size
@@ -1826,7 +2113,7 @@ def splitGif(gifFileName,scaledFilePath):
 	except EOFError:
 	    pass
 	
-def assembleGif(scaledFilePath,TIME_GAP,gifQuality):
+def assembleGif(scaledFilePath,TIME_GAP):
 	image_list=[]
 	gif_name=scaledFilePath+'_waifu2x.gif'
 	filelist_name=[]
@@ -1841,7 +2128,7 @@ def assembleGif(scaledFilePath,TIME_GAP,gifQuality):
 	for png in png_list_fullname:
 		fileNameAndExt=str(os.path.basename(png))
 		filename=os.path.splitext(fileNameAndExt)[0]
-		imageio.imwrite(scaledFilePath+'_split\\scaled\\'+filename+".jpg", imageio.imread(png), 'JPG', quality = 100)
+		imageio.imwrite(scaledFilePath+'_split\\scaled\\'+filename+".jpg", imageio.imread(png), 'JPG', quality = 90)
 	
 	os.system('del /q "'+scaledFilePath+'_split'+'\\scaled\\*.'+'png'+'"')
 	
@@ -1858,7 +2145,19 @@ def assembleGif(scaledFilePath,TIME_GAP,gifQuality):
 	frames = []  
 	for image_name in image_list:  
 		frames.append(imageio.imread(image_name))  
-	imageio.mimsave(gif_name, frames, 'GIF', duration = TIME_GAP,subrectangles = gifQuality)
+	imageio.mimsave(gif_name, frames, 'GIF', duration = TIME_GAP)
+	
+def compress_gif(inputpath,compress_level):
+	gif_path_filename = os.path.splitext(inputpath)[0]
+	if compress_level == '1':
+		os.system('gifsicle --optimize -O3  "'+inputpath+'" > "'+gif_path_filename+'_compressed.gif"')
+	elif compress_level == '2':
+		os.system('gifsicle --optimize -O3 --colors 256 "'+inputpath+'" > "'+gif_path_filename+'_compressed.gif"')
+	elif compress_level == '3':
+		os.system('gifsicle --optimize -O3 --lossy "'+inputpath+'" > "'+gif_path_filename+'_compressed.gif"')
+	elif compress_level == '4':
+		os.system('gifsicle --optimize -O3 --lossy --colors 256 "'+inputpath+'" > "'+gif_path_filename+'_compressed.gif"')
+	
 	
 	
 #====================== Video ==============================
@@ -2006,7 +2305,7 @@ def input_highQuality():
 	settings_values = ReadSettings()
 	default_value = settings_values['highQuality']
 	while True:
-		highQuality = input('High quality gif?(y/n, default='+default_value+'): ')
+		highQuality = input('Save high quality gif? (y/n, default='+default_value+'): ')
 		if highQuality in ['y','n','Y','N','']:
 			break
 		else:
@@ -2017,6 +2316,21 @@ def input_highQuality():
 		
 	return highQuality
 	
+def input_gifCompresslevel():
+	settings_values = ReadSettings()
+	default_value = settings_values['gifCompresslevel']
+	while True:
+		gifCompresslevel = input('Compress level(1/2/3/4, default='+default_value+'): ')
+		if gifCompresslevel in ['1','2','3','4','']:
+			break
+		else:
+			print('wrong input, pls input again')
+	
+	if gifCompresslevel == '':
+		gifCompresslevel = default_value
+		
+	return gifCompresslevel
+
 #======================== Seconds 2 h:m:s =========================
 def Seconds2hms(seconds):
 	if seconds > 59 and seconds < 3600:
@@ -2109,7 +2423,7 @@ def VerifyFiles():
 	'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param', 
 	'noise0_scale2.0x_model.bin', 'noise0_scale2.0x_model.param', 'noise1_scale2.0x_model.bin', 
 	'noise1_scale2.0x_model.param', 'noise2_scale2.0x_model.bin', 'noise2_scale2.0x_model.param', 
-	'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param']
+	'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param','gifsicle.exe']
 	
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	FilesList_current = []
@@ -2143,10 +2457,11 @@ def Settings():
 		print(' 6: Compress the result image?(when saved as .jpg) Current default value: '+settings_values['Compress']+'\n')
 		print(' 7: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
 		print(' 8: Save high quality gif? Current default value: '+settings_values['highQuality']+'\n')
-		print(' 9: Reset error log.\n')
+		print(' 9: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
+		print(' 10: Reset error log.\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/4/5/6/7/8/9/r): '.upper())
+		mode = input('(1/2/3/4/5/6/7/8/9/10/r): '.upper())
 		mode = mode.lower()
 		if mode == "1":
 			os.system('cls')
@@ -2276,8 +2591,24 @@ def Settings():
 				json.dump(settings_values,f)
 				
 			os.system('cls')
+		
+		elif mode== "9":
+			os.system('cls')
 			
-		elif mode == "9":
+			while True:
+				value_ = input('New value(1/2/3/4): ').lower()
+				if value_ in ['1','2','3','4']:
+					break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['gifCompresslevel']=value_
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+		
+		elif mode == "10":
 			os.system('cls')
 			
 			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
@@ -2301,12 +2632,12 @@ def Settings():
 			os.system('cls')
 
 def ReadSettings():
+	default_values = {'CheckUpdate':'y','scale':'2','tileSize':'200',
+						'noiseLevel':'2','saveAsJPG':'y',
+						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
-		default_values = {'CheckUpdate':'y','scale':'2','tileSize':'200',
-						'noiseLevel':'2','saveAsJPG':'y',
-						'Compress':'n','delorginal':'n','highQuality':'y'}
 		with open('waifu2x-extension-setting','w+') as f:
 			json.dump(default_values,f)
 		return default_values
@@ -2314,14 +2645,19 @@ def ReadSettings():
 		settings_values = {}
 		with open('waifu2x-extension-setting','r+') as f:
 			settings_values = json.load(f)
-		return settings_values
+		if len(settings_values) != len(default_values):
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(default_values,f)
+			return default_values
+		else:
+			return settings_values
 
 #=================  Init  ================
 
-def init():
-	os.system('title = Waifu2x-Extension by Aaron Feng')
-	os.system('color 0b')
-	os.system('mode con cols=150 lines=35')
+def init():		#初始化函数
+	os.system('title = Waifu2x-Extension by Aaron Feng')	#更改控制台标题
+	os.system('color 0b')	#更改文字颜色
+	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
 	
 	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
 	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
@@ -2362,16 +2698,26 @@ class Logger(object):
 	def flush(self):
 		pass
 
+#==================== Admin ===========================
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
 #============================= Error_Log ====================================
 
-def Error_Log():
-	if os.path.exists('Error_Log_Waifu2x-Extension.log') == True:
-		print('You can reset error log in the setting menu.')
-		print('\033[1;31;40m'+'Close the notepad to continue.'+'\033[0m')
-		os.system('notepad Error_Log_Waifu2x-Extension.log')
+def Error_Log():	#读取错误日志
+	if os.path.exists('Error_Log_Waifu2x-Extension.log') == True:	#判断错误日志文件是否存在
+		webbrowser.open('Error_Log_Waifu2x-Extension.log')
 	else:
-		print('Error : error log file is missing.')
+		print('Error : error log file is missing.')	#提示错误日志文件丢失
 		input('Press any key to return.')
 		
 #======================== Start ========================
-init()
+        
+if __name__ == '__main__':
+	if is_admin():
+		init()
+	else:
+		# Re-run the program with admin rights
+		ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
