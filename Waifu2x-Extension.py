@@ -1,8 +1,9 @@
+import os
+os.system('cls')
 print('Loading.......')
 
-Version_current='v1.48'
+Version_current='v1.5'
 
-import os
 import time
 import threading
 import sys
@@ -16,12 +17,14 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import json
+from multiprocessing import cpu_count
+import traceback
 
 def ChooseFormat(Version_current):
 	while True:
-		print('Waifu2x-Extension | '+Version_current+' | 2019/8/27 | Author: Aaron Feng')
+		print('Waifu2x-Extension | '+Version_current+' | 2019/8/30 | Author: Aaron Feng')
 		print('Github: https://github.com/AaronFeng753/Waifu2x-Extension')
-		print('\033[1;31;40m'+'Attention: This software is only designed for process 2D illust files(image,gif,video)'+'\033[0m')
+		print('\033[1;31;40m'+'Attention: This software\'s scale function is only designed for process 2D illust files(image,gif,video)'+'\033[0m')
 		print('------------------------------------------')
 		print(' I : Scale image.\n')
 		print(' G : Scale gif.\n')
@@ -728,6 +731,12 @@ def Gif_ModeA():
 			break
 	
 	for inputPath in inputPathList_files:
+		
+		file_ext = os.path.splitext(inputPath)[1]
+		
+		if file_ext != '.gif':
+			continue
+		
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
 		TIME_GAP=getDuration(inputPath)
@@ -868,6 +877,12 @@ def Gif_ModeB():
 				inputPathList_files.append(path+'\\'+fname)
 	
 	for inputPath in inputPathList_files:
+		
+		file_ext = os.path.splitext(inputPath)[1]
+		
+		if file_ext != '.gif':
+			continue
+		
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
 		TIME_GAP=getDuration(inputPath)
@@ -1528,6 +1543,7 @@ def Compress_image_ModeA():
 			inputPathList.append(inputPath)
 	
 	delorginal = input_delorginal()
+	multiThread = input_multiThread()
 	
 	
 	
@@ -1547,41 +1563,57 @@ def Compress_image_ModeA():
 	FinishedFileNum = 1
 	saved_size_total=0
 	
-	for inputPath in inputPathList_files:
-		scaledFilePath = os.path.splitext(inputPath)[0]
-		fileNameAndExt=str(os.path.basename(inputPath))
-		
-		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-		
-		print(inputPath)
-		print('Original size:'+original_size)
-		print('Compressing.....')
-		
-		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
-		
-		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
-		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
-		if saved_size <= 0:
-			os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
-			print('Failed to compress '+inputPath)
-		else:
-			saved_size_total = saved_size_total+saved_size
-			saved_size_str = str(saved_size)+'KB'
-			print('Compressed size:'+compressed_size)
-			print('Save '+saved_size_str+' !')
-			print('')	
-			if delorginal.lower() == 'y':
-				os.system('del /q "'+inputPath+'"')
-			
-		FinishedFileNum = FinishedFileNum+1
-		print('--------------------------------------------')
-		
-			
-	total_time_end=time.time()
+	if multiThread.lower() == 'y':
+		print('Start compressing, pls wait....')
+		Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality)
+		time.sleep(1)
+		total_time_end=time.time()
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		input('\nPress any key to return to the menu')
+	else:
 	
-	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-	print('\nTotal saved space: ',saved_size_total,'KB\n')
-	input('\nPress any key to return to the menu')
+		for inputPath in inputPathList_files:
+			
+			file_ext = os.path.splitext(inputPath)[1]
+			
+			if file_ext == '.gif':
+				continue
+			
+			scaledFilePath = os.path.splitext(inputPath)[0]
+			fileNameAndExt=str(os.path.basename(inputPath))
+			
+			original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+			
+			print(inputPath)
+			print('Original size:'+original_size)
+			print('Compressing.....')
+			
+			imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
+			
+			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
+			
+			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
+			if saved_size <= 0:
+				os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
+				print('Failed to compress '+inputPath)
+			else:
+				saved_size_total = saved_size_total+saved_size
+				saved_size_str = str(saved_size)+'KB'
+				print('Compressed size:'+compressed_size)
+				print('Save '+saved_size_str+' !')
+				print('')	
+				if delorginal.lower() == 'y':
+					os.system('del /q "'+inputPath+'"')
+				
+			FinishedFileNum = FinishedFileNum+1
+			print('--------------------------------------------')
+			
+				
+		total_time_end=time.time()
+		
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		input('\nPress any key to return to the menu')
 
 #============================= Compress_image_ModeB ===============================
 def Compress_image_ModeB():
@@ -1603,6 +1635,7 @@ def Compress_image_ModeB():
 			break
 	
 	delorginal = input_delorginal()
+	multiThread = input_multiThread()
 		
 	print('--------------------------------------------')
 	
@@ -1616,42 +1649,58 @@ def Compress_image_ModeB():
 	TotalFileNum = len(inputPathList_files)
 	FinishedFileNum = 1
 	saved_size_total=0
-	for inputPath in inputPathList_files:
-		scaledFilePath = os.path.splitext(inputPath)[0]
-		fileNameAndExt=str(os.path.basename(inputPath))
-		
-		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-		
-		print(inputPath)
-		print('Original size:'+original_size)
-		print('Compressing.....')
-		
-		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
-		
-		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
-		
-		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
-		if saved_size <= 0:
-			os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
-			print('Failed to compress '+inputPath)
-		else:
-			saved_size_total = saved_size_total+saved_size
-			saved_size_str = str(saved_size)+'KB'
-			print('Compressed size:'+compressed_size)
-			print('Save '+saved_size_str+' !')
-			print('')	
-			if delorginal.lower() == 'y':
-				os.system('del /q "'+inputPath+'"')
-			
-		FinishedFileNum = FinishedFileNum+1
-		print('--------------------------------------------')
-		
-			
-	total_time_end=time.time()
 	
-	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-	print('\nTotal saved space: ',saved_size_total,'KB\n')
-	input('\nPress any key to return to the menu')
+	if multiThread.lower() == 'y':
+		print('Start compressing, pls wait....')
+		Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality)
+		time.sleep(1)
+		total_time_end=time.time()
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		input('\nPress any key to return to the menu')
+	else:
+	
+		for inputPath in inputPathList_files:
+			
+			file_ext = os.path.splitext(inputPath)[1]
+			
+			if file_ext == '.gif':
+				continue
+			
+			scaledFilePath = os.path.splitext(inputPath)[0]
+			fileNameAndExt=str(os.path.basename(inputPath))
+			
+			original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+			
+			print(inputPath)
+			print('Original size:'+original_size)
+			print('Compressing.....')
+			
+			imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
+			
+			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
+			
+			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
+			if saved_size <= 0:
+				os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
+				print('Failed to compress '+inputPath)
+			else:
+				saved_size_total = saved_size_total+saved_size
+				saved_size_str = str(saved_size)+'KB'
+				print('Compressed size:'+compressed_size)
+				print('Save '+saved_size_str+' !')
+				print('')	
+				if delorginal.lower() == 'y':
+					os.system('del /q "'+inputPath+'"')
+				
+			FinishedFileNum = FinishedFileNum+1
+			print('--------------------------------------------')
+			
+				
+		total_time_end=time.time()
+		
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		input('\nPress any key to return to the menu')
 
 
 #============================= Compress_image_ModeC ===============================
@@ -1684,6 +1733,7 @@ def Compress_image_ModeC():
 			inputPathList.append(inputPath)
 	
 	delorginal = input_delorginal()
+	multiThread = input_multiThread()
 		
 	print('--------------------------------------------')
 	
@@ -1692,41 +1742,57 @@ def Compress_image_ModeC():
 	TotalFileNum = len(inputPathList)
 	FinishedFileNum = 1
 	saved_size_total=0
-	for inputPath in inputPathList:
-		scaledFilePath = os.path.splitext(inputPath)[0]
-		fileNameAndExt=str(os.path.basename(inputPath))
-		
-		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-		
-		print(inputPath)
-		print('Original size:'+original_size)
-		print('Compressing.....')
-		
-		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
-		
-		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
-		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
-		if saved_size <= 0:
-			os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
-			print('Failed to compress '+inputPath)
-		else:
-			saved_size_total = saved_size_total+saved_size
-			saved_size_str = str(saved_size)+'KB'
-			print('Compressed size:'+compressed_size)
-			print('Save '+saved_size_str+' !')
-			print('')	
-			if delorginal.lower() == 'y':
-				os.system('del /q "'+inputPath+'"')
-			
-		FinishedFileNum = FinishedFileNum+1
-		print('--------------------------------------------')
-		
-			
-	total_time_end=time.time()
+	if multiThread.lower() == 'y':
+		print('Start compressing, pls wait....')
+		Multi_thread_Image_Compress(inputPathList,delorginal,JpgQuality)
+		time.sleep(1)
+		total_time_end=time.time()
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		input('\nPress any key to return to the menu')
+	else:
 	
-	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-	print('\nTotal saved space: ',saved_size_total,'KB\n')
-	input('\nPress any key to return to the menu')
+		for inputPath in inputPathList:
+			
+			file_ext = os.path.splitext(inputPath)[1]
+			
+			if file_ext == '.gif':
+				continue
+			
+			scaledFilePath = os.path.splitext(inputPath)[0]
+			fileNameAndExt=str(os.path.basename(inputPath))
+			
+			original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+			
+			print(inputPath)
+			print('Original size:'+original_size)
+			print('Compressing.....')
+			
+			imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
+			
+			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
+			
+			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
+			if saved_size <= 0:
+				os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
+				print('Failed to compress '+inputPath)
+			else:
+				saved_size_total = saved_size_total+saved_size
+				saved_size_str = str(saved_size)+'KB'
+				print('Compressed size:'+compressed_size)
+				print('Save '+saved_size_str+' !')
+				print('')	
+				if delorginal.lower() == 'y':
+					os.system('del /q "'+inputPath+'"')
+				
+			FinishedFileNum = FinishedFileNum+1
+			print('--------------------------------------------')
+			
+				
+		total_time_end=time.time()
+		
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		input('\nPress any key to return to the menu')
 	
 #============================= Compress_gif_ModeA ===============================
 def Compress_gif_ModeA():
@@ -1760,10 +1826,9 @@ def Compress_gif_ModeA():
 	
 	delorginal = input_delorginal()
 	
-	
+	multiThread = input_multiThread()
 	
 	print('--------------------------------------------')
-	
 	
 	total_time_start=time.time()
 	
@@ -1778,41 +1843,54 @@ def Compress_gif_ModeA():
 	FinishedFileNum = 1
 	saved_size_total=0
 	
-	for inputPath in inputPathList_files:
-		scaledFilePath = os.path.splitext(inputPath)[0]
-		fileNameAndExt=str(os.path.basename(inputPath))
-		
-		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-		
-		print(inputPath)
-		print('Original size:'+original_size)
-		print('Compressing.....')
-		
-		compress_gif(inputPath,gifCompresslevel)
-		
-		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
-		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
-		if saved_size <= 0:
-			os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
-			print('Failed to compress '+inputPath)
-		else:
-			saved_size_total = saved_size_total+saved_size
-			saved_size_str = str(saved_size)+'KB'
-			print('Compressed size:'+compressed_size)
-			print('Save '+saved_size_str+' !')
-			print('')	
-			if delorginal.lower() == 'y':
-				os.system('del /q "'+inputPath+'"')
+	if multiThread.lower() == 'y':
+		print('Start compressing, pls wait....')
+		Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal)
+		time.sleep(1)
+		total_time_end=time.time()
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		input('\nPress any key to return to the menu')
+	else:
+		for inputPath in inputPathList_files:
 			
-		FinishedFileNum = FinishedFileNum+1
-		print('--------------------------------------------')
-		
+			file_ext = os.path.splitext(inputPath)[1]
 			
-	total_time_end=time.time()
-	
-	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-	print('\nTotal saved space: ',saved_size_total,'KB\n')
-	input('\nPress any key to return to the menu')
+			if file_ext != '.gif':
+				continue
+			
+			scaledFilePath = os.path.splitext(inputPath)[0]
+			fileNameAndExt=str(os.path.basename(inputPath))
+			
+			original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+			
+			print(inputPath)
+			print('Original size:'+original_size)
+			print('Compressing.....')
+			
+			compress_gif(inputPath,gifCompresslevel)
+			
+			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
+			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
+			if saved_size <= 0:
+				os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
+				print('Failed to compress '+inputPath)
+			else:
+				saved_size_total = saved_size_total+saved_size
+				saved_size_str = str(saved_size)+'KB'
+				print('Compressed size:'+compressed_size)
+				print('Save '+saved_size_str+' !')
+				print('')	
+				if delorginal.lower() == 'y':
+					os.system('del /q "'+inputPath+'"')
+				
+			FinishedFileNum = FinishedFileNum+1
+			print('--------------------------------------------')
+				
+		total_time_end=time.time()
+		
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		input('\nPress any key to return to the menu')
 
 #============================= Compress_gif_ModeB ===============================
 def Compress_gif_ModeB():
@@ -1832,8 +1910,10 @@ def Compress_gif_ModeB():
 		else:
 			break
 	
-	gifCompresslevel=input_gifCompresslevel()
+	gifCompresslevel= input_gifCompresslevel()
 	delorginal = input_delorginal()
+	multiThread = input_multiThread()
+	
 		
 	print('--------------------------------------------')
 	
@@ -1847,41 +1927,55 @@ def Compress_gif_ModeB():
 	TotalFileNum = len(inputPathList_files)
 	FinishedFileNum = 1
 	saved_size_total=0
-	for inputPath in inputPathList_files:
-		scaledFilePath = os.path.splitext(inputPath)[0]
-		fileNameAndExt=str(os.path.basename(inputPath))
-		
-		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-		
-		print(inputPath)
-		print('Original size:'+original_size)
-		print('Compressing.....')
-		
-		compress_gif(inputPath,gifCompresslevel)
-		
-		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
-		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
-		if saved_size <= 0:
-			os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
-			print('Failed to compress '+inputPath)
-		else:
-			saved_size_total = saved_size_total+saved_size
-			saved_size_str = str(saved_size)+'KB'
-			print('Compressed size:'+compressed_size)
-			print('Save '+saved_size_str+' !')
-			print('')	
-			if delorginal.lower() == 'y':
-				os.system('del /q "'+inputPath+'"')
-			
-		FinishedFileNum = FinishedFileNum+1
-		print('--------------------------------------------')
-		
-			
-	total_time_end=time.time()
 	
-	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-	print('\nTotal saved space: ',saved_size_total,'KB\n')
-	input('\nPress any key to return to the menu')
+	if multiThread.lower() == 'y':
+		print('Start compressing, pls wait....')
+		Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal)
+		time.sleep(1)
+		total_time_end=time.time()
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		input('\nPress any key to return to the menu')
+	else:
+		for inputPath in inputPathList_files:
+			
+			file_ext = os.path.splitext(inputPath)[1]
+			
+			if file_ext != '.gif':
+				continue
+			
+			scaledFilePath = os.path.splitext(inputPath)[0]
+			fileNameAndExt=str(os.path.basename(inputPath))
+			
+			original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+			
+			print(inputPath)
+			print('Original size:'+original_size)
+			print('Compressing.....')
+			
+			compress_gif(inputPath,gifCompresslevel)
+			
+			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
+			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
+			if saved_size <= 0:
+				os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
+				print('Failed to compress '+inputPath)
+			else:
+				saved_size_total = saved_size_total+saved_size
+				saved_size_str = str(saved_size)+'KB'
+				print('Compressed size:'+compressed_size)
+				print('Save '+saved_size_str+' !')
+				print('')	
+				if delorginal.lower() == 'y':
+					os.system('del /q "'+inputPath+'"')
+				
+			FinishedFileNum = FinishedFileNum+1
+			print('--------------------------------------------')
+				
+		total_time_end=time.time()
+		
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		input('\nPress any key to return to the menu')
 
 
 #============================= Compress_gif_ModeC ===============================
@@ -1914,6 +2008,7 @@ def Compress_gif_ModeC():
 			
 	gifCompresslevel=input_gifCompresslevel()
 	delorginal = input_delorginal()
+	multiThread = input_multiThread()
 		
 	print('--------------------------------------------')
 	
@@ -1922,41 +2017,54 @@ def Compress_gif_ModeC():
 	TotalFileNum = len(inputPathList)
 	FinishedFileNum = 1
 	saved_size_total=0
-	for inputPath in inputPathList:
-		scaledFilePath = os.path.splitext(inputPath)[0]
-		fileNameAndExt=str(os.path.basename(inputPath))
-		
-		original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-		
-		print(inputPath)
-		print('Original size:'+original_size)
-		print('Compressing.....')
-		
-		compress_gif(inputPath,gifCompresslevel)
-		
-		compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
-		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
-		if saved_size <= 0:
-			os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
-			print('Failed to compress '+inputPath)
-		else:
-			saved_size_total = saved_size_total+saved_size
-			saved_size_str = str(saved_size)+'KB'
-			print('Compressed size:'+compressed_size)
-			print('Save '+saved_size_str+' !')
-			print('')	
-			if delorginal.lower() == 'y':
-				os.system('del /q "'+inputPath+'"')
+	if multiThread.lower() == 'y':
+		print('Start compressing, pls wait....')
+		Multi_thread_Gif_Compress(inputPathList,gifCompresslevel,delorginal)
+		time.sleep(1)
+		total_time_end=time.time()
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		input('\nPress any key to return to the menu')
+	else:
+		for inputPath in inputPathList:
 			
-		FinishedFileNum = FinishedFileNum+1
-		print('--------------------------------------------')
-		
+			file_ext = os.path.splitext(inputPath)[1]
 			
-	total_time_end=time.time()
-	
-	print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-	print('\nTotal saved space: ',saved_size_total,'KB\n')
-	input('\nPress any key to return to the menu')
+			if file_ext != '.gif':
+				continue
+			
+			scaledFilePath = os.path.splitext(inputPath)[0]
+			fileNameAndExt=str(os.path.basename(inputPath))
+			
+			original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
+			
+			print(inputPath)
+			print('Original size:'+original_size)
+			print('Compressing.....')
+			
+			compress_gif(inputPath,gifCompresslevel)
+			
+			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
+			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
+			if saved_size <= 0:
+				os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
+				print('Failed to compress '+inputPath)
+			else:
+				saved_size_total = saved_size_total+saved_size
+				saved_size_str = str(saved_size)+'KB'
+				print('Compressed size:'+compressed_size)
+				print('Save '+saved_size_str+' !')
+				print('')	
+				if delorginal.lower() == 'y':
+					os.system('del /q "'+inputPath+'"')
+				
+			FinishedFileNum = FinishedFileNum+1
+			print('--------------------------------------------')
+				
+		total_time_end=time.time()
+		
+		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		input('\nPress any key to return to the menu')
 
 #=============================Prograss bar==========================
 def FileCount(countPath):
@@ -2330,6 +2438,21 @@ def input_gifCompresslevel():
 		gifCompresslevel = default_value
 		
 	return gifCompresslevel
+	
+def input_multiThread():
+	settings_values = ReadSettings()
+	default_value = settings_values['multiThread']
+	while True:
+		multiThread = input('Enable multithreading? (y/n, default='+default_value+'): ')
+		if multiThread in ['y','n','Y','N','']:
+			break
+		else:
+			print('wrong input, pls input again')
+	
+	if multiThread == '':
+		multiThread = default_value
+		
+	return multiThread
 
 #======================== Seconds 2 h:m:s =========================
 def Seconds2hms(seconds):
@@ -2459,9 +2582,10 @@ def Settings():
 		print(' 8: Save high quality gif? Current default value: '+settings_values['highQuality']+'\n')
 		print(' 9: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
 		print(' 10: Reset error log.\n')
+		print(' 11: Enable multithreading? Current default value: '+settings_values['multiThread']+'\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/4/5/6/7/8/9/10/r): '.upper())
+		mode = input('(1/2/3/4/5/6/7/8/9/10/11/r): '.upper())
 		mode = mode.lower()
 		if mode == "1":
 			os.system('cls')
@@ -2622,6 +2746,22 @@ def Settings():
 			
 			os.system('cls')
 			
+		elif mode == "11":
+			os.system('cls')
+			
+			while True:
+				value_ = input('New value(y/n): ').lower()
+				if value_ in ['y','n']:
+					break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['multiThread']=value_
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+			
 		elif mode == "r":
 			break
 		else:
@@ -2634,7 +2774,7 @@ def Settings():
 def ReadSettings():
 	default_values = {'CheckUpdate':'y','scale':'2','tileSize':'200',
 						'noiseLevel':'2','saveAsJPG':'y',
-						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1'}
+						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1','multiThread':'y'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -2699,11 +2839,23 @@ class Logger(object):
 		pass
 
 #==================== Admin ===========================
-def is_admin():
-    try:
-        return ctypes.windll.shell32.IsUserAnAdmin()
-    except:
-        return False
+def AdminTest():
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	tmp_dir = current_dir+'\\'+'admintest.tmp'
+	if os.path.exists(tmp_dir) == False:
+		try:
+			with open(tmp_dir,'w+') as f:
+				f.write('admintest')
+		except BaseException:
+			return False
+		if os.path.exists(tmp_dir) == False:
+			return False
+		else:
+			os.system('del /q "'+tmp_dir+'"')
+			return True
+	else:
+		os.system('del /q "'+tmp_dir+'"')
+		return True
 #============================= Error_Log ====================================
 
 def Error_Log():	#读取错误日志
@@ -2712,12 +2864,133 @@ def Error_Log():	#读取错误日志
 	else:
 		print('Error : error log file is missing.')	#提示错误日志文件丢失
 		input('Press any key to return.')
+
+#===================== Multi-thread Gif Compress =======================
+class GifCompressThread (threading.Thread):
+	def __init__(self,inputPath,gifCompresslevel,delorginal):
+		threading.Thread.__init__(self)
+		self.inputPath = inputPath
+		self.gifCompresslevel = gifCompresslevel
+		self.delorginal =delorginal
+        
+	def run(self):
+		inputPath = self.inputPath
+		gifCompresslevel = self.gifCompresslevel
+		delorginal = self.delorginal
+		scaledFilePath = os.path.splitext(inputPath)[0]
+		compress_gif(inputPath,gifCompresslevel)
+		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
+		if saved_size <= 0:
+			os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
+			print('\nFailed to compress '+inputPath)
+		else:
+			saved_size_str = str(saved_size)+'KB'
+			print('\nFinished to compress '+inputPath)
+			if delorginal.lower() == 'y':
+				os.system('del /q "'+inputPath+'"')
+
+def Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal):
+	
+	max_threads = cpu_count()
+	
+	thread_files = []
+	
+	for inputPath in inputPathList_files:
+		file_ext = os.path.splitext(inputPath)[1]
+		if file_ext != '.gif':
+			continue
+		thread_files.append(inputPath)
+		if len(thread_files) == max_threads:
+			for inputPath in thread_files:
+				thread1=GifCompressThread(inputPath,gifCompresslevel,delorginal)
+				thread1.start()
+			while True:
+				if thread1.isAlive()== False:
+					break
+			thread_files = []
+	if thread_files != []:
+		for inputPath in thread_files:
+			thread1=GifCompressThread(inputPath,gifCompresslevel,delorginal)
+			thread1.start()
+		while True:
+			if thread1.isAlive()== False:
+				break
+		thread_files = []
+		
+#===================== Multi-thread Image Compress =======================
+class ImageCompressThread (threading.Thread):
+	def __init__(self,inputPath,delorginal,JpgQuality):
+		threading.Thread.__init__(self)
+		self.inputPath = inputPath
+		self.delorginal =delorginal
+		self.JpgQuality =JpgQuality
+        
+	def run(self):
+		inputPath = self.inputPath
+		delorginal = self.delorginal
+		JpgQuality=self.JpgQuality
+		
+		scaledFilePath = os.path.splitext(inputPath)[0]
+		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
+		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
+		if saved_size <= 0:
+			os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
+			print('\nFailed to compress '+inputPath)
+		else:
+			print('\nFinished to compress '+inputPath)
+			if delorginal.lower() == 'y':
+				os.system('del /q "'+inputPath+'"')
+
+def Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality):
+	
+	max_threads = cpu_count()
+	
+	thread_files = []
+	
+	for inputPath in inputPathList_files:
+		file_ext = os.path.splitext(inputPath)[1]
+		if file_ext == '.gif':
+			continue
+		thread_files.append(inputPath)
+		if len(thread_files) == max_threads:
+			for inputPath in thread_files:
+				thread1=ImageCompressThread(inputPath,delorginal,JpgQuality)
+				thread1.start()
+			while True:
+				if thread1.isAlive()== False:
+					break
+			thread_files = []
+	if thread_files != []:
+		for inputPath in thread_files:
+			thread1=ImageCompressThread(inputPath,delorginal,JpgQuality)
+			thread1.start()
+		while True:
+			if thread1.isAlive()== False:
+				break
+		thread_files = []
 		
 #======================== Start ========================
         
 if __name__ == '__main__':
-	if is_admin():
-		init()
+	#检查所处文件夹是否需要管理员权限
+	if AdminTest():
+		try:
+			init()
+		except BaseException as e:
+			print('---------------------------------------------------')
+			print('                   !!! Error !!!')
+			print('---------------------------------------------------')
+			ErrorStr = str(traceback.print_exc())
+			
+			with open('Error_Log_Waifu2x-Extension.log','a+') as f:
+				f.write(ErrorStr)
+			
+			print('---------------------------------------------------')
+			input('An error occurred, pls report this to the developer.\nPress any key to restart the software.\n')
+			os.system('color 07')
+			os.system('cls')
+			python = sys.executable
+			os.execl(python, python, * sys.argv)
 	else:
 		# Re-run the program with admin rights
 		ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
