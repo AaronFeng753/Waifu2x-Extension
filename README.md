@@ -75,7 +75,7 @@ https://www.lcdf.org/gifsicle/
 
 # Donate 捐赠
 
-如果这个扩展程序帮助了您, 欢迎您捐赠支持开发者.
+如果这个扩展程序帮助了您, 欢迎您捐赠支持开发者. 
 
 If this extension helps you, you are welcome to donate to support developers.
 
