@@ -2,7 +2,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v1.51'
+Version_current='v1.56'
 
 import time
 import threading
@@ -22,10 +22,10 @@ import traceback
 
 def ChooseFormat(Version_current):
 	while True:
-		print(' Waifu2x-Extension | '+Version_current+' | 2019/8/30 | Author: Aaron Feng')
+		print(' Waifu2x-Extension | '+Version_current+' | 2019/8/31 | Author: Aaron Feng')
 		print(' Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('┌──────────────────────────────────────────────────────────────┐')
-		print('│ Attention: This software\'s scale & denoise function is only  │')
+		print("│ Attention: This software's scale & denoise function is only  │")
 		print('│ designed for process 2D illust files(image,gif,video).       │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ I : Scale & denoise image.                                   │')
@@ -34,7 +34,7 @@ def ChooseFormat(Version_current):
 		print('│                                                              │')
 		print('│ V : Scale & denoise video.                                   │')
 		print('│                                                              │')
-		print('│ CI : Compress image (Almost lossless).                       │')
+		print('│ CI : Compress image. (Almost lossless)                       │')
 		print('│                                                              │')
 		print('│ CG : Compress gif.                                           │')
 		print('├──────────────────────────────────────────────────────────────┤')
@@ -46,7 +46,7 @@ def ChooseFormat(Version_current):
 		print('│                                                              │')
 		print('│ R : Readme.                                                  │')
 		print('│                                                              │')
-		print('│'+'\033[1;31;40m'+' D : Donate 捐赠 (Alipay 支付宝)'+'\033[0m'+'                              │')
+		print('│ D : Donate. (Alipay)                                         │')
 		print('│                                                              │')
 		print('│ E : Exit.                                                    │')
 		print('└──────────────────────────────────────────────────────────────┘')
@@ -104,9 +104,13 @@ def ChooseFormat(Version_current):
 			checkUpdate(Version_current)
 			os.system('cls')
 		elif mode == "r":
+			os.system('cls')
+			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README.md')
 			os.system('cls')
 		elif mode == "d":
+			os.system('cls')
+			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/donate.jpg')
 			os.system('cls')
 			print('Thank you!!! :)')
@@ -121,8 +125,7 @@ def ChooseFormat(Version_current):
 #============================= IMAGE Menu ===============================
 def Image_():
 	while True:
-		print('---------')
-		print('| Image |')
+		print('                                    Image')
 		print('-----------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one and scaled all images in them.\n')
 		print(' Mode B: input one folder and scaled all images in it and it\'s sub-folders.\n')
@@ -155,8 +158,7 @@ def Image_():
 #============================= GIF Menu ===============================
 def Gif_():
 	while True:
-		print('-------')
-		print('| GIF |')
+		print('                                   GIF')
 		print('---------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one\n')
 		print(' Mode B: input one folder and scaled all gif in it and it\'s sub-folders\n')
@@ -189,8 +191,7 @@ def Gif_():
 #============================= Video Menu ===============================
 def Video_():
 	while True:
-		print('---------')
-		print('| Video |')
+		print('                                   Video')
 		print('---------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one\n')
 		print(' Mode B: input one folder and scaled all video in it and it\'s sub-folders\n')
@@ -223,8 +224,7 @@ def Video_():
 #============================= Compress_image Menu ===============================
 def Compress_image():
 	while True:
-		print('------------------')
-		print('| Compress image |')
+		print('                               Compress image')
 		print('---------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one\n')
 		print(' Mode B: input one folder and compress all images in it and it\'s sub-folders\n')
@@ -257,8 +257,7 @@ def Compress_image():
 #============================= Compress_gif Menu ===============================
 def Compress_gif():
 	while True:
-		print('----------------')
-		print('| Compress gif |')
+		print('                              Compress gif')
 		print('---------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one\n')
 		print(' Mode B: input one folder and compress all gifs in it and it\'s sub-folders\n')
@@ -304,7 +303,7 @@ def Image_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			if inputPath.lower() == '?r':
 				return 1
 			elif inputPath.lower() == '?o':
@@ -325,6 +324,11 @@ def Image_ModeA():
 	noiseLevel = input_noiseLevel()
 		
 	tileSize = input_tileSize()
+	
+	gpuId = input_gpuId()
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
 		
 	saveAsJPG = input_saveAsJPG()
 	
@@ -361,8 +365,8 @@ def Image_ModeA():
 		os.mkdir(inputPath+"\\scaled\\")
 		
 		if scale == '4':
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
@@ -377,8 +381,8 @@ def Image_ModeA():
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2)
 			thread1.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
@@ -394,8 +398,8 @@ def Image_ModeA():
 					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileName))
 			
 		else:
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
 		
 		if thread1.isAlive()==True:
 			time.sleep(2)
@@ -452,7 +456,7 @@ def Image_ModeB():
 	
 	while inputPathError:
 		inputPath = input('input-path: ')
-		inputPath=inputPath.strip('"').strip('\\')
+		inputPath=inputPath.strip('"').strip('\\').strip(' ')
 		if inputPath.lower() == '?r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
@@ -469,6 +473,11 @@ def Image_ModeB():
 	noiseLevel = input_noiseLevel()
 		
 	tileSize = input_tileSize()
+	
+	gpuId = input_gpuId()
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
 		
 	saveAsJPG = input_saveAsJPG()
 	
@@ -508,8 +517,8 @@ def Image_ModeB():
 		os.mkdir(inputPath+"\\scaled\\")
 		
 		if scale == '4':
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
@@ -524,8 +533,8 @@ def Image_ModeB():
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2)
 			thread1.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
@@ -541,8 +550,8 @@ def Image_ModeB():
 					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileName))
 			
 		else:
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
 		
 		
 		if thread1.isAlive()==True:
@@ -601,7 +610,7 @@ def Image_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == '?r':
 				return 1
@@ -624,6 +633,12 @@ def Image_ModeC():
 	noiseLevel = input_noiseLevel()
 		
 	tileSize = input_tileSize()
+	
+	gpuId = input_gpuId()
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
+	
 		
 	saveAsJPG = input_saveAsJPG()
 		
@@ -652,15 +667,15 @@ def Image_ModeC():
 		thread1.start()
 		
 		if scale == '4':
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 
 		else:
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
 		
 		if thread1.isAlive()==True:
 			stop_thread(thread1)	
@@ -699,7 +714,7 @@ def Gif_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == '?r':
 				return 1
@@ -723,6 +738,11 @@ def Gif_ModeA():
 	noiseLevel = input_noiseLevel()
 		
 	tileSize = input_tileSize()
+	
+	gpuId = input_gpuId()
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
 		
 	highQuality = input_highQuality()
 	if highQuality.lower() == 'n':
@@ -770,8 +790,8 @@ def Gif_ModeA():
 		if scale == '4': 
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -782,8 +802,8 @@ def Gif_ModeA():
 					File_x2.append(path+'\\'+filename)
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
 			thread1.start()		
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -799,8 +819,8 @@ def Gif_ModeA():
 		else:
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -860,7 +880,7 @@ def Gif_ModeB():
 		elif inputPath_ == '' or os.path.exists(inputPath_) == False:
 			print('Error,input-path is invalid!!\n')
 		else:
-			inputPath_=inputPath_.strip('"').strip('\\')
+			inputPath_=inputPath_.strip('"').strip('\\').strip(' ')
 			inputPathError = False
 	
 	 
@@ -871,6 +891,11 @@ def Gif_ModeB():
 	noiseLevel = input_noiseLevel()
 		
 	tileSize = input_tileSize()
+	
+	gpuId = input_gpuId()
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
 		
 	highQuality = input_highQuality()
 	if highQuality.lower() == 'n':
@@ -916,8 +941,8 @@ def Gif_ModeB():
 		if scale == '4': 
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -928,8 +953,8 @@ def Gif_ModeB():
 					File_x2.append(path+'\\'+filename)
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
 			thread1.start()		
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -945,8 +970,8 @@ def Gif_ModeB():
 		else:
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -1002,7 +1027,7 @@ def Gif_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == '?r':
 				return 1
@@ -1026,6 +1051,11 @@ def Gif_ModeC():
 	noiseLevel = input_noiseLevel()
 		
 	tileSize = input_tileSize()
+	
+	gpuId = input_gpuId()
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
 		
 	highQuality = input_highQuality()
 	if highQuality.lower() == 'n':
@@ -1059,8 +1089,8 @@ def Gif_ModeC():
 		if scale == '4': 
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -1071,8 +1101,8 @@ def Gif_ModeC():
 					File_x2.append(path+'\\'+filename)
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
 			thread1.start()		
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -1088,8 +1118,8 @@ def Gif_ModeC():
 		else:
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -1144,7 +1174,7 @@ def Video_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == '?o':
 				inputPathOver = False
@@ -1167,6 +1197,11 @@ def Video_ModeA():
 	noiseLevel = input_noiseLevel()
 		
 	tileSize = input_tileSize()
+	
+	gpuId = input_gpuId()
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
 		
 	delorginal = input_delorginal()
 		
@@ -1197,8 +1232,8 @@ def Video_ModeA():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1218,8 +1253,8 @@ def Video_ModeA():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1237,8 +1272,8 @@ def Video_ModeA():
 		else:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
 			thread2.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread2.isAlive()==True:
 				time.sleep(2)
 				if thread2.isAlive()==True:
@@ -1280,7 +1315,7 @@ def Video_ModeB():
 	inputPathError = True
 	while inputPathError:
 		inputPath_ = input('input-path: ')
-		inputPath_=inputPath_.strip('"').strip('\\')
+		inputPath_=inputPath_.strip('"').strip('\\').strip(' ')
 		
 		if inputPath_.lower() == '?r':
 			return 1
@@ -1297,6 +1332,11 @@ def Video_ModeB():
 	noiseLevel = input_noiseLevel()
 		
 	tileSize = input_tileSize()
+	
+	gpuId = input_gpuId()
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
 		
 	delorginal = input_delorginal()
 		
@@ -1326,8 +1366,8 @@ def Video_ModeB():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1347,8 +1387,8 @@ def Video_ModeB():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1367,8 +1407,8 @@ def Video_ModeB():
 		else:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
 			thread2.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread2.isAlive()==True:
 				time.sleep(2)
 				if thread2.isAlive()==True:
@@ -1411,7 +1451,7 @@ def Video_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == '?o':
 				inputPathOver = False
@@ -1433,6 +1473,11 @@ def Video_ModeC():
 	noiseLevel = input_noiseLevel()
 		
 	tileSize = input_tileSize()
+	
+	gpuId = input_gpuId()
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
 		
 	delorginal = input_delorginal()
 		
@@ -1457,8 +1502,8 @@ def Video_ModeC():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1478,8 +1523,8 @@ def Video_ModeC():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1498,8 +1543,8 @@ def Video_ModeC():
 		else:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
 			thread2.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
 			if thread2.isAlive()==True:
 				time.sleep(2)
 				if thread2.isAlive()==True:
@@ -1533,6 +1578,7 @@ def Compress_image_ModeA():
 	print("Type '?r' to return to the previous menu")
 	print("Type '?o' to stop input more path, and input path must be a folder")
 	print("Compressed images will be in the input-path \n")
+	
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=90
@@ -1541,7 +1587,7 @@ def Compress_image_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == '?r':
 				return 1
@@ -1640,7 +1686,7 @@ def Compress_image_ModeB():
 
 	while True:
 		inputPath = input('input-path: ')
-		inputPath =inputPath.strip('"').strip('\\')
+		inputPath =inputPath.strip('"').strip('\\').strip(' ')
 		if inputPath.lower() == '?r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
@@ -1731,7 +1777,7 @@ def Compress_image_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == '?r':
 				return 1
@@ -1821,7 +1867,7 @@ def Compress_gif_ModeA():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == '?r':
 				return 1
@@ -1916,7 +1962,7 @@ def Compress_gif_ModeB():
 
 	while True:
 		inputPath = input('input-path: ')
-		inputPath =inputPath.strip('"').strip('\\')
+		inputPath =inputPath.strip('"').strip('\\').strip(' ')
 		if inputPath.lower() == '?r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
@@ -2005,7 +2051,7 @@ def Compress_gif_ModeC():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == '?r':
 				return 1
@@ -2202,11 +2248,23 @@ def stop_thread(thread):
 
 #=================DelOriginalFiles================
 def DelOrgFiles(inputPath):
-	Exts=["png","jpg","jpeg","tif","tiff","bmp","tga","gif"]
-	for ext in Exts:
-		os.system('del /q "'+inputPath+'\\*.'+ext+'"')
-		os.system('del /q "'+inputPath+'\\*.'+ext.upper()+'"')
-		os.system('del /q "'+inputPath+'\\*.'+ext.capitalize()+'"')
+	
+	Exts=[".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]
+	
+	for path,useless,fnames in os.walk(inputPath):
+		for fname in fnames:
+			if os.path.splitext(fname)[1] in Exts:
+				os.remove(path+'\\'+fname)
+		break
+
+#================= Protect files ================
+# ~ def ProtectFiles(inputPath):
+	# ~ Exts=[".gif"]
+	# ~ for path,useless,fnames in os.walk(inputPath):
+		# ~ for fname in fnames:
+			# ~ if os.path.splitext(fname)[1] in Exts:
+				# ~ os.remove(path+'\\'+fname)
+		# ~ break
 	
 #========================== GIF ==============================
 def getDuration(FILENAME):
@@ -2467,6 +2525,28 @@ def input_multiThread():
 		multiThread = default_value
 		
 	return multiThread
+	
+def input_gpuId():
+	settings_values = ReadSettings()
+	default_value = settings_values['gpuId']
+	while True:
+		gpuId = input('GPU ID (auto (Automatic)/0/1/2/..., default='+default_value+'): ')
+		if gpuId.isdigit():
+			if int(gpuId) >= 0:
+				break
+			else:
+				print('wrong input, pls input again')
+		elif gpuId == '':
+			break
+		elif gpuId.lower() == 'auto':
+			gpuId = gpuId.lower()
+			break
+		else:
+			print('wrong input, pls input again')
+		
+	if gpuId == '':
+		gpuId = default_value
+	return gpuId
 
 #======================== Seconds 2 h:m:s =========================
 def Seconds2hms(seconds):
@@ -2584,7 +2664,7 @@ def Settings():
 		settings_values = {}
 		with open('waifu2x-extension-setting','r+') as f:
 			settings_values = json.load(f)
-		print('Settings')
+		print('                                  Settings')
 		print('-----------------------------------------------------------------------------')
 		print(' 1: Check for updates at startup. Current value: '+settings_values['CheckUpdate']+'\n')
 		print(' 2: Default value of "scale". Current value: '+settings_values['scale']+'\n')
@@ -2597,9 +2677,10 @@ def Settings():
 		print(' 9: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
 		print(' 10: Reset error log.\n')
 		print(' 11: Enable multithreading? Current default value: '+settings_values['multiThread']+'\n')
+		print(' 12: Default value of "GPU ID". Current default value: '+settings_values['gpuId']+'\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/4/5/6/7/8/9/10/11/r): '.upper())
+		mode = input('(1/2/3/4/5/6/7/8/9/10/11/12/r): '.upper())
 		mode = mode.lower()
 		if mode == "1":
 			os.system('cls')
@@ -2776,6 +2857,26 @@ def Settings():
 				
 			os.system('cls')
 			
+		elif mode == "12":
+			os.system('cls')
+			
+			while True:
+				value_ = input('New value(auto (Automatic)/0/1/2/....): ')
+				if value_.isdigit():
+					if int(value_) >= 0:
+						break
+				elif value_.lower() == 'auto':
+					value_=value_.lower().strip(' ')
+					break
+				else:
+					print('invalid value, pls input again')
+					
+			settings_values['gpuId']=str(value_)
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+			
 		elif mode == "r":
 			break
 		else:
@@ -2788,7 +2889,7 @@ def Settings():
 def ReadSettings():
 	default_values = {'CheckUpdate':'y','scale':'2','tileSize':'200',
 						'noiseLevel':'2','saveAsJPG':'y',
-						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1','multiThread':'y'}
+						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1','multiThread':'y','gpuId':'auto'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
