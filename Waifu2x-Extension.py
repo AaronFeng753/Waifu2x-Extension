@@ -121,7 +121,8 @@ def ChooseFormat(Version_current):
 #============================= IMAGE Menu ===============================
 def Image_():
 	while True:
-		print('Image')
+		print('---------')
+		print('| Image |')
 		print('-----------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one and scaled all images in them.\n')
 		print(' Mode B: input one folder and scaled all images in it and it\'s sub-folders.\n')
@@ -154,7 +155,8 @@ def Image_():
 #============================= GIF Menu ===============================
 def Gif_():
 	while True:
-		print('GIF')
+		print('-------')
+		print('| GIF |')
 		print('---------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one\n')
 		print(' Mode B: input one folder and scaled all gif in it and it\'s sub-folders\n')
@@ -187,7 +189,8 @@ def Gif_():
 #============================= Video Menu ===============================
 def Video_():
 	while True:
-		print('Video')
+		print('---------')
+		print('| Video |')
 		print('---------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one\n')
 		print(' Mode B: input one folder and scaled all video in it and it\'s sub-folders\n')
@@ -220,7 +223,8 @@ def Video_():
 #============================= Compress_image Menu ===============================
 def Compress_image():
 	while True:
-		print('Compress image')
+		print('------------------')
+		print('| Compress image |')
 		print('---------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one\n')
 		print(' Mode B: input one folder and compress all images in it and it\'s sub-folders\n')
@@ -253,7 +257,8 @@ def Compress_image():
 #============================= Compress_gif Menu ===============================
 def Compress_gif():
 	while True:
-		print('Compress gif')
+		print('----------------')
+		print('| Compress gif |')
 		print('---------------------------------------------------------------------------')
 		print(' Mode A: input folders one by one\n')
 		print(' Mode B: input one folder and compress all gifs in it and it\'s sub-folders\n')
@@ -286,8 +291,8 @@ def Compress_gif():
 #=============================Image_MODE A===============================
 def Image_ModeA():
 	print("=================Image_MODE A================")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a folder, not a file")
+	print("Type '?r' to return to the previous menu")
+	print("Type '?o' to stop input more path, and input path must be a folder, not a file")
 	print("Scaled images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -300,14 +305,14 @@ def Image_ModeA():
 		while inputPathError:
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\')
-			if inputPath.lower() == 'return':
+			if inputPath.lower() == '?r':
 				return 1
-			elif inputPath.lower() == 'over':
+			elif inputPath.lower() == '?o':
 				inputPathOver = False
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
+				print('Error,input-path is invalid!!\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -436,7 +441,7 @@ def Image_ModeA():
 #=====================================Image_MODE B======================================
 def Image_ModeB():
 	print("=================Image_MODE B================")
-	print("Type 'return' to return to the previous menu")
+	print("Type '?r' to return to the previous menu")
 	print("Input path must be a folder, not a file")
 	print("Scaled images will be in the input-path \n")
 	inputPathList = []
@@ -448,10 +453,10 @@ def Image_ModeB():
 	while inputPathError:
 		inputPath = input('input-path: ')
 		inputPath=inputPath.strip('"').strip('\\')
-		if inputPath.lower() == 'return':
+		if inputPath.lower() == '?r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
-			print('error,input-path is invalid\n')
+			print('Error,input-path is invalid!!\n')
 		else:
 			inputPathError = False
 
@@ -584,8 +589,8 @@ def Image_ModeB():
 #=============================Image_MODE C=====================================
 def Image_ModeC():
 	print("=================Image_MODE C================")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a file")
+	print("Type '?r' to return to the previous menu")
+	print("Type '?o' to stop input more path, and input path must be a file")
 	print("Scaled images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -598,14 +603,14 @@ def Image_ModeC():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\')
 			
-			if inputPath.lower() == 'return':
+			if inputPath.lower() == '?r':
 				return 1
-			elif inputPath.lower() == 'over':
+			elif inputPath.lower() == '?o':
 				inputPathOver = False
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
+				print('Error,input-path is invalid!!\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -681,8 +686,8 @@ def Image_ModeC():
 #======================================Gif_MODE A========================================
 def Gif_ModeA():
 	print("====================== Gif_MODE A =====================")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a folder")
+	print("Type '?r' to return to the previous menu")
+	print("Type '?o' to stop input more path, and input path must be a folder")
 	print("Scaled images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -696,14 +701,14 @@ def Gif_ModeA():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\')
 			
-			if inputPath.lower() == 'return':
+			if inputPath.lower() == '?r':
 				return 1
-			elif inputPath.lower() == 'over':
+			elif inputPath.lower() == '?o':
 				inputPathOver = False
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
+				print('Error,input-path is invalid!!\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -838,7 +843,7 @@ def Gif_ModeA():
 #===================================Gif_MODE B========================================
 def Gif_ModeB():
 	print("====================== Gif_MODE B =====================")
-	print("Type 'return' to return to the previous menu")
+	print("Type '?r' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Scaled images will be in it's original path \n")
 	inputPathOver = True
@@ -850,10 +855,10 @@ def Gif_ModeB():
 	while inputPathError:
 		inputPath_ = input('input-path: ')
 		
-		if inputPath_.lower() == 'return':
+		if inputPath_.lower() == '?r':
 			return 1
 		elif inputPath_ == '' or os.path.exists(inputPath_) == False:
-			print('error,input-path is invalid\n')
+			print('Error,input-path is invalid!!\n')
 		else:
 			inputPath_=inputPath_.strip('"').strip('\\')
 			inputPathError = False
@@ -984,8 +989,8 @@ def Gif_ModeB():
 #===================================Gif_MODE C======================================
 def Gif_ModeC():
 	print("====================== Gif_MODE C =====================")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a .gif file")
+	print("Type '?r' to return to the previous menu")
+	print("Type '?o' to stop input more path, and input path must be a .gif file")
 	print("Scaled images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -999,14 +1004,14 @@ def Gif_ModeC():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\')
 			
-			if inputPath.lower() == 'return':
+			if inputPath.lower() == '?r':
 				return 1
-			elif inputPath.lower() == 'over':
+			elif inputPath.lower() == '?o':
 				inputPathOver = False
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
+				print('Error,input-path is invalid!!\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1127,8 +1132,8 @@ def Gif_ModeC():
 #=============================== Video_MODE A ==============================
 def Video_ModeA():
 	print("================ Video_MODE A ===============")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a folder")
+	print("Type '?r' to return to the previous menu")
+	print("Type '?o' to stop input more path, and input path must be a folder")
 	print("Scaled files will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -1141,14 +1146,14 @@ def Video_ModeA():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\')
 			
-			if inputPath.lower() == 'over':
+			if inputPath.lower() == '?o':
 				inputPathOver = False
 				inputPathError = False
 				break
-			elif inputPath.lower() == 'return':
+			elif inputPath.lower() == '?r':
 				return 1
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
+				print('Error,input-path is invalid!!\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1264,7 +1269,7 @@ def Video_ModeA():
 #================== Video_MODE B =============================
 def Video_ModeB():
 	print("================ Video_MODE B ===============")
-	print("Type 'return' to return to the previous menu")
+	print("Type '?r' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Scaled files will be in the input-path \n")
 	inputPathOver = True
@@ -1277,10 +1282,10 @@ def Video_ModeB():
 		inputPath_ = input('input-path: ')
 		inputPath_=inputPath_.strip('"').strip('\\')
 		
-		if inputPath_.lower() == 'return':
+		if inputPath_.lower() == '?r':
 			return 1
 		elif inputPath_ == '' or os.path.exists(inputPath_) == False:
-			print('error,input-path is invalid\n')
+			print('Error,input-path is invalid!!\n')
 		else:
 			inputPathError = False
 	
@@ -1394,8 +1399,8 @@ def Video_ModeB():
 #================== Video_MODE C =============================
 def Video_ModeC():
 	print("================ Video_MODE C ===============")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a video file")
+	print("Type '?r' to return to the previous menu")
+	print("Type '?o' to stop input more path, and input path must be a video file")
 	print("Scaled files will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -1408,14 +1413,14 @@ def Video_ModeC():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\')
 			
-			if inputPath.lower() == 'over':
+			if inputPath.lower() == '?o':
 				inputPathOver = False
 				inputPathError = False
 				break
-			elif inputPath.lower() == 'return':
+			elif inputPath.lower() == '?r':
 				return 1
 			if inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
+				print('Error,input-path is invalid!!\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1525,8 +1530,8 @@ def Video_ModeC():
 #============================= Compress_image_ModeA ===============================
 def Compress_image_ModeA():
 	print("================= Compress_image_ModeA ================")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a folder")
+	print("Type '?r' to return to the previous menu")
+	print("Type '?o' to stop input more path, and input path must be a folder")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -1538,14 +1543,14 @@ def Compress_image_ModeA():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\')
 			
-			if inputPath.lower() == 'return':
+			if inputPath.lower() == '?r':
 				return 1
-			elif inputPath.lower() == 'over':
+			elif inputPath.lower() == '?o':
 				inputPathOver = False
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
+				print('Error,input-path is invalid!!\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1627,7 +1632,7 @@ def Compress_image_ModeA():
 #============================= Compress_image_ModeB ===============================
 def Compress_image_ModeB():
 	print("================= Compress_image_ModeB ================")
-	print("Type 'return' to return to the previous menu")
+	print("Type '?r' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
@@ -1636,10 +1641,10 @@ def Compress_image_ModeB():
 	while True:
 		inputPath = input('input-path: ')
 		inputPath =inputPath.strip('"').strip('\\')
-		if inputPath.lower() == 'return':
+		if inputPath.lower() == '?r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
-			print('error,input-path is invalid\n')
+			print('Error,input-path is invalid!!\n')
 		else:
 			break
 	
@@ -1715,8 +1720,8 @@ def Compress_image_ModeB():
 #============================= Compress_image_ModeC ===============================
 def Compress_image_ModeC():
 	print("================= Compress_image_ModeC ================")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a image")
+	print("Type '?r' to return to the previous menu")
+	print("Type '?o' to stop input more path, and input path must be a image")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -1728,14 +1733,14 @@ def Compress_image_ModeC():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\')
 			
-			if inputPath.lower() == 'return':
+			if inputPath.lower() == '?r':
 				return 1
-			elif inputPath.lower() == 'over':
+			elif inputPath.lower() == '?o':
 				inputPathOver = False
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
+				print('Error,input-path is invalid!!\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1805,9 +1810,9 @@ def Compress_image_ModeC():
 	
 #============================= Compress_gif_ModeA ===============================
 def Compress_gif_ModeA():
-	print("================= Compress_gif_ModeA ================")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a folder")
+	print("======================== Compress_gif_ModeA ======================")
+	print("Type '?r' to return to the previous menu")
+	print("Type '?o' to stop input more path, and input path must be a folder")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -1818,14 +1823,14 @@ def Compress_gif_ModeA():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\')
 			
-			if inputPath.lower() == 'return':
+			if inputPath.lower() == '?r':
 				return 1
-			elif inputPath.lower() == 'over':
+			elif inputPath.lower() == '?o':
 				inputPathOver = False
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
+				print('Error,input-path is invalid!!\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1904,7 +1909,7 @@ def Compress_gif_ModeA():
 #============================= Compress_gif_ModeB ===============================
 def Compress_gif_ModeB():
 	print("================= Compress_gif_ModeB ================")
-	print("Type 'return' to return to the previous menu")
+	print("Type '?r' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
@@ -1912,10 +1917,10 @@ def Compress_gif_ModeB():
 	while True:
 		inputPath = input('input-path: ')
 		inputPath =inputPath.strip('"').strip('\\')
-		if inputPath.lower() == 'return':
+		if inputPath.lower() == '?r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
-			print('error,input-path is invalid\n')
+			print('Error,input-path is invalid!!\n')
 		else:
 			break
 	
@@ -1990,8 +1995,8 @@ def Compress_gif_ModeB():
 #============================= Compress_gif_ModeC ===============================
 def Compress_gif_ModeC():
 	print("================= Compress_gif_ModeC ================")
-	print("Type 'return' to return to the previous menu")
-	print("Type 'over' to stop input more path, and input path must be a gif")
+	print("Type '?r' to return to the previous menu")
+	print("Type '?o' to stop input more path, and input path must be a gif")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -2002,14 +2007,14 @@ def Compress_gif_ModeC():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\')
 			
-			if inputPath.lower() == 'return':
+			if inputPath.lower() == '?r':
 				return 1
-			elif inputPath.lower() == 'over':
+			elif inputPath.lower() == '?o':
 				inputPathOver = False
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('error,input-path is invalid\n')
+				print('Error,input-path is invalid!!\n')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -2777,7 +2782,7 @@ def Settings():
 			os.system('cls')
 			os.system('color 0c')
 			input('Error : wrong input,pls press any key to return')
-			os.system('color 0a')
+			os.system('color 07')
 			os.system('cls')
 
 def ReadSettings():
@@ -2870,6 +2875,16 @@ def AdminTest():
 def Error_Log():	#读取错误日志
 	if os.path.exists('Error_Log_Waifu2x-Extension.log') == True:	#判断错误日志文件是否存在
 		webbrowser.open('Error_Log_Waifu2x-Extension.log')
+		log_size = round(os.path.getsize('Error_Log_Waifu2x-Extension.log')/1024)
+		if log_size > 200:
+			del_log = input('The error log is too large (>200KB). Do you want to reset the error log?(Y/N): ')
+			if del_log.lower() == 'y':
+				with open('Error_Log_Waifu2x-Extension.log','w+') as f:
+					f.write('')
+				with open('Error_Log_Waifu2x-Extension.log','a+') as f:
+					timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+					f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Error log reseted by user.\n')
+				
 	else:
 		print('Error : error log file is missing.')	#提示错误日志文件丢失
 		input('Press any key to return.')
