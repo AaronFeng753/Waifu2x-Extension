@@ -2,7 +2,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v1.61'
+Version_current='v1.62'
 
 import time
 import threading
@@ -23,13 +23,13 @@ from playsound import playsound
 
 def ChooseFormat(Version_current):
 	
+	settings_values = ReadSettings()
+	tileSize = settings_values['tileSize']
+	gpuId = settings_values['gpuId']
+	notificationSound = settings_values['notificationSound']
+	multiThread = settings_values['multiThread']
+	
 	while True:
-		
-		settings_values = ReadSettings()
-		tileSize = settings_values['tileSize']
-		gpuId = settings_values['gpuId']
-		notificationSound = settings_values['notificationSound']
-		multiThread = settings_values['multiThread']
 		print(' Waifu2x-Extension | '+Version_current+'-Stable | 2019/9/1 | Author: Aaron Feng')
 		print(' Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('┌──────────────────────────────────────────────────────────────┐')
@@ -88,18 +88,34 @@ def ChooseFormat(Version_current):
 		elif mode == "t":
 			os.system('cls')
 			input_tileSize()
+			
+			settings_values = ReadSettings()
+			tileSize = settings_values['tileSize']
+			
 			os.system('cls')
 		elif mode == "gi":
 			os.system('cls')
 			input_gpuId()
+			
+			settings_values = ReadSettings()
+			gpuId = settings_values['gpuId']
+			
 			os.system('cls')
 		elif mode == "n":
 			os.system('cls')
 			input_notificationSound()
+			
+			settings_values = ReadSettings()
+			notificationSound = settings_values['notificationSound']
+			
 			os.system('cls')
 		elif mode == "m":
 			os.system('cls')
 			input_multiThread()
+			
+			settings_values = ReadSettings()
+			multiThread = settings_values['multiThread']
+			
 			os.system('cls')
 		elif mode == "ci":
 			os.system('cls')
@@ -354,7 +370,9 @@ def Image_ModeA():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('Error,input-path is invalid!!\n')
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -485,7 +503,8 @@ def Image_ModeA():
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	if notificationSound.lower() == 'y':
-		PlayNotificationSound()
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
 	
 	input('\npress any key to return to the menu')
 	
@@ -508,7 +527,9 @@ def Image_ModeB():
 		if inputPath.lower() == '?r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
-			print('Error,input-path is invalid!!\n')
+			print('-----------------------------')
+			print('Error,input-path is invalid!!')
+			print('-----------------------------')
 		else:
 			inputPathError = False
 
@@ -645,7 +666,8 @@ def Image_ModeB():
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	if notificationSound.lower() == 'y':
-		PlayNotificationSound()
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
 	
 	input('\npress any key to return to the menu')
 	
@@ -666,7 +688,6 @@ def Image_ModeC():
 		while inputPathError:
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
-			
 			if inputPath.lower() == '?r':
 				return 1
 			elif inputPath.lower() == '?o':
@@ -674,7 +695,13 @@ def Image_ModeC():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('Error,input-path is invalid!!\n')
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
+			elif os.path.splitext(inputPath)[1] == '.gif':
+				print('----------------------------------------------------------')
+				print('Error,this mode only support image files, not .gif files!!')
+				print('----------------------------------------------------------')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -750,7 +777,8 @@ def Image_ModeC():
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	if notificationSound.lower() == 'y':
-		PlayNotificationSound()
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
 	input('\npress any key to return to the menu')
 
 
@@ -780,7 +808,9 @@ def Gif_ModeA():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('Error,input-path is invalid!!\n')
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -915,7 +945,8 @@ def Gif_ModeA():
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	if notificationSound.lower() == 'y':
-		PlayNotificationSound()
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
 	input('\npress any key to exit')
 
 #===================================Gif_MODE B========================================
@@ -937,7 +968,9 @@ def Gif_ModeB():
 		if inputPath_.lower() == '?r':
 			return 1
 		elif inputPath_ == '' or os.path.exists(inputPath_) == False:
-			print('Error,input-path is invalid!!\n')
+			print('-----------------------------')
+			print('Error,input-path is invalid!!')
+			print('-----------------------------')
 		else:
 			inputPath_=inputPath_.strip('"').strip('\\').strip(' ')
 			inputPathError = False
@@ -1067,7 +1100,8 @@ def Gif_ModeB():
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	if notificationSound.lower() == 'y':
-		PlayNotificationSound()
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
 	input('\npress any key to exit')
 
 
@@ -1097,7 +1131,9 @@ def Gif_ModeC():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('Error,input-path is invalid!!\n')
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1217,7 +1253,8 @@ def Gif_ModeC():
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	if notificationSound.lower() == 'y':
-		PlayNotificationSound()
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
 	input('\npress any key to exit')
 
 
@@ -1246,7 +1283,9 @@ def Video_ModeA():
 			elif inputPath.lower() == '?r':
 				return 1
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('Error,input-path is invalid!!\n')
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1362,7 +1401,8 @@ def Video_ModeA():
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	if notificationSound.lower() == 'y':
-		PlayNotificationSound()
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
 	input('\npress any key to exit')
 
 #==================================== Video_MODE B =============================
@@ -1385,7 +1425,9 @@ def Video_ModeB():
 		if inputPath_.lower() == '?r':
 			return 1
 		elif inputPath_ == '' or os.path.exists(inputPath_) == False:
-			print('Error,input-path is invalid!!\n')
+			print('-----------------------------')
+			print('Error,input-path is invalid!!')
+			print('-----------------------------')
 		else:
 			inputPathError = False
 	
@@ -1499,7 +1541,8 @@ def Video_ModeB():
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	if notificationSound.lower() == 'y':
-		PlayNotificationSound()
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
 	input('\npress any key to exit')
 
 #===================================== Video_MODE C =============================
@@ -1527,7 +1570,9 @@ def Video_ModeC():
 			elif inputPath.lower() == '?r':
 				return 1
 			if inputPath == '' or os.path.exists(inputPath) == False:
-				print('Error,input-path is invalid!!\n')
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1637,7 +1682,8 @@ def Video_ModeC():
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
 	if notificationSound.lower() == 'y':
-		PlayNotificationSound()
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
 	input('\npress any key to exit')
 
 #============================= Compress_image_ModeA ===============================
@@ -1664,7 +1710,9 @@ def Compress_image_ModeA():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('Error,input-path is invalid!!\n')
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1699,7 +1747,8 @@ def Compress_image_ModeA():
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 	else:
 	
@@ -1745,7 +1794,8 @@ def Compress_image_ModeA():
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 
 #============================= Compress_image_ModeB ===============================
@@ -1763,7 +1813,9 @@ def Compress_image_ModeB():
 		if inputPath.lower() == '?r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
-			print('Error,input-path is invalid!!\n')
+			print('-----------------------------')
+			print('Error,input-path is invalid!!')
+			print('-----------------------------')
 		else:
 			break
 	
@@ -1791,7 +1843,8 @@ def Compress_image_ModeB():
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 	else:
 	
@@ -1837,7 +1890,8 @@ def Compress_image_ModeB():
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 
 
@@ -1864,7 +1918,9 @@ def Compress_image_ModeC():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('Error,input-path is invalid!!\n')
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1888,7 +1944,8 @@ def Compress_image_ModeC():
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 	else:
 	
@@ -1934,7 +1991,8 @@ def Compress_image_ModeC():
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 	
 #============================= Compress_gif_ModeA ===============================
@@ -1959,7 +2017,9 @@ def Compress_gif_ModeA():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('Error,input-path is invalid!!\n')
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -1994,7 +2054,8 @@ def Compress_gif_ModeA():
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 	else:
 		for inputPath in inputPathList_files:
@@ -2037,7 +2098,8 @@ def Compress_gif_ModeA():
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 
 #============================= Compress_gif_ModeB ===============================
@@ -2054,7 +2116,9 @@ def Compress_gif_ModeB():
 		if inputPath.lower() == '?r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
-			print('Error,input-path is invalid!!\n')
+			print('-----------------------------')
+			print('Error,input-path is invalid!!')
+			print('-----------------------------')
 		else:
 			break
 	
@@ -2084,7 +2148,8 @@ def Compress_gif_ModeB():
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 	else:
 		for inputPath in inputPathList_files:
@@ -2127,8 +2192,9 @@ def Compress_gif_ModeB():
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
-		input('\nPress any key to return to the menu')
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
+		input('\nPress any key to return to the menu.')
 
 
 #============================= Compress_gif_ModeC ===============================
@@ -2153,7 +2219,9 @@ def Compress_gif_ModeC():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('Error,input-path is invalid!!\n')
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
 			else:
 				inputPathError = False
 		if inputPathOver == True:
@@ -2178,7 +2246,8 @@ def Compress_gif_ModeC():
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 	else:
 		for inputPath in inputPathList:
@@ -2221,10 +2290,11 @@ def Compress_gif_ModeC():
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
 		if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
 		input('\nPress any key to return to the menu')
 
-#=============================Prograss bar==========================
+#=========================================== Prograss bar ======================================
 def FileCount(countPath):
 	file_count=0
 	for root in os.walk(countPath):
@@ -2302,7 +2372,7 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 				
 			time.sleep(1)
 			
-#================Clock==================
+#====================================== Clock ==================================
 class ClockThread (threading.Thread):
 	def __init__(self, TotalFileNum, FinishedFileNum):
 		threading.Thread.__init__(self)
@@ -2325,7 +2395,7 @@ def Clock(TotalFileNum,FinishedFileNum):
 		sys.stdout.flush()
 		time.sleep(1)
 			
-#================Multithread==================
+#======================== Multithread management ===========================
 def _async_raise(tid, exctype):
    """raises the exception, performs cleanup if needed"""
    tid = ctypes.c_long(tid)
@@ -2344,7 +2414,7 @@ def _async_raise(tid, exctype):
 def stop_thread(thread):
    _async_raise(thread.ident, SystemExit)
 
-#=================DelOriginalFiles================
+#================================ DelOriginalFiles ==========================
 def DelOrgFiles(inputPath):
 	
 	Exts=[".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]
@@ -2472,7 +2542,7 @@ def input_scale():
 	default_value = settings_values['scale']
 
 	while True:
-		scale = input('scale(1/2/4, default='+default_value+'): ')
+		scale = input('Upscale ratio(1/2/4, default='+default_value+'): ')
 		if scale in ['1','2','4','']:
 			break
 		else:
@@ -2513,7 +2583,7 @@ def input_noiseLevel():
 	settings_values = ReadSettings()
 	default_value = settings_values['noiseLevel']
 	while True:
-		noiseLevel = input('Noise-level(-1/0/1/2/3, default='+default_value+'): ')
+		noiseLevel = input('Denoise level(-1/0/1/2/3, default='+default_value+'): ')
 		if noiseLevel in ['-1','0','1','2','3','']:
 			break
 		else:
@@ -2975,7 +3045,7 @@ def ReadSettings():
 #=================  Init  ================
 
 def init():		#初始化函数
-	os.system('title = Waifu2x-Extension by Aaron Feng')	#更改控制台标题
+	Window_Title('')	#更改控制台标题
 	os.system('color 0b')	#更改文字颜色
 	ResizeWindow()		#更改控制台窗口大小
 	
@@ -3160,8 +3230,13 @@ def Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality):
 		thread_files = []
 
 #================================= Play Notification Sound====================
-def PlayNotificationSound():
-	playsound('NotificationSound_waifu2xExtension.mp3')
+
+class Play_Notification_Sound_Thread (threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+        
+	def run(self):
+		playsound('NotificationSound_waifu2xExtension.mp3')
 
 #================================ Resize Window ==========================
 def ResizeWindow():
@@ -3175,6 +3250,7 @@ def Benchmark():
 	print('---------------------------------------------------------------------------------------')
 	if input('Do you wanna start the benchmark now? (y/n): ').lower().strip(' ') != 'y':
 		return 0
+	Window_Title('[Running benchmark]')
 	print('-------------------------------------------------------')
 	print('This benchmark is gonna take a while, pls wait.....')
 	print('-------------------------------------------------------')
@@ -3197,6 +3273,9 @@ def Benchmark():
 	old_time_cost = 100000
 	old_tileSize = 0
 	
+	if os.path.exists(scaledFilePath) == True:
+		os.system("rd /s/q \""+scaledFilePath+"\"")
+	
 	for x in range(0,50):
 		os.mkdir(scaledFilePath)
 		time_start=time.time()
@@ -3218,7 +3297,9 @@ def Benchmark():
 		print('Wait 60 seconds to cool the computer.')
 		time.sleep(60)
 	if notificationSound.lower() == 'y':
-			PlayNotificationSound()
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
+	Window_Title('')
 	print('==================================================================')
 	print('The best value of "tile size" of your computer is:',old_tileSize)
 	if input('Do you wanna use the result value? (y/n): ').lower().strip(' ') != 'y':
@@ -3269,7 +3350,8 @@ def RecoverFiles(inputPath):
 				new_path = inputPath+'\\'+fname
 				os.system('copy /y "'+old_path+'" "'+new_path+'"')
 				os.system('del /q "'+old_path+'"')
-		os.system('rd /s/q "'+inputPath+'\\protectfiles_waifu2x_extension'+'"')
+		if os.path.exists(inputPath+'\\protectfiles_waifu2x_extension') == True:
+			os.system('rd /s/q "'+inputPath+'\\protectfiles_waifu2x_extension'+'"')
 		break
 
 #======================================= View_GPU_ID() ===========================
@@ -3300,13 +3382,17 @@ def View_GPU_ID():
 	tileSize = settings_values['tileSize']
 	inputPath = current_dir+'\\'+'viewGpuId-files-waifu2x-extension'
 	scaledFilePath = inputPath+'\\scaled'
+	if os.path.exists(scaledFilePath) == True:
+		os.system("rd /s/q \""+scaledFilePath+"\"")
 	os.mkdir(scaledFilePath)
 	os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str)
 	os.system("rd /s/q \""+scaledFilePath+"\"")
 	print('---------------------------------------------')
 	input('Press any key to return to the main menu.')
 	
-	
+#=============================== Default Window Title =================
+def Window_Title(Add_str = ''):
+	os.system('title = Waifu2x-Extension by Aaron Feng '+Add_str)
 	
 	
 #======================== Start ========================
