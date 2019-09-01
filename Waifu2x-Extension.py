@@ -2,7 +2,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v1.56'
+Version_current='v1.6'
 
 import time
 import threading
@@ -19,10 +19,18 @@ import re
 import json
 from multiprocessing import cpu_count
 import traceback
+from playsound import playsound
 
 def ChooseFormat(Version_current):
+	
 	while True:
-		print(' Waifu2x-Extension | '+Version_current+' | 2019/8/31 | Author: Aaron Feng')
+		
+		settings_values = ReadSettings()
+		tileSize = settings_values['tileSize']
+		gpuId = settings_values['gpuId']
+		notificationSound = settings_values['notificationSound']
+		multiThread = settings_values['multiThread']
+		print(' Waifu2x-Extension | '+Version_current+'-Stable | 2019/9/1 | Author: Aaron Feng')
 		print(' Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('┌──────────────────────────────────────────────────────────────┐')
 		print("│ Attention: This software's scale & denoise function is only  │")
@@ -33,24 +41,30 @@ def ChooseFormat(Version_current):
 		print('│ G : Scale & denoise gif.                                     │')
 		print('│                                                              │')
 		print('│ V : Scale & denoise video.                                   │')
+		print('├──────────────────────────────────────────────────────────────┤')
+		print('│ T : Tile size: '+tileSize+' '*(46-len(tileSize))+'│')
 		print('│                                                              │')
+		print('│ GI : GPU ID: '+gpuId+' '*(48-len(gpuId))+'│')
+		print('│                                                              │')
+		print('│ N : Notification sound: '+notificationSound+'                                    │')
+		print('│                                                              │')
+		print('│ M : Multithreading: '+multiThread+'                                        │')
+		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ CI : Compress image. (Almost lossless)                       │')
 		print('│                                                              │')
 		print('│ CG : Compress gif.                                           │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ S : Settings.                                                │')
+		print('│ S : Settings.           B : Benchmark.                       │')
 		print('│                                                              │')
-		print('│ L : Read error log.                                          │')
+		print('│ EL : Read error log.    U : Check update.                    │')
 		print('│                                                              │')
-		print('│ U : Check update.                                            │')
+		print('│ R : Readme.             D : Donate. (Alipay)                 │')
 		print('│                                                              │')
-		print('│ R : Readme.                                                  │')
-		print('│                                                              │')
-		print('│ D : Donate. (Alipay)                                         │')
+		print('│ L : License.            VG : View GPU ID.                    │')
 		print('│                                                              │')
 		print('│ E : Exit.                                                    │')
 		print('└──────────────────────────────────────────────────────────────┘')
-		print('( i / g / v / ci / cg / s / l / u / r / d / e ): '.upper())
+		print('( i / g / v / t / gi / n / m / ci / cg / s / b / el / u / r / d / l / vg / e ): '.upper())
 		mode = input()
 		mode = mode.lower().strip(' ')
 		if mode == "i":
@@ -71,6 +85,22 @@ def ChooseFormat(Version_current):
 			Video_()
 			os.system('cls')
 			os.system('color 0b')
+		elif mode == "t":
+			os.system('cls')
+			input_tileSize()
+			os.system('cls')
+		elif mode == "gi":
+			os.system('cls')
+			input_gpuId()
+			os.system('cls')
+		elif mode == "n":
+			os.system('cls')
+			input_notificationSound()
+			os.system('cls')
+		elif mode == "m":
+			os.system('cls')
+			input_multiThread()
+			os.system('cls')
 		elif mode == "ci":
 			os.system('cls')
 			os.system('color 09')
@@ -89,11 +119,15 @@ def ChooseFormat(Version_current):
 			Settings()
 			os.system('cls')
 			os.system('color 0b')
+		elif mode == "b":
+			os.system('cls')
+			Benchmark()
+			os.system('cls')
 		elif mode == "e":
 			os.system('color 07')
 			os.system('cls')
 			return 0
-		elif mode == "l":
+		elif mode == "el":
 			os.system('cls')
 			os.system('color 07')
 			Error_Log()
@@ -115,6 +149,14 @@ def ChooseFormat(Version_current):
 			os.system('cls')
 			print('Thank you!!! :)')
 			print('---------------')
+		elif mode == "l":
+			os.system('cls')
+			license_()
+			os.system('cls')
+		elif mode == "vg":
+			os.system('cls')
+			View_GPU_ID()
+			os.system('cls')
 		else:
 			os.system('cls')
 			os.system('color 0c')
@@ -287,12 +329,13 @@ def Compress_gif():
 			os.system('color 09')
 			os.system('cls')
 		
-#=============================Image_MODE A===============================
+#======================================Image_MODE A===============================
 def Image_ModeA():
 	print("=================Image_MODE A================")
 	print("Type '?r' to return to the previous menu")
 	print("Type '?o' to stop input more path, and input path must be a folder, not a file")
 	print("Scaled images will be in the input-path \n")
+	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
 	orginalFileNameAndFullname = {}
@@ -323,9 +366,10 @@ def Image_ModeA():
 	
 	noiseLevel = input_noiseLevel()
 		
-	tileSize = input_tileSize()
+	tileSize = settings_values['tileSize']
 	
-	gpuId = input_gpuId()
+	gpuId = settings_values['gpuId']
+	notificationSound = settings_values['notificationSound']
 	gpuId_str=''
 	if gpuId.lower() != 'auto':
 		gpuId_str = ' -g '+gpuId
@@ -344,9 +388,9 @@ def Image_ModeA():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
+	ResizeWindow()		#更改控制台窗口大小
 	for inputPath in inputPathList:
-		
+		ProtectFiles(inputPath)
 		oldfilenumber=FileCount(inputPath)
 		scalepath = inputPath+"\\scaled\\"
 		
@@ -433,12 +477,15 @@ def Image_ModeA():
 			DelOrgFiles(inputPath)
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
+		RecoverFiles(inputPath)
 			
 	total_time_end=time.time()
 	
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
+	if notificationSound.lower() == 'y':
+		PlayNotificationSound()
 	
 	input('\npress any key to return to the menu')
 	
@@ -448,6 +495,7 @@ def Image_ModeB():
 	print("Type '?r' to return to the previous menu")
 	print("Input path must be a folder, not a file")
 	print("Scaled images will be in the input-path \n")
+	settings_values = ReadSettings()
 	inputPathList = []
 	orginalFileNameAndFullname = {}
 	inputPathError = True
@@ -472,9 +520,10 @@ def Image_ModeB():
 	
 	noiseLevel = input_noiseLevel()
 		
-	tileSize = input_tileSize()
+	tileSize = settings_values['tileSize']
+	notificationSound = settings_values['notificationSound']
 	
-	gpuId = input_gpuId()
+	gpuId = settings_values['gpuId']
 	gpuId_str=''
 	if gpuId.lower() != 'auto':
 		gpuId_str = ' -g '+gpuId
@@ -493,12 +542,14 @@ def Image_ModeB():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
+	ResizeWindow()		#更改控制台窗口大小
 	
 	for dirs in os.walk(inputPath):
 		inputPathList.append(str(dirs[0]))
 		
 	for inputPath in inputPathList:
+		
+		ProtectFiles(inputPath)
 		
 		oldfilenumber=FileCount(inputPath)
 		scalepath = inputPath+"\\scaled\\"
@@ -586,12 +637,15 @@ def Image_ModeB():
 			DelOrgFiles(inputPath)
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
+		RecoverFiles(inputPath)
 			
 	total_time_end=time.time()
 	
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
+	if notificationSound.lower() == 'y':
+		PlayNotificationSound()
 	
 	input('\npress any key to return to the menu')
 	
@@ -601,6 +655,7 @@ def Image_ModeC():
 	print("Type '?r' to return to the previous menu")
 	print("Type '?o' to stop input more path, and input path must be a file")
 	print("Scaled images will be in the input-path \n")
+	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=100
@@ -632,9 +687,9 @@ def Image_ModeC():
 	
 	noiseLevel = input_noiseLevel()
 		
-	tileSize = input_tileSize()
-	
-	gpuId = input_gpuId()
+	tileSize = settings_values['tileSize']
+	notificationSound = settings_values['notificationSound']
+	gpuId = settings_values['gpuId']
 	gpuId_str=''
 	if gpuId.lower() != 'auto':
 		gpuId_str = ' -g '+gpuId
@@ -655,7 +710,7 @@ def Image_ModeC():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
+	ResizeWindow()		#更改控制台窗口大小
 
 	TotalFileNum = len(inputPathList)
 	FinishedFileNum = 1
@@ -694,7 +749,8 @@ def Image_ModeC():
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
-	
+	if notificationSound.lower() == 'y':
+		PlayNotificationSound()
 	input('\npress any key to return to the menu')
 
 
@@ -704,6 +760,7 @@ def Gif_ModeA():
 	print("Type '?r' to return to the previous menu")
 	print("Type '?o' to stop input more path, and input path must be a folder")
 	print("Scaled images will be in the input-path \n")
+	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
 	gifCompresslevel =''
@@ -737,9 +794,9 @@ def Gif_ModeA():
 	
 	noiseLevel = input_noiseLevel()
 		
-	tileSize = input_tileSize()
-	
-	gpuId = input_gpuId()
+	tileSize = settings_values['tileSize']
+	notificationSound = settings_values['notificationSound']
+	gpuId = settings_values['gpuId']
 	gpuId_str=''
 	if gpuId.lower() != 'auto':
 		gpuId_str = ' -g '+gpuId
@@ -755,7 +812,7 @@ def Gif_ModeA():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
+	ResizeWindow()		#更改控制台窗口大小
 	inputPathList_files = []
 	for folders in inputPathList:
 		for path,useless,fnames in os.walk(folders):
@@ -857,7 +914,8 @@ def Gif_ModeA():
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
-	
+	if notificationSound.lower() == 'y':
+		PlayNotificationSound()
 	input('\npress any key to exit')
 
 #===================================Gif_MODE B========================================
@@ -866,6 +924,7 @@ def Gif_ModeB():
 	print("Type '?r' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Scaled images will be in it's original path \n")
+	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPath_ = ''
 	gifCompresslevel =''
@@ -890,9 +949,9 @@ def Gif_ModeB():
 	
 	noiseLevel = input_noiseLevel()
 		
-	tileSize = input_tileSize()
-	
-	gpuId = input_gpuId()
+	tileSize = settings_values['tileSize']
+	notificationSound = settings_values['notificationSound']
+	gpuId = settings_values['gpuId']
 	gpuId_str=''
 	if gpuId.lower() != 'auto':
 		gpuId_str = ' -g '+gpuId
@@ -908,7 +967,7 @@ def Gif_ModeB():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
+	ResizeWindow()		#更改控制台窗口大小
 	inputPathList_files = []
 	for path,useless,fnames in os.walk(inputPath_):
 		for fname in fnames:
@@ -1007,7 +1066,8 @@ def Gif_ModeB():
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
-	
+	if notificationSound.lower() == 'y':
+		PlayNotificationSound()
 	input('\npress any key to exit')
 
 
@@ -1017,6 +1077,7 @@ def Gif_ModeC():
 	print("Type '?r' to return to the previous menu")
 	print("Type '?o' to stop input more path, and input path must be a .gif file")
 	print("Scaled images will be in the input-path \n")
+	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
 	gifCompresslevel =''
@@ -1050,9 +1111,9 @@ def Gif_ModeC():
 	
 	noiseLevel = input_noiseLevel()
 		
-	tileSize = input_tileSize()
-	
-	gpuId = input_gpuId()
+	tileSize = settings_values['tileSize']
+	notificationSound = settings_values['notificationSound']
+	gpuId = settings_values['gpuId']
 	gpuId_str=''
 	if gpuId.lower() != 'auto':
 		gpuId_str = ' -g '+gpuId
@@ -1068,7 +1129,7 @@ def Gif_ModeC():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
+	ResizeWindow()		#更改控制台窗口大小
 	for inputPath in inputPathList:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
@@ -1155,7 +1216,8 @@ def Gif_ModeC():
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
-	
+	if notificationSound.lower() == 'y':
+		PlayNotificationSound()
 	input('\npress any key to exit')
 
 
@@ -1165,6 +1227,7 @@ def Video_ModeA():
 	print("Type '?r' to return to the previous menu")
 	print("Type '?o' to stop input more path, and input path must be a folder")
 	print("Scaled files will be in the input-path \n")
+	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=100
@@ -1196,9 +1259,9 @@ def Video_ModeA():
 	
 	noiseLevel = input_noiseLevel()
 		
-	tileSize = input_tileSize()
-	
-	gpuId = input_gpuId()
+	tileSize = settings_values['tileSize']
+	notificationSound = settings_values['notificationSound']
+	gpuId = settings_values['gpuId']
 	gpuId_str=''
 	if gpuId.lower() != 'auto':
 		gpuId_str = ' -g '+gpuId
@@ -1210,7 +1273,7 @@ def Video_ModeA():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
+	ResizeWindow()		#更改控制台窗口大小
 	inputPathList_files = []
 	for folders in inputPathList:
 		for path,useless,fnames in os.walk(folders):
@@ -1298,15 +1361,17 @@ def Video_ModeA():
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
-	
+	if notificationSound.lower() == 'y':
+		PlayNotificationSound()
 	input('\npress any key to exit')
 
-#================== Video_MODE B =============================
+#==================================== Video_MODE B =============================
 def Video_ModeB():
 	print("================ Video_MODE B ===============")
 	print("Type '?r' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Scaled files will be in the input-path \n")
+	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPath_ = ''
 	JpgQuality=100
@@ -1331,9 +1396,9 @@ def Video_ModeB():
 	
 	noiseLevel = input_noiseLevel()
 		
-	tileSize = input_tileSize()
-	
-	gpuId = input_gpuId()
+	tileSize = settings_values['tileSize']
+	notificationSound = settings_values['notificationSound']
+	gpuId = settings_values['gpuId']
 	gpuId_str=''
 	if gpuId.lower() != 'auto':
 		gpuId_str = ' -g '+gpuId
@@ -1345,7 +1410,7 @@ def Video_ModeB():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
+	ResizeWindow()		#更改控制台窗口大小
 	inputPathList_files = []
 	for path,useless,fnames in os.walk(inputPath_):
 		for fname in fnames:
@@ -1433,15 +1498,17 @@ def Video_ModeB():
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
-	
+	if notificationSound.lower() == 'y':
+		PlayNotificationSound()
 	input('\npress any key to exit')
 
-#================== Video_MODE C =============================
+#===================================== Video_MODE C =============================
 def Video_ModeC():
 	print("================ Video_MODE C ===============")
 	print("Type '?r' to return to the previous menu")
 	print("Type '?o' to stop input more path, and input path must be a video file")
 	print("Scaled files will be in the input-path \n")
+	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=100
@@ -1472,9 +1539,9 @@ def Video_ModeC():
 	
 	noiseLevel = input_noiseLevel()
 		
-	tileSize = input_tileSize()
-	
-	gpuId = input_gpuId()
+	tileSize = settings_values['tileSize']
+	notificationSound = settings_values['notificationSound']
+	gpuId = settings_values['gpuId']
 	gpuId_str=''
 	if gpuId.lower() != 'auto':
 		gpuId_str = ' -g '+gpuId
@@ -1487,7 +1554,7 @@ def Video_ModeC():
 	
 	total_time_start=time.time()
 
-	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
+	ResizeWindow()		#更改控制台窗口大小
 	for inputPath in inputPathList:
 		
 		video2images(inputPath) #拆解视频
@@ -1569,7 +1636,8 @@ def Video_ModeC():
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
-	
+	if notificationSound.lower() == 'y':
+		PlayNotificationSound()
 	input('\npress any key to exit')
 
 #============================= Compress_image_ModeA ===============================
@@ -1578,7 +1646,7 @@ def Compress_image_ModeA():
 	print("Type '?r' to return to the previous menu")
 	print("Type '?o' to stop input more path, and input path must be a folder")
 	print("Compressed images will be in the input-path \n")
-	
+	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=90
@@ -1603,7 +1671,8 @@ def Compress_image_ModeA():
 			inputPathList.append(inputPath)
 	
 	delorginal = input_delorginal()
-	multiThread = input_multiThread()
+	multiThread = settings_values['multiThread']
+	notificationSound = settings_values['notificationSound']
 	
 	
 	
@@ -1629,6 +1698,8 @@ def Compress_image_ModeA():
 		time.sleep(1)
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 	else:
 	
@@ -1673,6 +1744,8 @@ def Compress_image_ModeA():
 		
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 
 #============================= Compress_image_ModeB ===============================
@@ -1683,7 +1756,7 @@ def Compress_image_ModeB():
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
 	JpgQuality=90
-
+	settings_values = ReadSettings()
 	while True:
 		inputPath = input('input-path: ')
 		inputPath =inputPath.strip('"').strip('\\').strip(' ')
@@ -1695,7 +1768,8 @@ def Compress_image_ModeB():
 			break
 	
 	delorginal = input_delorginal()
-	multiThread = input_multiThread()
+	multiThread = settings_values['multiThread']
+	notificationSound = settings_values['notificationSound']
 		
 	print('--------------------------------------------')
 	
@@ -1716,6 +1790,8 @@ def Compress_image_ModeB():
 		time.sleep(1)
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 	else:
 	
@@ -1760,6 +1836,8 @@ def Compress_image_ModeB():
 		
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 
 
@@ -1772,7 +1850,7 @@ def Compress_image_ModeC():
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=90
-
+	settings_values = ReadSettings()
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
@@ -1793,7 +1871,8 @@ def Compress_image_ModeC():
 			inputPathList.append(inputPath)
 	
 	delorginal = input_delorginal()
-	multiThread = input_multiThread()
+	multiThread = settings_values['multiThread']
+	notificationSound = settings_values['notificationSound']
 		
 	print('--------------------------------------------')
 	
@@ -1808,6 +1887,8 @@ def Compress_image_ModeC():
 		time.sleep(1)
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 	else:
 	
@@ -1852,6 +1933,8 @@ def Compress_image_ModeC():
 		
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 	
 #============================= Compress_gif_ModeA ===============================
@@ -1862,7 +1945,7 @@ def Compress_gif_ModeA():
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
-
+	settings_values = ReadSettings()
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
@@ -1886,7 +1969,8 @@ def Compress_gif_ModeA():
 	
 	delorginal = input_delorginal()
 	
-	multiThread = input_multiThread()
+	multiThread = settings_values['multiThread']
+	notificationSound = settings_values['notificationSound']
 	
 	print('--------------------------------------------')
 	
@@ -1909,6 +1993,8 @@ def Compress_gif_ModeA():
 		time.sleep(1)
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 	else:
 		for inputPath in inputPathList_files:
@@ -1950,6 +2036,8 @@ def Compress_gif_ModeA():
 		
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 
 #============================= Compress_gif_ModeB ===============================
@@ -1959,7 +2047,7 @@ def Compress_gif_ModeB():
 	print("Input path must be a folder")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
-
+	settings_values = ReadSettings()
 	while True:
 		inputPath = input('input-path: ')
 		inputPath =inputPath.strip('"').strip('\\').strip(' ')
@@ -1972,7 +2060,8 @@ def Compress_gif_ModeB():
 	
 	gifCompresslevel= input_gifCompresslevel()
 	delorginal = input_delorginal()
-	multiThread = input_multiThread()
+	multiThread = settings_values['multiThread']
+	notificationSound = settings_values['notificationSound']
 	
 		
 	print('--------------------------------------------')
@@ -1994,6 +2083,8 @@ def Compress_gif_ModeB():
 		time.sleep(1)
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 	else:
 		for inputPath in inputPathList_files:
@@ -2035,6 +2126,8 @@ def Compress_gif_ModeB():
 		
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 
 
@@ -2046,7 +2139,7 @@ def Compress_gif_ModeC():
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
-
+	settings_values = ReadSettings()
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
@@ -2068,7 +2161,8 @@ def Compress_gif_ModeC():
 			
 	gifCompresslevel=input_gifCompresslevel()
 	delorginal = input_delorginal()
-	multiThread = input_multiThread()
+	multiThread = settings_values['multiThread']
+	notificationSound = settings_values['notificationSound']
 		
 	print('--------------------------------------------')
 	
@@ -2083,6 +2177,8 @@ def Compress_gif_ModeC():
 		time.sleep(1)
 		total_time_end=time.time()
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 	else:
 		for inputPath in inputPathList:
@@ -2124,6 +2220,8 @@ def Compress_gif_ModeC():
 		
 		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
 		print('\nTotal saved space: ',saved_size_total,'KB\n')
+		if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 		input('\nPress any key to return to the menu')
 
 #=============================Prograss bar==========================
@@ -2256,15 +2354,6 @@ def DelOrgFiles(inputPath):
 			if os.path.splitext(fname)[1] in Exts:
 				os.remove(path+'\\'+fname)
 		break
-
-#================= Protect files ================
-# ~ def ProtectFiles(inputPath):
-	# ~ Exts=[".gif"]
-	# ~ for path,useless,fnames in os.walk(inputPath):
-		# ~ for fname in fnames:
-			# ~ if os.path.splitext(fname)[1] in Exts:
-				# ~ os.remove(path+'\\'+fname)
-		# ~ break
 	
 #========================== GIF ==============================
 def getDuration(FILENAME):
@@ -2397,7 +2486,9 @@ def input_scale():
 	
 def input_tileSize():
 	settings_values = ReadSettings()
-	default_value = settings_values['tileSize']
+	default_value = '200'
+	print('You can run the benchmark to determine the best value of "tile size" for your computer.')
+	print('--------------------------------------------------------------------------------------')
 	while True:
 		tileSize = input('Tile size(>=32, default='+default_value+'): ')
 		if tileSize.isdigit():
@@ -2408,11 +2499,15 @@ def input_tileSize():
 		elif tileSize == '':
 			break
 		else:
+			os.system('cls')
 			print('wrong input, pls input again')
 		
 	if tileSize == '':
 		tileSize = default_value
-	return tileSize
+	
+	settings_values['tileSize']=str(int(tileSize))
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
 	
 def input_noiseLevel():
 	settings_values = ReadSettings()
@@ -2513,7 +2608,7 @@ def input_gifCompresslevel():
 	
 def input_multiThread():
 	settings_values = ReadSettings()
-	default_value = settings_values['multiThread']
+	default_value = 'y'
 	while True:
 		multiThread = input('Enable multithreading? (y/n, default='+default_value+'): ')
 		if multiThread in ['y','n','Y','N','']:
@@ -2523,12 +2618,14 @@ def input_multiThread():
 	
 	if multiThread == '':
 		multiThread = default_value
-		
-	return multiThread
+	
+	settings_values['multiThread']=str(multiThread)
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
 	
 def input_gpuId():
 	settings_values = ReadSettings()
-	default_value = settings_values['gpuId']
+	default_value = 'auto'
 	while True:
 		gpuId = input('GPU ID (auto (Automatic)/0/1/2/..., default='+default_value+'): ')
 		if gpuId.isdigit():
@@ -2542,11 +2639,33 @@ def input_gpuId():
 			gpuId = gpuId.lower()
 			break
 		else:
+			os.system('cls')
 			print('wrong input, pls input again')
 		
 	if gpuId == '':
 		gpuId = default_value
-	return gpuId
+	settings_values['gpuId']=str(gpuId)
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
+
+def input_notificationSound():
+	settings_values = ReadSettings()
+	default_value = 'y'
+	while True:
+		notificationSound = input('Enable notification sound? (y/n, default='+default_value+'): ')
+		if notificationSound in ['y','n','Y','N','']:
+			break
+		else:
+			os.system('cls')
+			print('wrong input, pls input again')
+	
+	if notificationSound == '':
+		notificationSound = default_value
+		
+	settings_values['notificationSound']=str(notificationSound)
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
+
 
 #======================== Seconds 2 h:m:s =========================
 def Seconds2hms(seconds):
@@ -2640,7 +2759,9 @@ def VerifyFiles():
 	'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param', 
 	'noise0_scale2.0x_model.bin', 'noise0_scale2.0x_model.param', 'noise1_scale2.0x_model.bin', 
 	'noise1_scale2.0x_model.param', 'noise2_scale2.0x_model.bin', 'noise2_scale2.0x_model.param', 
-	'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param','gifsicle.exe']
+	'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param','gifsicle.exe',
+	'NotificationSound_waifu2xExtension.mp3','Benchmark_Image_waifu2x_extension_1.png','Benchmark_Image_waifu2x_extension_2.png',
+	'Benchmark_Image_waifu2x_extension_3.png','github_logo_waifu2x_extension.jpg']
 	
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	FilesList_current = []
@@ -2668,19 +2789,16 @@ def Settings():
 		print('-----------------------------------------------------------------------------')
 		print(' 1: Check for updates at startup. Current value: '+settings_values['CheckUpdate']+'\n')
 		print(' 2: Default value of "scale". Current value: '+settings_values['scale']+'\n')
-		print(' 3: Default value of "tileSize". Current value: '+settings_values['tileSize']+'\n')
-		print(' 4: Default value of "noiseLevel". Current value: '+settings_values['noiseLevel']+'\n')
-		print(' 5: Save the result image as .jpg file? Current default value: '+settings_values['saveAsJPG']+'\n')
-		print(' 6: Compress the result image?(when saved as .jpg) Current default value: '+settings_values['Compress']+'\n')
-		print(' 7: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
-		print(' 8: Save high quality gif? Current default value: '+settings_values['highQuality']+'\n')
-		print(' 9: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
-		print(' 10: Reset error log.\n')
-		print(' 11: Enable multithreading? Current default value: '+settings_values['multiThread']+'\n')
-		print(' 12: Default value of "GPU ID". Current default value: '+settings_values['gpuId']+'\n')
+		print(' 3: Default value of "noiseLevel". Current value: '+settings_values['noiseLevel']+'\n')
+		print(' 4: Save the result image as .jpg file? Current default value: '+settings_values['saveAsJPG']+'\n')
+		print(' 5: Compress the result image?(when saved as .jpg) Current default value: '+settings_values['Compress']+'\n')
+		print(' 6: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
+		print(' 7: Save high quality gif? Current default value: '+settings_values['highQuality']+'\n')
+		print(' 8: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
+		print(' 9: Reset error log.\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/4/5/6/7/8/9/10/11/12/r): '.upper())
+		mode = input('(1/2/3/4/5/6/7/8/9/r): '.upper())
 		mode = mode.lower()
 		if mode == "1":
 			os.system('cls')
@@ -2713,25 +2831,8 @@ def Settings():
 				json.dump(settings_values,f)
 				
 			os.system('cls')
-		
+			
 		elif mode == "3":
-			os.system('cls')
-			
-			while True:
-				value_ = input('New value: ')
-				if value_.isdigit():
-					if int(value_) > 0:
-						break
-				else:
-					print('invalid value, pls input again')
-					
-			settings_values['tileSize']=str(int(value_))
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
-				
-			os.system('cls')
-			
-		elif mode == "4":
 			os.system('cls')
 			
 			while True:
@@ -2747,7 +2848,7 @@ def Settings():
 				
 			os.system('cls')
 			
-		elif mode == "5":
+		elif mode == "4":
 			os.system('cls')
 			
 			while True:
@@ -2763,7 +2864,7 @@ def Settings():
 				
 			os.system('cls')
 			
-		elif mode == "6":
+		elif mode == "5":
 			os.system('cls')
 			
 			while True:
@@ -2779,7 +2880,7 @@ def Settings():
 				
 			os.system('cls')
 			
-		elif mode == "7":
+		elif mode == "6":
 			os.system('cls')
 			
 			while True:
@@ -2795,7 +2896,7 @@ def Settings():
 				
 			os.system('cls')
 			
-		elif mode == "8":
+		elif mode == "7":
 			os.system('cls')
 			
 			while True:
@@ -2811,7 +2912,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode== "9":
+		elif mode== "8":
 			os.system('cls')
 			
 			while True:
@@ -2827,7 +2928,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode == "10":
+		elif mode == "9":
 			os.system('cls')
 			
 			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
@@ -2839,42 +2940,6 @@ def Settings():
 			
 			input('Error log reseted, press any key to return.')
 			
-			os.system('cls')
-			
-		elif mode == "11":
-			os.system('cls')
-			
-			while True:
-				value_ = input('New value(y/n): ').lower()
-				if value_ in ['y','n']:
-					break
-				else:
-					print('invalid value, pls input again')
-					
-			settings_values['multiThread']=value_
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
-				
-			os.system('cls')
-			
-		elif mode == "12":
-			os.system('cls')
-			
-			while True:
-				value_ = input('New value(auto (Automatic)/0/1/2/....): ')
-				if value_.isdigit():
-					if int(value_) >= 0:
-						break
-				elif value_.lower() == 'auto':
-					value_=value_.lower().strip(' ')
-					break
-				else:
-					print('invalid value, pls input again')
-					
-			settings_values['gpuId']=str(value_)
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
-				
 			os.system('cls')
 			
 		elif mode == "r":
@@ -2889,7 +2954,7 @@ def Settings():
 def ReadSettings():
 	default_values = {'CheckUpdate':'y','scale':'2','tileSize':'200',
 						'noiseLevel':'2','saveAsJPG':'y',
-						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1','multiThread':'y','gpuId':'auto'}
+						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1','multiThread':'y','gpuId':'auto','notificationSound':'y'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -2912,7 +2977,7 @@ def ReadSettings():
 def init():		#初始化函数
 	os.system('title = Waifu2x-Extension by Aaron Feng')	#更改控制台标题
 	os.system('color 0b')	#更改文字颜色
-	os.system('mode con cols=150 lines=35')		#更改控制台窗口大小
+	ResizeWindow()		#更改控制台窗口大小
 	
 	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
 	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
@@ -3093,7 +3158,155 @@ def Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality):
 			if thread1.isAlive()== False:
 				break
 		thread_files = []
+
+#================================= Play Notification Sound====================
+def PlayNotificationSound():
+	playsound('NotificationSound_waifu2xExtension.mp3')
+
+#================================ Resize Window ==========================
+def ResizeWindow():
+	os.system('mode con cols=150 lines=37')
+	
+#=============================== Benchmark =============================
+def Benchmark():
+	print('============================== Benchmark ==============================================')
+	print('This benchmark will help you to determine the best value of "tile size".')
+	print('In order to get the accurate result, pls do not use your computer during the benchmark.')
+	print('---------------------------------------------------------------------------------------')
+	if input('Do you wanna start the benchmark now? (y/n): ').lower().strip(' ') != 'y':
+		return 0
+	print('-------------------------------------------------------')
+	print('This benchmark is gonna take a while, pls wait.....')
+	print('-------------------------------------------------------')
+	print('Wait 60 seconds to cool the computer.')
+	time.sleep(60)
+	settings_values = ReadSettings()
+	models = 'models-upconv_7_anime_style_art_rgb'
+	scale = '2'
+	noiseLevel = '3'
+	gpuId = settings_values['gpuId']
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	inputPath = current_dir+'\\'+'benchmark-files-waifu2x-extension'
+	scaledFilePath = inputPath+'\\scaled'
+	
+	tileSize = 50
+	old_time_cost = 100000
+	old_tileSize = 0
+	
+	for x in range(0,50):
+		os.mkdir(scaledFilePath)
+		time_start=time.time()
+		print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str)
+		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str)
+		time_end=time.time()
+		os.system("rd /s/q \""+scaledFilePath+"\"")
+		new_time_cost = time_end - time_start
+		print('---------------------------------')
+		print('Tile size: ',tileSize)
+		print('Time cost: ',new_time_cost)
+		print('---------------------------------')
+		if new_time_cost <= old_time_cost:
+			old_time_cost = new_time_cost
+			old_tileSize = tileSize
+		else:
+			break
+		tileSize=tileSize+50
+		print('Wait 60 seconds to cool the computer.')
+		time.sleep(60)
 		
+	print('==================================================================')
+	print('The best value of "tile size" of your computer is:',old_tileSize)
+	if input('Do you wanna use the result value? (y/n): ').lower().strip(' ') != 'y':
+		return 0
+	settings_values['tileSize']=old_tileSize
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
+		
+#============================= license_ ========================
+def license_():
+	print('English:')
+	print('------------------------------------------')
+	print('Copyright 2019 Aaron Feng\n')
+	print('Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n')
+	print('The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n')
+	print('THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n')
+	print('------------------------------------------')
+	print('中文:')
+	print('注意:中文版本由机器翻译生成, 可能包含错误, 一切以英文原版许可证为准.')
+	print('---------------------------------------------')
+	print('版权所有 2019 Aaron Feng\n')
+	print('特此授予任何获得本软件和相关文档文件（“软件”）副本的人免费许可，以无限制地交易本软件，包括但不限于使用，复制，修改，合并的权利在符合以下条件的前提下，发布，分发，再许可，并允许向其提供软件的人员这样做：\n')
+	print('上述版权声明和本许可声明应包含在本软件的所有副本或实质部分中。\n')
+	print('本软件按“原样”提供，不提供任何明示或暗示的保证，包括但不限于适销性，特定用途的适用性和不侵权的保证。在任何情况下，作者或版权所有者均不对任何索赔，损害或其他责任承担任何责任，无论是在合同，侵权行为还是其他方面的行为，由本软件引起或与之相关，或与本软件的使用或其他交易有关。软件。\n')
+	print('------------------------------------------')
+	input('Press any key to return to the main menu.')
+
+#================= Protect files ================
+def ProtectFiles(inputPath):
+	Exts=[".gif"]
+	for path,useless,fnames in os.walk(inputPath):
+		for fname in fnames:
+			if os.path.splitext(fname)[1] in Exts:
+				old_path = path+'\\'+fname
+				if os.path.exists(inputPath+'\\protectfiles_waifu2x_extension') == False:
+					os.mkdir(inputPath+'\\protectfiles_waifu2x_extension')
+				new_path = path+'\\protectfiles_waifu2x_extension\\'+fname
+				os.system('copy /y "'+old_path+'" "'+new_path+'"')
+				os.system('del /q "'+old_path+'"')
+		break
+
+def RecoverFiles(inputPath):
+	Exts=[".gif"]
+	for path,useless,fnames in os.walk(inputPath+'\\protectfiles_waifu2x_extension'):
+		for fname in fnames:
+			if os.path.splitext(fname)[1] in Exts:
+				old_path = path+'\\'+fname
+				new_path = inputPath+'\\'+fname
+				os.system('copy /y "'+old_path+'" "'+new_path+'"')
+				os.system('del /q "'+old_path+'"')
+		os.system('rd /s/q "'+inputPath+'\\protectfiles_waifu2x_extension'+'"')
+		break
+
+#======================================= View_GPU_ID() ===========================
+def View_GPU_ID():
+	print('============================View_GPU_ID =======================')
+	print('This will tell you the GPU corresponding to the GPU ID.')
+	gpuId = '0'
+	while True:
+		gpuId = input('GPU ID (0/1/2/...): ')
+		if gpuId.isdigit():
+			if int(gpuId) >= 0:
+				break
+			else:
+				print('wrong input, pls input again')
+		elif gpuId == '':
+			break
+		else:
+			os.system('cls')
+			print('wrong input, pls input again')
+	if gpuId == '':
+		return 0
+	gpuId_str = ' -g '+gpuId
+	settings_values = ReadSettings()
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	models = 'models-upconv_7_anime_style_art_rgb'
+	scale = '2'
+	noiseLevel = '0'
+	tileSize = settings_values['tileSize']
+	inputPath = current_dir+'\\'+'viewGpuId-files-waifu2x-extension'
+	scaledFilePath = inputPath+'\\scaled'
+	os.mkdir(scaledFilePath)
+	os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str)
+	os.system("rd /s/q \""+scaledFilePath+"\"")
+	print('---------------------------------------------')
+	input('Press any key to return to the main menu.')
+	
+	
+	
+	
 #======================== Start ========================
         
 if __name__ == '__main__':
