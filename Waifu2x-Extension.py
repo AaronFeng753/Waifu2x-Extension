@@ -2,7 +2,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v1.6'
+Version_current='v1.61'
 
 import time
 import threading
@@ -81,7 +81,7 @@ def ChooseFormat(Version_current):
 			os.system('color 0b')
 		elif mode == "v":
 			os.system('cls')
-			os.system('color 09')
+			os.system('color 0b')
 			Video_()
 			os.system('cls')
 			os.system('color 0b')
@@ -103,7 +103,7 @@ def ChooseFormat(Version_current):
 			os.system('cls')
 		elif mode == "ci":
 			os.system('cls')
-			os.system('color 09')
+			os.system('color 0b')
 			Compress_image()
 			os.system('cls')
 			os.system('color 0b')
@@ -260,7 +260,7 @@ def Video_():
 			os.system('cls')
 			os.system('color 0c')
 			input('Error : wrong input,pls press any key to return')
-			os.system('color 09')
+			os.system('color 0b')
 			os.system('cls')
 			
 #============================= Compress_image Menu ===============================
@@ -293,7 +293,7 @@ def Compress_image():
 			os.system('cls')
 			os.system('color 0c')
 			input('Error : wrong input,pls press any key to return')
-			os.system('color 09')
+			os.system('color 0b')
 			os.system('cls')
 
 #============================= Compress_gif Menu ===============================
@@ -326,7 +326,7 @@ def Compress_gif():
 			os.system('cls')
 			os.system('color 0c')
 			input('Error : wrong input,pls press any key to return')
-			os.system('color 09')
+			os.system('color 0b')
 			os.system('cls')
 		
 #======================================Image_MODE A===============================
@@ -3181,6 +3181,7 @@ def Benchmark():
 	print('Wait 60 seconds to cool the computer.')
 	time.sleep(60)
 	settings_values = ReadSettings()
+	notificationSound = settings_values['notificationSound']
 	models = 'models-upconv_7_anime_style_art_rgb'
 	scale = '2'
 	noiseLevel = '3'
@@ -3216,12 +3217,13 @@ def Benchmark():
 		tileSize=tileSize+50
 		print('Wait 60 seconds to cool the computer.')
 		time.sleep(60)
-		
+	if notificationSound.lower() == 'y':
+			PlayNotificationSound()
 	print('==================================================================')
 	print('The best value of "tile size" of your computer is:',old_tileSize)
 	if input('Do you wanna use the result value? (y/n): ').lower().strip(' ') != 'y':
 		return 0
-	settings_values['tileSize']=old_tileSize
+	settings_values['tileSize']=str(old_tileSize)
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 		
