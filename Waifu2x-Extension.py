@@ -365,8 +365,8 @@ def Compress_gif():
 #======================================Image_MODE A===============================
 def Image_ModeA():
 	print("=================Image_MODE A================")
-	print("Type '?r' to return to the previous menu")
-	print("Type '?o' to stop input more path, and input path must be a folder, not a file")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a folder, not a file")
 	print("Scaled images will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -380,9 +380,9 @@ def Image_ModeA():
 		while inputPathError:
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
-			if inputPath.lower() == '?r':
+			if inputPath.lower() == 'r':
 				return 1
-			elif inputPath.lower() == '?o':
+			elif inputPath.lower() == 'o':
 				inputPathOver = False
 				inputPathError = False
 				break
@@ -443,7 +443,7 @@ def Image_ModeA():
 #=====================================Image_MODE B======================================
 def Image_ModeB():
 	print("=================Image_MODE B================")
-	print("Type '?r' to return to the previous menu")
+	print("Type 'r' to return to the previous menu")
 	print("Input path must be a folder, not a file")
 	print("Scaled images will be in the input-path \n")
 	settings_values = ReadSettings()
@@ -456,7 +456,7 @@ def Image_ModeB():
 	while inputPathError:
 		inputPath = input('input-path: ')
 		inputPath=inputPath.strip('"').strip('\\').strip(' ')
-		if inputPath.lower() == '?r':
+		if inputPath.lower() == 'r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
 			print('-----------------------------')
@@ -614,8 +614,8 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 #=============================Image_MODE C=====================================
 def Image_ModeC():
 	print("=================Image_MODE C================")
-	print("Type '?r' to return to the previous menu")
-	print("Type '?o' to stop input more path, and input path must be a file")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a file")
 	print("Scaled images will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -628,9 +628,9 @@ def Image_ModeC():
 		while inputPathError:
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
-			if inputPath.lower() == '?r':
+			if inputPath.lower() == 'r':
 				return 1
-			elif inputPath.lower() == '?o':
+			elif inputPath.lower() == 'o':
 				inputPathOver = False
 				inputPathError = False
 				break
@@ -728,8 +728,8 @@ def Image_ModeC():
 #======================================Gif_MODE A========================================
 def Gif_ModeA():
 	print("====================== Gif_MODE A =====================")
-	print("Type '?r' to return to the previous menu")
-	print("Type '?o' to stop input more path, and input path must be a folder")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a folder")
 	print("Scaled images will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -744,9 +744,9 @@ def Gif_ModeA():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
-			if inputPath.lower() == '?r':
+			if inputPath.lower() == 'r':
 				return 1
-			elif inputPath.lower() == '?o':
+			elif inputPath.lower() == 'o':
 				inputPathOver = False
 				inputPathError = False
 				break
@@ -898,7 +898,7 @@ def Gif_ModeA():
 #===================================Gif_MODE B========================================
 def Gif_ModeB():
 	print("====================== Gif_MODE B =====================")
-	print("Type '?r' to return to the previous menu")
+	print("Type 'r' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Scaled images will be in it's original path \n")
 	settings_values = ReadSettings()
@@ -911,7 +911,7 @@ def Gif_ModeB():
 	while inputPathError:
 		inputPath_ = input('input-path: ')
 		
-		if inputPath_.lower() == '?r':
+		if inputPath_.lower() == 'r':
 			return 1
 		elif inputPath_ == '' or os.path.exists(inputPath_) == False:
 			print('-----------------------------')
@@ -1057,8 +1057,8 @@ def Gif_ModeB():
 #===================================Gif_MODE C======================================
 def Gif_ModeC():
 	print("====================== Gif_MODE C =====================")
-	print("Type '?r' to return to the previous menu")
-	print("Type '?o' to stop input more path, and input path must be a .gif file")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a .gif file")
 	print("Scaled images will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -1073,9 +1073,9 @@ def Gif_ModeC():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
-			if inputPath.lower() == '?r':
+			if inputPath.lower() == 'r':
 				return 1
-			elif inputPath.lower() == '?o':
+			elif inputPath.lower() == 'o':
 				inputPathOver = False
 				inputPathError = False
 				break
@@ -1213,8 +1213,8 @@ def Gif_ModeC():
 #=============================== Video_MODE A ==============================
 def Video_ModeA():
 	print("================ Video_MODE A ===============")
-	print("Type '?r' to return to the previous menu")
-	print("Type '?o' to stop input more path, and input path must be a folder")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a folder")
 	print("Scaled files will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -1228,11 +1228,11 @@ def Video_ModeA():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
-			if inputPath.lower() == '?o':
+			if inputPath.lower() == 'o':
 				inputPathOver = False
 				inputPathError = False
 				break
-			elif inputPath.lower() == '?r':
+			elif inputPath.lower() == 'r':
 				return 1
 			elif inputPath == '' or os.path.exists(inputPath) == False:
 				print('-----------------------------')
@@ -1363,7 +1363,7 @@ def Video_ModeA():
 #==================================== Video_MODE B =============================
 def Video_ModeB():
 	print("================ Video_MODE B ===============")
-	print("Type '?r' to return to the previous menu")
+	print("Type 'r' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Scaled files will be in the input-path \n")
 	settings_values = ReadSettings()
@@ -1377,7 +1377,7 @@ def Video_ModeB():
 		inputPath_ = input('input-path: ')
 		inputPath_=inputPath_.strip('"').strip('\\').strip(' ')
 		
-		if inputPath_.lower() == '?r':
+		if inputPath_.lower() == 'r':
 			return 1
 		elif inputPath_ == '' or os.path.exists(inputPath_) == False:
 			print('-----------------------------')
@@ -1506,8 +1506,8 @@ def Video_ModeB():
 #===================================== Video_MODE C =============================
 def Video_ModeC():
 	print("================ Video_MODE C ===============")
-	print("Type '?r' to return to the previous menu")
-	print("Type '?o' to stop input more path, and input path must be a video file")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a video file")
 	print("Scaled files will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -1521,11 +1521,11 @@ def Video_ModeC():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
-			if inputPath.lower() == '?o':
+			if inputPath.lower() == 'o':
 				inputPathOver = False
 				inputPathError = False
 				break
-			elif inputPath.lower() == '?r':
+			elif inputPath.lower() == 'r':
 				return 1
 			if inputPath == '' or os.path.exists(inputPath) == False:
 				print('-----------------------------')
@@ -1650,8 +1650,8 @@ def Video_ModeC():
 #============================= Compress_image_ModeA ===============================
 def Compress_image_ModeA():
 	print("================= Compress_image_ModeA ================")
-	print("Type '?r' to return to the previous menu")
-	print("Type '?o' to stop input more path, and input path must be a folder")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a folder")
 	print("Compressed images will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -1664,9 +1664,9 @@ def Compress_image_ModeA():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
-			if inputPath.lower() == '?r':
+			if inputPath.lower() == 'r':
 				return 1
-			elif inputPath.lower() == '?o':
+			elif inputPath.lower() == 'o':
 				inputPathOver = False
 				inputPathError = False
 				break
@@ -1696,73 +1696,14 @@ def Compress_image_ModeA():
 			for fname in fnames:
 				inputPathList_files.append(path+'\\'+fname)
 			break
-
-	TotalFileNum = len(inputPathList_files)
-	FinishedFileNum = 1
-	saved_size_total=0
 	
-	if multiThread.lower() == 'y':
-		print('Start compressing, pls wait....')
-		Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality)
-		time.sleep(1)
-		total_time_end=time.time()
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
-	else:
+	Process_compress_image(total_time_start,inputPathList_files,delorginal,multiThread,notificationSound,JpgQuality)
 	
-		for inputPath in inputPathList_files:
-			
-			file_ext = os.path.splitext(inputPath)[1]
-			
-			if file_ext == '.gif':
-				continue
-			
-			scaledFilePath = os.path.splitext(inputPath)[0]
-			fileNameAndExt=str(os.path.basename(inputPath))
-			
-			original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-			
-			print(inputPath)
-			print('Original size:'+original_size)
-			print('Compressing.....')
-			
-			imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
-			
-			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
-			
-			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
-			if saved_size <= 0:
-				os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
-				print('Failed to compress '+inputPath)
-			else:
-				saved_size_total = saved_size_total+saved_size
-				saved_size_str = str(saved_size)+'KB'
-				print('Compressed size:'+compressed_size)
-				print('Save '+saved_size_str+' !')
-				print('')	
-				if delorginal.lower() == 'y':
-					os.system('del /q "'+inputPath+'"')
-				
-			FinishedFileNum = FinishedFileNum+1
-			print('--------------------------------------------')
-			
-				
-		total_time_end=time.time()
-		
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		print('\nTotal saved space: ',saved_size_total,'KB\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
 
 #============================= Compress_image_ModeB ===============================
 def Compress_image_ModeB():
 	print("================= Compress_image_ModeB ================")
-	print("Type '?r' to return to the previous menu")
+	print("Type 'r' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
@@ -1771,7 +1712,7 @@ def Compress_image_ModeB():
 	while True:
 		inputPath = input('input-path: ')
 		inputPath =inputPath.strip('"').strip('\\').strip(' ')
-		if inputPath.lower() == '?r':
+		if inputPath.lower() == 'r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
 			print('-----------------------------')
@@ -1793,10 +1734,55 @@ def Compress_image_ModeB():
 		for fname in fnames:
 			inputPathList_files.append(path+'\\'+fname)
 	
-	TotalFileNum = len(inputPathList_files)
-	FinishedFileNum = 1
-	saved_size_total=0
+	Process_compress_image(total_time_start,inputPathList_files,delorginal,multiThread,notificationSound,JpgQuality)
 	
+
+
+#============================= Compress_image_ModeC ===============================
+def Compress_image_ModeC():
+	print("================= Compress_image_ModeC ================")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a image")
+	print("Compressed images will be in the input-path \n")
+	inputPathOver = True
+	inputPathList = []
+	JpgQuality=90
+	settings_values = ReadSettings()
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
+			
+			if inputPath.lower() == 'r':
+				return 1
+			elif inputPath.lower() == 'o':
+				inputPathOver = False
+				inputPathError = False
+				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPathList.append(inputPath)
+	
+	delorginal = input_delorginal()
+	multiThread = settings_values['multiThread']
+	notificationSound = settings_values['notificationSound']
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+	
+	Process_compress_image(total_time_start,inputPathList,delorginal,multiThread,notificationSound,JpgQuality)
+
+	
+#=================================== Process_compress_image ===============================================
+
+def Process_compress_image(total_time_start,inputPathList_files,delorginal,multiThread,notificationSound,JpgQuality):
 	if multiThread.lower() == 'y':
 		print('Start compressing, pls wait....')
 		Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality)
@@ -1808,7 +1794,7 @@ def Compress_image_ModeB():
 			thread_Notification.start()
 		input('\nPress Enter key to return to the menu')
 	else:
-	
+		saved_size_total = 0
 		for inputPath in inputPathList_files:
 			
 			file_ext = os.path.splitext(inputPath)[1]
@@ -1842,7 +1828,6 @@ def Compress_image_ModeB():
 				if delorginal.lower() == 'y':
 					os.system('del /q "'+inputPath+'"')
 				
-			FinishedFileNum = FinishedFileNum+1
 			print('--------------------------------------------')
 			
 				
@@ -1855,112 +1840,11 @@ def Compress_image_ModeB():
 			thread_Notification.start()
 		input('\nPress Enter key to return to the menu')
 
-
-#============================= Compress_image_ModeC ===============================
-def Compress_image_ModeC():
-	print("================= Compress_image_ModeC ================")
-	print("Type '?r' to return to the previous menu")
-	print("Type '?o' to stop input more path, and input path must be a image")
-	print("Compressed images will be in the input-path \n")
-	inputPathOver = True
-	inputPathList = []
-	JpgQuality=90
-	settings_values = ReadSettings()
-	while inputPathOver:
-		inputPathError = True
-		while inputPathError:
-			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\').strip(' ')
-			
-			if inputPath.lower() == '?r':
-				return 1
-			elif inputPath.lower() == '?o':
-				inputPathOver = False
-				inputPathError = False
-				break
-			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('-----------------------------')
-				print('Error,input-path is invalid!!')
-				print('-----------------------------')
-			else:
-				inputPathError = False
-		if inputPathOver == True:
-			inputPathList.append(inputPath)
-	
-	delorginal = input_delorginal()
-	multiThread = settings_values['multiThread']
-	notificationSound = settings_values['notificationSound']
-		
-	print('--------------------------------------------')
-	
-	total_time_start=time.time()
-
-	TotalFileNum = len(inputPathList)
-	FinishedFileNum = 1
-	saved_size_total=0
-	if multiThread.lower() == 'y':
-		print('Start compressing, pls wait....')
-		Multi_thread_Image_Compress(inputPathList,delorginal,JpgQuality)
-		time.sleep(1)
-		total_time_end=time.time()
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
-	else:
-	
-		for inputPath in inputPathList:
-			
-			file_ext = os.path.splitext(inputPath)[1]
-			
-			if file_ext == '.gif':
-				continue
-			
-			scaledFilePath = os.path.splitext(inputPath)[0]
-			fileNameAndExt=str(os.path.basename(inputPath))
-			
-			original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-			
-			print(inputPath)
-			print('Original size:'+original_size)
-			print('Compressing.....')
-			
-			imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
-			
-			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024))+'KB'
-			
-			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
-			if saved_size <= 0:
-				os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
-				print('Failed to compress '+inputPath)
-			else:
-				saved_size_total = saved_size_total+saved_size
-				saved_size_str = str(saved_size)+'KB'
-				print('Compressed size:'+compressed_size)
-				print('Save '+saved_size_str+' !')
-				print('')	
-				if delorginal.lower() == 'y':
-					os.system('del /q "'+inputPath+'"')
-				
-			FinishedFileNum = FinishedFileNum+1
-			print('--------------------------------------------')
-			
-				
-		total_time_end=time.time()
-		
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		print('\nTotal saved space: ',saved_size_total,'KB\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
-	
 #============================= Compress_gif_ModeA ===============================
 def Compress_gif_ModeA():
 	print("======================== Compress_gif_ModeA ======================")
-	print("Type '?r' to return to the previous menu")
-	print("Type '?o' to stop input more path, and input path must be a folder")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a folder")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -1971,9 +1855,9 @@ def Compress_gif_ModeA():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
-			if inputPath.lower() == '?r':
+			if inputPath.lower() == 'r':
 				return 1
-			elif inputPath.lower() == '?o':
+			elif inputPath.lower() == 'o':
 				inputPathOver = False
 				inputPathError = False
 				break
@@ -2003,10 +1887,6 @@ def Compress_gif_ModeA():
 			for fname in fnames:
 				inputPathList_files.append(path+'\\'+fname)
 			break
-
-	TotalFileNum = len(inputPathList_files)
-	FinishedFileNum = 1
-	saved_size_total=0
 	
 	if multiThread.lower() == 'y':
 		print('Start compressing, pls wait....')
@@ -2019,6 +1899,7 @@ def Compress_gif_ModeA():
 			thread_Notification.start()
 		input('\nPress Enter key to return to the menu')
 	else:
+		saved_size_total = 0
 		for inputPath in inputPathList_files:
 			
 			file_ext = os.path.splitext(inputPath)[1]
@@ -2051,7 +1932,6 @@ def Compress_gif_ModeA():
 				if delorginal.lower() == 'y':
 					os.system('del /q "'+inputPath+'"')
 				
-			FinishedFileNum = FinishedFileNum+1
 			print('--------------------------------------------')
 				
 		total_time_end=time.time()
@@ -2066,7 +1946,7 @@ def Compress_gif_ModeA():
 #============================= Compress_gif_ModeB ===============================
 def Compress_gif_ModeB():
 	print("================= Compress_gif_ModeB ================")
-	print("Type '?r' to return to the previous menu")
+	print("Type 'r' to return to the previous menu")
 	print("Input path must be a folder")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
@@ -2074,7 +1954,7 @@ def Compress_gif_ModeB():
 	while True:
 		inputPath = input('input-path: ')
 		inputPath =inputPath.strip('"').strip('\\').strip(' ')
-		if inputPath.lower() == '?r':
+		if inputPath.lower() == 'r':
 			return 1
 		elif inputPath == '' or os.path.exists(inputPath) == False:
 			print('-----------------------------')
@@ -2098,10 +1978,6 @@ def Compress_gif_ModeB():
 		for fname in fnames:
 			inputPathList_files.append(path+'\\'+fname)
 	
-	TotalFileNum = len(inputPathList_files)
-	FinishedFileNum = 1
-	saved_size_total=0
-	
 	if multiThread.lower() == 'y':
 		print('Start compressing, pls wait....')
 		Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal)
@@ -2113,6 +1989,7 @@ def Compress_gif_ModeB():
 			thread_Notification.start()
 		input('\nPress Enter key to return to the menu')
 	else:
+		saved_size_total = 0
 		for inputPath in inputPathList_files:
 			
 			file_ext = os.path.splitext(inputPath)[1]
@@ -2145,7 +2022,6 @@ def Compress_gif_ModeB():
 				if delorginal.lower() == 'y':
 					os.system('del /q "'+inputPath+'"')
 				
-			FinishedFileNum = FinishedFileNum+1
 			print('--------------------------------------------')
 				
 		total_time_end=time.time()
@@ -2161,8 +2037,8 @@ def Compress_gif_ModeB():
 #============================= Compress_gif_ModeC ===============================
 def Compress_gif_ModeC():
 	print("================= Compress_gif_ModeC ================")
-	print("Type '?r' to return to the previous menu")
-	print("Type '?o' to stop input more path, and input path must be a gif")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a gif")
 	print("Compressed images will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
@@ -2173,9 +2049,9 @@ def Compress_gif_ModeC():
 			inputPath = input('input-path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
-			if inputPath.lower() == '?r':
+			if inputPath.lower() == 'r':
 				return 1
-			elif inputPath.lower() == '?o':
+			elif inputPath.lower() == 'o':
 				inputPathOver = False
 				inputPathError = False
 				break
@@ -2197,9 +2073,6 @@ def Compress_gif_ModeC():
 	
 	total_time_start=time.time()
 
-	TotalFileNum = len(inputPathList)
-	FinishedFileNum = 1
-	saved_size_total=0
 	if multiThread.lower() == 'y':
 		print('Start compressing, pls wait....')
 		Multi_thread_Gif_Compress(inputPathList,gifCompresslevel,delorginal)
@@ -2211,6 +2084,7 @@ def Compress_gif_ModeC():
 			thread_Notification.start()
 		input('\nPress Enter key to return to the menu')
 	else:
+		saved_size_total = 0
 		for inputPath in inputPathList:
 			
 			file_ext = os.path.splitext(inputPath)[1]
@@ -2243,7 +2117,6 @@ def Compress_gif_ModeC():
 				if delorginal.lower() == 'y':
 					os.system('del /q "'+inputPath+'"')
 				
-			FinishedFileNum = FinishedFileNum+1
 			print('--------------------------------------------')
 				
 		total_time_end=time.time()
