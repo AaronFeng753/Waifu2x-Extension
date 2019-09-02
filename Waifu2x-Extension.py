@@ -426,6 +426,100 @@ def Image_ModeA():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
+	
+	Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,notificationSound,gpuId_str,saveAsJPG,turnoff,delorginal)
+			
+	total_time_end=time.time()
+	
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
+		os.system('shutdown -s')
+	if notificationSound.lower() == 'y':
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
+	
+	input('\npress Enter key to return to the menu')
+	
+#=====================================Image_MODE B======================================
+def Image_ModeB():
+	print("=================Image_MODE B================")
+	print("Type '?r' to return to the previous menu")
+	print("Input path must be a folder, not a file")
+	print("Scaled images will be in the input-path \n")
+	settings_values = ReadSettings()
+	inputPathList = []
+	orginalFileNameAndFullname = {}
+	inputPathError = True
+	JpgQuality=100
+	models = 'models-upconv_7_anime_style_art_rgb'
+	
+	while inputPathError:
+		inputPath = input('input-path: ')
+		inputPath=inputPath.strip('"').strip('\\').strip(' ')
+		if inputPath.lower() == '?r':
+			return 1
+		elif inputPath == '' or os.path.exists(inputPath) == False:
+			print('-----------------------------')
+			print('Error,input-path is invalid!!')
+			print('-----------------------------')
+		else:
+			inputPathError = False
+
+	
+	 
+	scale = input_scale()
+	if scale == '1':
+		models = 'models-cunet'
+	
+	noiseLevel = input_noiseLevel()
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
+	tileSize = settings_values['tileSize']
+	notificationSound = settings_values['notificationSound']
+	
+	gpuId = settings_values['gpuId']
+	gpuId_str=''
+	if gpuId.lower() != 'auto':
+		gpuId_str = ' -g '+gpuId
+		
+	saveAsJPG = input_saveAsJPG()
+	
+	if saveAsJPG == 'y':
+		Compress = input_Compress()
+		if Compress.lower() == 'y':
+			JpgQuality=90
+		
+	turnoff = input_turnoff()
+		
+	delorginal = input_delorginal()
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+	 
+	
+	for dirs in os.walk(inputPath):
+		inputPathList.append(str(dirs[0]))
+	
+	Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,notificationSound,gpuId_str,saveAsJPG,turnoff,delorginal)
+	
+			
+	total_time_end=time.time()
+	
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
+		os.system('shutdown -s')
+	if notificationSound.lower() == 'y':
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
+	
+	input('\npress Enter key to return to the menu')
+
+#================================== Process_ImageModeAB ===================================
+
+def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,notificationSound,gpuId_str,saveAsJPG,turnoff,delorginal):
 	for inputPath in inputPathList:
 		ProtectFiles(inputPath)
 		oldfilenumber=FileCount(inputPath)
@@ -516,185 +610,7 @@ def Image_ModeA():
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
 		RecoverFiles(inputPath)
-			
-	total_time_end=time.time()
-	
-	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
-	if turnoff.lower()=='y':
-		os.system('shutdown -s')
-	if notificationSound.lower() == 'y':
-		thread_Notification=Play_Notification_Sound_Thread()
-		thread_Notification.start()
-	
-	input('\npress Enter key to return to the menu')
-	
-#=====================================Image_MODE B======================================
-def Image_ModeB():
-	print("=================Image_MODE B================")
-	print("Type '?r' to return to the previous menu")
-	print("Input path must be a folder, not a file")
-	print("Scaled images will be in the input-path \n")
-	settings_values = ReadSettings()
-	inputPathList = []
-	orginalFileNameAndFullname = {}
-	inputPathError = True
-	JpgQuality=100
-	models = 'models-upconv_7_anime_style_art_rgb'
-	
-	while inputPathError:
-		inputPath = input('input-path: ')
-		inputPath=inputPath.strip('"').strip('\\').strip(' ')
-		if inputPath.lower() == '?r':
-			return 1
-		elif inputPath == '' or os.path.exists(inputPath) == False:
-			print('-----------------------------')
-			print('Error,input-path is invalid!!')
-			print('-----------------------------')
-		else:
-			inputPathError = False
 
-	
-	 
-	scale = input_scale()
-	if scale == '1':
-		models = 'models-cunet'
-	
-	noiseLevel = input_noiseLevel()
-	multiThread_Scale = settings_values['multiThread_Scale']
-	load_proc_save_str = ' -j 2:2:2 '
-	if multiThread_Scale.lower() == 'n':
-		load_proc_save_str = ' -j 1:1:1 '
-	tileSize = settings_values['tileSize']
-	notificationSound = settings_values['notificationSound']
-	
-	gpuId = settings_values['gpuId']
-	gpuId_str=''
-	if gpuId.lower() != 'auto':
-		gpuId_str = ' -g '+gpuId
-		
-	saveAsJPG = input_saveAsJPG()
-	
-	if saveAsJPG == 'y':
-		Compress = input_Compress()
-		if Compress.lower() == 'y':
-			JpgQuality=90
-		
-	turnoff = input_turnoff()
-		
-	delorginal = input_delorginal()
-		
-	print('--------------------------------------------')
-	
-	total_time_start=time.time()
-	 
-	
-	for dirs in os.walk(inputPath):
-		inputPathList.append(str(dirs[0]))
-		
-	for inputPath in inputPathList:
-		
-		ProtectFiles(inputPath)
-		
-		oldfilenumber=FileCount(inputPath)
-		scalepath = inputPath+"\\scaled\\"
-		
-		for files in os.walk(inputPath):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				orginalFileNameAndFullname[fileName]= fileNameAndExt
-		if scale == '4':
-			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 1)
-			thread1.start()
-		else:
-			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 0)
-			thread1.start()
-				
-		os.mkdir(inputPath+"\\scaled\\")
-		
-		if scale == '4':
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
-				
-			File_x2=[]
-			for path,useless,filenames in os.walk(inputPath+"\\scaled\\"):
-				for filename in filenames:
-					File_x2.append(path+'\\'+filename)
-			
-			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2)
-			thread1.start()
-			
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
-			
-			for f in File_x2:
-				os.system('del /q "'+f+'"')
-			
-			for files in os.walk(inputPath+'\\scaled\\'):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileName))
-			
-		else:
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-		
-		
-		if thread1.isAlive()==True:
-			time.sleep(2)
-			if thread1.isAlive()==True:
-				stop_thread(thread1)
-		
-		if saveAsJPG.lower() == 'y':
-			print('\n Convert image..... \n')
-			for path,useless,fnames in os.walk(inputPath+'\\scaled\\'):
-				for fnameAndExt in fnames:
-					pngFile = path+'\\'+fnameAndExt
-					fname = os.path.splitext(fnameAndExt)[0]
-					jpgFile = path+'\\'+fname+'.jpg'
-					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = JpgQuality)
-					os.system('del /q "'+pngFile+'"')
-					
-		
-		for files in os.walk(inputPath+'\\scaled\\'):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
-				if saveAsJPG.lower() == 'y':
-					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.jpg"))
-				else:
-					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
-		orginalFileNameAndFullname = {}	
-		
-		
-		print('')
-		if delorginal.lower() == 'y':
-			DelOrgFiles(inputPath)
-		print('Copy files...')
-		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
-		os.system("rd /s/q \""+inputPath+"\\scaled\"")
-		RecoverFiles(inputPath)
-			
-	total_time_end=time.time()
-	
-	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
-	if turnoff.lower()=='y':
-		os.system('shutdown -s')
-	if notificationSound.lower() == 'y':
-		thread_Notification=Play_Notification_Sound_Thread()
-		thread_Notification.start()
-	
-	input('\npress Enter key to return to the menu')
-	
 #=============================Image_MODE C=====================================
 def Image_ModeC():
 	print("=================Image_MODE C================")
