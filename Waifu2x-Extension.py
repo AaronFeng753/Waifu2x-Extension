@@ -2,7 +2,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v1.62'
+Version_current='v1.65'
 
 import time
 import threading
@@ -31,7 +31,7 @@ def ChooseFormat():
 	multiThread_Scale = settings_values['multiThread_Scale']
 	
 	while True:
-		print(' Waifu2x-Extension | '+Version_current+' | 2019/9/1 | Author: Aaron Feng')
+		print(' Waifu2x-Extension | '+Version_current+' | Author: Aaron Feng')
 		print(' Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('┌──────────────────────────────────────────────────────────────┐')
 		print("│ Attention: This software's scale & denoise function is only  │")
