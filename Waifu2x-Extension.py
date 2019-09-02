@@ -427,7 +427,7 @@ def Image_ModeA():
 	
 	total_time_start=time.time()
 	
-	Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,notificationSound,gpuId_str,saveAsJPG,turnoff,delorginal)
+	Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,turnoff,delorginal)
 			
 	total_time_end=time.time()
 	
@@ -503,7 +503,7 @@ def Image_ModeB():
 	for dirs in os.walk(inputPath):
 		inputPathList.append(str(dirs[0]))
 	
-	Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,notificationSound,gpuId_str,saveAsJPG,turnoff,delorginal)
+	Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,turnoff,delorginal)
 	
 			
 	total_time_end=time.time()
@@ -519,7 +519,7 @@ def Image_ModeB():
 
 #================================== Process_ImageModeAB ===================================
 
-def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,notificationSound,gpuId_str,saveAsJPG,turnoff,delorginal):
+def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,delorginal):
 	for inputPath in inputPathList:
 		ProtectFiles(inputPath)
 		oldfilenumber=FileCount(inputPath)
@@ -797,94 +797,7 @@ def Gif_ModeA():
 					inputPathList_files.append(path+'\\'+fname)
 			break
 	
-	for inputPath in inputPathList_files:
-		
-		file_ext = os.path.splitext(inputPath)[1]
-		
-		if file_ext != '.gif':
-			continue
-		
-		scaledFilePath = os.path.splitext(inputPath)[0]
-			
-		TIME_GAP=getDuration(inputPath)
-		print('Split gif.....')
-		splitGif(inputPath,scaledFilePath)
-		
-		oldfilenumber=FileCount(scaledFilePath+'_split')
-		
-		for files in os.walk(scaledFilePath+'_split'):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				orginalFileNameAndFullname[fileName]= fileNameAndExt
-				
-	
-		os.mkdir(scaledFilePath+'_split\\scaled')
-		print('scal images.....')
-		if scale == '4': 
-			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
-			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
-			File_x2=[]
-			for path,useless,filenames in os.walk(scaledFilePath+'_split\\scaled\\'):
-				for filename in filenames:
-					File_x2.append(path+'\\'+filename)
-			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
-			thread1.start()		
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
-			for f in File_x2:
-				os.system('del /q "'+f+'"')
-			
-			for files in os.walk(scaledFilePath+'_split\\scaled\\'):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',fileName))
-			
-		else:
-			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
-			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
-		print('')	
-		
-		for files in os.walk(scaledFilePath+'_split\\scaled\\'):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
-				os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',originalName+".png"))
-		orginalFileNameAndFullname = {}
-		
-		
-		print('Assembling Gif.....')
-		assembleGif(scaledFilePath,TIME_GAP)
-		print('Gif assembled')
-		
-		os.system("rd /s/q \""+scaledFilePath+'_split"')
-		
-		if delorginal.lower() == 'y':
-			os.system('del /q "'+inputPath+'"')
-		
-		
-		if highQuality.lower() == 'n':
-			print('Compressing gif....')
-			compress_gif(scaledFilePath+'_waifu2x.gif',gifCompresslevel)
-			os.system('del /q "'+scaledFilePath+'_waifu2x.gif'+'"')
-			print('Gif compressed\n')
-		else:
-			print('')
+	process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal)
 	total_time_end=time.time()
 	
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
@@ -956,92 +869,7 @@ def Gif_ModeB():
 			if os.path.splitext(fname)[1] == '.gif':
 				inputPathList_files.append(path+'\\'+fname)
 	
-	for inputPath in inputPathList_files:
-		
-		file_ext = os.path.splitext(inputPath)[1]
-		
-		if file_ext != '.gif':
-			continue
-		
-		scaledFilePath = os.path.splitext(inputPath)[0]
-			
-		TIME_GAP=getDuration(inputPath)
-		print('Split gif.....')
-		splitGif(inputPath,scaledFilePath)
-		
-		oldfilenumber=FileCount(scaledFilePath+'_split')
-		
-		for files in os.walk(scaledFilePath+'_split'):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				orginalFileNameAndFullname[fileName]= fileNameAndExt
-				
-	
-		os.mkdir(scaledFilePath+'_split\\scaled')
-		print('scal images.....')
-		if scale == '4': 
-			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
-			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
-			File_x2=[]
-			for path,useless,filenames in os.walk(scaledFilePath+'_split\\scaled\\'):
-				for filename in filenames:
-					File_x2.append(path+'\\'+filename)
-			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
-			thread1.start()		
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
-			for f in File_x2:
-				os.system('del /q "'+f+'"')
-			
-			for files in os.walk(scaledFilePath+'_split\\scaled\\'):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',fileName))
-			
-		else:
-			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
-			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
-		print('')	
-		
-		for files in os.walk(scaledFilePath+'_split\\scaled\\'):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
-				os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',originalName+".png"))
-		orginalFileNameAndFullname = {}
-		
-		print('Assembling Gif.....')
-		assembleGif(scaledFilePath,TIME_GAP)
-		print('Gif assembled')
-		
-		os.system("rd /s/q \""+scaledFilePath+'_split"')
-		
-		if delorginal.lower() == 'y':
-			os.system('del /q "'+inputPath+'"')
-		
-		if highQuality.lower() == 'n':
-			print('Compressing gif....')
-			compress_gif(scaledFilePath+'_waifu2x.gif',gifCompresslevel)
-			os.system('del /q "'+scaledFilePath+'_waifu2x.gif'+'"')
-			print('Gif compressed\n')
-		else:
-			print('')
+	process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal)
 		
 	total_time_end=time.time()
 	
@@ -1118,7 +946,27 @@ def Gif_ModeC():
 	
 	total_time_start=time.time()
 	 
-	for inputPath in inputPathList:
+	process_gif_scale_modeABC(inputPathList,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal)
+		
+	total_time_end=time.time()
+	
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
+		os.system('shutdown -s')
+	if notificationSound.lower() == 'y':
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
+	input('\npress Enter key to exit')
+
+#=======================================  process_gif_scale_modeABC ===================================
+def process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal):
+	for inputPath in inputPathList_files:
+		
+		file_ext = os.path.splitext(inputPath)[1]
+		
+		if file_ext != '.gif':
+			continue
+		
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
 		TIME_GAP=getDuration(inputPath)
@@ -1190,7 +1038,7 @@ def Gif_ModeC():
 		
 		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')
-			
+		
 		if highQuality.lower() == 'n':
 			print('Compressing gif....')
 			compress_gif(scaledFilePath+'_waifu2x.gif',gifCompresslevel)
@@ -1198,16 +1046,6 @@ def Gif_ModeC():
 			print('Gif compressed\n')
 		else:
 			print('')
-		
-	total_time_end=time.time()
-	
-	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
-	if turnoff.lower()=='y':
-		os.system('shutdown -s')
-	if notificationSound.lower() == 'y':
-		thread_Notification=Play_Notification_Sound_Thread()
-		thread_Notification.start()
-	input('\npress Enter key to exit')
 
 
 #=============================== Video_MODE A ==============================
@@ -1219,7 +1057,6 @@ def Video_ModeA():
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
-	JpgQuality=100
 	models = 'models-upconv_7_anime_style_art_rgb'
 
 	while inputPathOver:
@@ -1275,81 +1112,7 @@ def Video_ModeA():
 				inputPathList_files.append(path+'\\'+fname)
 			break
 	
-	for inputPath in inputPathList_files:
-		
-		video2images(inputPath) #拆解视频
-		
-		frames_dir = os.path.dirname(inputPath)+'\\'+'frames'
-		
-		oldfilenumber=FileCount(frames_dir)
-		
-		os.mkdir(frames_dir+"\\scaled\\")
-		
-		if scale == '4':
-			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
-			thread2.start()
-			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			if thread2.isAlive()==True:
-				time.sleep(2)
-				if thread2.isAlive()==True:
-					stop_thread(thread2)
-			
-			for files in os.walk(frames_dir+"\\scaled"):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-					
-			File_x2=[]
-			for path,useless,filenames in os.walk(frames_dir+"\\scaled"):
-				for filename in filenames:
-					File_x2.append(path+'\\'+filename)
-			
-			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
-			thread2.start()
-			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			if thread2.isAlive()==True:
-				time.sleep(2)
-				if thread2.isAlive()==True:
-					stop_thread(thread2)
-			
-			for f in File_x2:
-				os.system('del /q "'+f+'"')
-			
-			for files in os.walk(frames_dir+"\\scaled"):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-			
-		else:
-			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
-			thread2.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread2.isAlive()==True:
-				time.sleep(2)
-				if thread2.isAlive()==True:
-					stop_thread(thread2)
-			for files in os.walk(frames_dir+"\\scaled"):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-		
-		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
-		
-
-				
-		if os.path.splitext(inputPath)[1] != '.mp4':
-			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
-			
-		if delorginal.lower() == 'y':
-			os.system('del /q "'+inputPath+'"')	
-			
+	process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,delorginal)
 	total_time_end=time.time()
 	
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
@@ -1369,7 +1132,6 @@ def Video_ModeB():
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPath_ = ''
-	JpgQuality=100
 	models = 'models-upconv_7_anime_style_art_rgb'
 
 	inputPathError = True
@@ -1416,83 +1178,7 @@ def Video_ModeB():
 		for fname in fnames:
 			inputPathList_files.append(path+'\\'+fname)
 
-	
-	for inputPath in inputPathList_files:
-		
-		video2images(inputPath) #拆解视频
-		
-		frames_dir = os.path.dirname(inputPath)+'\\'+'frames'
-		
-		oldfilenumber=FileCount(frames_dir)
-		
-		os.mkdir(frames_dir+"\\scaled\\")
-		
-		if scale == '4':
-			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
-			thread2.start()
-			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			if thread2.isAlive()==True:
-				time.sleep(2)
-				if thread2.isAlive()==True:
-					stop_thread(thread2)
-			
-			for files in os.walk(frames_dir+"\\scaled"):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-					
-			File_x2=[]
-			for path,useless,filenames in os.walk(frames_dir+"\\scaled"):
-				for filename in filenames:
-					File_x2.append(path+'\\'+filename)
-			
-			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
-			thread2.start()
-			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			if thread2.isAlive()==True:
-				time.sleep(2)
-				if thread2.isAlive()==True:
-					stop_thread(thread2)
-			
-			for f in File_x2:
-				os.system('del /q "'+f+'"')
-			
-			for files in os.walk(frames_dir+"\\scaled"):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-			
-		
-		else:
-			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
-			thread2.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread2.isAlive()==True:
-				time.sleep(2)
-				if thread2.isAlive()==True:
-					stop_thread(thread2)
-			for files in os.walk(frames_dir+"\\scaled"):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-		
-		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
-		
-
-				
-		if os.path.splitext(inputPath)[1] != '.mp4':
-			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
-			
-		if delorginal.lower() == 'y':
-			os.system('del /q "'+inputPath+'"')	
-			
+	process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,delorginal)
 	total_time_end=time.time()
 	
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
@@ -1512,7 +1198,6 @@ def Video_ModeC():
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
-	JpgQuality=100
 	models = 'models-upconv_7_anime_style_art_rgb'
 
 	while inputPathOver:
@@ -1560,9 +1245,20 @@ def Video_ModeC():
 	
 	total_time_start=time.time()
 
-	 
-	for inputPath in inputPathList:
-		
+	process_video_modeABC(inputPathList,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,delorginal)
+	total_time_end=time.time()
+	
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
+		os.system('shutdown -s')
+	if notificationSound.lower() == 'y':
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
+	input('\npress Enter key to exit')
+	
+#======================================= process_video_modeABC ============================
+def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,delorginal):
+	for inputPath in inputPathList_files:
 		video2images(inputPath) #拆解视频
 		
 		frames_dir = os.path.dirname(inputPath)+'\\'+'frames'
@@ -1612,7 +1308,6 @@ def Video_ModeC():
 					fileName=os.path.splitext(fileNameAndExt)[0]
 					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
 			
-		
 		else:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
 			thread2.start()
@@ -1629,23 +1324,13 @@ def Video_ModeC():
 		
 		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
 		
-
+	
 				
 		if os.path.splitext(inputPath)[1] != '.mp4':
 			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
 			
 		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')	
-			
-	total_time_end=time.time()
-	
-	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
-	if turnoff.lower()=='y':
-		os.system('shutdown -s')
-	if notificationSound.lower() == 'y':
-		thread_Notification=Play_Notification_Sound_Thread()
-		thread_Notification.start()
-	input('\npress Enter key to exit')
 
 #============================= Compress_image_ModeA ===============================
 def Compress_image_ModeA():
