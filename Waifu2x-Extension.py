@@ -21,16 +21,17 @@ from multiprocessing import cpu_count
 import traceback
 from playsound import playsound
 
-def ChooseFormat(Version_current):
+def ChooseFormat():
 	
 	settings_values = ReadSettings()
 	tileSize = settings_values['tileSize']
 	gpuId = settings_values['gpuId']
 	notificationSound = settings_values['notificationSound']
 	multiThread = settings_values['multiThread']
+	multiThread_Scale = settings_values['multiThread_Scale']
 	
 	while True:
-		print(' Waifu2x-Extension | '+Version_current+'-Stable | 2019/9/1 | Author: Aaron Feng')
+		print(' Waifu2x-Extension | '+Version_current+' | 2019/9/1 | Author: Aaron Feng')
 		print(' Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('┌──────────────────────────────────────────────────────────────┐')
 		print("│ Attention: This software's scale & denoise function is only  │")
@@ -42,13 +43,13 @@ def ChooseFormat(Version_current):
 		print('│                                                              │')
 		print('│ V : Scale & denoise video.                                   │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ T : Tile size: '+tileSize+' '*(46-len(tileSize))+'│')
-		print('│                                                              │')
-		print('│ GI : GPU ID: '+gpuId+' '*(48-len(gpuId))+'│')
+		print('│ T : Tile size: '+tileSize+'         '+'GI : GPU ID: '+gpuId+' '*(24-len(tileSize)-len(gpuId))+'│')
 		print('│                                                              │')
 		print('│ N : Notification sound: '+notificationSound+'                                    │')
 		print('│                                                              │')
-		print('│ M : Multithreading: '+multiThread+'                                        │')
+		print('│ MS : Multithreading(Scale & denoise): '+multiThread_Scale+'                      │')
+		print('│                                                              │')
+		print('│ MC : Multithreading(Compress): '+multiThread+'                             │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ CI : Compress image. (Almost lossless)                       │')
 		print('│                                                              │')
@@ -56,7 +57,7 @@ def ChooseFormat(Version_current):
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ S : Settings.           B : Benchmark.                       │')
 		print('│                                                              │')
-		print('│ EL : Read error log.    U : Check update.                    │')
+		print('│ RE : Read error log.    U : Check update.                    │')
 		print('│                                                              │')
 		print('│ R : Readme.             D : Donate. (Alipay)                 │')
 		print('│                                                              │')
@@ -64,7 +65,7 @@ def ChooseFormat(Version_current):
 		print('│                                                              │')
 		print('│ E : Exit.                                                    │')
 		print('└──────────────────────────────────────────────────────────────┘')
-		print('( i / g / v / t / gi / n / m / ci / cg / s / b / el / u / r / d / l / vg / e ): '.upper())
+		print('( i / g / v / t / gi / n / ms / mc / ci / cg / s / b / re / u / r / d / l / vg / e ): '.upper())
 		mode = input()
 		mode = mode.lower().strip(' ')
 		if mode == "i":
@@ -109,14 +110,21 @@ def ChooseFormat(Version_current):
 			notificationSound = settings_values['notificationSound']
 			
 			os.system('cls')
-		elif mode == "m":
+			
+		elif mode == "mc":
 			os.system('cls')
 			input_multiThread()
-			
 			settings_values = ReadSettings()
 			multiThread = settings_values['multiThread']
-			
 			os.system('cls')
+		
+		elif mode == "ms":
+			os.system('cls')
+			input_multiThread_Scale()
+			settings_values = ReadSettings()
+			multiThread_Scale = settings_values['multiThread_Scale']
+			os.system('cls')
+			
 		elif mode == "ci":
 			os.system('cls')
 			os.system('color 0b')
@@ -143,7 +151,7 @@ def ChooseFormat(Version_current):
 			os.system('color 07')
 			os.system('cls')
 			return 0
-		elif mode == "el":
+		elif mode == "re":
 			os.system('cls')
 			os.system('color 07')
 			Error_Log()
@@ -151,7 +159,7 @@ def ChooseFormat(Version_current):
 			os.system('color 0b')
 		elif mode == "u":
 			os.system('cls')
-			checkUpdate(Version_current)
+			checkUpdate()
 			os.system('cls')
 		elif mode == "r":
 			os.system('cls')
@@ -176,7 +184,7 @@ def ChooseFormat(Version_current):
 		else:
 			os.system('cls')
 			os.system('color 0c')
-			input('Error : wrong input,pls press any key to return')
+			input('Error : wrong input,pls press Enter key to return')
 			os.system('color 0b')
 			os.system('cls')
 
@@ -194,14 +202,17 @@ def Image_():
 		mode = mode.lower().strip(' ')
 		if mode == "a":
 			os.system('cls')
+			ResizeWindow()
 			Image_ModeA()
 			os.system('cls')
 		elif mode == "b":
 			os.system('cls')
+			ResizeWindow()
 			Image_ModeB()
 			os.system('cls')
 		elif mode == "c":
 			os.system('cls')
+			ResizeWindow()
 			Image_ModeC()
 			os.system('cls')
 		elif mode == "r":
@@ -209,7 +220,7 @@ def Image_():
 		else:
 			os.system('cls')
 			os.system('color 0c')
-			input('Error : wrong input,pls press any key to return')
+			input('Error : wrong input,pls press Enter key to return')
 			os.system('color 0a')
 			os.system('cls')
 			
@@ -227,14 +238,17 @@ def Gif_():
 		mode = mode.lower().strip(' ')
 		if mode == "a":
 			os.system('cls')
+			ResizeWindow()
 			Gif_ModeA()
 			os.system('cls')
 		elif mode == "b":
 			os.system('cls')
+			ResizeWindow()
 			Gif_ModeB()
 			os.system('cls')
 		elif mode == "c":
 			os.system('cls')
+			ResizeWindow()
 			Gif_ModeC()
 			os.system('cls')
 		elif mode == "r":
@@ -242,7 +256,7 @@ def Gif_():
 		else:
 			os.system('cls')
 			os.system('color 0c')
-			input('Error : wrong input,pls press any key to return')
+			input('Error : wrong input,pls press Enter key to return')
 			os.system('color 0e')
 			os.system('cls')
 			
@@ -260,14 +274,17 @@ def Video_():
 		mode = mode.lower().strip(' ')
 		if mode == "a":
 			os.system('cls')
+			ResizeWindow()
 			Video_ModeA()
 			os.system('cls')
 		elif mode == "b":
 			os.system('cls')
+			ResizeWindow()
 			Video_ModeB()
 			os.system('cls')
 		elif mode == "c":
 			os.system('cls')
+			ResizeWindow()
 			Video_ModeC()
 			os.system('cls')
 		elif mode == "r":
@@ -275,7 +292,7 @@ def Video_():
 		else:
 			os.system('cls')
 			os.system('color 0c')
-			input('Error : wrong input,pls press any key to return')
+			input('Error : wrong input,pls press Enter key to return')
 			os.system('color 0b')
 			os.system('cls')
 			
@@ -308,7 +325,7 @@ def Compress_image():
 		else:
 			os.system('cls')
 			os.system('color 0c')
-			input('Error : wrong input,pls press any key to return')
+			input('Error : wrong input,pls press Enter key to return')
 			os.system('color 0b')
 			os.system('cls')
 
@@ -341,7 +358,7 @@ def Compress_gif():
 		else:
 			os.system('cls')
 			os.system('color 0c')
-			input('Error : wrong input,pls press any key to return')
+			input('Error : wrong input,pls press Enter key to return')
 			os.system('color 0b')
 			os.system('cls')
 		
@@ -385,7 +402,10 @@ def Image_ModeA():
 	noiseLevel = input_noiseLevel()
 		
 	tileSize = settings_values['tileSize']
-	
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
 	gpuId = settings_values['gpuId']
 	notificationSound = settings_values['notificationSound']
 	gpuId_str=''
@@ -406,7 +426,6 @@ def Image_ModeA():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	ResizeWindow()		#更改控制台窗口大小
 	for inputPath in inputPathList:
 		ProtectFiles(inputPath)
 		oldfilenumber=FileCount(inputPath)
@@ -427,8 +446,8 @@ def Image_ModeA():
 		os.mkdir(inputPath+"\\scaled\\")
 		
 		if scale == '4':
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
@@ -443,8 +462,8 @@ def Image_ModeA():
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2)
 			thread1.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
@@ -460,8 +479,8 @@ def Image_ModeA():
 					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileName))
 			
 		else:
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 		
 		if thread1.isAlive()==True:
 			time.sleep(2)
@@ -493,6 +512,7 @@ def Image_ModeA():
 		print('')
 		if delorginal.lower() == 'y':
 			DelOrgFiles(inputPath)
+		print('Copy files...')
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
 		RecoverFiles(inputPath)
@@ -506,7 +526,7 @@ def Image_ModeA():
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
 	
-	input('\npress any key to return to the menu')
+	input('\npress Enter key to return to the menu')
 	
 #=====================================Image_MODE B======================================
 def Image_ModeB():
@@ -540,7 +560,10 @@ def Image_ModeB():
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
-		
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
 	notificationSound = settings_values['notificationSound']
 	
@@ -563,7 +586,7 @@ def Image_ModeB():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	ResizeWindow()		#更改控制台窗口大小
+	 
 	
 	for dirs in os.walk(inputPath):
 		inputPathList.append(str(dirs[0]))
@@ -589,8 +612,8 @@ def Image_ModeB():
 		os.mkdir(inputPath+"\\scaled\\")
 		
 		if scale == '4':
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
@@ -605,8 +628,8 @@ def Image_ModeB():
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2)
 			thread1.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
@@ -622,8 +645,8 @@ def Image_ModeB():
 					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileName))
 			
 		else:
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 		
 		
 		if thread1.isAlive()==True:
@@ -656,6 +679,7 @@ def Image_ModeB():
 		print('')
 		if delorginal.lower() == 'y':
 			DelOrgFiles(inputPath)
+		print('Copy files...')
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
 		RecoverFiles(inputPath)
@@ -669,7 +693,7 @@ def Image_ModeB():
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
 	
-	input('\npress any key to return to the menu')
+	input('\npress Enter key to return to the menu')
 	
 #=============================Image_MODE C=====================================
 def Image_ModeC():
@@ -713,7 +737,10 @@ def Image_ModeC():
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
-		
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
 	notificationSound = settings_values['notificationSound']
 	gpuId = settings_values['gpuId']
@@ -737,7 +764,7 @@ def Image_ModeC():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	ResizeWindow()		#更改控制台窗口大小
+	 
 
 	TotalFileNum = len(inputPathList)
 	FinishedFileNum = 1
@@ -749,15 +776,15 @@ def Image_ModeC():
 		thread1.start()
 		
 		if scale == '4':
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 
 		else:
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 		
 		if thread1.isAlive()==True:
 			stop_thread(thread1)	
@@ -779,7 +806,7 @@ def Image_ModeC():
 	if notificationSound.lower() == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
-	input('\npress any key to return to the menu')
+	input('\npress Enter key to return to the menu')
 
 
 #======================================Gif_MODE A========================================
@@ -823,7 +850,10 @@ def Gif_ModeA():
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
-		
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
 	notificationSound = settings_values['notificationSound']
 	gpuId = settings_values['gpuId']
@@ -842,7 +872,7 @@ def Gif_ModeA():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	ResizeWindow()		#更改控制台窗口大小
+	 
 	inputPathList_files = []
 	for folders in inputPathList:
 		for path,useless,fnames in os.walk(folders):
@@ -877,8 +907,8 @@ def Gif_ModeA():
 		if scale == '4': 
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -889,8 +919,8 @@ def Gif_ModeA():
 					File_x2.append(path+'\\'+filename)
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
 			thread1.start()		
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -906,8 +936,8 @@ def Gif_ModeA():
 		else:
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -947,7 +977,7 @@ def Gif_ModeA():
 	if notificationSound.lower() == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
-	input('\npress any key to exit')
+	input('\npress Enter key to exit')
 
 #===================================Gif_MODE B========================================
 def Gif_ModeB():
@@ -981,7 +1011,10 @@ def Gif_ModeB():
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
-		
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
 	notificationSound = settings_values['notificationSound']
 	gpuId = settings_values['gpuId']
@@ -1000,7 +1033,7 @@ def Gif_ModeB():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	ResizeWindow()		#更改控制台窗口大小
+	 
 	inputPathList_files = []
 	for path,useless,fnames in os.walk(inputPath_):
 		for fname in fnames:
@@ -1033,8 +1066,8 @@ def Gif_ModeB():
 		if scale == '4': 
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -1045,8 +1078,8 @@ def Gif_ModeB():
 					File_x2.append(path+'\\'+filename)
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
 			thread1.start()		
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -1062,8 +1095,8 @@ def Gif_ModeB():
 		else:
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -1102,7 +1135,7 @@ def Gif_ModeB():
 	if notificationSound.lower() == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
-	input('\npress any key to exit')
+	input('\npress Enter key to exit')
 
 
 #===================================Gif_MODE C======================================
@@ -1146,7 +1179,10 @@ def Gif_ModeC():
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
-		
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
 	notificationSound = settings_values['notificationSound']
 	gpuId = settings_values['gpuId']
@@ -1165,7 +1201,7 @@ def Gif_ModeC():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	ResizeWindow()		#更改控制台窗口大小
+	 
 	for inputPath in inputPathList:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
@@ -1186,8 +1222,8 @@ def Gif_ModeC():
 		if scale == '4': 
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -1198,8 +1234,8 @@ def Gif_ModeC():
 					File_x2.append(path+'\\'+filename)
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
 			thread1.start()		
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -1215,8 +1251,8 @@ def Gif_ModeC():
 		else:
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
 			thread1.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
@@ -1255,7 +1291,7 @@ def Gif_ModeC():
 	if notificationSound.lower() == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
-	input('\npress any key to exit')
+	input('\npress Enter key to exit')
 
 
 #=============================== Video_MODE A ==============================
@@ -1297,7 +1333,10 @@ def Video_ModeA():
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
-		
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
 	notificationSound = settings_values['notificationSound']
 	gpuId = settings_values['gpuId']
@@ -1312,7 +1351,7 @@ def Video_ModeA():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	ResizeWindow()		#更改控制台窗口大小
+	 
 	inputPathList_files = []
 	for folders in inputPathList:
 		for path,useless,fnames in os.walk(folders):
@@ -1334,8 +1373,8 @@ def Video_ModeA():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1355,8 +1394,8 @@ def Video_ModeA():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1374,8 +1413,8 @@ def Video_ModeA():
 		else:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
 			thread2.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread2.isAlive()==True:
 				time.sleep(2)
 				if thread2.isAlive()==True:
@@ -1403,7 +1442,7 @@ def Video_ModeA():
 	if notificationSound.lower() == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
-	input('\npress any key to exit')
+	input('\npress Enter key to exit')
 
 #==================================== Video_MODE B =============================
 def Video_ModeB():
@@ -1437,7 +1476,10 @@ def Video_ModeB():
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
-		
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
 	notificationSound = settings_values['notificationSound']
 	gpuId = settings_values['gpuId']
@@ -1452,7 +1494,7 @@ def Video_ModeB():
 	print('--------------------------------------------')
 	
 	total_time_start=time.time()
-	ResizeWindow()		#更改控制台窗口大小
+	 
 	inputPathList_files = []
 	for path,useless,fnames in os.walk(inputPath_):
 		for fname in fnames:
@@ -1473,8 +1515,8 @@ def Video_ModeB():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1494,8 +1536,8 @@ def Video_ModeB():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1514,8 +1556,8 @@ def Video_ModeB():
 		else:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
 			thread2.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread2.isAlive()==True:
 				time.sleep(2)
 				if thread2.isAlive()==True:
@@ -1543,7 +1585,7 @@ def Video_ModeB():
 	if notificationSound.lower() == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
-	input('\npress any key to exit')
+	input('\npress Enter key to exit')
 
 #===================================== Video_MODE C =============================
 def Video_ModeC():
@@ -1583,7 +1625,10 @@ def Video_ModeC():
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
-		
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
 	notificationSound = settings_values['notificationSound']
 	gpuId = settings_values['gpuId']
@@ -1599,7 +1644,7 @@ def Video_ModeC():
 	
 	total_time_start=time.time()
 
-	ResizeWindow()		#更改控制台窗口大小
+	 
 	for inputPath in inputPathList:
 		
 		video2images(inputPath) #拆解视频
@@ -1614,8 +1659,8 @@ def Video_ModeC():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1635,8 +1680,8 @@ def Video_ModeC():
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
 			thread2.start()
 			
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread2.isAlive()==True:
 				time.sleep(2)
@@ -1655,8 +1700,8 @@ def Video_ModeC():
 		else:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
 			thread2.start()
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread2.isAlive()==True:
 				time.sleep(2)
 				if thread2.isAlive()==True:
@@ -1684,7 +1729,7 @@ def Video_ModeC():
 	if notificationSound.lower() == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
-	input('\npress any key to exit')
+	input('\npress Enter key to exit')
 
 #============================= Compress_image_ModeA ===============================
 def Compress_image_ModeA():
@@ -1749,7 +1794,7 @@ def Compress_image_ModeA():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 	else:
 	
 		for inputPath in inputPathList_files:
@@ -1796,7 +1841,7 @@ def Compress_image_ModeA():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 
 #============================= Compress_image_ModeB ===============================
 def Compress_image_ModeB():
@@ -1845,7 +1890,7 @@ def Compress_image_ModeB():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 	else:
 	
 		for inputPath in inputPathList_files:
@@ -1892,7 +1937,7 @@ def Compress_image_ModeB():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 
 
 #============================= Compress_image_ModeC ===============================
@@ -1946,7 +1991,7 @@ def Compress_image_ModeC():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 	else:
 	
 		for inputPath in inputPathList:
@@ -1993,7 +2038,7 @@ def Compress_image_ModeC():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 	
 #============================= Compress_gif_ModeA ===============================
 def Compress_gif_ModeA():
@@ -2056,7 +2101,7 @@ def Compress_gif_ModeA():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 	else:
 		for inputPath in inputPathList_files:
 			
@@ -2100,7 +2145,7 @@ def Compress_gif_ModeA():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 
 #============================= Compress_gif_ModeB ===============================
 def Compress_gif_ModeB():
@@ -2150,7 +2195,7 @@ def Compress_gif_ModeB():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 	else:
 		for inputPath in inputPathList_files:
 			
@@ -2194,7 +2239,7 @@ def Compress_gif_ModeB():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu.')
+		input('\nPress Enter key to return to the menu.')
 
 
 #============================= Compress_gif_ModeC ===============================
@@ -2248,7 +2293,7 @@ def Compress_gif_ModeC():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 	else:
 		for inputPath in inputPathList:
 			
@@ -2292,7 +2337,7 @@ def Compress_gif_ModeC():
 		if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-		input('\nPress any key to return to the menu')
+		input('\nPress Enter key to return to the menu')
 
 #=========================================== Prograss bar ======================================
 def FileCount(countPath):
@@ -2336,14 +2381,14 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 				Percent = 0
 				BarStr = ''
 				for x in range(0,int(100/3)):
-					BarStr = BarStr + '□'
+					BarStr = BarStr + '▯'
 			else:
 				Percent = int(100*(NewFileNum/OldFileNum))
 				BarStr = ''
 				for x in range(0,int(Percent/3)):
-					BarStr = BarStr + '■'
+					BarStr = BarStr + '▮'
 				for x in range(0,int(100/3)-int(Percent/3)):
-					BarStr = BarStr + '□'
+					BarStr = BarStr + '▯'
 			time_now = time.time()
 			timeCost_str = Seconds2hms(int(time_now-time_start))
 			if NewFileNum > 0:
@@ -2355,21 +2400,20 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 				if Eta > 1:
 					Eta=Eta-1
 				if scale == '4':
-					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+"  "+"["+'ETA: '+Seconds2hms(Eta)+" ]"+'   '
+					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+"  "+"["+'ETA: '+Seconds2hms(Eta)+" ]"
 				else:
-					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+"  "+"["+'ETA: '+Seconds2hms(Eta)+" ]"+'   '
-				sys.stdout.write(PrograssBar)
+					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+"  "+"["+'ETA: '+Seconds2hms(Eta)+" ]"
+				sys.stdout.write(PrograssBar+' '*(130-len(PrograssBar)))
 				sys.stdout.flush()
 					
 				
 			else:
 				if scale == '4':
-					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+'          '
+					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"
 				else:
-					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): ["+BarStr+"]"+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+'          '
-				sys.stdout.write(PrograssBar)
+					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"
+				sys.stdout.write(PrograssBar+' '*(130-len(PrograssBar)))
 				sys.stdout.flush()
-				
 			time.sleep(1)
 			
 #====================================== Clock ==================================
@@ -2680,7 +2724,7 @@ def input_multiThread():
 	settings_values = ReadSettings()
 	default_value = 'y'
 	while True:
-		multiThread = input('Enable multithreading? (y/n, default='+default_value+'): ')
+		multiThread = input('Enable multithreading(Compress)? (y/n, default='+default_value+'): ')
 		if multiThread in ['y','n','Y','N','']:
 			break
 		else:
@@ -2736,6 +2780,22 @@ def input_notificationSound():
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 
+def input_multiThread_Scale():
+	settings_values = ReadSettings()
+	default_value = 'y'
+	while True:
+		multiThread_Scale = input('Enable multithreading(Scale & denoise)? (y/n, default='+default_value+'): ')
+		if multiThread_Scale in ['y','n','Y','N','']:
+			break
+		else:
+			print('wrong input, pls input again')
+	
+	if multiThread_Scale == '':
+		multiThread_Scale = default_value
+	
+	settings_values['multiThread_Scale']=str(multiThread_Scale)
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
 
 #======================== Seconds 2 h:m:s =========================
 def Seconds2hms(seconds):
@@ -2752,14 +2812,14 @@ def Seconds2hms(seconds):
 	else:
 		return str(seconds)+'s'
 #============================= Check Update =====================
-def checkUpdate(Version_current):
+def checkUpdate():
 	print('Checking update....')
 	try:
 		headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
 		r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
 		
 		soup = BeautifulSoup(r1.text,'lxml')
-				
+		
 		title = soup.title.string
 		p_split_name = re.compile(r' ')
 		
@@ -2779,10 +2839,10 @@ def checkUpdate(Version_current):
 		else:
 			os.system('cls')
 			print('No new update')
-			input('press any key to return')
+			input('press Enter key to return')
 	except BaseException:
 		os.system('cls')
-		input('Failed to establish connection, pls check your internet, press any key to return....')
+		input('Failed to establish connection, pls check your internet, press Enter key to return....')
 		os.system('cls')
 	
 		
@@ -2831,7 +2891,7 @@ def VerifyFiles():
 	'noise1_scale2.0x_model.param', 'noise2_scale2.0x_model.bin', 'noise2_scale2.0x_model.param', 
 	'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param','gifsicle.exe',
 	'NotificationSound_waifu2xExtension.mp3','Benchmark_Image_waifu2x_extension_1.png','Benchmark_Image_waifu2x_extension_2.png',
-	'Benchmark_Image_waifu2x_extension_3.png','github_logo_waifu2x_extension.jpg']
+	'Benchmark_Image_waifu2x_extension_3.png','vgi_waifu2x_extension.jpg']
 	
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	FilesList_current = []
@@ -3008,7 +3068,7 @@ def Settings():
 				timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 				f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Error log reseted by user.\n')
 			
-			input('Error log reseted, press any key to return.')
+			input('Error log reseted, press Enter key to return.')
 			
 			os.system('cls')
 			
@@ -3017,14 +3077,15 @@ def Settings():
 		else:
 			os.system('cls')
 			os.system('color 0c')
-			input('Error : wrong input,pls press any key to return')
+			input('Error : wrong input,pls press Enter key to return')
 			os.system('color 07')
 			os.system('cls')
 
 def ReadSettings():
 	default_values = {'CheckUpdate':'y','scale':'2','tileSize':'200',
 						'noiseLevel':'2','saveAsJPG':'y',
-						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1','multiThread':'y','gpuId':'auto','notificationSound':'y'}
+						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1',
+						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -3061,7 +3122,7 @@ def init():		#初始化函数
 		
 	if VerifyFiles() == 'verified':
 		os.system('cls')
-		ChooseFormat(Version_current)
+		ChooseFormat()
 	else:
 		os.system('cls')
 		os.system('color 0c')
@@ -3070,7 +3131,7 @@ def init():		#初始化函数
 		if download_latest.lower() == 'y':
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
 		os.system('cls')
-		input('Press any key to exit.')
+		input('Press Enter key to exit.')
 		os.system('cls')
 		os.system('color 07')
 		
@@ -3123,7 +3184,7 @@ def Error_Log():	#读取错误日志
 				
 	else:
 		print('Error : error log file is missing.')	#提示错误日志文件丢失
-		input('Press any key to return.')
+		input('Press Enter key to return.')
 
 #===================== Multi-thread Gif Compress =======================
 class GifCompressThread (threading.Thread):
@@ -3240,7 +3301,7 @@ class Play_Notification_Sound_Thread (threading.Thread):
 
 #================================ Resize Window ==========================
 def ResizeWindow():
-	os.system('mode con cols=150 lines=37')
+	os.system('mode con cols=130 lines=38')
 	
 #=============================== Benchmark =============================
 def Benchmark():
@@ -3279,8 +3340,8 @@ def Benchmark():
 	for x in range(0,50):
 		os.mkdir(scaledFilePath)
 		time_start=time.time()
-		print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str)
-		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str)
+		print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
+		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
 		time_end=time.time()
 		os.system("rd /s/q \""+scaledFilePath+"\"")
 		new_time_cost = time_end - time_start
@@ -3318,14 +3379,14 @@ def license_():
 	print('THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n')
 	print('------------------------------------------')
 	print('中文:')
-	print('注意:中文版本由机器翻译生成, 可能包含错误, 一切以英文原版许可证为准.')
+	print('注意:中文版本由机器翻译生成, 仅供无法阅读英语者参考, 可能包含错误, 一切以英文原版许可证为准.')
 	print('---------------------------------------------')
 	print('版权所有 2019 Aaron Feng\n')
 	print('特此授予任何获得本软件和相关文档文件（“软件”）副本的人免费许可，以无限制地交易本软件，包括但不限于使用，复制，修改，合并的权利在符合以下条件的前提下，发布，分发，再许可，并允许向其提供软件的人员这样做：\n')
 	print('上述版权声明和本许可声明应包含在本软件的所有副本或实质部分中。\n')
 	print('本软件按“原样”提供，不提供任何明示或暗示的保证，包括但不限于适销性，特定用途的适用性和不侵权的保证。在任何情况下，作者或版权所有者均不对任何索赔，损害或其他责任承担任何责任，无论是在合同，侵权行为还是其他方面的行为，由本软件引起或与之相关，或与本软件的使用或其他交易有关。软件。\n')
 	print('------------------------------------------')
-	input('Press any key to return to the main menu.')
+	input('Press Enter key to return to the main menu.')
 
 #================= Protect files ================
 def ProtectFiles(inputPath):
@@ -3357,42 +3418,46 @@ def RecoverFiles(inputPath):
 #======================================= View_GPU_ID() ===========================
 def View_GPU_ID():
 	print('============================View_GPU_ID =======================')
-	print('This will tell you the GPU corresponding to the GPU ID.')
-	gpuId = '0'
-	while True:
-		gpuId = input('GPU ID (0/1/2/...): ')
-		if gpuId.isdigit():
-			if int(gpuId) >= 0:
-				break
-			else:
-				print('wrong input, pls input again')
-		elif gpuId == '':
-			break
+	print('This will tell you the available GPU ID.')
+	print('----------------------------------------')
+	gpuId = 0
+	gpuId_list = []
+	for x in range(0,10):
+		gpuId_str = ' -g '+str(gpuId)
+		settings_values = ReadSettings()
+		current_dir = os.path.dirname(os.path.abspath(__file__))
+		models = 'models-upconv_7_anime_style_art_rgb'
+		scale = '2'
+		noiseLevel = '0'
+		tileSize = settings_values['tileSize']
+		multiThread_Scale = settings_values['multiThread_Scale']
+		load_proc_save_str = ' -j 2:2:2 '
+		if multiThread_Scale.lower() == 'n':
+			load_proc_save_str = ' -j 1:1:1 '
+		inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
+		scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.png'
+		if os.path.exists(scaledFilePath) == True:
+			os.system("del /q \""+scaledFilePath+"\"")
+		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
+		if os.path.exists(scaledFilePath)==True:
+			gpuId_list.append(gpuId)
+			os.system("del /q \""+scaledFilePath+"\"")
 		else:
-			os.system('cls')
-			print('wrong input, pls input again')
-	if gpuId == '':
-		return 0
-	gpuId_str = ' -g '+gpuId
-	settings_values = ReadSettings()
-	current_dir = os.path.dirname(os.path.abspath(__file__))
-	models = 'models-upconv_7_anime_style_art_rgb'
-	scale = '2'
-	noiseLevel = '0'
-	tileSize = settings_values['tileSize']
-	inputPath = current_dir+'\\'+'viewGpuId-files-waifu2x-extension'
-	scaledFilePath = inputPath+'\\scaled'
-	if os.path.exists(scaledFilePath) == True:
-		os.system("rd /s/q \""+scaledFilePath+"\"")
-	os.mkdir(scaledFilePath)
-	os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str)
-	os.system("rd /s/q \""+scaledFilePath+"\"")
-	print('---------------------------------------------')
-	input('Press any key to return to the main menu.')
+			break
+		gpuId = gpuId+1
+	if len(gpuId_list) > 0:
+		print('---------------------------------------------')
+		print(' Available GPU ID: ',gpuId_list)
+		print('---------------------------------------------')
+	else:
+		print('---------------------------------------------------------------')
+		print(' No GPU ID availabel. Pls upgrade or reinstall your GPU driver.')
+		print('---------------------------------------------------------------')
+	input('Press Enter key to return to the main menu.')
 	
 #=============================== Default Window Title =================
 def Window_Title(Add_str = ''):
-	os.system('title = Waifu2x-Extension by Aaron Feng '+Add_str)
+	os.system('title = Waifu2x-Extension '+Version_current+' by Aaron Feng '+Add_str)
 	
 	
 #======================== Start ========================
@@ -3403,6 +3468,7 @@ if __name__ == '__main__':
 		try:
 			init()
 		except BaseException as e:
+			print()
 			print('---------------------------------------------------')
 			print('                   !!! Error !!!')
 			print('---------------------------------------------------')
@@ -3412,7 +3478,7 @@ if __name__ == '__main__':
 				f.write(ErrorStr)
 			
 			print('---------------------------------------------------')
-			input('An error occurred, pls report this to the developer.\nPress any key to restart the software.\n')
+			input('An error occurred, pls report this to the developer.\nPress Enter key to restart the software.\n')
 			os.system('color 07')
 			os.system('cls')
 			python = sys.executable
