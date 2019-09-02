@@ -37,56 +37,55 @@ def ChooseFormat():
 		print("│ Attention: This software's scale & denoise function is only  │")
 		print('│ designed for process 2D illust files(image,gif,video).       │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ I : Scale & denoise image.                                   │')
+		print('│ 0 : Scale & denoise image.                                   │')
 		print('│                                                              │')
-		print('│ G : Scale & denoise gif.                                     │')
+		print('│ 1 : Scale & denoise gif.                                     │')
 		print('│                                                              │')
-		print('│ V : Scale & denoise video.                                   │')
+		print('│ 2 : Scale & denoise video.                                   │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ T : Tile size: '+tileSize+'         '+'GI : GPU ID: '+gpuId+' '*(24-len(tileSize)-len(gpuId))+'│')
+		print('│ 3 : Tile size: '+tileSize+'          '+'4 : GPU ID: '+gpuId+' '*(24-len(tileSize)-len(gpuId))+'│')
 		print('│                                                              │')
-		print('│ N : Notification sound: '+notificationSound+'                                    │')
+		print('│ 5 : Notification sound: '+notificationSound+'                                    │')
 		print('│                                                              │')
-		print('│ MS : Multithreading(Scale & denoise): '+multiThread_Scale+'                      │')
+		print('│ 6 : Multithreading(Scale & denoise): '+multiThread_Scale+'                       │')
 		print('│                                                              │')
-		print('│ MC : Multithreading(Compress): '+multiThread+'                             │')
+		print('│ 7 : Multithreading(Compress): '+multiThread+'                              │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ CI : Compress image. (Almost lossless)                       │')
+		print('│ 8 : Compress image. (Almost lossless)                        │')
 		print('│                                                              │')
-		print('│ CG : Compress gif.                                           │')
+		print('│ 9 : Compress gif.                                            │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ S : Settings.           B : Benchmark.                       │')
+		print('│ 10 : Settings.           11 : Benchmark.                     │')
 		print('│                                                              │')
-		print('│ RE : Read error log.    U : Check update.                    │')
+		print('│ 12 : Read error log.     13 : Check update.                  │')
 		print('│                                                              │')
-		print('│ R : Readme.             D : Donate. (Alipay)                 │')
+		print('│ 14 : Readme.             15 : Donate. (Alipay)               │')
 		print('│                                                              │')
-		print('│ L : License.            VG : View GPU ID.                    │')
+		print('│ 16 : License.            17 : View GPU ID.                   │')
 		print('│                                                              │')
-		print('│ E : Exit.                                                    │')
+		print('│ 18 : Exit.                                                   │')
 		print('└──────────────────────────────────────────────────────────────┘')
-		print('( i / g / v / t / gi / n / ms / mc / ci / cg / s / b / re / u / r / d / l / vg / e ): '.upper())
-		mode = input()
-		mode = mode.lower().strip(' ')
-		if mode == "i":
+		print('( 0 / 1 / 2 / 3 / 4 /.....): ')
+		mode = input().strip(' ')
+		if mode == "0":
 			os.system('cls')
 			os.system('color 0a')
 			Image_()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "g":
+		elif mode == "1":
 			os.system('cls')
 			os.system('color 0e')
 			Gif_()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "v":
+		elif mode == "2":
 			os.system('cls')
 			os.system('color 0b')
 			Video_()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "t":
+		elif mode == "3":
 			os.system('cls')
 			input_tileSize()
 			
@@ -94,7 +93,7 @@ def ChooseFormat():
 			tileSize = settings_values['tileSize']
 			
 			os.system('cls')
-		elif mode == "gi":
+		elif mode == "4":
 			os.system('cls')
 			input_gpuId()
 			
@@ -102,7 +101,7 @@ def ChooseFormat():
 			gpuId = settings_values['gpuId']
 			
 			os.system('cls')
-		elif mode == "n":
+		elif mode == "5":
 			os.system('cls')
 			input_notificationSound()
 			
@@ -111,73 +110,73 @@ def ChooseFormat():
 			
 			os.system('cls')
 			
-		elif mode == "mc":
+		elif mode == "7":
 			os.system('cls')
 			input_multiThread()
 			settings_values = ReadSettings()
 			multiThread = settings_values['multiThread']
 			os.system('cls')
 		
-		elif mode == "ms":
+		elif mode == "6":
 			os.system('cls')
 			input_multiThread_Scale()
 			settings_values = ReadSettings()
 			multiThread_Scale = settings_values['multiThread_Scale']
 			os.system('cls')
 			
-		elif mode == "ci":
+		elif mode == "8":
 			os.system('cls')
 			os.system('color 0b')
 			Compress_image()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "cg":
+		elif mode == "9":
 			os.system('cls')
 			os.system('color 0e')
 			Compress_gif()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "s":
+		elif mode == "10":
 			os.system('cls')
 			os.system('color 07')
 			Settings()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "b":
+		elif mode == "11":
 			os.system('cls')
 			Benchmark()
 			os.system('cls')
-		elif mode == "e":
+		elif mode == "18":
 			os.system('color 07')
 			os.system('cls')
 			return 0
-		elif mode == "re":
+		elif mode == "12":
 			os.system('cls')
 			os.system('color 07')
 			Error_Log()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "u":
+		elif mode == "13":
 			os.system('cls')
 			checkUpdate()
 			os.system('cls')
-		elif mode == "r":
+		elif mode == "14":
 			os.system('cls')
 			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README.md')
 			os.system('cls')
-		elif mode == "d":
+		elif mode == "15":
 			os.system('cls')
 			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/donate.jpg')
 			os.system('cls')
 			print('Thank you!!! :)')
 			print('---------------')
-		elif mode == "l":
+		elif mode == "16":
 			os.system('cls')
 			license_()
 			os.system('cls')
-		elif mode == "vg":
+		elif mode == "17":
 			os.system('cls')
 			View_GPU_ID()
 			os.system('cls')
@@ -193,24 +192,23 @@ def Image_():
 	while True:
 		print('                                    Image')
 		print('-----------------------------------------------------------------------------')
-		print(' Mode A: input folders one by one and scaled all images in them.\n')
-		print(' Mode B: input one folder and scaled all images in it and it\'s sub-folders.\n')
-		print(' Mode C: input images one by one.\n')
+		print(' 0 : input folders one by one and scaled all images in them.\n')
+		print(' 1 : input one folder and scaled all images in it and it\'s sub-folders.\n')
+		print(' 2 : input images one by one.\n')
 		print(' R : return to the main menu')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(a/b/c/r): '.upper())
-		mode = mode.lower().strip(' ')
-		if mode == "a":
+		mode = input('(0/1/2/r): '.upper()).lower().strip(' ')
+		if mode == "0":
 			os.system('cls')
 			ResizeWindow()
 			Image_ModeA()
 			os.system('cls')
-		elif mode == "b":
+		elif mode == "1":
 			os.system('cls')
 			ResizeWindow()
 			Image_ModeB()
 			os.system('cls')
-		elif mode == "c":
+		elif mode == "2":
 			os.system('cls')
 			ResizeWindow()
 			Image_ModeC()
@@ -229,24 +227,23 @@ def Gif_():
 	while True:
 		print('                                   GIF')
 		print('---------------------------------------------------------------------------')
-		print(' Mode A: input folders one by one\n')
-		print(' Mode B: input one folder and scaled all gif in it and it\'s sub-folders\n')
-		print(' Mode C: input gif one by one\n')
+		print(' 0 : input folders one by one\n')
+		print(' 1 : input one folder and scaled all gif in it and it\'s sub-folders\n')
+		print(' 2 : input gif one by one\n')
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
-		mode = input('(a/b/c/r): '.upper())
-		mode = mode.lower().strip(' ')
-		if mode == "a":
+		mode = input('(0/1/2/r): '.upper()).lower().strip(' ')
+		if mode == "0":
 			os.system('cls')
 			ResizeWindow()
 			Gif_ModeA()
 			os.system('cls')
-		elif mode == "b":
+		elif mode == "1":
 			os.system('cls')
 			ResizeWindow()
 			Gif_ModeB()
 			os.system('cls')
-		elif mode == "c":
+		elif mode == "2":
 			os.system('cls')
 			ResizeWindow()
 			Gif_ModeC()
@@ -265,24 +262,23 @@ def Video_():
 	while True:
 		print('                                   Video')
 		print('---------------------------------------------------------------------------')
-		print(' Mode A: input folders one by one\n')
-		print(' Mode B: input one folder and scaled all video in it and it\'s sub-folders\n')
-		print(' Mode C: input video one by one\n')
+		print(' 0 : input folders one by one\n')
+		print(' 1 : input one folder and scaled all video in it and it\'s sub-folders\n')
+		print(' 2 : input video one by one\n')
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
-		mode = input('(a/b/c/r): '.upper())
-		mode = mode.lower().strip(' ')
-		if mode == "a":
+		mode = input('(0/1/2/r): '.upper()).lower().strip(' ')
+		if mode == "0":
 			os.system('cls')
 			ResizeWindow()
 			Video_ModeA()
 			os.system('cls')
-		elif mode == "b":
+		elif mode == "1":
 			os.system('cls')
 			ResizeWindow()
 			Video_ModeB()
 			os.system('cls')
-		elif mode == "c":
+		elif mode == "2":
 			os.system('cls')
 			ResizeWindow()
 			Video_ModeC()
@@ -301,22 +297,22 @@ def Compress_image():
 	while True:
 		print('                               Compress image')
 		print('---------------------------------------------------------------------------')
-		print(' Mode A: input folders one by one\n')
-		print(' Mode B: input one folder and compress all images in it and it\'s sub-folders\n')
-		print(' Mode C: input images one by one\n')
+		print(' 0 : input folders one by one\n')
+		print(' 1 : input one folder and compress all images in it and it\'s sub-folders\n')
+		print(' 2 : input images one by one\n')
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
-		mode = input('(a/b/c/r): '.upper())
+		mode = input('(0/1/2/r): '.upper())
 		mode = mode.lower().strip(' ')
-		if mode == "a":
+		if mode == "0":
 			os.system('cls')
 			Compress_image_ModeA()
 			os.system('cls')
-		elif mode == "b":
+		elif mode == "1":
 			os.system('cls')
 			Compress_image_ModeB()
 			os.system('cls')
-		elif mode == "c":
+		elif mode == "2":
 			os.system('cls')
 			Compress_image_ModeC()
 			os.system('cls')
@@ -334,22 +330,22 @@ def Compress_gif():
 	while True:
 		print('                              Compress gif')
 		print('---------------------------------------------------------------------------')
-		print(' Mode A: input folders one by one\n')
-		print(' Mode B: input one folder and compress all gifs in it and it\'s sub-folders\n')
-		print(' Mode C: input gifs one by one\n')
+		print(' 0 : input folders one by one\n')
+		print(' 1 : input one folder and compress all gifs in it and it\'s sub-folders\n')
+		print(' 2 : input gifs one by one\n')
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
-		mode = input('(a/b/c/r): '.upper())
+		mode = input('(0/1/2/r): '.upper())
 		mode = mode.lower().strip(' ')
-		if mode == "a":
+		if mode == "0":
 			os.system('cls')
 			Compress_gif_ModeA()
 			os.system('cls')
-		elif mode == "b":
+		elif mode == "1":
 			os.system('cls')
 			Compress_gif_ModeB()
 			os.system('cls')
-		elif mode == "c":
+		elif mode == "2":
 			os.system('cls')
 			Compress_gif_ModeC()
 			os.system('cls')
@@ -1572,61 +1568,8 @@ def Compress_gif_ModeA():
 			for fname in fnames:
 				inputPathList_files.append(path+'\\'+fname)
 			break
+	process_gif_compress_modeABC(total_time_start,inputPathList_files,gifCompresslevel,delorginal,multiThread,notificationSound)
 	
-	if multiThread.lower() == 'y':
-		print('Start compressing, pls wait....')
-		Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal)
-		time.sleep(1)
-		total_time_end=time.time()
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
-	else:
-		saved_size_total = 0
-		for inputPath in inputPathList_files:
-			
-			file_ext = os.path.splitext(inputPath)[1]
-			
-			if file_ext != '.gif':
-				continue
-			
-			scaledFilePath = os.path.splitext(inputPath)[0]
-			fileNameAndExt=str(os.path.basename(inputPath))
-			
-			original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-			
-			print(inputPath)
-			print('Original size:'+original_size)
-			print('Compressing.....')
-			
-			compress_gif(inputPath,gifCompresslevel)
-			
-			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
-			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
-			if saved_size <= 0:
-				os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
-				print('Failed to compress '+inputPath)
-			else:
-				saved_size_total = saved_size_total+saved_size
-				saved_size_str = str(saved_size)+'KB'
-				print('Compressed size:'+compressed_size)
-				print('Save '+saved_size_str+' !')
-				print('')	
-				if delorginal.lower() == 'y':
-					os.system('del /q "'+inputPath+'"')
-				
-			print('--------------------------------------------')
-				
-		total_time_end=time.time()
-		
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		print('\nTotal saved space: ',saved_size_total,'KB\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
 
 #============================= Compress_gif_ModeB ===============================
 def Compress_gif_ModeB():
@@ -1662,7 +1605,52 @@ def Compress_gif_ModeB():
 	for path,useless,fnames in os.walk(inputPath):
 		for fname in fnames:
 			inputPathList_files.append(path+'\\'+fname)
+	process_gif_compress_modeABC(total_time_start,inputPathList_files,gifCompresslevel,delorginal,multiThread,notificationSound)
+
+
+
+#============================= Compress_gif_ModeC ===============================
+def Compress_gif_ModeC():
+	print("================= Compress_gif_ModeC ================")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a gif")
+	print("Compressed images will be in the input-path \n")
+	inputPathOver = True
+	inputPathList = []
+	settings_values = ReadSettings()
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
+			
+			if inputPath.lower() == 'r':
+				return 1
+			elif inputPath.lower() == 'o':
+				inputPathOver = False
+				inputPathError = False
+				break
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPathList.append(inputPath)
+			
+	gifCompresslevel=input_gifCompresslevel()
+	delorginal = input_delorginal()
+	multiThread = settings_values['multiThread']
+	notificationSound = settings_values['notificationSound']
+		
+	print('--------------------------------------------')
 	
+	total_time_start=time.time()
+	process_gif_compress_modeABC(total_time_start,inputPathList,gifCompresslevel,delorginal,multiThread,notificationSound)
+	
+#========================================== process_gif_compress_modeABC ===============================
+def process_gif_compress_modeABC(total_time_start,inputPathList_files,gifCompresslevel,delorginal,multiThread,notificationSound):
 	if multiThread.lower() == 'y':
 		print('Start compressing, pls wait....')
 		Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal)
@@ -1718,100 +1706,6 @@ def Compress_gif_ModeB():
 			thread_Notification.start()
 		input('\nPress Enter key to return to the menu.')
 
-
-#============================= Compress_gif_ModeC ===============================
-def Compress_gif_ModeC():
-	print("================= Compress_gif_ModeC ================")
-	print("Type 'r' to return to the previous menu")
-	print("Type 'o' to stop input more path, and input path must be a gif")
-	print("Compressed images will be in the input-path \n")
-	inputPathOver = True
-	inputPathList = []
-	settings_values = ReadSettings()
-	while inputPathOver:
-		inputPathError = True
-		while inputPathError:
-			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\').strip(' ')
-			
-			if inputPath.lower() == 'r':
-				return 1
-			elif inputPath.lower() == 'o':
-				inputPathOver = False
-				inputPathError = False
-				break
-			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('-----------------------------')
-				print('Error,input-path is invalid!!')
-				print('-----------------------------')
-			else:
-				inputPathError = False
-		if inputPathOver == True:
-			inputPathList.append(inputPath)
-			
-	gifCompresslevel=input_gifCompresslevel()
-	delorginal = input_delorginal()
-	multiThread = settings_values['multiThread']
-	notificationSound = settings_values['notificationSound']
-		
-	print('--------------------------------------------')
-	
-	total_time_start=time.time()
-
-	if multiThread.lower() == 'y':
-		print('Start compressing, pls wait....')
-		Multi_thread_Gif_Compress(inputPathList,gifCompresslevel,delorginal)
-		time.sleep(1)
-		total_time_end=time.time()
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
-	else:
-		saved_size_total = 0
-		for inputPath in inputPathList:
-			
-			file_ext = os.path.splitext(inputPath)[1]
-			
-			if file_ext != '.gif':
-				continue
-			
-			scaledFilePath = os.path.splitext(inputPath)[0]
-			fileNameAndExt=str(os.path.basename(inputPath))
-			
-			original_size = str(round(os.path.getsize(inputPath)/1024))+'KB'
-			
-			print(inputPath)
-			print('Original size:'+original_size)
-			print('Compressing.....')
-			
-			compress_gif(inputPath,gifCompresslevel)
-			
-			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
-			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
-			if saved_size <= 0:
-				os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
-				print('Failed to compress '+inputPath)
-			else:
-				saved_size_total = saved_size_total+saved_size
-				saved_size_str = str(saved_size)+'KB'
-				print('Compressed size:'+compressed_size)
-				print('Save '+saved_size_str+' !')
-				print('')	
-				if delorginal.lower() == 'y':
-					os.system('del /q "'+inputPath+'"')
-				
-			print('--------------------------------------------')
-				
-		total_time_end=time.time()
-		
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		print('\nTotal saved space: ',saved_size_total,'KB\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
 
 #=========================================== Prograss bar ======================================
 def FileCount(countPath):
