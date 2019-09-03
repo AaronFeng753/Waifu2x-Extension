@@ -1463,7 +1463,7 @@ def Compress_image_ModeC():
 
 def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality):
 	if multiThread.lower() == 'y':
-		print('Start compressing, pls wait....')
+		print('Start compressing images, pls wait....')
 		Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality)
 		time.sleep(1)
 
@@ -1505,7 +1505,7 @@ def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality
 #========================================== process_gif_compress_modeABC ===============================
 def process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal,multiThread):
 	if multiThread.lower() == 'y':
-		print('Start compressing, pls wait....')
+		print('Start compressing .gif, pls wait....')
 		Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal)
 		time.sleep(1)
 		
