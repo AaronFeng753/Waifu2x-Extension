@@ -2,7 +2,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v1.7'
+Version_current='v2.0'
 
 import time
 import threading
@@ -20,6 +20,7 @@ import json
 from multiprocessing import cpu_count
 import traceback
 from playsound import playsound
+import struct
 
 def ChooseFormat():
 	
@@ -31,36 +32,38 @@ def ChooseFormat():
 	multiThread_Scale = settings_values['multiThread_Scale']
 	
 	while True:
-		print(' Waifu2x-Extension | '+Version_current+'-Stable | Author: Aaron Feng')
-		print(' Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('┌──────────────────────────────────────────────────────────────┐')
+		print('│ Waifu2x-Extension | '+Version_current+' | Author: Aaron Feng '+' '*(19-len(Version_current))+'│')
+		print('├──────────────────────────────────────────────────────────────┤')
+		print('│ Github: https://github.com/AaronFeng753/Waifu2x-Extension    │')
+		print('├──────────────────────────────────────────────────────────────┤')
 		print("│ Attention: This software's scale & denoise function is only  │")
 		print('│ designed for process 2D illust files(image,gif,video).       │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ 1 : Scale & denoise Image & GIF.  2 : Scale & denoise Video. │')
+		print('│ 1 : Scale & Denoise Image & GIF.  2 : Scale & Denoise Video. │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ 3 : Compress Image.           4 : Compress GIF.              │')
+		print('│ 3 : Compress Image & GIF.                                    │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ 5 : Tile size: '+tileSize+'            '+'6 : GPU ID: '+gpuId+' '*(22-len(tileSize)-len(gpuId))+'│')
+		print('│ 4 : Tile size: '+tileSize+'            '+'5 : GPU ID: '+gpuId+' '*(22-len(tileSize)-len(gpuId))+'│')
 		print('│                                                              │')
-		print('│ 7 : Notification sound: '+notificationSound+'                                    │')
+		print('│ 6 : Notification sound: '+notificationSound+'                                    │')
 		print('│                                                              │')
-		print('│ 8 : Multithreading(Scale & denoise): '+multiThread_Scale+'                       │')
+		print('│ 7 : Multithreading(Scale & denoise): '+multiThread_Scale+'                       │')
 		print('│                                                              │')
-		print('│ 9 : Multithreading(Compress): '+multiThread+'                              │')
+		print('│ 8 : Multithreading(Compress): '+multiThread+'                              │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ 10 : Settings.           11 : Benchmark.                     │')
+		print('│ 9 : Settings.            10 : Benchmark.                     │')
 		print('│                                                              │')
-		print('│ 12 : Read error log.     13 : Check update.                  │')
+		print('│ 11 : Read error log.     12 : Check update.                  │')
 		print('│                                                              │')
-		print('│ 14 : Readme.             15 : Donate. (Alipay)               │')
+		print('│ 13 : Readme.             14 : Donate. (Alipay)               │')
 		print('│                                                              │')
-		print('│ 16 : License.            17 : View GPU ID.                   │')
+		print('│ 15 : License.            16 : View GPU ID.                   │')
 		print('│                                                              │')
-		print('│ 18 : Exit.                                                   │')
+		print('│ E : Exit.                                                    │')
 		print('└──────────────────────────────────────────────────────────────┘')
-		print('( 1 / 2 / 3 / 4 /.....): ')
-		mode = input().strip(' ')
+		print('( 1 / 2 / 3 / 4 /...../ E ): ')
+		mode = input().strip(' ').lower()
 		if mode == "1":
 			os.system('cls')
 			os.system('color 0a')
@@ -81,81 +84,75 @@ def ChooseFormat():
 			os.system('color 0b')
 		elif mode == "4":
 			os.system('cls')
-			os.system('color 0e')
-			Compress_gif()
-			os.system('cls')
-			os.system('color 0b')
-		elif mode == "5":
-			os.system('cls')
 			input_tileSize()
 			settings_values = ReadSettings()
 			tileSize = settings_values['tileSize']
 			os.system('cls')
-		elif mode == "6":
+		elif mode == "5":
 			os.system('cls')
 			input_gpuId()
 			settings_values = ReadSettings()
 			gpuId = settings_values['gpuId']
 			os.system('cls')
-		elif mode == "7":
+		elif mode == "6":
 			os.system('cls')
 			input_notificationSound()
 			settings_values = ReadSettings()
 			notificationSound = settings_values['notificationSound']
 			os.system('cls')
-		elif mode == "8":
+		elif mode == "7":
 			os.system('cls')
 			input_multiThread_Scale()
 			settings_values = ReadSettings()
 			multiThread_Scale = settings_values['multiThread_Scale']
 			os.system('cls')	
-		elif mode == "9":
+		elif mode == "8":
 			os.system('cls')
 			input_multiThread()
 			settings_values = ReadSettings()
 			multiThread = settings_values['multiThread']
 			os.system('cls')
-		elif mode == "10":
+		elif mode == "9":
 			os.system('cls')
 			os.system('color 07')
 			Settings()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "11":
+		elif mode == "10":
 			os.system('cls')
 			Benchmark()
 			os.system('cls')
-		elif mode == "12":
+		elif mode == "11":
 			os.system('cls')
 			os.system('color 07')
 			Error_Log()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "13":
+		elif mode == "12":
 			os.system('cls')
 			checkUpdate()
 			os.system('cls')
-		elif mode == "14":
+		elif mode == "13":
 			os.system('cls')
 			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README.md')
 			os.system('cls')
-		elif mode == "15":
+		elif mode == "14":
 			os.system('cls')
 			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/donate.jpg')
 			os.system('cls')
 			print('Thank you!!! :)')
 			print('---------------')
-		elif mode == "16":
+		elif mode == "15":
 			os.system('cls')
 			license_()
 			os.system('cls')
-		elif mode == "17":
+		elif mode == "16":
 			os.system('cls')
 			View_GPU_ID()
 			os.system('cls')
-		elif mode == "18":
+		elif mode == "e":
 			os.system('color 07')
 			os.system('cls')
 			return 0
@@ -169,7 +166,7 @@ def ChooseFormat():
 #============================= IMAGE Menu ===============================
 def Image_GIF_():
 	while True:
-		print('                                    Image & GIF')
+		print('                          Scale & Denoise Image & GIF')
 		print('-----------------------------------------------------------------------------')
 		print(' 0 : input folders one by one and scaled all images in them.\n')
 		print(' 1 : input one folder and scaled all images in it and it\'s sub-folders.\n')
@@ -179,17 +176,14 @@ def Image_GIF_():
 		mode = input('(0/1/2/r): '.upper()).lower().strip(' ')
 		if mode == "0":
 			os.system('cls')
-			ResizeWindow()
 			Image_ModeA()
 			os.system('cls')
 		elif mode == "1":
 			os.system('cls')
-			ResizeWindow()
 			Image_ModeB()
 			os.system('cls')
 		elif mode == "2":
 			os.system('cls')
-			ResizeWindow()
 			Image_ModeC()
 			os.system('cls')
 		elif mode == "r":
@@ -204,7 +198,7 @@ def Image_GIF_():
 #============================= Video Menu ===============================
 def Video_():
 	while True:
-		print('                                   Video')
+		print('                          Scale & Denoise Video')
 		print('---------------------------------------------------------------------------')
 		print(' 0 : input folders one by one\n')
 		print(' 1 : input one folder and scaled all video in it and it\'s sub-folders\n')
@@ -214,17 +208,14 @@ def Video_():
 		mode = input('(0/1/2/r): '.upper()).lower().strip(' ')
 		if mode == "0":
 			os.system('cls')
-			ResizeWindow()
 			Video_ModeA()
 			os.system('cls')
 		elif mode == "1":
 			os.system('cls')
-			ResizeWindow()
 			Video_ModeB()
 			os.system('cls')
 		elif mode == "2":
 			os.system('cls')
-			ResizeWindow()
 			Video_ModeC()
 			os.system('cls')
 		elif mode == "r":
@@ -236,13 +227,13 @@ def Video_():
 			os.system('color 0b')
 			os.system('cls')
 			
-#============================= Compress_image Menu ===============================
+#============================= Compress_Image & GIF Menu ===============================
 def Compress_image():
 	while True:
-		print('                               Compress image')
+		print('                               Compress Image & GIF')
 		print('---------------------------------------------------------------------------')
 		print(' 0 : input folders one by one\n')
-		print(' 1 : input one folder and compress all images in it and it\'s sub-folders\n')
+		print(' 1 : input one folder and compress all images & gifs in it and it\'s sub-folders\n')
 		print(' 2 : input images one by one\n')
 		print(' R : return to the main menu')
 		print('---------------------------------------------------------------------------')
@@ -269,39 +260,6 @@ def Compress_image():
 			os.system('color 0b')
 			os.system('cls')
 
-#============================= Compress_gif Menu ===============================
-def Compress_gif():
-	while True:
-		print('                              Compress gif')
-		print('---------------------------------------------------------------------------')
-		print(' 0 : input folders one by one\n')
-		print(' 1 : input one folder and compress all gifs in it and it\'s sub-folders\n')
-		print(' 2 : input gifs one by one\n')
-		print(' R : return to the main menu')
-		print('---------------------------------------------------------------------------')
-		mode = input('(0/1/2/r): '.upper())
-		mode = mode.lower().strip(' ')
-		if mode == "0":
-			os.system('cls')
-			Compress_gif_ModeA()
-			os.system('cls')
-		elif mode == "1":
-			os.system('cls')
-			Compress_gif_ModeB()
-			os.system('cls')
-		elif mode == "2":
-			os.system('cls')
-			Compress_gif_ModeC()
-			os.system('cls')
-		elif mode == "r":
-			break
-		else:
-			os.system('cls')
-			os.system('color 0c')
-			input('Error : wrong input,pls press Enter key to return')
-			os.system('color 0b')
-			os.system('cls')
-		
 #======================================Image_GIF_MODE A===============================
 def Image_ModeA():
 	print("=================Image_GIF_MODE A================")
@@ -339,10 +297,14 @@ def Image_ModeA():
 		
 	
 	scale = input_scale()
+	if scale.lower() == 'r':
+		return 1
 	if scale == '1':
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
+	if noiseLevel.lower() == 'r':
+		return 1
 		
 	tileSize = settings_values['tileSize']
 	multiThread_Scale = settings_values['multiThread_Scale']
@@ -360,21 +322,32 @@ def Image_ModeA():
 		Gif_exists=True
 		gifCompresslevel =''
 		highQuality = input_highQuality()
+		if highQuality.lower() == 'r':
+			return 1
 		if highQuality.lower() == 'n':
 			gifCompresslevel = input_gifCompresslevel()
+			if gifCompresslevel.lower() == 'r':
+				return 1
 	
 	Image_exists = False
 	if FindImageFiles(inputPathList):
 		Image_exists = True
 		saveAsJPG = input_saveAsJPG()
+		if saveAsJPG.lower() == 'r':
+			return 1
 		if saveAsJPG == 'y':
 			Compress = input_Compress()
+			if Compress.lower() == 'r':
+				return 1
 			if Compress.lower() == 'y':
 				JpgQuality=90
 		
 	turnoff = input_turnoff()
-		
+	if turnoff.lower() == 'r':
+		return 1
 	delorginal = input_delorginal()
+	if delorginal.lower() == 'r':
+		return 1
 		
 	print('--------------------------------------------')
 	
@@ -446,10 +419,14 @@ def Image_ModeB():
 	
 			
 	scale = input_scale()
+	if scale.lower() == 'r':
+		return 1
 	if scale == '1':
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
+	if noiseLevel.lower() == 'r':
+		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
 	load_proc_save_str = ' -j 2:2:2 '
 	if multiThread_Scale.lower() == 'n':
@@ -467,21 +444,33 @@ def Image_ModeB():
 		Gif_exists=True
 		gifCompresslevel =''
 		highQuality = input_highQuality()
+		if highQuality.lower() == 'r':
+			return 1
 		if highQuality.lower() == 'n':
 			gifCompresslevel = input_gifCompresslevel()
+			if gifCompresslevel.lower() == 'r':
+				return 1
 	
 	Image_exists = False
 	if FindImageFiles(inputPathList):
 		Image_exists = True
 		saveAsJPG = input_saveAsJPG()
+		if saveAsJPG.lower() == 'r':
+			return 1
 		if saveAsJPG == 'y':
 			Compress = input_Compress()
+			if Compress.lower() == 'r':
+				return 1
 			if Compress.lower() == 'y':
 				JpgQuality=90
 	
 	turnoff = input_turnoff()
+	if turnoff.lower() == 'r':
+		return 1
 		
 	delorginal = input_delorginal()
+	if delorginal.lower() == 'r':
+		return 1
 		
 	print('--------------------------------------------')
 	
@@ -541,7 +530,9 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 		else:
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 0)
 			thread1.start()
-				
+		
+		if os.path.exists(inputPath+"\\scaled\\") == True:
+			os.system("rd /s/q \""+inputPath+"\\scaled\\"+'"')
 		os.mkdir(inputPath+"\\scaled\\")
 		
 		if scale == '4':
@@ -553,14 +544,26 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 				if thread1.isAlive()==True:
 					stop_thread(thread1)
 			
-			File_x2=[]
-			for path,useless,filenames in os.walk(inputPath+"\\scaled\\"):
-				for filename in filenames:
-					File_x2.append(path+'\\'+filename)
+			for files in os.walk(scalepath):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(os.path.splitext(fileNameAndExt)[0])[0]
+					os.rename(os.path.join(scalepath,fileNameAndExt),os.path.join(scalepath,fileName+'.png'))
 			
+			
+			old_file_list=[]
+			for path,useless,fnames in os.walk(scalepath):
+					for fname in fnames:
+						f_name_ext = os.path.splitext(fname)[0]
+						f_name = os.path.splitext(fname)[0]
+						if f_name == f_name_ext:
+							old_file_list.append(os.path.splitext(fname)[0])
+					break
+			
+			thread_DelOldFileThread_4x=DelOldFileThread_4x(scalepath,old_file_list)
+			thread_DelOldFileThread_4x.start()
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2)
 			thread1.start()
-			
+			print('')
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
@@ -569,13 +572,15 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 				if thread1.isAlive()==True:
 					stop_thread(thread1)
 			
-			for f in File_x2:
-				os.system('del /q "'+f+'"')
-				
+			while thread_DelOldFileThread_4x.isAlive():
+				time.sleep(1)
+			
 			for files in os.walk(inputPath+'\\scaled\\'):
 				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileName))
+					fileName=os.path.splitext(os.path.splitext(fileNameAndExt)[0])[0]
+					fileNameAndExt_new = orginalFileNameAndFullname[fileName]
+					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileNameAndExt_new+".png"))
+			
 			
 		else:
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
@@ -657,10 +662,14 @@ def Image_ModeC():
 	
 	
 	scale = input_scale()
+	if scale.lower() == 'r':
+		return 1
 	if scale == '1':
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
+	if noiseLevel.lower() == 'r':
+		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
 	load_proc_save_str = ' -j 2:2:2 '
 	if multiThread_Scale.lower() == 'n':
@@ -679,8 +688,12 @@ def Image_ModeC():
 				inputPathList_Gif.append(fname)
 		gifCompresslevel =''
 		highQuality = input_highQuality()
+		if highQuality.lower() == 'r':
+			return 1
 		if highQuality.lower() == 'n':
 			gifCompresslevel = input_gifCompresslevel()
+			if gifCompresslevel.lower() == 'r':
+				return 1
 	
 	Image_exists = False
 	for fname in inputPathList:
@@ -693,15 +706,23 @@ def Image_ModeC():
 			if os.path.splitext(fname)[1] in [".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]:
 				inputPathList_Image.append(fname)
 		saveAsJPG = input_saveAsJPG()
+		if saveAsJPG.lower() == 'r':
+			return 1
 		if saveAsJPG == 'y':
 			Compress = input_Compress()
+			if Compress.lower() == 'r':
+				return 1
 			if Compress.lower() == 'y':
 				JpgQuality=90
 		
 	turnoff = input_turnoff()
+	if turnoff.lower() == 'r':
+		return 1
 	
 	
 	delorginal = input_delorginal()
+	if delorginal.lower() == 'r':
+		return 1
 		
 	print('--------------------------------------------')
 	
@@ -753,7 +774,7 @@ def Image_ModeC():
 		thread_Notification.start()
 	input('\npress Enter key to return to the menu')
 
-#=======================================  process_gif_scale_modeABC ===================================
+#==============================================  process_gif_scale_modeABC =================================================
 def process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal):
 	for inputPath in inputPathList_files:
 		
@@ -775,8 +796,12 @@ def process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNa
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				orginalFileNameAndFullname[fileName]= fileNameAndExt
 				
-	
+		scalepath = scaledFilePath+'_split\\scaled\\'
+		
+		if os.path.exists(scaledFilePath+'_split\\scaled') == True:
+			os.system("rd /s/q \""+scaledFilePath+'_split\\scaled'+'"')
 		os.mkdir(scaledFilePath+'_split\\scaled')
+		
 		print('scal images.....')
 		if scale == '4': 
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
@@ -787,26 +812,40 @@ def process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNa
 				time.sleep(2)
 				if thread1.isAlive()==True:
 					stop_thread(thread1)
-			File_x2=[]
-			for path,useless,filenames in os.walk(scaledFilePath+'_split\\scaled\\'):
-				for filename in filenames:
-					File_x2.append(path+'\\'+filename)
+			
+			for files in os.walk(scalepath):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(os.path.splitext(fileNameAndExt)[0])[0]
+					os.rename(os.path.join(scalepath,fileNameAndExt),os.path.join(scalepath,fileName+'.png'))
+			
+			old_file_list=[]
+			for path,useless,fnames in os.walk(scalepath):
+				for fname in fnames:
+					f_name_ext = os.path.splitext(fname)[0]
+					f_name = os.path.splitext(fname)[0]
+					if f_name == f_name_ext:
+						old_file_list.append(os.path.splitext(fname)[0])
+				break
+			
+			thread_DelOldFileThread_4x=DelOldFileThread_4x(scalepath,old_file_list)
+			thread_DelOldFileThread_4x.start()
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
-			thread1.start()		
+			thread1.start()	
+			print('')	
 			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread1.isAlive()==True:
 				time.sleep(2)
 				if thread1.isAlive()==True:
 					stop_thread(thread1)
-			for f in File_x2:
-				os.system('del /q "'+f+'"')
+			while thread_DelOldFileThread_4x.isAlive():
+				time.sleep(1)
 			
-			for files in os.walk(scaledFilePath+'_split\\scaled\\'):
+			for files in os.walk(inputPath+'\\scaled\\'):
 				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',fileName))
-			
+					fileName=os.path.splitext(os.path.splitext(fileNameAndExt)[0])[0]
+					fileNameAndExt_new = orginalFileNameAndFullname[fileName]
+					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileNameAndExt_new+".png"))
 		else:
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
 			thread1.start()
@@ -841,6 +880,34 @@ def process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNa
 			print('Gif compressed\n')
 		else:
 			print('')
+
+#============================================== DelOldFileThread_4x ===========================================
+class DelOldFileThread_4x(threading.Thread):
+	def __init__(self,inputpath,oldfile_list):
+		threading.Thread.__init__(self)
+		self.inputpath = inputpath
+		self.oldfile_list = oldfile_list
+        
+	def run(self):
+		inputpath = self.inputpath
+		oldfile_list = self.oldfile_list
+
+		old_filenum = len(oldfile_list)
+		inputpath_deled_list = []
+		while True:
+			if len(inputpath_deled_list) == old_filenum:
+				return 0
+			for path,useless,fnames in os.walk(inputpath):
+				for f_name_ext_ext in fnames:
+					f_name_ext = os.path.splitext(f_name_ext_ext)[0]
+					f_name = os.path.splitext(f_name_ext)[0]
+					if f_name_ext != f_name:
+						if f_name not in inputpath_deled_list:
+							if f_name in oldfile_list:
+								os.remove(inputpath+f_name+'.png')
+								inputpath_deled_list.append(f_name)
+				break
+			time.sleep(0.5)
 
 
 #=============================== Video_MODE A ==============================
@@ -877,10 +944,14 @@ def Video_ModeA():
 	
 	 
 	scale = input_scale()
+	if scale.lower() == 'r':
+		return 1
 	if scale == '1':
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
+	if noiseLevel.lower() == 'r':
+		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
 	load_proc_save_str = ' -j 2:2:2 '
 	if multiThread_Scale.lower() == 'n':
@@ -893,8 +964,12 @@ def Video_ModeA():
 		gpuId_str = ' -g '+gpuId
 		
 	delorginal = input_delorginal()
+	if delorginal.lower() == 'r':
+		return 1
 		
 	turnoff = input_turnoff()
+	if turnoff.lower() == 'r':
+		return 1
 		
 	print('--------------------------------------------')
 	
@@ -945,10 +1020,14 @@ def Video_ModeB():
 	
 	 
 	scale = input_scale()
+	if scale.lower() == 'r':
+		return 1
 	if scale == '1':
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
+	if noiseLevel.lower() == 'r':
+		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
 	load_proc_save_str = ' -j 2:2:2 '
 	if multiThread_Scale.lower() == 'n':
@@ -961,8 +1040,12 @@ def Video_ModeB():
 		gpuId_str = ' -g '+gpuId
 		
 	delorginal = input_delorginal()
+	if delorginal.lower() == 'r':
+		return 1
 		
 	turnoff = input_turnoff()
+	if turnoff.lower() == 'r':
+		return 1
 		
 	print('--------------------------------------------')
 	
@@ -1017,10 +1100,14 @@ def Video_ModeC():
 			inputPathList.append(inputPath)
 	
 	scale = input_scale()
+	if scale.lower() == 'r':
+		return 1
 	if scale == '1':
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
+	if noiseLevel.lower() == 'r':
+		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
 	load_proc_save_str = ' -j 2:2:2 '
 	if multiThread_Scale.lower() == 'n':
@@ -1033,8 +1120,12 @@ def Video_ModeC():
 		gpuId_str = ' -g '+gpuId
 		
 	delorginal = input_delorginal()
+	if delorginal.lower() == 'r':
+		return 1
 		
 	turnoff = input_turnoff()
+	if turnoff.lower() == 'r':
+		return 1
 		
 	print('--------------------------------------------')
 	
@@ -1056,16 +1147,18 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 	for inputPath in inputPathList_files:
 		video2images(inputPath) #拆解视频
 		
-		frames_dir = os.path.dirname(inputPath)+'\\'+'frames'
+		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'
 		
 		oldfilenumber=FileCount(frames_dir)
-		
+		if os.path.exists(frames_dir+"\\scaled\\") == True:
+			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
 		os.mkdir(frames_dir+"\\scaled\\")
 		
 		if scale == '4':
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
 			thread2.start()
-			
+			thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+			thread_VideoDelFrameThread.start()
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
@@ -1073,20 +1166,31 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 				time.sleep(2)
 				if thread2.isAlive()==True:
 					stop_thread(thread2)
+			while thread_VideoDelFrameThread.isAlive():
+				time.sleep(1)
 			
 			for files in os.walk(frames_dir+"\\scaled"):
 				for fileNameAndExt in files[2]:
 					fileName=os.path.splitext(fileNameAndExt)[0]
 					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-					
-			File_x2=[]
-			for path,useless,filenames in os.walk(frames_dir+"\\scaled"):
-				for filename in filenames:
-					File_x2.append(path+'\\'+filename)
 			
-			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
+			video_dir = os.path.dirname(inputPath)+'\\'
+			frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+			frame_list = []
+			for path,useless,fnames in os.walk(frames_scaled_dir):
+					for fname in fnames:
+						f_name_ext = os.path.splitext(fname)[0]
+						f_name = os.path.splitext(fname)[0]
+						if f_name == f_name_ext:
+							frame_list.append(os.path.splitext(fname)[0])
+					break
+			
+			thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
+			thread_VideoDelFrameThread_4x.start()
+			
+			thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
 			thread2.start()
-			
+			print('')
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
@@ -1094,9 +1198,9 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 				time.sleep(2)
 				if thread2.isAlive()==True:
 					stop_thread(thread2)
-			
-			for f in File_x2:
-				os.system('del /q "'+f+'"')
+					
+			while thread_VideoDelFrameThread_4x.isAlive():
+				time.sleep(1)
 			
 			for files in os.walk(frames_dir+"\\scaled"):
 				for fileNameAndExt in files[2]:
@@ -1106,12 +1210,16 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		else:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
 			thread2.start()
+			thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+			thread_VideoDelFrameThread.start()
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			if thread2.isAlive()==True:
 				time.sleep(2)
 				if thread2.isAlive()==True:
 					stop_thread(thread2)
+			while thread_VideoDelFrameThread.isAlive():
+				time.sleep(1)
 			for files in os.walk(frames_dir+"\\scaled"):
 				for fileNameAndExt in files[2]:
 					fileName=os.path.splitext(fileNameAndExt)[0]
@@ -1127,12 +1235,12 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')	
 
-#============================= Compress_image_ModeA ===============================
+#============================= Compress_image_gif_ModeA ===============================
 def Compress_image_ModeA():
-	print("================= Compress_image_ModeA ================")
+	print("================= Compress image & gif--ModeA ================")
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder")
-	print("Compressed images will be in the input-path \n")
+	print("Compressed images & gifs will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1157,11 +1265,26 @@ def Compress_image_ModeA():
 				inputPathError = False
 		if inputPathOver == True:
 			inputPathList.append(inputPath)
-	image_quality = input_image_quality()
-	JpgQuality = round(94*(image_quality/100))
-	if JpgQuality < 1:
-		JpgQuality = 1
+			
+	image_exist = False
+	if FindImageFiles(inputPathList):
+		image_exist = True
+		image_quality = input_image_quality()
+		if image_quality == 'r':
+			return 1
+		JpgQuality = round(94*(image_quality/100))
+		if JpgQuality < 1:
+			JpgQuality = 1
+	gif_exist = False
+	if FindGifFiles(inputPathList):
+		gif_exist = True
+		gifCompresslevel=input_gifCompresslevel()
+		if gifCompresslevel.lower() == 'r':
+				return 1
+	
 	delorginal = input_delorginal()
+	if delorginal.lower() == 'r':
+		return 1
 	multiThread = settings_values['multiThread']
 	notificationSound = settings_values['notificationSound']
 	
@@ -1178,16 +1301,26 @@ def Compress_image_ModeA():
 			for fname in fnames:
 				inputPathList_files.append(path+'\\'+fname)
 			break
-	
-	Process_compress_image(total_time_start,inputPathList_files,delorginal,multiThread,notificationSound,JpgQuality)
-	
+			
+	if gif_exist == True :
+		process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal,multiThread)
+	if image_exist == True :
+		Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality)
+			
+	total_time_end=time.time()
+		
+	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
+	if notificationSound.lower() == 'y':
+		thread_notification=Play_Notification_Sound_Thread()
+		thread_notification.start()
+	input('\npress enter key to return to the menu')
 
-#============================= Compress_image_ModeB ===============================
+#============================= Compress_image_gif_ModeB ===============================
 def Compress_image_ModeB():
-	print("================= Compress_image_ModeB ================")
+	print("================= Compress image & gif--ModeB ================")
 	print("Type 'r' to return to the previous menu")
 	print("Input path must be a folder")
-	print("Compressed images will be in the input-path \n")
+	print("Compressed images & gifs will be in the input-path \n")
 	inputPathOver = True
 	JpgQuality=90
 	settings_values = ReadSettings()
@@ -1202,11 +1335,27 @@ def Compress_image_ModeB():
 			print('-----------------------------')
 		else:
 			break
-	image_quality = input_image_quality()
-	JpgQuality = round(94*(image_quality/100))
-	if JpgQuality < 1:
-		JpgQuality = 1
+	inputPathList =[]
+	for dirs in os.walk(inputPath):
+		inputPathList.append(str(dirs[0]))
+	image_exist = False
+	if FindImageFiles(inputPathList):
+		image_exist = True
+		image_quality = input_image_quality()
+		if image_quality == 'r':
+			return 1
+		JpgQuality = round(94*(image_quality/100))
+		if JpgQuality < 1:
+			JpgQuality = 1
+	gif_exist = False
+	if FindGifFiles(inputPathList):
+		gif_exist = True
+		gifCompresslevel=input_gifCompresslevel()
+		if gifCompresslevel.lower() == 'r':
+				return 1
 	delorginal = input_delorginal()
+	if delorginal.lower() == 'r':
+		return 1
 	multiThread = settings_values['multiThread']
 	notificationSound = settings_values['notificationSound']
 		
@@ -1219,16 +1368,26 @@ def Compress_image_ModeB():
 		for fname in fnames:
 			inputPathList_files.append(path+'\\'+fname)
 	
-	Process_compress_image(total_time_start,inputPathList_files,delorginal,multiThread,notificationSound,JpgQuality)
+	if gif_exist == True :
+		process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal,multiThread)
+	if image_exist == True :
+		Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality)
 	
+	total_time_end=time.time()
+		
+	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
+	if notificationSound.lower() == 'y':
+		thread_notification=Play_Notification_Sound_Thread()
+		thread_notification.start()
+	input('\npress enter key to return to the menu')
 
 
-#============================= Compress_image_ModeC ===============================
+#============================= Compress_image_gif_ModeC ===============================
 def Compress_image_ModeC():
-	print("================= Compress_image_ModeC ================")
+	print("================= Compress image & gif--ModeC ================")
 	print("Type 'r' to return to the previous menu")
-	print("Type 'o' to stop input more path, and input path must be a image")
-	print("Compressed images will be in the input-path \n")
+	print("Type 'o' to stop input more path, and input path must be a image or gif")
+	print("Compressed images & gifs will be in the input-path \n")
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=90
@@ -1253,12 +1412,33 @@ def Compress_image_ModeC():
 				inputPathError = False
 		if inputPathOver == True:
 			inputPathList.append(inputPath)
-	image_quality = input_image_quality()
-	JpgQuality = round(94*(image_quality/100))
-	if JpgQuality < 1:
-		JpgQuality = 1
-	print('JpgQuality = ',JpgQuality)
+			
+	image_exist = False
+	for fname in inputPathList:
+		if os.path.splitext(fname)[1] in [".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]:
+			image_exist = True
+			break
+	if image_exist:
+		image_quality = input_image_quality()
+		if image_quality == 'r':
+			return 1
+		JpgQuality = round(94*(image_quality/100))
+		if JpgQuality < 1:
+			JpgQuality = 1
+			
+	gif_exist = False
+	for fname in inputPathList:
+		if os.path.splitext(fname)[1] == ".gif":
+			gif_exist = True
+			break
+	if gif_exist:
+		gifCompresslevel=input_gifCompresslevel()
+		if gifCompresslevel.lower() == 'r':
+				return 1
+		
 	delorginal = input_delorginal()
+	if delorginal.lower() == 'r':
+		return 1
 	multiThread = settings_values['multiThread']
 	notificationSound = settings_values['notificationSound']
 		
@@ -1266,24 +1446,28 @@ def Compress_image_ModeC():
 	
 	total_time_start=time.time()
 	
-	Process_compress_image(total_time_start,inputPathList,delorginal,multiThread,notificationSound,JpgQuality)
-
+	if gif_exist == True :
+		process_gif_compress_modeABC(inputPathList,gifCompresslevel,delorginal,multiThread)
+	if image_exist == True :
+		Process_compress_image(inputPathList,delorginal,multiThread,JpgQuality)
+	
+	total_time_end=time.time()
+		
+	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
+	if notificationSound.lower() == 'y':
+		thread_notification=Play_Notification_Sound_Thread()
+		thread_notification.start()
+	input('\npress enter key to return to the menu')
 	
 #=================================== Process_compress_image ===============================================
 
-def Process_compress_image(total_time_start,inputPathList_files,delorginal,multiThread,notificationSound,JpgQuality):
+def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality):
 	if multiThread.lower() == 'y':
 		print('Start compressing, pls wait....')
 		Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality)
 		time.sleep(1)
-		total_time_end=time.time()
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
+
 	else:
-		saved_size_total = 0
 		for inputPath in inputPathList_files:
 			
 			file_ext = os.path.splitext(inputPath)[1]
@@ -1309,7 +1493,6 @@ def Process_compress_image(total_time_start,inputPathList_files,delorginal,multi
 				os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
 				print('Failed to compress ['+inputPath+'] This image may be already being compressed. You can try to reduce "image quality".')
 			else:
-				saved_size_total = saved_size_total+saved_size
 				saved_size_str = str(saved_size)+'KB'
 				print('Compressed size:'+compressed_size)
 				print('Save '+saved_size_str+' !')
@@ -1318,159 +1501,15 @@ def Process_compress_image(total_time_start,inputPathList_files,delorginal,multi
 					os.system('del /q "'+inputPath+'"')
 				
 			print('--------------------------------------------')
-			
-				
-		total_time_end=time.time()
-		
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		print('\nTotal saved space: ',saved_size_total,'KB\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
 
-#============================= Compress_gif_ModeA ===============================
-def Compress_gif_ModeA():
-	print("======================== Compress_gif_ModeA ======================")
-	print("Type 'r' to return to the previous menu")
-	print("Type 'o' to stop input more path, and input path must be a folder")
-	print("Compressed images will be in the input-path \n")
-	inputPathOver = True
-	inputPathList = []
-	settings_values = ReadSettings()
-	while inputPathOver:
-		inputPathError = True
-		while inputPathError:
-			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\').strip(' ')
-			
-			if inputPath.lower() == 'r':
-				return 1
-			elif inputPath.lower() == 'o':
-				inputPathOver = False
-				inputPathError = False
-				break
-			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('-----------------------------')
-				print('Error,input-path is invalid!!')
-				print('-----------------------------')
-			else:
-				inputPathError = False
-		if inputPathOver == True:
-			inputPathList.append(inputPath)
-	
-	gifCompresslevel=input_gifCompresslevel()
-	
-	delorginal = input_delorginal()
-	
-	multiThread = settings_values['multiThread']
-	notificationSound = settings_values['notificationSound']
-	
-	print('--------------------------------------------')
-	
-	total_time_start=time.time()
-	
-	inputPathList_files = []
-	for folders in inputPathList:
-		for path,useless,fnames in os.walk(folders):
-			for fname in fnames:
-				inputPathList_files.append(path+'\\'+fname)
-			break
-	process_gif_compress_modeABC(total_time_start,inputPathList_files,gifCompresslevel,delorginal,multiThread,notificationSound)
-	
-
-#============================= Compress_gif_ModeB ===============================
-def Compress_gif_ModeB():
-	print("================= Compress_gif_ModeB ================")
-	print("Type 'r' to return to the previous menu")
-	print("Input path must be a folder")
-	print("Compressed images will be in the input-path \n")
-	inputPathOver = True
-	settings_values = ReadSettings()
-	while True:
-		inputPath = input('input-path: ')
-		inputPath =inputPath.strip('"').strip('\\').strip(' ')
-		if inputPath.lower() == 'r':
-			return 1
-		elif inputPath == '' or os.path.exists(inputPath) == False:
-			print('-----------------------------')
-			print('Error,input-path is invalid!!')
-			print('-----------------------------')
-		else:
-			break
-	
-	gifCompresslevel= input_gifCompresslevel()
-	delorginal = input_delorginal()
-	multiThread = settings_values['multiThread']
-	notificationSound = settings_values['notificationSound']
-	
-		
-	print('--------------------------------------------')
-	
-	total_time_start=time.time()
-	
-	inputPathList_files = []
-	for path,useless,fnames in os.walk(inputPath):
-		for fname in fnames:
-			inputPathList_files.append(path+'\\'+fname)
-	process_gif_compress_modeABC(total_time_start,inputPathList_files,gifCompresslevel,delorginal,multiThread,notificationSound)
-
-
-
-#============================= Compress_gif_ModeC ===============================
-def Compress_gif_ModeC():
-	print("================= Compress_gif_ModeC ================")
-	print("Type 'r' to return to the previous menu")
-	print("Type 'o' to stop input more path, and input path must be a gif")
-	print("Compressed images will be in the input-path \n")
-	inputPathOver = True
-	inputPathList = []
-	settings_values = ReadSettings()
-	while inputPathOver:
-		inputPathError = True
-		while inputPathError:
-			inputPath = input('input-path: ')
-			inputPath=inputPath.strip('"').strip('\\').strip(' ')
-			
-			if inputPath.lower() == 'r':
-				return 1
-			elif inputPath.lower() == 'o':
-				inputPathOver = False
-				inputPathError = False
-				break
-			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('-----------------------------')
-				print('Error,input-path is invalid!!')
-				print('-----------------------------')
-			else:
-				inputPathError = False
-		if inputPathOver == True:
-			inputPathList.append(inputPath)
-			
-	gifCompresslevel=input_gifCompresslevel()
-	delorginal = input_delorginal()
-	multiThread = settings_values['multiThread']
-	notificationSound = settings_values['notificationSound']
-		
-	print('--------------------------------------------')
-	
-	total_time_start=time.time()
-	process_gif_compress_modeABC(total_time_start,inputPathList,gifCompresslevel,delorginal,multiThread,notificationSound)
-	
 #========================================== process_gif_compress_modeABC ===============================
-def process_gif_compress_modeABC(total_time_start,inputPathList_files,gifCompresslevel,delorginal,multiThread,notificationSound):
+def process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal,multiThread):
 	if multiThread.lower() == 'y':
 		print('Start compressing, pls wait....')
 		Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal)
 		time.sleep(1)
-		total_time_end=time.time()
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu')
+		
 	else:
-		saved_size_total = 0
 		for inputPath in inputPathList_files:
 			
 			file_ext = os.path.splitext(inputPath)[1]
@@ -1495,7 +1534,6 @@ def process_gif_compress_modeABC(total_time_start,inputPathList_files,gifCompres
 				os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
 				print('Failed to compress '+inputPath)
 			else:
-				saved_size_total = saved_size_total+saved_size
 				saved_size_str = str(saved_size)+'KB'
 				print('Compressed size:'+compressed_size)
 				print('Save '+saved_size_str+' !')
@@ -1504,16 +1542,6 @@ def process_gif_compress_modeABC(total_time_start,inputPathList_files,gifCompres
 					os.system('del /q "'+inputPath+'"')
 				
 			print('--------------------------------------------')
-				
-		total_time_end=time.time()
-		
-		print('\nTotal time cost: ',total_time_end-total_time_start,'s\n')
-		print('\nTotal saved space: ',saved_size_total,'KB\n')
-		if notificationSound.lower() == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
-		input('\nPress Enter key to return to the menu.')
-
 
 #=========================================== Prograss bar ======================================
 def FileCount(countPath):
@@ -1539,6 +1567,7 @@ class PrograssBarThread (threading.Thread):
 def PrograssBar(OldFileNum,ScalePath,scale,round_):
 	Eta = 0
 	NewFileNum_Old=0
+	PrograssBar_len_old = 0
 	if OldFileNum != 0:
 		NewFileNum=0
 		time_start = time.time()
@@ -1546,12 +1575,19 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 		print('\n')
 		while NewFileNum <= OldFileNum and os.path.exists(ScalePath):
 			NewFileNum=0
-			for files in os.walk(ScalePath):
-				for singleFile in files[2]:
-					if str(os.path.splitext(singleFile)[1]) in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
-						NewFileNum=NewFileNum+1
 			if round_ == 2:
-				NewFileNum=NewFileNum-OldFileNum
+				for path,useless,fnames in os.walk(ScalePath):
+					for f_name_ext_ext in fnames:
+						f_name_ext = os.path.splitext(f_name_ext_ext)[0]
+						f_name = os.path.splitext(f_name_ext)[0]
+						if f_name_ext != f_name:
+							NewFileNum = NewFileNum+1
+					break
+			else:
+				for files in os.walk(ScalePath):
+					for singleFile in files[2]:
+						if str(os.path.splitext(singleFile)[1]) in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
+							NewFileNum=NewFileNum+1
 				
 			if NewFileNum==0:
 				Percent = 0
@@ -1579,7 +1615,12 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+"  "+"["+'ETA: '+Seconds2hms(Eta)+" ]"
 				else:
 					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+"  "+"["+'ETA: '+Seconds2hms(Eta)+" ]"
-				sys.stdout.write(PrograssBar+' '*(130-len(PrograssBar)))
+				PrograssBar_len_new = len(PrograssBar)
+				Add_len = PrograssBar_len_old - PrograssBar_len_new
+				if Add_len < 0:
+					Add_len = 0
+				PrograssBar_len_old = PrograssBar_len_new
+				sys.stdout.write(PrograssBar+' '*Add_len)
 				sys.stdout.flush()
 					
 				
@@ -1588,7 +1629,12 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"
 				else:
 					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"
-				sys.stdout.write(PrograssBar+' '*(130-len(PrograssBar)))
+				PrograssBar_len_new = len(PrograssBar)
+				Add_len = PrograssBar_len_old - PrograssBar_len_new
+				if Add_len < 0:
+					Add_len = 0
+				PrograssBar_len_old = PrograssBar_len_new
+				sys.stdout.write(PrograssBar+' '*Add_len)
 				sys.stdout.flush()
 			time.sleep(1)
 			
@@ -1663,6 +1709,8 @@ def getDuration(FILENAME):
 def splitGif(gifFileName,scaledFilePath):
 	im = Image.open(gifFileName)
 	pngDir = scaledFilePath+'_split'
+	if os.path.exists(scaledFilePath+'_split') == True:
+			os.system("rd /s/q \""+scaledFilePath+'_split'+'"')
 	os.mkdir(scaledFilePath+'_split')
 	try:
 	  while True:
@@ -1726,35 +1774,97 @@ def video2images(inputpath):
 	video_ext = os.path.splitext(inputpath)[1]
 	if video_ext != '.mp4':
 		os.system('ffmpeg -i "'+inputpath+'" "'+video_path_filename+'.mp4"')
-	frames_dir = video_dir+'frames\\'
+	frames_dir = video_dir+'frames_waifu2x\\'
 	
 	cap = cv2.VideoCapture(inputpath)
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
 	
-	if os.path.exists(frames_dir) == False:
-		os.mkdir(frames_dir)
-	
-	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:02 "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
-	#os.system('ffmpeg -i "'+inputpath+'" -ss 00:00 -t 00:02 "'+video_dir+'audio.mp3"')
+	if os.path.exists(frames_dir) == True:
+			os.system("rd /s/q \""+frames_dir+'"')
+	os.mkdir(frames_dir)
 
 	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
-	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+video_dir+'audio.mp3"')
+	
+	if os.path.exists(video_dir+'audio_waifu2x.mp3'):
+		os.remove(video_dir+'audio_waifu2x.mp3')
+	
+	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+video_dir+'audio_waifu2x.mp3"')
 
 def images2video(inputpath):
 	video_path_filename = os.path.splitext(inputpath)[0]
 	video_ext = os.path.splitext(inputpath)[1]
 	video_dir = os.path.dirname(inputpath)+'\\'
-	frames_scaled_dir = video_dir+'frames\\scaled\\'
+	frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
 	cap = cv2.VideoCapture(inputpath)
 	fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
-	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio.mp3" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
+	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio_waifu2x.mp3" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
 
-	os.system('del /q "'+video_dir+'audio.mp3"')
+	os.system('del /q "'+video_dir+'audio_waifu2x.mp3"')
 
-	os.system('rd /s/q "'+video_dir+'frames'+'"')
+	os.system('rd /s/q "'+video_dir+'frames_waifu2x'+'"')
+
+class VideoDelFrameThread(threading.Thread):
+	def __init__(self,inputpath):
+		threading.Thread.__init__(self)
+		self.inputpath = inputpath
+        
+	def run(self):
+		inputpath = self.inputpath
+		video_dir = os.path.dirname(inputpath)+'\\'
+		frames_dir = video_dir+'frames_waifu2x\\'
+		frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+		frame_list = []
+		for path,useless,fnames in os.walk(frames_dir):
+				for fname in fnames:
+					frame_list.append(os.path.splitext(fname)[0])
+				break
+		frame_deled_list = []
+		while True:
+			for path,useless,fnames in os.walk(frames_dir):
+				if fnames == []:
+					return 0
+				break
+			for path,useless,fnames in os.walk(frames_scaled_dir):
+				for f_name_ext_ext in fnames:
+					f_name_ext = os.path.splitext(f_name_ext_ext)[0]
+					f_name = os.path.splitext(f_name_ext)[0]
+					if f_name not in frame_deled_list:
+						if f_name in frame_list:
+							os.remove(frames_dir+f_name+'.png')
+							frame_deled_list.append(f_name)
+				break
+			time.sleep(0.5)
+
+class VideoDelFrameThread_4x(threading.Thread):
+	def __init__(self,inputpath,frame_list):
+		threading.Thread.__init__(self)
+		self.inputpath = inputpath
+		self.frame_list = frame_list
+        
+	def run(self):
+		inputpath = self.inputpath
+		frame_list = self.frame_list
+		video_dir = os.path.dirname(inputpath)+'\\'
+		frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+		old_filenum = len(frame_list)
+		frame_deled_list = []
+		while True:
+			if len(frame_deled_list) == old_filenum:
+				return 0
+			for path,useless,fnames in os.walk(frames_scaled_dir):
+				for f_name_ext_ext in fnames:
+					f_name_ext = os.path.splitext(f_name_ext_ext)[0]
+					f_name = os.path.splitext(f_name_ext)[0]
+					if f_name_ext != f_name:
+						if f_name not in frame_deled_list:
+							if f_name in frame_list:
+								os.remove(frames_scaled_dir+f_name+'.png')
+								frame_deled_list.append(f_name)
+				break
+			time.sleep(0.5)
 	
 #====================== input ============================
 def input_scale():
@@ -1763,7 +1873,7 @@ def input_scale():
 
 	while True:
 		scale = input('Upscale ratio(1/2/4, default='+default_value+'): ')
-		if scale in ['1','2','4','']:
+		if scale in ['1','2','4','','r','R']:
 			break
 		else:
 			print('Error : wrong input, pls input again')
@@ -1804,7 +1914,7 @@ def input_noiseLevel():
 	default_value = settings_values['noiseLevel']
 	while True:
 		noiseLevel = input('Denoise level(-1/0/1/2/3, default='+default_value+'): ')
-		if noiseLevel in ['-1','0','1','2','3','']:
+		if noiseLevel in ['-1','0','1','2','3','','r','R']:
 			break
 		else:
 			print('wrong input, pls input again')
@@ -1818,7 +1928,7 @@ def input_delorginal():
 	default_value = settings_values['delorginal']
 	while True:
 		delorginal = input('Delete original files?(y/n, default='+default_value+'): ')
-		if delorginal in ['y','n','Y','N','']:
+		if delorginal in ['y','n','Y','N','','r','R']:
 			break
 		else:
 			print('wrong input, pls input again')
@@ -1830,7 +1940,7 @@ def input_delorginal():
 def input_turnoff():
 	while True:
 		turnoff = input('turn off computer when finished?(y/n, default=n): ')
-		if turnoff in ['y','n','Y','N','']:
+		if turnoff in ['y','n','Y','N','','r','R']:
 			break
 		else:
 			print('wrong input, pls input again')
@@ -1844,7 +1954,7 @@ def input_saveAsJPG():
 	default_value = settings_values['saveAsJPG']
 	while True:
 		saveAsJPG = input('Save as .jpg? (y/n, default='+default_value+'): ')
-		if saveAsJPG in ['y','n','Y','N','']:
+		if saveAsJPG in ['y','n','Y','N','','r','R']:
 			break
 		else:
 			print('wrong input, pls input again')
@@ -1858,7 +1968,7 @@ def input_Compress():
 	default_value = settings_values['Compress']
 	while True:
 		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default='+default_value+'): ')
-		if Compress in ['y','n','Y','N','']:
+		if Compress in ['y','n','Y','N','','r','R']:
 			break
 		else:
 			print('wrong input, pls input again')
@@ -1871,7 +1981,7 @@ def input_highQuality():
 	default_value = settings_values['highQuality']
 	while True:
 		highQuality = input('Save high quality gif? (y/n, default='+default_value+'): ')
-		if highQuality in ['y','n','Y','N','']:
+		if highQuality in ['y','n','Y','N','','r','R']:
 			break
 		else:
 			print('wrong input, pls input again')
@@ -1886,7 +1996,7 @@ def input_gifCompresslevel():
 	default_value = settings_values['gifCompresslevel']
 	while True:
 		gifCompresslevel = input('Compress level(1/2/3/4, default='+default_value+'): ')
-		if gifCompresslevel in ['1','2','3','4','']:
+		if gifCompresslevel in ['1','2','3','4','','r','R']:
 			break
 		else:
 			print('wrong input, pls input again')
@@ -1974,17 +2084,20 @@ def input_multiThread_Scale():
 		json.dump(settings_values,f)
 
 def input_image_quality():
+	settings_values = ReadSettings()
+	default_value = settings_values['image_quality']
 	while True:
-		image_quality = input('Image quality ( 100 (Almost lossless) ~ 1 (Most lossy) , defalut = 95 ):').strip(' ')
+		image_quality = input('Image quality ( 100 (Almost lossless) ~ 1 (Most lossy) , defalut = '+str(default_value)+' ):').strip(' ')
 		if image_quality.isdigit():
 			if int(image_quality) >= 1 and int(image_quality) <= 100:
 				return int(image_quality)
 				break
 			else:
 				print('wrong input, pls input again')
+		elif image_quality.lower() == 'r':
+			return 'r'
 		elif image_quality == '':
-			return 95
-			break
+			return default_value
 		else:
 			os.system('cls')
 			print('wrong input, pls input again')
@@ -2083,7 +2196,8 @@ def VerifyFiles():
 	'noise1_scale2.0x_model.param', 'noise2_scale2.0x_model.bin', 'noise2_scale2.0x_model.param', 
 	'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param','gifsicle.exe',
 	'NotificationSound_waifu2xExtension.mp3','Benchmark_Image_waifu2x_extension_1.png','Benchmark_Image_waifu2x_extension_2.png',
-	'Benchmark_Image_waifu2x_extension_3.png','vgi_waifu2x_extension.jpg']
+	'Benchmark_Image_waifu2x_extension_3.png','Benchmark_Image_waifu2x_extension_4.png','Benchmark_Image_waifu2x_extension_5.png',
+	'Benchmark_Image_waifu2x_extension_6.png','Benchmark_Image_waifu2x_extension_7.png','Benchmark_Image_waifu2x_extension_8.png','vgi_waifu2x_extension.jpg']
 	
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	FilesList_current = []
@@ -2110,14 +2224,15 @@ def Settings():
 		print('                                  Settings')
 		print('-----------------------------------------------------------------------------')
 		print(' 1: Check for updates at startup. Current value: '+settings_values['CheckUpdate']+'\n')
-		print(' 2: Default value of "scale". Current value: '+settings_values['scale']+'\n')
-		print(' 3: Default value of "noiseLevel". Current value: '+settings_values['noiseLevel']+'\n')
+		print(' 2: Default value of "Upscale ratio". Current value: '+settings_values['scale']+'\n')
+		print(' 3: Default value of "Denoise Level". Current value: '+settings_values['noiseLevel']+'\n')
 		print(' 4: Save the result image as .jpg file? Current default value: '+settings_values['saveAsJPG']+'\n')
 		print(' 5: Compress the result image?(when saved as .jpg) Current default value: '+settings_values['Compress']+'\n')
 		print(' 6: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
 		print(' 7: Save high quality gif? Current default value: '+settings_values['highQuality']+'\n')
 		print(' 8: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
-		print(' 9: Reset error log.\n')
+		print(' 9: Image quality ( When compress images ). Current default value: ',settings_values['image_quality'],'\n')
+		print(' 10: Reset error log.\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
 		mode = input('(1/2/3/4/5/6/7/8/9/r): '.upper())
@@ -2252,6 +2367,23 @@ def Settings():
 		
 		elif mode == "9":
 			os.system('cls')
+			while True:
+				image_quality = input('New value ( 100 ~ 1 ): ').strip(' ')
+				if image_quality.isdigit():
+					if int(image_quality) >= 1 and int(image_quality) <= 100:
+						break
+					else:
+						print('wrong input, pls input again')
+				else:
+					print('wrong input, pls input again')
+			settings_values['image_quality']=int(image_quality)
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+		
+		elif mode == "10":
+			os.system('cls')
 			
 			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
 				f.write('')
@@ -2263,7 +2395,9 @@ def Settings():
 			input('Error log reseted, press Enter key to return.')
 			
 			os.system('cls')
-			
+		
+		
+		
 		elif mode == "r":
 			break
 		else:
@@ -2277,7 +2411,7 @@ def ReadSettings():
 	default_values = {'CheckUpdate':'y','scale':'2','tileSize':'200',
 						'noiseLevel':'2','saveAsJPG':'y',
 						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1',
-						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y'}
+						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y','image_quality':'95'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -2295,12 +2429,11 @@ def ReadSettings():
 		else:
 			return settings_values
 
-#=================  Init  ================
+#==========================================  Init  ==================================================================
 
 def init():		#初始化函数
 	Window_Title('')	#更改控制台标题
 	os.system('color 0b')	#更改文字颜色
-	ResizeWindow()		#更改控制台窗口大小
 	
 	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
 	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
@@ -2314,7 +2447,12 @@ def init():		#初始化函数
 		
 	if VerifyFiles() == 'verified':
 		os.system('cls')
+		thread_resizeWindow=ResizeWindow_Thread()
+		thread_resizeWindow.start()
+		time.sleep(0.2)
 		ChooseFormat()
+		if thread_resizeWindow.isAlive()==True:
+			stop_thread(thread_resizeWindow)
 	else:
 		os.system('cls')
 		os.system('color 0c')
@@ -2492,8 +2630,32 @@ class Play_Notification_Sound_Thread (threading.Thread):
 		playsound('NotificationSound_waifu2xExtension.mp3')
 
 #================================ Resize Window ==========================
+
+class ResizeWindow_Thread(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+        
+	def run(self):
+		ResizeWindow()
+
 def ResizeWindow():
-	os.system('mode con cols=130 lines=38')
+	cols = 145
+	lines = 38
+	while True:
+		h = ctypes.windll.kernel32.GetStdHandle(-12)
+		csbi = ctypes.create_string_buffer(22)
+		res = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(h, csbi)
+		
+		if res:
+			(bufx, bufy, curx, cury, wattr,
+			 left, top, right, bottom, maxx, maxy) = struct.unpack("hhhhHhhhhhh", csbi.raw)
+			sizex = right - left + 1
+			sizey = bottom - top + 1
+			if sizex != cols or sizey != lines:
+				os.system('Resize-window.exe 145 38')
+		else:
+			os.system('Resize-window.exe 145 38')
+		time.sleep(0.1)
 	
 #=============================== Benchmark =============================
 def Benchmark():
@@ -2521,7 +2683,10 @@ def Benchmark():
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	inputPath = current_dir+'\\'+'benchmark-files-waifu2x-extension'
 	scaledFilePath = inputPath+'\\scaled'
-	
+	multiThread_Scale = settings_values['multiThread_Scale']
+	load_proc_save_str = ' -j 2:2:2 '
+	if multiThread_Scale.lower() == 'n':
+		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = 50
 	old_time_cost = 100000
 	old_tileSize = 0
@@ -2624,6 +2789,7 @@ def RecoverGifFiles(inputPathList):
 			if os.path.exists(inputPath+'\\protectfiles_waifu2x_extension') == True:
 				os.system('rd /s/q "'+inputPath+'\\protectfiles_waifu2x_extension'+'"')
 			break
+			
 def FindImageFiles(inputPathList):
 	Exts=[".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]
 	Image_exist = False
