@@ -2197,7 +2197,8 @@ def VerifyFiles():
 	'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param','gifsicle.exe',
 	'NotificationSound_waifu2xExtension.mp3','Benchmark_Image_waifu2x_extension_1.png','Benchmark_Image_waifu2x_extension_2.png',
 	'Benchmark_Image_waifu2x_extension_3.png','Benchmark_Image_waifu2x_extension_4.png','Benchmark_Image_waifu2x_extension_5.png',
-	'Benchmark_Image_waifu2x_extension_6.png','Benchmark_Image_waifu2x_extension_7.png','Benchmark_Image_waifu2x_extension_8.png','vgi_waifu2x_extension.jpg']
+	'Benchmark_Image_waifu2x_extension_6.png','Benchmark_Image_waifu2x_extension_7.png','Benchmark_Image_waifu2x_extension_8.png',
+	'vgi_waifu2x_extension.jpg','Resize-window.exe']
 	
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	FilesList_current = []
