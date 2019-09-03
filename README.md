@@ -14,7 +14,9 @@ New features brought by this extension:
 10. Adjust the quality of the enlarged dynamic picture
 11. Display processing progress and remaining time
 12. Smart selection of models
-13. Gif compression
+13. Gif compression & Image compression (Multithreading)
+14. Benchmark
+15. Multithreading
 
 ![mainmenu](/screenshot/mainmenu.png) 
 
@@ -58,7 +60,11 @@ https://www.lcdf.org/gifsicle/
 
 12.智能选择models
 
-13. Gif 压缩
+13. Gif 压缩 & 图片压缩(支持多线程)
+
+14. 基准测试(用于获得适用于您电脑的tile size值)
+
+15. 多线程模式
 
 ![mainmenu](/screenshot/mainmenu.png) 
 
