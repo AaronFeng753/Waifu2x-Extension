@@ -20,7 +20,7 @@ New features brought by this extension:
 
 ![mainmenu](/screenshot/mainmenu.png) 
 
-Put 'Waifu2x-Extension.py' in the folder of waifu2x-ncnn-vulkan then open the extension, enjoy.
+# Download: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
 waifu2x-ncnn-vulkan:
 https://github.com/nihui/waifu2x-ncnn-vulkan
@@ -68,7 +68,7 @@ https://www.lcdf.org/gifsicle/
 
 ![mainmenu](/screenshot/mainmenu.png) 
 
-使用说明:把'Waifu2x-Extension.py'放到waifu2x-ncnn-vulkan的文件夹内(就是和waifu2x-ncnn-vulkan.exe在一个文件夹里), 然后打开扩展脚本, 输入参数即可.
+# 下载: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
 waifu2x-ncnn-vulkan:
 https://github.com/nihui/waifu2x-ncnn-vulkan
