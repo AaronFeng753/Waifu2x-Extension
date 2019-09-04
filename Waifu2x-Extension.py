@@ -616,7 +616,20 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 		
 		print('')
 		if delorginal.lower() == 'y':
-			DelOrgFiles(inputPath)
+			files_num_inputPath = 0
+			files_num_inputPath_scaled = 0
+			for path,useless,fnames in os.walk(inputPath):
+				files_num_inputPath = len(fnames)
+				break
+			for path,useless,fnames in os.walk(inputPath+"\\scaled"):
+				files_num_inputPath_scaled = len(fnames)
+				break
+			if files_num_inputPath == files_num_inputPath_scaled:
+				DelOrgFiles(inputPath)
+			else:
+				print('--------------------------------------------------')
+				print('Error occured, in order to save your files, the original files will not be deleted.')
+				print('--------------------------------------------------')
 		print('Copy files...')
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
@@ -757,13 +770,22 @@ def Image_ModeC():
 			if thread1.isAlive()==True:
 				stop_thread(thread1)	
 			print('')	
-			if delorginal.lower() == 'y':
-				os.system('del /q "'+inputPath+'"')
+			
 				
 			if saveAsJPG.lower() == 'y':
-				print('\n Convert image..... \n')
-				imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
-				os.system('del /q "'+scaledFilePath+"_Waifu2x.png"+'"')
+				if os.path.exists(scaledFilePath+"_Waifu2x.png"):
+					print('\n Convert image..... \n')
+					imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
+					os.system('del /q "'+scaledFilePath+"_Waifu2x.png"+'"')
+			
+			
+			if delorginal.lower() == 'y':
+				if os.path.exists(scaledFilePath+"_Waifu2x.png") or os.path.exists(scaledFilePath+"_Waifu2x.jpg"):
+					os.system('del /q "'+inputPath+'"')
+				else:
+					print('--------------------------------------------------')
+					print('Error occured, in order to save your files, the original file will not be deleted.')
+					print('--------------------------------------------------')
 			FinishedFileNum = FinishedFileNum+1
 			
 	total_time_end=time.time()
@@ -873,7 +895,15 @@ def process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNa
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
 		
 		if delorginal.lower() == 'y':
-			os.system('del /q "'+inputPath+'"')
+			gif_name=scaledFilePath+'_waifu2x.gif'
+			if os.path.exists(gif_name):
+				if os.path.getsize(gif_name)>0:
+					os.system('del /q "'+inputPath+'"')
+			else:
+				print('--------------------------------------------------')
+				print('Error occured, in order to save your files, the original file will not be deleted.')
+				print('--------------------------------------------------')
+			
 		
 		if highQuality.lower() == 'n':
 			print('Compressing gif....')
