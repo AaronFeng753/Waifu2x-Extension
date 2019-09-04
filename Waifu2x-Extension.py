@@ -2,7 +2,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v2.0'
+Version_current='v2.11'
 
 import time
 import threading
@@ -56,13 +56,13 @@ def ChooseFormat():
 		print('│                                                              │')
 		print('│ 11 : Read error log.     12 : Check update.                  │')
 		print('│                                                              │')
-		print('│ 13 : Readme.             14 : Donate. (Alipay)               │')
+		print('│ 13 : Readme.             14 : License.                       │')
 		print('│                                                              │')
-		print('│ 15 : License.            16 : View GPU ID.                   │')
-		print('│                                                              │')
-		print('│ E : Exit.                                                    │')
+		print('│ 15 : View GPU ID.        E : Exit.                           │')
+		print('├──────────────────────────────────────────────────────────────┤')
+		print('│                   D : Donate. (Alipay)                       │')
 		print('└──────────────────────────────────────────────────────────────┘')
-		print('( 1 / 2 / 3 / 4 /...../ E ): ')
+		print('( 1 / 2 / 3 / 4 /...../ E / D ): ')
 		mode = input().strip(' ').lower()
 		if mode == "1":
 			os.system('cls')
@@ -137,18 +137,12 @@ def ChooseFormat():
 			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README.md')
 			os.system('cls')
+		
 		elif mode == "14":
-			os.system('cls')
-			print('Loading.......')
-			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/donate.jpg')
-			os.system('cls')
-			print('Thank you!!! :)')
-			print('---------------')
-		elif mode == "15":
 			os.system('cls')
 			license_()
 			os.system('cls')
-		elif mode == "16":
+		elif mode == "15":
 			os.system('cls')
 			View_GPU_ID()
 			os.system('cls')
@@ -156,6 +150,13 @@ def ChooseFormat():
 			os.system('color 07')
 			os.system('cls')
 			return 0
+		elif mode == "d":
+			os.system('cls')
+			print('Loading.......')
+			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/donate.jpg')
+			os.system('cls')
+			print('Thank you!!! :)')
+			print('---------------')
 		else:
 			os.system('cls')
 			os.system('color 0c')
@@ -308,7 +309,7 @@ def Image_ModeA():
 		
 	tileSize = settings_values['tileSize']
 	multiThread_Scale = settings_values['multiThread_Scale']
-	load_proc_save_str = ' -j 2:2:2 '
+	load_proc_save_str = settings_values['load_proc_save_str']
 	if multiThread_Scale.lower() == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	gpuId = settings_values['gpuId']
@@ -428,7 +429,7 @@ def Image_ModeB():
 	if noiseLevel.lower() == 'r':
 		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
-	load_proc_save_str = ' -j 2:2:2 '
+	load_proc_save_str = settings_values['load_proc_save_str']
 	if multiThread_Scale.lower() == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
@@ -671,7 +672,8 @@ def Image_ModeC():
 	if noiseLevel.lower() == 'r':
 		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
-	load_proc_save_str = ' -j 2:2:2 '
+	load_proc_save_str = settings_values['load_proc_save_str']
+	
 	if multiThread_Scale.lower() == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
@@ -953,7 +955,7 @@ def Video_ModeA():
 	if noiseLevel.lower() == 'r':
 		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
-	load_proc_save_str = ' -j 2:2:2 '
+	load_proc_save_str = settings_values['load_proc_save_str']
 	if multiThread_Scale.lower() == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
@@ -1029,7 +1031,7 @@ def Video_ModeB():
 	if noiseLevel.lower() == 'r':
 		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
-	load_proc_save_str = ' -j 2:2:2 '
+	load_proc_save_str = settings_values['load_proc_save_str']
 	if multiThread_Scale.lower() == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
@@ -1109,7 +1111,7 @@ def Video_ModeC():
 	if noiseLevel.lower() == 'r':
 		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
-	load_proc_save_str = ' -j 2:2:2 '
+	load_proc_save_str = settings_values['load_proc_save_str']
 	if multiThread_Scale.lower() == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
@@ -2147,7 +2149,9 @@ def checkUpdate():
 			input('press Enter key to return')
 	except BaseException:
 		os.system('cls')
-		input('Failed to establish connection, pls check your internet, press Enter key to return....')
+		print('Failed to establish connection, pls check your internet or try again, press Enter key to return....\n')
+		print('PS : If you are in "some countries" and your Internet is "normal" but you can\'t check update, that means github is blocked by "someone"\n, just give up, or move to another country, LOL.')
+		input()
 		os.system('cls')
 	
 		
@@ -2233,7 +2237,8 @@ def Settings():
 		print(' 7: Save high quality gif? Current default value: '+settings_values['highQuality']+'\n')
 		print(' 8: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
 		print(' 9: Image quality ( When compress images ). Current default value: ',settings_values['image_quality'],'\n')
-		print(' 10: Reset error log.\n')
+		print(' 10: Number of threads ( Scale & Denoise ). Current default value: ',settings_values['Number_of_threads'],'\n')
+		print(' 11: Reset error log.\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
 		mode = input('(1/2/3/4/5/6/7/8/9/r): '.upper())
@@ -2383,7 +2388,33 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode == "10":
+		elif mode== "10":
+			os.system('cls')
+			Number_of_threads=''
+			print('Change this setting may cause performance issues.')
+			print('We recommend you to use the default setting.')
+			print('----------------------------------------------')
+			while True:
+				Number_of_threads = input('Number of threads(Scale&Denoise) ( 2 / 3 / 4 /..... , default = 2 ): ').strip(' ')
+				if Number_of_threads.isdigit():
+					if int(Number_of_threads) >= 2:
+						break
+					else:
+						print('wrong input, pls input again')
+				elif Number_of_threads == '':
+					Number_of_threads = '2'
+					break
+				else:
+					print('invalid value, pls input again')
+			settings_values['Number_of_threads']=Number_of_threads
+			load_proc_save_str = ' -j '+Number_of_threads+':'+Number_of_threads+':'+Number_of_threads+' '
+			settings_values['load_proc_save_str']=load_proc_save_str	
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+		
+		elif mode == "11":
 			os.system('cls')
 			
 			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
@@ -2412,7 +2443,8 @@ def ReadSettings():
 	default_values = {'CheckUpdate':'y','scale':'2','tileSize':'200',
 						'noiseLevel':'2','saveAsJPG':'y',
 						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1',
-						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y','image_quality':'95'}
+						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
+						'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -2534,10 +2566,10 @@ class GifCompressThread (threading.Thread):
 		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
 		if saved_size <= 0:
 			os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
-			print('\nFailed to compress '+inputPath)
+			print('\n'+'Failed to compress '+inputPath+'\n')
 		else:
 			saved_size_str = str(saved_size)+'KB'
-			print('\nFinished to compress '+inputPath)
+			print('\n'+'Finished to compress '+inputPath+'\n')
 			if delorginal.lower() == 'y':
 				os.system('del /q "'+inputPath+'"')
 
@@ -2587,9 +2619,9 @@ class ImageCompressThread (threading.Thread):
 		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
 		if saved_size <= 0:
 			os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
-			print('Failed to compress ['+inputPath+'] This image may be already being compressed.\nYou can try to reduce "image quality".')
+			print('\n'+'Failed to compress ['+inputPath+'] This image may be already being compressed.\nYou can try to reduce "image quality".'+'\n')
 		else:
-			print('\nFinished to compress '+inputPath)
+			print('\n'+'Finished to compress '+inputPath+'\n')
 			if delorginal.lower() == 'y':
 				os.system('del /q "'+inputPath+'"')
 
@@ -2685,7 +2717,7 @@ def Benchmark():
 	inputPath = current_dir+'\\'+'benchmark-files-waifu2x-extension'
 	scaledFilePath = inputPath+'\\scaled'
 	multiThread_Scale = settings_values['multiThread_Scale']
-	load_proc_save_str = ' -j 2:2:2 '
+	load_proc_save_str = settings_values['load_proc_save_str']
 	if multiThread_Scale.lower() == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = 50
@@ -2818,7 +2850,7 @@ def View_GPU_ID():
 		noiseLevel = '0'
 		tileSize = settings_values['tileSize']
 		multiThread_Scale = settings_values['multiThread_Scale']
-		load_proc_save_str = ' -j 2:2:2 '
+		load_proc_save_str = settings_values['load_proc_save_str']
 		if multiThread_Scale.lower() == 'n':
 			load_proc_save_str = ' -j 1:1:1 '
 		inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
@@ -2871,5 +2903,12 @@ if __name__ == '__main__':
 			python = sys.executable
 			os.execl(python, python, * sys.argv)
 	else:
+		os.system('cls')
+		print('--------------------------------------------------------------------------------------------------------------')
+		print('We have detected that the current directory of the software is causing the software to apply for administrator\n privileges to continue normal operation.')
+		print('We recommend that you move the software to another directory or give software administrator privileges.')
+		print('--------------------------------------------------------------------------------------------------------------')
+		print('Press Enter key to Re-run the program with admin rights. ')
+		input()
 		# Re-run the program with admin rights
 		ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
