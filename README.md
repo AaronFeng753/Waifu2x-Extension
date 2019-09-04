@@ -60,7 +60,7 @@ https://www.lcdf.org/gifsicle/
 
 12.智能选择models
 
-13. Gif 压缩 & 图片压缩(支持多线程)
+13. Gif 压缩 & 图片压缩(支持多线程以及多个压缩等级)
 
 14. 基准测试(用于获得适用于您电脑的tile size值)
 
