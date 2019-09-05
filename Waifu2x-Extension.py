@@ -2,7 +2,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v2.11'
+Version_current='v2.2'
 
 import time
 import threading
@@ -44,13 +44,11 @@ def ChooseFormat():
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ 3 : Compress Image & GIF.                                    │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ 4 : Tile size: '+tileSize+'            '+'5 : GPU ID: '+gpuId+' '*(22-len(tileSize)-len(gpuId))+'│')
+		print('│ 4 : Tile size: '+tileSize+'           '+'5 : GPU ID: '+gpuId+' '*(22-len(tileSize)-len(gpuId))+' │')
 		print('│                                                              │')
-		print('│ 6 : Notification sound: '+notificationSound+'                                    │')
+		print('│ 6 : Notification sound: '+notificationSound+'    7 : Multithreading(Compress): '+multiThread+' │')
 		print('│                                                              │')
-		print('│ 7 : Multithreading(Scale & denoise): '+multiThread_Scale+'                       │')
-		print('│                                                              │')
-		print('│ 8 : Multithreading(Compress): '+multiThread+'                              │')
+		print('│ 8 : Multithreading(Scale & denoise): '+multiThread_Scale+'                       │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ 9 : Settings.            10 : Benchmark.                     │')
 		print('│                                                              │')
@@ -58,7 +56,7 @@ def ChooseFormat():
 		print('│                                                              │')
 		print('│ 13 : Readme.             14 : License.                       │')
 		print('│                                                              │')
-		print('│ 15 : View GPU ID.        E : Exit.                           │')
+		print('│ E : Exit.                                                    │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│                   D : Donate. (Alipay)                       │')
 		print('└──────────────────────────────────────────────────────────────┘')
@@ -102,16 +100,16 @@ def ChooseFormat():
 			os.system('cls')
 		elif mode == "7":
 			os.system('cls')
-			input_multiThread_Scale()
-			settings_values = ReadSettings()
-			multiThread_Scale = settings_values['multiThread_Scale']
-			os.system('cls')	
-		elif mode == "8":
-			os.system('cls')
 			input_multiThread()
 			settings_values = ReadSettings()
 			multiThread = settings_values['multiThread']
 			os.system('cls')
+		elif mode == "8":
+			os.system('cls')
+			input_multiThread_Scale()
+			settings_values = ReadSettings()
+			multiThread_Scale = settings_values['multiThread_Scale']
+			os.system('cls')	
 		elif mode == "9":
 			os.system('cls')
 			os.system('color 07')
@@ -141,10 +139,6 @@ def ChooseFormat():
 		elif mode == "14":
 			os.system('cls')
 			license_()
-			os.system('cls')
-		elif mode == "15":
-			os.system('cls')
-			View_GPU_ID()
 			os.system('cls')
 		elif mode == "e":
 			os.system('color 07')
@@ -2058,6 +2052,7 @@ def input_multiThread():
 def input_gpuId():
 	settings_values = ReadSettings()
 	default_value = 'auto'
+	View_GPU_ID()
 	while True:
 		gpuId = input('GPU ID (auto (Automatic)/0/1/2/..., default='+default_value+'): ')
 		if gpuId.isdigit():
@@ -2728,12 +2723,14 @@ def Benchmark():
 	print('---------------------------------------------------------------------------------------')
 	if input('Do you wanna start the benchmark now? (y/n): ').lower().strip(' ') != 'y':
 		return 0
+	wait_to_cool_time=int(input('How many seconds do you wanna wait to cool your computer during the test: '))
+	
 	Window_Title('[Running benchmark]')
 	print('-------------------------------------------------------')
 	print('This benchmark is gonna take a while, pls wait.....')
 	print('-------------------------------------------------------')
-	print('Wait 60 seconds to cool the computer.')
-	time.sleep(60)
+	print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
+	time.sleep(wait_to_cool_time)
 	settings_values = ReadSettings()
 	notificationSound = settings_values['notificationSound']
 	models = 'models-upconv_7_anime_style_art_rgb'
@@ -2775,8 +2772,8 @@ def Benchmark():
 		else:
 			break
 		tileSize=tileSize+50
-		print('Wait 60 seconds to cool the computer.')
-		time.sleep(60)
+		print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
+		time.sleep(wait_to_cool_time)
 	if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
@@ -2866,9 +2863,9 @@ def FindImageFiles(inputPathList):
 
 #======================================= View_GPU_ID() ===========================
 def View_GPU_ID():
-	print('============================View_GPU_ID =======================')
-	print('This will tell you the available GPU ID.')
-	print('----------------------------------------')
+	print('----------------------------')
+	print('        Loading....')
+	print('----------------------------')
 	gpuId = 0
 	gpuId_list = []
 	for x in range(0,10):
@@ -2894,6 +2891,7 @@ def View_GPU_ID():
 		else:
 			break
 		gpuId = gpuId+1
+	os.system('cls')
 	if len(gpuId_list) > 0:
 		print('---------------------------------------------')
 		print(' Available GPU ID: ',gpuId_list)
@@ -2902,7 +2900,6 @@ def View_GPU_ID():
 		print('---------------------------------------------------------------')
 		print(' No GPU ID availabel. Pls upgrade or reinstall your GPU driver.')
 		print('---------------------------------------------------------------')
-	input('Press Enter key to return to the main menu.')
 	
 #=============================== Default Window Title =================
 def Window_Title(Add_str = ''):
