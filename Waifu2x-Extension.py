@@ -2,7 +2,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v2.5'
+Version_current='v2.51'
 
 import time
 import threading
@@ -199,7 +199,7 @@ def Image_Gif_Scale_Denoise():
 	
 	inputPathList_files = pathlist_files_folder[0]
 	inputPathList_folders = pathlist_files_folder[1]
-	
+	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
 	
@@ -234,8 +234,13 @@ def Image_Gif_Scale_Denoise():
 		gpuId_str = ' -g '+gpuId
 	
 	Gif_exists = False
+	for file_ in inputPathList_files:
+		if os.path.splitext(file_)[1] == '.gif':
+			Gif_exists=True
+			break
 	if FindGifFiles(inputPathList_folders):
 		Gif_exists=True
+	if Gif_exists:
 		gifCompresslevel =''
 		highQuality = input_highQuality()
 		if highQuality.lower() == 'r':
@@ -246,8 +251,13 @@ def Image_Gif_Scale_Denoise():
 				return 1
 	
 	Image_exists = False
+	for file_ in inputPathList_files:
+		if os.path.splitext(file_)[1] in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
+			Image_exists=True
+			break
 	if FindImageFiles(inputPathList_folders):
 		Image_exists = True
+	if Image_exists:
 		saveAsJPG = input_saveAsJPG()
 		if saveAsJPG.lower() == 'r':
 			return 1
@@ -270,44 +280,46 @@ def Image_Gif_Scale_Denoise():
 	total_time_start=time.time()
 	
 	#=================================== 文件夹 =========================
-	if Gif_exists:
-		
-		inputPathList_files_gif = []
-		if Image_exists:
-			inputPathList_gif = MoveGifFiles(inputPathList_folders)
-			for inputPath in inputPathList_gif:
-				for path,useless,fnames in os.walk(inputPath+'\\protectfiles_waifu2x_extension'):
-					for fname in fnames:
-						if os.path.splitext(fname)[1] == '.gif':
-							inputPathList_files_gif.append(path+'\\'+fname)
-					break
-		else:
-			for inputPath in inputPathList_folders:
-				for path,useless,fnames in os.walk(inputPath):
-					for fname in fnames:
-						if os.path.splitext(fname)[1] == '.gif':
-							inputPathList_files_gif.append(path+'\\'+fname)
-					break
+	if inputPathList_folders != []:
+		if Gif_exists:
 			
-		process_gif_scale_modeABC(inputPathList_files_gif,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal)
-	
-	if Image_exists:
-		Process_ImageModeAB(inputPathList_folders,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,delorginal)
-		RecoverGifFiles(inputPathList_folders)
+			inputPathList_files_gif = []
+			if Image_exists:
+				inputPathList_gif = MoveGifFiles(inputPathList_folders)
+				for inputPath in inputPathList_gif:
+					for path,useless,fnames in os.walk(inputPath+'\\protectfiles_waifu2x_extension'):
+						for fname in fnames:
+							if os.path.splitext(fname)[1] == '.gif':
+								inputPathList_files_gif.append(path+'\\'+fname)
+						break
+			else:
+				for inputPath in inputPathList_folders:
+					for path,useless,fnames in os.walk(inputPath):
+						for fname in fnames:
+							if os.path.splitext(fname)[1] == '.gif':
+								inputPathList_files_gif.append(path+'\\'+fname)
+						break
+				
+			process_gif_scale_modeABC(inputPathList_files_gif,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal)
+		
+		if Image_exists:
+			Process_ImageModeAB(inputPathList_folders,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,delorginal)
+			RecoverGifFiles(inputPathList_folders)
 	#======================= 单文件 =========================
-	if Gif_exists:
-		inputPathList_files_gif = []
-		for file_ in inputPathList_files:
-			if os.path.splitext(file_)[1] == '.gif':
-				inputPathList_files_gif.append(file_)
-		process_gif_scale_modeABC(inputPathList_files_gif,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal)
-	
-	if Image_exists:
-		inputPathList_files_images = []
-		for file_ in inputPathList_files:
-			if os.path.splitext(file_)[1] in [".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]:
-				inputPathList_files_images.append(file_)
-		Process_ImageModeC(inputPathList_files_images,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,delorginal)
+	if inputPathList_files != []:
+		if Gif_exists:
+			inputPathList_files_gif = []
+			for file_ in inputPathList_files:
+				if os.path.splitext(file_)[1] == '.gif':
+					inputPathList_files_gif.append(file_)
+			process_gif_scale_modeABC(inputPathList_files_gif,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal)
+		
+		if Image_exists:
+			inputPathList_files_images = []
+			for file_ in inputPathList_files:
+				if os.path.splitext(file_)[1] in [".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]:
+					inputPathList_files_images.append(file_)
+			Process_ImageModeC(inputPathList_files_images,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,delorginal)
 	total_time_end=time.time()
 	
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
@@ -679,7 +691,7 @@ def Scale_Denoise_Video():
 	
 	inputPathList_files = pathlist_files_folder[0]
 	inputPathList_folders = pathlist_files_folder[1]
-	
+	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
 	
@@ -877,7 +889,7 @@ def Compress_image_gif():
 	
 	inputPathList_files_input = pathlist_files_folder[0]
 	inputPathList_folders = pathlist_files_folder[1]
-	
+	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
 	
@@ -891,8 +903,13 @@ def Compress_image_gif():
 		inputPathList_folders = subfolders_list
 	
 	image_exist = False
+	for file_ in inputPathList_files_input:
+		if os.path.splitext(file_)[1] in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
+			image_exist=True
+			break
 	if FindImageFiles(inputPathList):
 		image_exist = True
+	if image_exist:
 		image_quality = input_image_quality()
 		if image_quality == 'r':
 			return 1
@@ -900,8 +917,13 @@ def Compress_image_gif():
 		if JpgQuality < 1:
 			JpgQuality = 1
 	gif_exist = False
+	for file_ in inputPathList_files_input:
+		if os.path.splitext(file_)[1] == '.gif':
+			gif_exist=True
+			break
 	if FindGifFiles(inputPathList):
 		gif_exist = True
+	if gif_exist:
 		gifCompresslevel=input_gifCompresslevel()
 		if gifCompresslevel.lower() == 'r':
 				return 1
