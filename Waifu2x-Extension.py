@@ -287,10 +287,7 @@ def Image_ModeA():
 				inputPathError = False
 		if inputPathOver == True:
 			inputPathList.append(inputPath)
-			
-	
-		
-	
+	inputPathList = Deduplicate_list(inputPathList)
 	scale = input_scale()
 	if scale.lower() == 'r':
 		return 1
@@ -410,8 +407,6 @@ def Image_ModeB():
 
 	for dirs in os.walk(inputPath):
 		inputPathList.append(str(dirs[0]))
-	
-	
 			
 	scale = input_scale()
 	if scale.lower() == 'r':
@@ -513,12 +508,11 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 		
 		oldfilenumber=FileCount(inputPath)
 		scalepath = inputPath+"\\scaled\\"
-		
+		orginalFileNameAndFullname = {}
 		for files in os.walk(inputPath):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				orginalFileNameAndFullname[fileName]= fileNameAndExt
-				
 		if scale == '4':
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 1)
 			thread1.start()
@@ -660,6 +654,8 @@ def Image_ModeC():
 				inputPathError = False
 		if inputPathOver == True:
 			inputPathList.append(inputPath)
+			
+	inputPathList = Deduplicate_list(inputPathList)
 	
 	Gif_exists = False
 	for fname in inputPathList:
@@ -783,7 +779,6 @@ def Image_ModeC():
 			FinishedFileNum = FinishedFileNum+1
 			
 	total_time_end=time.time()
-	
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff.lower()=='y':
 		os.system('shutdown -s')
@@ -809,6 +804,7 @@ def process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNa
 		
 		oldfilenumber=FileCount(scaledFilePath+'_split')
 		
+		orginalFileNameAndFullname = {}
 		for files in os.walk(scaledFilePath+'_split'):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
@@ -967,7 +963,7 @@ def Video_ModeA():
 				inputPathError = False
 		if inputPathOver == True:
 			inputPathList.append(inputPath)
-	
+	inputPathList = Deduplicate_list(inputPathList)
 	 
 	scale = input_scale()
 	if scale.lower() == 'r':
@@ -1124,7 +1120,7 @@ def Video_ModeC():
 				inputPathError = False
 		if inputPathOver == True:
 			inputPathList.append(inputPath)
-	
+	inputPathList = Deduplicate_list(inputPathList)
 	scale = input_scale()
 	if scale.lower() == 'r':
 		return 1
@@ -1291,7 +1287,7 @@ def Compress_image_ModeA():
 				inputPathError = False
 		if inputPathOver == True:
 			inputPathList.append(inputPath)
-			
+	inputPathList = Deduplicate_list(inputPathList)
 	image_exist = False
 	if FindImageFiles(inputPathList):
 		image_exist = True
@@ -1438,7 +1434,7 @@ def Compress_image_ModeC():
 				inputPathError = False
 		if inputPathOver == True:
 			inputPathList.append(inputPath)
-			
+	inputPathList = Deduplicate_list(inputPathList)	
 	image_exist = False
 	for fname in inputPathList:
 		if os.path.splitext(fname)[1] in [".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]:
@@ -2487,41 +2483,7 @@ def ReadSettings():
 		else:
 			return settings_values
 
-#==========================================  Init  ==================================================================
 
-def init():		#初始化函数
-	Window_Title('')	#更改控制台标题
-	os.system('color 0b')	#更改文字颜色
-	
-	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
-	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
-		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-		f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Start running\n')
-		
-	settings_values = ReadSettings()
-	
-	if settings_values['CheckUpdate'] == 'y':
-		checkUpdate_start(Version_current)
-		
-	if VerifyFiles() == 'verified':
-		os.system('cls')
-		thread_resizeWindow=ResizeWindow_Thread()
-		thread_resizeWindow.start()
-		time.sleep(0.2)
-		ChooseFormat()
-		if thread_resizeWindow.isAlive()==True:
-			stop_thread(thread_resizeWindow)
-	else:
-		os.system('cls')
-		os.system('color 0c')
-		print('-'*40)
-		download_latest = input('Some files are missing. Do you wanna download the latest package?(y/n): ')
-		if download_latest.lower() == 'y':
-			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
-		os.system('cls')
-		input('Press Enter key to exit.')
-		os.system('cls')
-		os.system('color 07')
 		
 #======================== Logger =============================
 
@@ -2713,7 +2675,8 @@ def ResizeWindow():
 				os.system('Resize-window.exe 145 38')
 		else:
 			os.system('Resize-window.exe 145 38')
-		time.sleep(0.1)
+		time.sleep(0.2)
+
 	
 #=============================== Benchmark =============================
 def Benchmark():
@@ -2904,8 +2867,60 @@ def View_GPU_ID():
 #=============================== Default Window Title =================
 def Window_Title(Add_str = ''):
 	os.system('title = Waifu2x-Extension '+Version_current+' by Aaron Feng '+Add_str)
+
+#============================================  Deduplicate_list  ===================================
+
+def Deduplicate_list(The_List):
+	New_List = sorted(list(set(The_List)))
+	return New_List
 	
+#============================================  Separate_files_folder  ===================================
+def Separate_files_folder(paths_list):
+	list_folders = []
+	list_files = []
+	for path in paths_list:
+		if os.path.isdir(path):
+		    list_folders.append(path)
+		elif os.path.isfile(path):
+		    list_files.append(path)
+	return [list_files,list_folders]
 	
+#==========================================  Init  ==================================================================
+
+def init():		#初始化函数
+	Window_Title('')	#更改控制台标题
+	os.system('color 0b')	#更改文字颜色
+	
+	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
+	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
+		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+		f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Start running\n')
+		
+	settings_values = ReadSettings()
+	
+	if settings_values['CheckUpdate'] == 'y':
+		checkUpdate_start(Version_current)
+		
+	if VerifyFiles() == 'verified':
+		os.system('cls')
+		thread_resizeWindow=ResizeWindow_Thread()
+		thread_resizeWindow.start()
+		time.sleep(0.2)
+		ChooseFormat()
+		if thread_resizeWindow.isAlive()==True:
+			stop_thread(thread_resizeWindow)
+	else:
+		os.system('cls')
+		os.system('color 0c')
+		print('-'*40)
+		download_latest = input('Some files are missing. Do you wanna download the latest package?(y/n): ')
+		if download_latest.lower() == 'y':
+			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
+		os.system('cls')
+		input('Press Enter key to exit.')
+		os.system('cls')
+		os.system('color 07')
+
 #======================== Start ========================
         
 if __name__ == '__main__':
