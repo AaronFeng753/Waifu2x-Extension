@@ -1,8 +1,19 @@
+#!/usr/bin/python  
+# -*- coding: utf-8 -*- 
+'''
+- 提升放大后的视频的画质和音质
+- 增加界面颜色设置,7种颜色可选
+- 新增 睡眠模式
+- 启动时检查是否有可用的GPU
+- 细节改进与优化
+- 修复潜在bug
+'''
+
 import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v2.6'
+Version_current='v2.7'
 
 import time
 import threading
@@ -76,28 +87,25 @@ def ChooseFormat():
 		print('│                                                              │')
 		print('│ E : Exit.                                                    │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│             \033[1;31;40m D : Donate 捐赠. (Alipay 支付宝) \033[1;36;40m               │')
+		print('│                D : Donate 捐赠. (Alipay 支付宝)              │')
 		print('└──────────────────────────────────────────────────────────────┘')
 		print('( 1 / 2 / 3 / 4 /...../ E / D ): ')
 		mode = input().strip(' ').lower()
 		if mode == "1":
 			os.system('cls')
-			os.system('color 0a')
 			Image_Gif_Scale_Denoise()
 			os.system('cls')
-			os.system('color 0b')
+			
 		elif mode == "2":
 			os.system('cls')
-			os.system('color 0b')
 			Scale_Denoise_Video()
 			os.system('cls')
-			os.system('color 0b')
+			
 		elif mode == "3":
 			os.system('cls')
-			os.system('color 0b')
 			Compress_image_gif()
 			os.system('cls')
-			os.system('color 0b')
+			
 		elif mode == "4":
 			os.system('cls')
 			input_tileSize()
@@ -145,20 +153,18 @@ def ChooseFormat():
 			os.system('cls')
 		elif mode == "11":
 			os.system('cls')
-			os.system('color 07')
 			Settings()
 			os.system('cls')
-			os.system('color 0b')
+			
 		elif mode == "12":
 			os.system('cls')
 			Benchmark()
 			os.system('cls')
 		elif mode == "13":
 			os.system('cls')
-			os.system('color 07')
 			Error_Log()
 			os.system('cls')
-			os.system('color 0b')
+			
 		elif mode == "14":
 			os.system('cls')
 			checkUpdate()
@@ -174,7 +180,7 @@ def ChooseFormat():
 			license_()
 			os.system('cls')
 		elif mode == "e":
-			os.system('color 07')
+			ChangeColor_cmd_original()
 			os.system('cls')
 			return 0
 		elif mode == "d":
@@ -185,9 +191,9 @@ def ChooseFormat():
 			print('                     Thank you!!!  :)')
 		else:
 			os.system('cls')
-			os.system('color 0c')
+			ChangeColor_warning()
 			input('Error : wrong input,pls press Enter key to return')
-			os.system('color 0b')
+			ChangeColor_default()
 			os.system('cls')
 
 #===================================================== Scale & Denoise Image & GIF ========================================
@@ -289,13 +295,21 @@ def Image_Gif_Scale_Denoise():
 		Compress = settings_values['Compress']
 		if Compress.lower() == 'y':
 			JpgQuality=90
-		
-	turnoff = input_turnoff()
-	if turnoff.lower() == 'r':
-		return 1
+	
 	delorginal = input_delorginal()
 	if delorginal.lower() == 'r':
 		return 1
+	
+	turnoff = input_turnoff()
+	if turnoff.lower() == 'r':
+		return 1
+	
+	sleepMode = input_sleepMode()
+	if sleepMode.lower() == 'r':
+		return 1
+	elif sleepMode.lower() == 'y':
+		load_proc_save_str = ' -j 1:1:1 '
+		notificationSound = 'n'
 		
 	print('--------------------------------------------')
 	
@@ -757,6 +771,13 @@ def Scale_Denoise_Video():
 	turnoff = input_turnoff()
 	if turnoff.lower() == 'r':
 		return 1
+	
+	sleepMode = input_sleepMode()
+	if sleepMode.lower() == 'r':
+		return 1
+	elif sleepMode.lower() == 'y':
+		load_proc_save_str = ' -j 1:1:1 '
+		notificationSound = 'n'
 		
 	print('--------------------------------------------')
 	
@@ -1266,7 +1287,7 @@ def assembleGif(scaledFilePath,TIME_GAP):
 	for png in png_list_fullname:
 		fileNameAndExt=str(os.path.basename(png))
 		filename=os.path.splitext(fileNameAndExt)[0]
-		imageio.imwrite(scaledFilePath+'_split\\scaled\\'+filename+".jpg", imageio.imread(png), 'JPG', quality = 92)
+		imageio.imwrite(scaledFilePath+'_split\\scaled\\'+filename+".jpg", imageio.imread(png), 'JPG', quality = 100)
 	
 	os.system('del /q "'+scaledFilePath+'_split'+'\\scaled\\*.'+'png'+'"')
 	
@@ -1317,10 +1338,10 @@ def video2images(inputpath):
 
 	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
 	
-	if os.path.exists(video_dir+'audio_waifu2x.mp3'):
-		os.remove(video_dir+'audio_waifu2x.mp3')
+	if os.path.exists(video_dir+'audio_waifu2x.wav'):
+		os.remove(video_dir+'audio_waifu2x.wav')
 	
-	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+video_dir+'audio_waifu2x.mp3"')
+	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+video_dir+'audio_waifu2x.wav"')
 
 def images2video(inputpath):
 	video_path_filename = os.path.splitext(inputpath)[0]
@@ -1331,9 +1352,9 @@ def images2video(inputpath):
 	fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
-	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio_waifu2x.mp3" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
+	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio_waifu2x.wav" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
 
-	os.system('del /q "'+video_dir+'audio_waifu2x.mp3"')
+	os.system('del /q "'+video_dir+'audio_waifu2x.wav"')
 
 	os.system('rd /s/q "'+video_dir+'frames_waifu2x'+'"')
 
@@ -1403,7 +1424,7 @@ def input_scale():
 	default_value = settings_values['scale']
 
 	while True:
-		scale = input('Upscale ratio(1/2/4, default='+default_value+'): ')
+		scale = input('Upscale ratio(1/2/4, default='+default_value+'): ').strip(' ')
 		if scale in ['1','2','4','','r','R']:
 			break
 		else:
@@ -1421,7 +1442,7 @@ def input_tileSize():
 	print('You can run the benchmark to determine the best value of "tile size" for your computer.')
 	print('--------------------------------------------------------------------------------------')
 	while True:
-		tileSize = input('Tile size(>=32, default='+default_value+'): ')
+		tileSize = input('Tile size(>=32, default='+default_value+'): ').strip(' ')
 		if tileSize.isdigit():
 			if int(tileSize) > 0:
 				break
@@ -1444,7 +1465,7 @@ def input_noiseLevel():
 	settings_values = ReadSettings()
 	default_value = settings_values['noiseLevel']
 	while True:
-		noiseLevel = input('Denoise level(-1/0/1/2/3, default='+default_value+'): ')
+		noiseLevel = input('Denoise level(-1/0/1/2/3, default='+default_value+'): ').strip(' ')
 		if noiseLevel in ['-1','0','1','2','3','','r','R']:
 			break
 		else:
@@ -1458,7 +1479,7 @@ def input_delorginal():
 	settings_values = ReadSettings()
 	default_value = settings_values['delorginal']
 	while True:
-		delorginal = input('Delete original files?(y/n, default='+default_value+'): ')
+		delorginal = input('Delete original files?(y/n, default='+default_value+'): ').strip(' ')
 		if delorginal in ['y','n','Y','N','','r','R']:
 			break
 		else:
@@ -1470,7 +1491,7 @@ def input_delorginal():
 	
 def input_turnoff():
 	while True:
-		turnoff = input('turn off computer when finished?(y/n, default=n): ')
+		turnoff = input('turn off computer when finished?(y/n, default=n): ').strip(' ')
 		if turnoff in ['y','n','Y','N','','r','R']:
 			break
 		else:
@@ -1483,7 +1504,7 @@ def input_turnoff():
 def input_saveAsJPG():
 	settings_values = ReadSettings()
 	while True:
-		saveAsJPG = input('Save as .jpg? (y/n, default=y): ')
+		saveAsJPG = input('Save as .jpg? (y/n, default=y): ').strip(' ')
 		if saveAsJPG in ['y','n','Y','N','']:
 			break
 		else:
@@ -1496,7 +1517,7 @@ def input_saveAsJPG():
 	
 	if saveAsJPG.lower() == 'y':
 		while True:
-			Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=y): ')
+			Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=y): ').strip(' ')
 			if Compress in ['y','n','Y','N','',]:
 				break
 			else:
@@ -1513,7 +1534,7 @@ def input_optimizeGif():
 	print('''This will slightly affect the quality of the GIF, but it will save a lot of space.
 ----------------------------------------------------------------------------------''')
 	while True:
-		optimizeGif = input('Optimize .gif? (y/n, default=y): ')
+		optimizeGif = input('Optimize .gif? (y/n, default=y): ').strip(' ')
 		if optimizeGif in ['y','n','Y','N','']:
 			break
 		else:
@@ -1530,7 +1551,7 @@ def input_gifCompresslevel():
 	settings_values = ReadSettings()
 	default_value = settings_values['gifCompresslevel']
 	while True:
-		gifCompresslevel = input('Compress level(1/2/3/4, default='+default_value+'): ')
+		gifCompresslevel = input('Compress level(1/2/3/4, default='+default_value+'): ').strip(' ')
 		if gifCompresslevel in ['1','2','3','4','','r','R']:
 			break
 		else:
@@ -1545,7 +1566,7 @@ def input_multiThread():
 	settings_values = ReadSettings()
 	default_value = 'y'
 	while True:
-		multiThread = input('Enable multithreading(Compress)? (y/n, default='+default_value+'): ')
+		multiThread = input('Enable multithreading(Compress)? (y/n, default='+default_value+'): ').strip(' ')
 		if multiThread in ['y','n','Y','N','']:
 			break
 		else:
@@ -1561,14 +1582,21 @@ def input_multiThread():
 def input_gpuId():
 	settings_values = ReadSettings()
 	default_value = 'auto'
-	View_GPU_ID()
+	gpuId_list = View_GPU_ID()
+	if gpuId_list == []:
+		input('Press Enter key to return')
+	gpuId_list_str = ''
+	for id_ in gpuId_list:
+		gpuId_list_str = gpuId_list_str+'/'+str(id_)
 	while True:
-		gpuId = input('GPU ID (auto (Automatic)/0/1/2/..., default='+default_value+'): ')
+		gpuId = input('GPU ID (auto (Automatic)'+gpuId_list_str+', default='+default_value+'): ').strip(' ')
 		if gpuId.isdigit():
-			if int(gpuId) >= 0:
+			if int(gpuId) in gpuId_list:
 				break
 			else:
+				os.system('cls')
 				print('wrong input, pls input again')
+				print('----------------------------')
 		elif gpuId == '':
 			break
 		elif gpuId.lower() == 'auto':
@@ -1588,7 +1616,7 @@ def input_notificationSound():
 	settings_values = ReadSettings()
 	default_value = 'y'
 	while True:
-		notificationSound = input('Enable notification sound? (y/n, default='+default_value+'): ')
+		notificationSound = input('Enable notification sound? (y/n, default='+default_value+'): ').strip(' ')
 		if notificationSound in ['y','n','Y','N','']:
 			break
 		else:
@@ -1650,6 +1678,27 @@ def input_scan_subfolders():
 		scan_subfolders = 'n'
 		
 	return scan_subfolders
+
+def input_sleepMode():
+	while True:
+		
+		sleepMode = input('Enable sleep mode?( y / n / help , default = n ): ').strip(' ').lower()
+		if sleepMode in ['y','n','','r','help']:
+			if sleepMode == 'help':
+				print('')
+				print('--------------------------------------------------------------------------------------------')
+				print('When "sleep mode" is enabled, the software will attempts to reduce performance requirements,')
+				print('thereby reducing the computer\'s operating pressure and thus minimizing noise.')
+				print('And turn off notification sound.')
+				print('--------------------------------------------------------------------------------------------')
+			else:
+				break
+		else:
+			print('wrong input, pls input again')
+	
+	if sleepMode == '':
+		sleepMode = 'n'
+	return sleepMode
 	
 
 #======================== Seconds 2 h:m:s =========================
@@ -1698,12 +1747,12 @@ def checkUpdate():
 	except BaseException:
 		os.system('cls')
 		print('Failed to establish connection, pls check your internet or try again, press Enter key to return....\n')
-		print('PS : If you are in "some countries" and your Internet is "normal" but you can\'t check update, that means github is blocked by "someone"\n, just give up, or move to another country, LOL.')
 		input()
 		os.system('cls')
 	
 		
 def checkUpdate_start(Version_current):
+	os.system('cls')
 	print('Checking update....')
 	try:
 		headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
@@ -1785,6 +1834,7 @@ def Settings():
 		print(' 7: Number of threads ( Scale & Denoise ). Current default value: ',settings_values['Number_of_threads'],'\n')
 		print(' 8: Reset error log.\n')
 		print(' 9: Show settings_values.\n')
+		print(' 10: Change interface color.\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
 		mode = input('(1/2/3/..../r): '.upper())
@@ -1935,20 +1985,25 @@ def Settings():
 			input('press Enter key to return.')
 			
 			os.system('cls')
+			
+		elif mode == "10":
+			os.system('cls')
+			Set_default_color()
+			os.system('cls')
 		
 		
 		elif mode == "r":
 			break
 		else:
 			os.system('cls')
-			os.system('color 0c')
+			
 			input('Error : wrong input,pls press Enter key to return')
-			os.system('color 07')
+			
 			os.system('cls')
 
 def ReadSettings():
-	default_values = {'SettingVersion':'1','CheckUpdate':'y','scale':'2',
-						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200',
+	default_values = {'SettingVersion':'2','CheckUpdate':'y','scale':'2',
+						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2'}
@@ -2324,11 +2379,8 @@ def View_GPU_ID():
 		models = 'models-upconv_7_anime_style_art_rgb'
 		scale = '2'
 		noiseLevel = '0'
-		tileSize = settings_values['tileSize']
-		multiThread_Scale = settings_values['multiThread_Scale']
-		load_proc_save_str = settings_values['load_proc_save_str']
-		if multiThread_Scale.lower() == 'n':
-			load_proc_save_str = ' -j 1:1:1 '
+		tileSize = '50'
+		load_proc_save_str = ' -j 1:1:1 '
 		inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
 		scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.png'
 		if os.path.exists(scaledFilePath) == True:
@@ -2347,8 +2399,40 @@ def View_GPU_ID():
 		print('---------------------------------------------')
 	else:
 		print('---------------------------------------------------------------')
-		print(' No GPU ID availabel. Pls upgrade or reinstall your GPU driver.')
+		print(' No GPU availabel. Pls upgrade or reinstall your GPU driver.')
 		print('---------------------------------------------------------------')
+	return gpuId_list
+
+def View_GPU_ID_start():
+	os.system('cls')
+	print('----------------------------')
+	print('        Loading....')
+	print('----------------------------')
+	gpuId = 0
+	gpuId_list = []
+	for x in range(0,10):
+		gpuId_str = ' -g '+str(gpuId)
+		settings_values = ReadSettings()
+		current_dir = os.path.dirname(os.path.abspath(__file__))
+		models = 'models-upconv_7_anime_style_art_rgb'
+		scale = '2'
+		noiseLevel = '0'
+		tileSize = '50'
+		load_proc_save_str = ' -j 1:1:1 '
+		inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
+		scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.jpg'
+		if os.path.exists(scaledFilePath) == True:
+			os.system("del /q \""+scaledFilePath+"\"")
+		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
+		if os.path.exists(scaledFilePath)==True:
+			gpuId_list.append(gpuId)
+			os.system("del /q \""+scaledFilePath+"\"")
+			break
+		else:
+			break
+		gpuId = gpuId+1
+	os.system('cls')
+	return gpuId_list
 	
 #=============================== Default Window Title =================
 def Window_Title(Add_str = ''):
@@ -2370,12 +2454,54 @@ def Separate_files_folder(paths_list):
 		elif os.path.isfile(path):
 		    list_files.append(path)
 	return [list_files,list_folders]
-	
+#================================================ Change Color ======================
+def ChangeColor_default():
+	settings_values = ReadSettings()
+	os.system('color '+settings_values['default_color'])
+
+def ChangeColor_warning():
+	os.system('color 0c')
+
+def ChangeColor_cmd_original():
+	os.system('color 07')
+
+def Set_default_color():
+	settings_values = ReadSettings()
+	Color_dict = {'0':'0b','1':'09','2':'0a','3':'0c','4':'0d','5':'0e','6':'0f'}
+	while True:
+		print('''Set_default_color
+------------------
+0.Aqua
+1.Blue
+2.Green
+3.Red
+4.Purple
+5.Yellow
+6.White
+------------------
+(0/1/2...../6)''')
+		color = input().strip(' ')
+		if color.isdigit():
+			if color in ['0','1','2','3','4','5','6']:
+				settings_values['default_color'] = Color_dict[color]
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+				ChangeColor_default()
+				return 0
+			else:
+				os.system('cls')
+				input('Wrong input,press Enter to continue.')
+				os.system('cls')
+		else:
+			os.system('cls')
+			input('Wrong input,press Enter to continue.')
+			os.system('cls')
+
 #==========================================  Init  ==================================================================
 
 def init():		#初始化函数
 	Window_Title('')	#更改控制台标题
-	os.system('color 0b')	#更改文字颜色
+	ChangeColor_default()	#更改文字颜色
 	
 	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
 	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
@@ -2388,6 +2514,12 @@ def init():		#初始化函数
 		checkUpdate_start(Version_current)
 		
 	if VerifyFiles() == 'verified':
+		if View_GPU_ID_start() == []:
+			os.system('cls')
+			print('------------------------------------------------------------')
+			print(' No GPU availabel. Pls upgrade or reinstall your GPU driver.')
+			print('------------------------------------------------------------')
+			input('Press Enter to continue.')
 		os.system('cls')
 		thread_resizeWindow=ResizeWindow_Thread()
 		thread_resizeWindow.start()
@@ -2397,15 +2529,15 @@ def init():		#初始化函数
 			stop_thread(thread_resizeWindow)
 	else:
 		os.system('cls')
-		os.system('color 0c')
 		print('-'*40)
 		download_latest = input('Some files are missing. Do you wanna download the latest package?(y/n): ')
 		if download_latest.lower() == 'y':
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
 		os.system('cls')
 		input('Press Enter key to exit.')
+		ChangeColor_cmd_original()
 		os.system('cls')
-		os.system('color 07')
+		
 
 #======================== Start ========================
         
@@ -2415,7 +2547,8 @@ if __name__ == '__main__':
 		try:
 			init()
 		except BaseException as e:
-			print()
+			os.system('cls')
+			ChangeColor_warning()
 			print('---------------------------------------------------')
 			print('                   !!! Error !!!')
 			print('---------------------------------------------------')
@@ -2435,7 +2568,6 @@ if __name__ == '__main__':
 			print('----------------------------------------')
 			print('Press Enter key to restart the software.')
 			input()
-			os.system('color 07')
 			os.system('cls')
 			python = sys.executable
 			os.execl(python, python, * sys.argv)
