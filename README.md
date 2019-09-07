@@ -20,6 +20,7 @@ New features brought by this extension:
 - Error catching
 - Record error log
 - And more
+
 ![mainmenu](/screenshot/mainmenu.png) 
 
 # Download: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
