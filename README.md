@@ -2,21 +2,20 @@
 Waifu2x-Extension for waifu2x-ncnn-vulkan
 
 New features brought by this extension:
-1. More friendly way of interaction
-2. Support 4 times magnification
-3. Batch enlargement of still pictures (three batch processing modes)
-4. Batch enlargement of dynamic pictures (.gif) (three batch processing modes)
-5. Batch enlarge video files (three batch processing modes)
-6. Personalization
-7. Online update
-8. Save the enlarged image target as .jpg
-9. Lossless compression of the .jpg image after the target is saved
-10. Adjust the quality of the enlarged dynamic picture
-11. Display processing progress and remaining time
-12. Smart selection of models
-13. Gif compression & Image compression (Multithreading)
-14. Benchmark
-15. Multithreading
+- More friendly way of interacting
+- Support 4x magnification
+- Batch zoom in still images and GIF dynamic images
+- Batch enlarge video files
+- Personalization
+- Online update
+- Save the enlarged image target as .jpg
+- Lossless compression of .jpg images after the target is saved
+- Optimize enlarged GIF dynamic images to reduce space usage
+- Display processing progress and remaining time
+- Smart selection of models
+- Gif compression & image compression (multi-threading and multiple compression levels)
+- Benchmark (to get the tile size value for your computer)
+- Multi-threaded mode
 
 ![mainmenu](/screenshot/mainmenu.png) 
 
@@ -36,35 +35,20 @@ https://www.lcdf.org/gifsicle/
 
 扩展带来的新功能有:
 
-1.更友好的交互方式
-
-2.支持4倍放大
-
-3.批量放大静态图片(三种批量处理模式)
-
-4.批量放大动态图片(.gif)(三种批量处理模式)
-
-5.批量放大视频文件(三种批量处理模式)
-
-6.个性化设置
-
-7.在线更新
-
-8.将放大后的图片目标另存为.jpg
-
-9.对目标另存为后的.jpg图片进行无损压缩
-
-10.调整放大后动态图片的质量
-
-11.显示处理进度以及剩余时间
-
-12.智能选择models
-
-13. Gif 压缩 & 图片压缩(支持多线程以及多个压缩等级)
-
-14. 基准测试(用于获得适用于您电脑的tile size值)
-
-15. 多线程模式
+- 更友好的交互方式
+- 支持4倍放大
+- 批量放大静态图片与GIF动态图片
+- 批量放大视频文件
+- 个性化设置
+- 在线更新
+- 将放大后的图片目标另存为.jpg
+- 对目标另存为后的.jpg图片进行无损压缩
+- 优化放大后的GIF动态图片, 减少空间占用
+- 显示处理进度以及剩余时间
+- 智能选择models
+- Gif 压缩 & 图片压缩(支持多线程以及多个压缩等级)
+- 基准测试(用于获得适用于您电脑的tile size值)
+- 多线程模式
 
 ![mainmenu](/screenshot/mainmenu.png) 
 
