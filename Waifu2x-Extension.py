@@ -2,7 +2,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v2.51'
+Version_current='v2.6'
 
 import time
 import threading
@@ -25,11 +25,23 @@ import struct
 def ChooseFormat():
 	
 	settings_values = ReadSettings()
-	tileSize = settings_values['tileSize']
-	gpuId = settings_values['gpuId']
-	notificationSound = settings_values['notificationSound']
-	multiThread = settings_values['multiThread']
-	multiThread_Scale = settings_values['multiThread_Scale']
+	
+	tileSize = '[ '+settings_values['tileSize']+' ]'
+	
+	gpuId = '[ '+settings_values['gpuId']+' ]'
+	
+	notificationSound = '[ '+settings_values['notificationSound']+' ]'
+	
+	multiThread = '[ '+settings_values['multiThread']+' ]'
+	
+	multiThread_Scale = '[ '+settings_values['multiThread_Scale']+' ]' 
+	
+	saveAsJPG = '[ '+settings_values['saveAsJPG']+' ]' 
+	Compress = ''
+	if settings_values['saveAsJPG'].lower() == 'y':
+		Compress = '   Compress: [ '+settings_values['Compress']+' ]' 
+	
+	optimizeGif = '[ '+settings_values['optimizeGif']+' ]' 
 	
 	while True:
 		print('┌──────────────────────────────────────────────────────────────┐')
@@ -46,19 +58,25 @@ def ChooseFormat():
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ 4 : Tile size: '+tileSize+'           '+'5 : GPU ID: '+gpuId+' '*(22-len(tileSize)-len(gpuId))+' │')
 		print('│                                                              │')
-		print('│ 6 : Notification sound: '+notificationSound+'    7 : Multithreading(Compress): '+multiThread+' │')
+		print('│ 6 : Notification sound: '+notificationSound+'                                │')
 		print('│                                                              │')
-		print('│ 8 : Multithreading(Scale & denoise): '+multiThread_Scale+'                       │')
+		print('│ 7 : Multithreading(Compress): '+multiThread+'                          │')
+		print('│                                                              │')
+		print('│ 8 : Multithreading(Scale & denoise): '+multiThread_Scale+'                   │')
+		print('│                                                              │')
+		print('│ 9 : Save as .jpg?(Scale & Denoise): '+saveAsJPG+Compress+' '*(19-len(Compress))+' │')
+		print('│                                                              │')
+		print('│ 10 : Optimize .gif?(Scale & Denoise): '+optimizeGif+'                  │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ 9 : Settings.            10 : Benchmark.                     │')
+		print('│ 11 : Settings.           12 : Benchmark.                     │')
 		print('│                                                              │')
-		print('│ 11 : Read error log.     12 : Check update.                  │')
+		print('│ 13 : Read error log.     14 : Check update.                  │')
 		print('│                                                              │')
-		print('│ 13 : Readme.             14 : License.                       │')
+		print('│ 15 : Readme.             16 : License.                       │')
 		print('│                                                              │')
 		print('│ E : Exit.                                                    │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│                   D : Donate. (Alipay)                       │')
+		print('│             \033[1;31;40m D : Donate 捐赠. (Alipay 支付宝) \033[1;36;40m               │')
 		print('└──────────────────────────────────────────────────────────────┘')
 		print('( 1 / 2 / 3 / 4 /...../ E / D ): ')
 		mode = input().strip(' ').lower()
@@ -84,59 +102,74 @@ def ChooseFormat():
 			os.system('cls')
 			input_tileSize()
 			settings_values = ReadSettings()
-			tileSize = settings_values['tileSize']
+			tileSize = '[ '+settings_values['tileSize']+' ]'
 			os.system('cls')
 		elif mode == "5":
 			os.system('cls')
 			input_gpuId()
 			settings_values = ReadSettings()
-			gpuId = settings_values['gpuId']
+			gpuId = '[ '+settings_values['gpuId']+' ]'
 			os.system('cls')
 		elif mode == "6":
 			os.system('cls')
 			input_notificationSound()
 			settings_values = ReadSettings()
-			notificationSound = settings_values['notificationSound']
+			notificationSound = '[ '+settings_values['notificationSound']+' ]'
 			os.system('cls')
 		elif mode == "7":
 			os.system('cls')
 			input_multiThread()
 			settings_values = ReadSettings()
-			multiThread = settings_values['multiThread']
+			multiThread = '[ '+settings_values['multiThread']+' ]'
 			os.system('cls')
 		elif mode == "8":
 			os.system('cls')
 			input_multiThread_Scale()
 			settings_values = ReadSettings()
-			multiThread_Scale = settings_values['multiThread_Scale']
-			os.system('cls')	
+			multiThread_Scale = '[ '+settings_values['multiThread_Scale']+' ]' 
+			os.system('cls')
 		elif mode == "9":
+			os.system('cls')
+			input_saveAsJPG()
+			settings_values = ReadSettings()
+			saveAsJPG = '[ '+settings_values['saveAsJPG']+' ]' 
+			Compress = ''
+			if settings_values['saveAsJPG'].lower() == 'y':
+				Compress = '   Compress: [ '+settings_values['Compress']+' ]' 
+			os.system('cls')
+		elif mode == "10":
+			os.system('cls')
+			input_optimizeGif()
+			settings_values = ReadSettings()
+			optimizeGif = '[ '+settings_values['optimizeGif']+' ]' 
+			os.system('cls')
+		elif mode == "11":
 			os.system('cls')
 			os.system('color 07')
 			Settings()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "10":
+		elif mode == "12":
 			os.system('cls')
 			Benchmark()
 			os.system('cls')
-		elif mode == "11":
+		elif mode == "13":
 			os.system('cls')
 			os.system('color 07')
 			Error_Log()
 			os.system('cls')
 			os.system('color 0b')
-		elif mode == "12":
+		elif mode == "14":
 			os.system('cls')
 			checkUpdate()
 			os.system('cls')
-		elif mode == "13":
+		elif mode == "15":
 			os.system('cls')
 			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README.md')
 			os.system('cls')
 		
-		elif mode == "14":
+		elif mode == "16":
 			os.system('cls')
 			license_()
 			os.system('cls')
@@ -149,8 +182,7 @@ def ChooseFormat():
 			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/donate.jpg')
 			os.system('cls')
-			print('Thank you!!! :)')
-			print('---------------')
+			print('                     Thank you!!!  :)')
 		else:
 			os.system('cls')
 			os.system('color 0c')
@@ -158,7 +190,7 @@ def ChooseFormat():
 			os.system('color 0b')
 			os.system('cls')
 
-#====================================== Scale & Denoise Image & GIF ===============================
+#===================================================== Scale & Denoise Image & GIF ========================================
 def Image_Gif_Scale_Denoise():
 	print('PS:In the new version, we merged the previous three modes.')
 	print('----------------------------------------------------------')
@@ -202,6 +234,8 @@ def Image_Gif_Scale_Denoise():
 	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
+		if scan_subfolders.lower() == 'r':
+			return 1
 	
 	if scan_subfolders.lower() == 'y':
 		subfolders_list = []
@@ -241,14 +275,7 @@ def Image_Gif_Scale_Denoise():
 	if FindGifFiles(inputPathList_folders):
 		Gif_exists=True
 	if Gif_exists:
-		gifCompresslevel =''
-		highQuality = input_highQuality()
-		if highQuality.lower() == 'r':
-			return 1
-		if highQuality.lower() == 'n':
-			gifCompresslevel = input_gifCompresslevel()
-			if gifCompresslevel.lower() == 'r':
-				return 1
+		optimizeGif = settings_values['optimizeGif']
 	
 	Image_exists = False
 	for file_ in inputPathList_files:
@@ -258,15 +285,10 @@ def Image_Gif_Scale_Denoise():
 	if FindImageFiles(inputPathList_folders):
 		Image_exists = True
 	if Image_exists:
-		saveAsJPG = input_saveAsJPG()
-		if saveAsJPG.lower() == 'r':
-			return 1
-		if saveAsJPG == 'y':
-			Compress = input_Compress()
-			if Compress.lower() == 'r':
-				return 1
-			if Compress.lower() == 'y':
-				JpgQuality=90
+		saveAsJPG = settings_values['saveAsJPG']
+		Compress = settings_values['Compress']
+		if Compress.lower() == 'y':
+			JpgQuality=90
 		
 	turnoff = input_turnoff()
 	if turnoff.lower() == 'r':
@@ -300,7 +322,7 @@ def Image_Gif_Scale_Denoise():
 								inputPathList_files_gif.append(path+'\\'+fname)
 						break
 				
-			process_gif_scale_modeABC(inputPathList_files_gif,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal)
+			process_gif_scale_modeABC(inputPathList_files_gif,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,optimizeGif,delorginal)
 		
 		if Image_exists:
 			Process_ImageModeAB(inputPathList_folders,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,delorginal)
@@ -312,7 +334,7 @@ def Image_Gif_Scale_Denoise():
 			for file_ in inputPathList_files:
 				if os.path.splitext(file_)[1] == '.gif':
 					inputPathList_files_gif.append(file_)
-			process_gif_scale_modeABC(inputPathList_files_gif,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal)
+			process_gif_scale_modeABC(inputPathList_files_gif,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,optimizeGif,delorginal)
 		
 		if Image_exists:
 			inputPathList_files_images = []
@@ -448,9 +470,11 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			if files_num_inputPath == files_num_inputPath_scaled:
 				DelOrgFiles(inputPath)
 			else:
-				print('--------------------------------------------------')
-				print('Error occured, in order to save your files, the original files will not be deleted.')
-				print('--------------------------------------------------')
+				print('------------------------------------------------------------------------------')
+				print('Error occured, in order to save your files, the original files in this folder:')
+				print(inputPath)
+				print('will not be deleted.')
+				print('------------------------------------------------------------------------------')
 		print('Copy files...')
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled\"")
@@ -502,7 +526,7 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 		FinishedFileNum = FinishedFileNum+1
 		
 #==============================================  process_gif_scale_modeABC =================================================
-def process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,highQuality,delorginal):
+def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,optimizeGif,delorginal):
 	Gif_inputPathList_files = []
 	for inputPath in inputPathList_files:
 		file_ext = os.path.splitext(inputPath)[1]
@@ -615,9 +639,9 @@ def process_gif_scale_modeABC(inputPathList_files,gifCompresslevel,orginalFileNa
 				print('--------------------------------------------------')
 			
 		
-		if highQuality.lower() == 'n':
+		if optimizeGif.lower() == 'y':
 			print('Compressing gif....')
-			compress_gif(scaledFilePath+'_waifu2x.gif',gifCompresslevel)
+			compress_gif(scaledFilePath+'_waifu2x.gif','1')
 			os.system('del /q "'+scaledFilePath+'_waifu2x.gif'+'"')
 			print('Gif compressed\n')
 		else:
@@ -694,6 +718,8 @@ def Scale_Denoise_Video():
 	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
+		if scan_subfolders.lower() == 'r':
+			return 1
 	
 	if scan_subfolders.lower() == 'y':
 		subfolders_list = []
@@ -892,6 +918,8 @@ def Compress_image_gif():
 	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
+		if scan_subfolders.lower() == 'r':
+			return 1
 	
 	if scan_subfolders.lower() == 'y':
 		subfolders_list = []
@@ -1238,7 +1266,7 @@ def assembleGif(scaledFilePath,TIME_GAP):
 	for png in png_list_fullname:
 		fileNameAndExt=str(os.path.basename(png))
 		filename=os.path.splitext(fileNameAndExt)[0]
-		imageio.imwrite(scaledFilePath+'_split\\scaled\\'+filename+".jpg", imageio.imread(png), 'JPG', quality = 90)
+		imageio.imwrite(scaledFilePath+'_split\\scaled\\'+filename+".jpg", imageio.imread(png), 'JPG', quality = 92)
 	
 	os.system('del /q "'+scaledFilePath+'_split'+'\\scaled\\*.'+'png'+'"')
 	
@@ -1454,45 +1482,49 @@ def input_turnoff():
 
 def input_saveAsJPG():
 	settings_values = ReadSettings()
-	default_value = settings_values['saveAsJPG']
 	while True:
-		saveAsJPG = input('Save as .jpg? (y/n, default='+default_value+'): ')
-		if saveAsJPG in ['y','n','Y','N','','r','R']:
+		saveAsJPG = input('Save as .jpg? (y/n, default=y): ')
+		if saveAsJPG in ['y','n','Y','N','']:
 			break
 		else:
 			print('wrong input, pls input again')
 	
 	if saveAsJPG == '':
-		saveAsJPG = default_value
-	return saveAsJPG
-	
-def input_Compress():
-	settings_values = ReadSettings()
-	default_value = settings_values['Compress']
-	while True:
-		Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default='+default_value+'): ')
-		if Compress in ['y','n','Y','N','','r','R']:
-			break
-		else:
-			print('wrong input, pls input again')
-	if Compress == '':
-		Compress = default_value
-	return Compress
-
-def input_highQuality():
-	settings_values = ReadSettings()
-	default_value = settings_values['highQuality']
-	while True:
-		highQuality = input('Save high quality gif? (y/n, default='+default_value+'): ')
-		if highQuality in ['y','n','Y','N','','r','R']:
-			break
-		else:
-			print('wrong input, pls input again')
-	
-	if highQuality == '':
-		highQuality = default_value
+		saveAsJPG = 'y'
 		
-	return highQuality
+	settings_values['saveAsJPG']=saveAsJPG
+	
+	if saveAsJPG.lower() == 'y':
+		while True:
+			Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=y): ')
+			if Compress in ['y','n','Y','N','',]:
+				break
+			else:
+				print('wrong input, pls input again')
+		if Compress == '':
+			Compress = 'y'
+		settings_values['Compress']=Compress
+		
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
+
+def input_optimizeGif():
+	settings_values = ReadSettings()
+	print('''This will slightly affect the quality of the GIF, but it will save a lot of space.
+----------------------------------------------------------------------------------''')
+	while True:
+		optimizeGif = input('Optimize .gif? (y/n, default=y): ')
+		if optimizeGif in ['y','n','Y','N','']:
+			break
+		else:
+			print('wrong input, pls input again')
+	
+	if optimizeGif == '':
+		optimizeGif = 'y'
+		
+	settings_values['optimizeGif'] = optimizeGif
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
 	
 def input_gifCompresslevel():
 	settings_values = ReadSettings()
@@ -1609,7 +1641,7 @@ def input_image_quality():
 def input_scan_subfolders():
 	while True:
 		scan_subfolders = input('Scan subfolders? ( y/n, default= n ): ').strip(' ')
-		if scan_subfolders in ['y','n','Y','N','']:
+		if scan_subfolders in ['y','n','Y','N','R','r','']:
 			break
 		else:
 			print('wrong input, pls input again')
@@ -1747,17 +1779,15 @@ def Settings():
 		print(' 1: Check for updates at startup. Current value: '+settings_values['CheckUpdate']+'\n')
 		print(' 2: Default value of "Upscale ratio". Current value: '+settings_values['scale']+'\n')
 		print(' 3: Default value of "Denoise Level". Current value: '+settings_values['noiseLevel']+'\n')
-		print(' 4: Save the result image as .jpg file? Current default value: '+settings_values['saveAsJPG']+'\n')
-		print(' 5: Compress the result image?(when saved as .jpg) Current default value: '+settings_values['Compress']+'\n')
-		print(' 6: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
-		print(' 7: Save high quality gif? Current default value: '+settings_values['highQuality']+'\n')
-		print(' 8: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
-		print(' 9: Image quality ( When compress images ). Current default value: ',settings_values['image_quality'],'\n')
-		print(' 10: Number of threads ( Scale & Denoise ). Current default value: ',settings_values['Number_of_threads'],'\n')
-		print(' 11: Reset error log.\n')
+		print(' 4: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
+		print(' 5: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
+		print(' 6: Image quality ( When compress images ). Current default value: ',settings_values['image_quality'],'\n')
+		print(' 7: Number of threads ( Scale & Denoise ). Current default value: ',settings_values['Number_of_threads'],'\n')
+		print(' 8: Reset error log.\n')
+		print(' 9: Show settings_values.\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/4/5/6/7/8/9/r): '.upper())
+		mode = input('(1/2/3/..../r): '.upper())
 		mode = mode.lower()
 		if mode == "1":
 			os.system('cls')
@@ -1817,61 +1847,13 @@ def Settings():
 				else:
 					print('invalid value, pls input again')
 					
-			settings_values['saveAsJPG']=value_
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
-				
-			os.system('cls')
-			
-		elif mode == "5":
-			os.system('cls')
-			
-			while True:
-				value_ = input('New value(y/n): ').lower()
-				if value_ in ['y','n']:
-					break
-				else:
-					print('invalid value, pls input again')
-					
-			settings_values['Compress']=value_
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
-				
-			os.system('cls')
-			
-		elif mode == "6":
-			os.system('cls')
-			
-			while True:
-				value_ = input('New value(y/n): ').lower()
-				if value_ in ['y','n']:
-					break
-				else:
-					print('invalid value, pls input again')
-					
 			settings_values['delorginal']=value_
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
 				
 			os.system('cls')
-			
-		elif mode == "7":
-			os.system('cls')
-			
-			while True:
-				value_ = input('New value(y/n): ').lower()
-				if value_ in ['y','n']:
-					break
-				else:
-					print('invalid value, pls input again')
-					
-			settings_values['highQuality']=value_
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
-				
-			os.system('cls')
 		
-		elif mode== "8":
+		elif mode== "5":
 			os.system('cls')
 			
 			while True:
@@ -1887,7 +1869,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode == "9":
+		elif mode == "6":
 			os.system('cls')
 			while True:
 				image_quality = input('New value ( 100 ~ 1 ): ').strip(' ')
@@ -1904,14 +1886,14 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode== "10":
+		elif mode== "7":
 			os.system('cls')
 			Number_of_threads=''
 			print('Change this setting may cause performance issues.')
 			print('We recommend you to use the default setting.')
-			print('----------------------------------------------')
+			print('-------------------------------------------------')
 			while True:
-				Number_of_threads = input('Number of threads(Scale&Denoise) ( 2 / 3 / 4 /..... , default = 2 ): ').strip(' ')
+				Number_of_threads = input('Number of threads(Scale&Denoise) ( 2 / 3 / 4 /.... ; default = 2 ): ').strip(' ')
 				if Number_of_threads.isdigit():
 					if int(Number_of_threads) >= 2:
 						break
@@ -1930,7 +1912,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode == "11":
+		elif mode == "8":
 			os.system('cls')
 			
 			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
@@ -1944,6 +1926,15 @@ def Settings():
 			
 			os.system('cls')
 		
+		elif mode == "9":
+			os.system('cls')
+			
+			for key,val in settings_values.items():
+				print(key+' : '+val)
+			print('--------------------------')
+			input('press Enter key to return.')
+			
+			os.system('cls')
 		
 		
 		elif mode == "r":
@@ -1956,9 +1947,9 @@ def Settings():
 			os.system('cls')
 
 def ReadSettings():
-	default_values = {'CheckUpdate':'y','scale':'2','tileSize':'200',
-						'noiseLevel':'2','saveAsJPG':'y',
-						'Compress':'n','delorginal':'n','highQuality':'n','gifCompresslevel':'1',
+	default_values = {'SettingVersion':'1','CheckUpdate':'y','scale':'2',
+						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200',
+						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1971,7 +1962,7 @@ def ReadSettings():
 		settings_values = {}
 		with open('waifu2x-extension-setting','r+') as f:
 			settings_values = json.load(f)
-		if len(settings_values) != len(default_values):
+		if len(settings_values) != len(default_values) or settings_values['SettingVersion'] != default_values['SettingVersion']:
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(default_values,f)
 			return default_values
@@ -2435,8 +2426,12 @@ if __name__ == '__main__':
 			
 			print('---------------------------------------------------')
 			print('An error occurred, pls report this to the developer.')
+			print('')
 			print('Report link:')
 			print('https://github.com/AaronFeng753/Waifu2x-Extension/issues')
+			print('')
+			print('You can download the Latest release here, maybe the bug is already fixed:')
+			print('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
 			print('----------------------------------------')
 			print('Press Enter key to restart the software.')
 			input()
