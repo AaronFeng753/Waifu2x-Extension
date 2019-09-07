@@ -16,6 +16,9 @@ New features brought by this extension:
 - Gif compression & image compression (multi-threading and multiple compression levels)
 - Benchmark (to get the tile size value for your computer)
 - Multi-threaded mode
+- Protect Gif files
+- Error catching
+- Record error log
 
 ![mainmenu](/screenshot/mainmenu.png) 
 
@@ -49,6 +52,9 @@ https://www.lcdf.org/gifsicle/
 - Gif 压缩 & 图片压缩(支持多线程以及多个压缩等级)
 - 基准测试(用于获得适用于您电脑的tile size值)
 - 多线程模式
+- 保护Gif文件
+- 错误捕捉
+- 记录错误日志
 
 ![mainmenu](/screenshot/mainmenu.png) 
 
