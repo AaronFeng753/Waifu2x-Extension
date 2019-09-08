@@ -1,19 +1,11 @@
 #!/usr/bin/python  
 # -*- coding: utf-8 -*- 
-'''
-- 提升放大后的视频的画质和音质
-- 增加界面颜色设置,7种颜色可选
-- 新增 睡眠模式
-- 启动时检查是否有可用的GPU
-- 细节改进与优化
-- 修复潜在bug
-'''
 
 import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v2.7'
+Version_current='v2.75'
 
 import time
 import threading
@@ -375,7 +367,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 	for inputPath in inputPathList:
 		Window_Title('  [Scale Images]  Folder: ('+str(Finished_folder_num)+'/'+str(Total_folder_num)+')')
 		oldfilenumber=FileCount(inputPath)
-		scalepath = inputPath+"\\scaled\\"
+		scalepath = inputPath+"\\scaled_waifu2x\\"
 		orginalFileNameAndFullname = {}
 		for files in os.walk(inputPath):
 			for fileNameAndExt in files[2]:
@@ -389,13 +381,13 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 0)
 			thread1.start()
 		
-		if os.path.exists(inputPath+"\\scaled\\") == True:
-			os.system("rd /s/q \""+inputPath+"\\scaled\\"+'"')
-		os.mkdir(inputPath+"\\scaled\\")
+		if os.path.exists(inputPath+"\\scaled_waifu2x\\") == True:
+			os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\\"+'"')
+		os.mkdir(inputPath+"\\scaled_waifu2x\\")
 		
 		if scale == '4':
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
@@ -422,8 +414,8 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2)
 			thread1.start()
 			print('')
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled"+"\" -o \""+inputPath+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
 			if thread1.isAlive()==True:
 				time.sleep(2)
@@ -433,16 +425,16 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			while thread_DelOldFileThread_4x.isAlive():
 				time.sleep(1)
 			
-			for files in os.walk(inputPath+'\\scaled\\'):
+			for files in os.walk(inputPath+'\\scaled_waifu2x\\'):
 				for fileNameAndExt in files[2]:
 					fileName=os.path.splitext(os.path.splitext(fileNameAndExt)[0])[0]
 					fileNameAndExt_new = orginalFileNameAndFullname[fileName]
-					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileNameAndExt_new+".png"))
+					os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt_new+".png"))
 			
 			
 		else:
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 		
 		if thread1.isAlive()==True:
 			time.sleep(2)
@@ -451,23 +443,23 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			
 		if saveAsJPG.lower() == 'y':
 			print('\n Convert image..... \n')
-			for path,useless,fnames in os.walk(inputPath+'\\scaled\\'):
+			for path,useless,fnames in os.walk(inputPath+'\\scaled_waifu2x\\'):
 				for fnameAndExt in fnames:
 					pngFile = path+'\\'+fnameAndExt
 					fname = os.path.splitext(fnameAndExt)[0]
 					jpgFile = path+'\\'+fname+'.jpg'
 					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = JpgQuality)
-					os.system('del /q "'+pngFile+'"')
+					os.remove(pngFile)
 			
 		
-		for files in os.walk(inputPath+'\\scaled\\'):
+		for files in os.walk(inputPath+'\\scaled_waifu2x\\'):
 			for fileNameAndExt in files[2]:
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
 				if saveAsJPG.lower() == 'y':
-					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.jpg"))
+					os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',originalName+"_Waifu2x.jpg"))
 				else:
-					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',originalName+"_Waifu2x.png"))
+					os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',originalName+"_Waifu2x.png"))
 		
 		orginalFileNameAndFullname = {}
 		
@@ -478,7 +470,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			for path,useless,fnames in os.walk(inputPath):
 				files_num_inputPath = len(fnames)
 				break
-			for path,useless,fnames in os.walk(inputPath+"\\scaled"):
+			for path,useless,fnames in os.walk(inputPath+"\\scaled_waifu2x"):
 				files_num_inputPath_scaled = len(fnames)
 				break
 			if files_num_inputPath == files_num_inputPath_scaled:
@@ -490,8 +482,8 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 				print('will not be deleted.')
 				print('------------------------------------------------------------------------------')
 		print('Copy files...')
-		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled\\*.*\" \""+inputPath+"\"")
-		os.system("rd /s/q \""+inputPath+"\\scaled\"")
+		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled_waifu2x\\*.*\" \""+inputPath+"\"")
+		os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\"")
 		Finished_folder_num = Finished_folder_num + 1
 	Window_Title('')
 
@@ -527,16 +519,18 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 			if os.path.exists(scaledFilePath+"_Waifu2x.png"):
 				print('\n Convert image..... \n')
 				imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
-				os.system('del /q "'+scaledFilePath+"_Waifu2x.png"+'"')
+				os.remove(scaledFilePath+"_Waifu2x.png")
 		
 		
 		if delorginal.lower() == 'y':
 			if os.path.exists(scaledFilePath+"_Waifu2x.png") or os.path.exists(scaledFilePath+"_Waifu2x.jpg"):
 				os.system('del /q "'+inputPath+'"')
 			else:
-				print('--------------------------------------------------')
-				print('Error occured, in order to save your files, the original file will not be deleted.')
-				print('--------------------------------------------------')
+				print('----------------------------------------------------------------')
+				print(' Error occured, in order to save your files, the original file :')
+				print(' '+inputPath)
+				print(' will not be deleted.')
+				print('----------------------------------------------------------------')
 		FinishedFileNum = FinishedFileNum+1
 		
 #==============================================  process_gif_scale_modeABC =================================================
@@ -648,15 +642,17 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 				if os.path.getsize(gif_name)>0:
 					os.system('del /q "'+inputPath+'"')
 			else:
-				print('--------------------------------------------------')
-				print('Error occured, in order to save your files, the original file will not be deleted.')
-				print('--------------------------------------------------')
+				print('----------------------------------------------------------------')
+				print(' Error occured, in order to save your files, the original file :')
+				print(' '+inputPath)
+				print(' will not be deleted.')
+				print('----------------------------------------------------------------')
 			
 		
 		if optimizeGif.lower() == 'y':
 			print('Compressing gif....')
 			compress_gif(scaledFilePath+'_waifu2x.gif','1')
-			os.system('del /q "'+scaledFilePath+'_waifu2x.gif'+'"')
+			os.remove(scaledFilePath+'_waifu2x.gif')
 			print('Gif compressed\n')
 		else:
 			print('')
@@ -1042,7 +1038,7 @@ def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality
 			
 			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
 			if saved_size <= 0:
-				os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
+				os.remove(scaledFilePath+"_compressed.jpg")
 				print('Failed to compress ['+inputPath+'] This image may be already being compressed. You can try to reduce "image quality".')
 			else:
 				saved_size_str = str(saved_size)+'KB'
@@ -1083,7 +1079,7 @@ def process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal
 			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
 			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
 			if saved_size <= 0:
-				os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
+				os.remove(scaledFilePath+"_compressed.gif")
 				print('Failed to compress '+inputPath)
 			else:
 				saved_size_str = str(saved_size)+'KB'
@@ -1353,8 +1349,9 @@ def images2video(inputpath):
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
 	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio_waifu2x.wav" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
-
-	os.system('del /q "'+video_dir+'audio_waifu2x.wav"')
+	
+	os.remove(video_dir+'audio_waifu2x.wav')
+	#os.system('del /q "'+video_dir+'audio_waifu2x.wav"')
 
 	os.system('rd /s/q "'+video_dir+'frames_waifu2x'+'"')
 
@@ -1424,7 +1421,7 @@ def input_scale():
 	default_value = settings_values['scale']
 
 	while True:
-		scale = input('Upscale ratio(1/2/4, default='+default_value+'): ').strip(' ')
+		scale = input('Scale ratio(1/2/4, default='+default_value+'): ').strip(' ')
 		if scale in ['1','2','4','','r','R']:
 			break
 		else:
@@ -1690,6 +1687,7 @@ def input_sleepMode():
 				print('When "sleep mode" is enabled, the software will attempts to reduce performance requirements,')
 				print('thereby reducing the computer\'s operating pressure and thus minimizing noise.')
 				print('And turn off notification sound.')
+				print('Enabling this mode will lengthen the time it takes for the program to complete its task.')
 				print('--------------------------------------------------------------------------------------------')
 			else:
 				break
@@ -1826,7 +1824,7 @@ def Settings():
 		print('                                  Settings')
 		print('-----------------------------------------------------------------------------')
 		print(' 1: Check for updates at startup. Current value: '+settings_values['CheckUpdate']+'\n')
-		print(' 2: Default value of "Upscale ratio". Current value: '+settings_values['scale']+'\n')
+		print(' 2: Default value of "Scale ratio". Current value: '+settings_values['scale']+'\n')
 		print(' 3: Default value of "Denoise Level". Current value: '+settings_values['noiseLevel']+'\n')
 		print(' 4: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
 		print(' 5: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
@@ -1996,13 +1994,16 @@ def Settings():
 			break
 		else:
 			os.system('cls')
-			
-			input('Error : wrong input,pls press Enter key to return')
-			
+			ChangeColor_warning()
+			print(' -------------------------------------------------')
+			print(' Error : wrong input,pls press Enter key to return')
+			print(' -------------------------------------------------')
+			input()
+			ChangeColor_default()
 			os.system('cls')
 
 def ReadSettings():
-	default_values = {'SettingVersion':'2','CheckUpdate':'y','scale':'2',
+	default_values = {'SettingVersion':'3','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
@@ -2093,7 +2094,7 @@ class GifCompressThread (threading.Thread):
 		compress_gif(inputPath,gifCompresslevel)
 		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
 		if saved_size <= 0:
-			os.system('del /q "'+scaledFilePath+"_compressed.gif"+'"')
+			os.remove(scaledFilePath+"_compressed.gif")
 			print('\n'+'Failed to compress '+inputPath+'\n')
 		else:
 			saved_size_str = str(saved_size)+'KB'
@@ -2146,7 +2147,7 @@ class ImageCompressThread (threading.Thread):
 		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
 		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
 		if saved_size <= 0:
-			os.system('del /q "'+scaledFilePath+"_compressed.jpg"+'"')
+			os.remove(scaledFilePath+"_compressed.jpg")
 			print('\n'+'Failed to compress ['+inputPath+'] This image may be already being compressed.\nYou can try to reduce "image quality".'+'\n')
 		else:
 			print('\n'+'Finished to compress '+inputPath+'\n')
@@ -2514,12 +2515,16 @@ def init():		#初始化函数
 		checkUpdate_start(Version_current)
 		
 	if VerifyFiles() == 'verified':
-		if View_GPU_ID_start() == []:
-			os.system('cls')
-			print('------------------------------------------------------------')
-			print(' No GPU availabel. Pls upgrade or reinstall your GPU driver.')
-			print('------------------------------------------------------------')
-			input('Press Enter to continue.')
+		if settings_values['First_Time_Boot_Up'] == 'y':
+			settings_values['First_Time_Boot_Up'] = 'n'
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+			if View_GPU_ID_start() == []:
+				os.system('cls')
+				print('------------------------------------------------------------')
+				print(' No GPU availabel. Pls upgrade or reinstall your GPU driver.')
+				print('------------------------------------------------------------')
+				input('Press Enter to continue.')
 		os.system('cls')
 		thread_resizeWindow=ResizeWindow_Thread()
 		thread_resizeWindow.start()
