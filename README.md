@@ -48,7 +48,11 @@ Gifsicle:
 https://www.lcdf.org/gifsicle/
 
 # Waifu2x扩展
-适用于waifu2x-ncnn-vulkan的批量图片处理扩展
+
+# 什么是"Waifu2x扩展" ?
+借助深度卷积神经网络进行超分辨率放大动漫风格的艺术作品, 包括图片,gif动态图片以及视频.
+
+基于waifu2x-ncnn-vulkan.
 
 # 功能与特性
 扩展带来的新功能有:
