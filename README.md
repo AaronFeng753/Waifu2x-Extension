@@ -50,6 +50,7 @@ https://www.lcdf.org/gifsicle/
 # Waifu2x扩展
 适用于waifu2x-ncnn-vulkan的批量图片处理扩展
 
+# Features
 扩展带来的新功能有:
 
 - 更友好的交互方式
@@ -70,6 +71,14 @@ https://www.lcdf.org/gifsicle/
 - 错误捕捉
 - 记录错误日志
 
+# 示例
+Image : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/image
+
+Video : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/video
+
+GIF : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
+
+# 截图
 ![mainmenu](/screenshot/mainmenu.png) 
 
 # 下载: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
