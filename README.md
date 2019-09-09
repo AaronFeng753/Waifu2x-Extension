@@ -37,6 +37,7 @@ GIF : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
 # Screenshot
 ![mainmenu](/screenshot/mainmenu.png) 
+![running](/screenshot/running.png) 
 
 # Download: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
@@ -89,6 +90,7 @@ GIF : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
 # 截图
 ![mainmenu](/screenshot/mainmenu.png) 
+![running](/screenshot/running.png) 
 
 # 下载: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
