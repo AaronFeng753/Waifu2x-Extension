@@ -50,7 +50,7 @@ https://www.lcdf.org/gifsicle/
 # Waifu2x扩展
 适用于waifu2x-ncnn-vulkan的批量图片处理扩展
 
-# Features
+# 功能与特性
 扩展带来的新功能有:
 
 - 更友好的交互方式
