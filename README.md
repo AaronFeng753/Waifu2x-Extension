@@ -26,11 +26,15 @@ New features brought by this extension:
 - Record error log
 - And more
 
+# Samples
+Image : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/image
+
+Video : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/video
+
+GIF : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
+
 # Screenshot
 ![mainmenu](/screenshot/mainmenu.png) 
-
-# Samples
-
 
 # Download: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
