@@ -94,6 +94,12 @@ Video : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/vi
 
 GIF : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
+原图 960x600:
+![Original Imgae](/Samples/image/Original_[960x600].jpg)
+
+放大后 7680x4800:
+![Scaled Imgae](/Samples/image/Waifu2x_8x_[7680x4800].jpg)
+
 # 截图
 ![mainmenu](/screenshot/mainmenu.png) 
 ![running](/screenshot/running.png) 
