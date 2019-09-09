@@ -24,6 +24,7 @@ New features brought by this extension:
 - Protect Gif files
 - Error catching
 - Record error log
+- Sleep mode
 - And more
 
 # Samples
@@ -74,6 +75,8 @@ https://www.lcdf.org/gifsicle/
 - 保护Gif文件
 - 错误捕捉
 - 记录错误日志
+- 睡眠模式
+- 以及更多
 
 # 示例
 Image : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/image
