@@ -2,8 +2,10 @@
 
 # What is Waifu2x-Extension?
 Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutional Neural Networks.
+
 Based on waifu2x-ncnn-vulkan.
 
+# Features
 New features brought by this extension:
 - More friendly way of interacting
 - Support 4x magnification
