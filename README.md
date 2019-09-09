@@ -26,7 +26,11 @@ New features brought by this extension:
 - Record error log
 - And more
 
+# Screenshot
 ![mainmenu](/screenshot/mainmenu.png) 
+
+# Samples
+
 
 # Download: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
