@@ -25,6 +25,7 @@ New features brought by this extension:
 - Error catching
 - Record error log
 - Sleep mode
+- Notification sound
 - And more
 
 # Samples
@@ -76,6 +77,7 @@ https://www.lcdf.org/gifsicle/
 - 错误捕捉
 - 记录错误日志
 - 睡眠模式
+- 提示音
 - 以及更多
 
 # 示例
