@@ -1421,9 +1421,14 @@ def input_scale():
 	default_value = settings_values['scale']
 
 	while True:
-		scale = input('Scale ratio(1/2/4, default='+default_value+'): ').strip(' ')
-		if scale in ['1','2','4','','r','R']:
+		scale = input('Scale ratio(1/2/4/help, default='+default_value+'): ').strip(' ').lower()
+		if scale in ['1','2','4','','r']:
 			break
+		elif scale == 'help':
+			print('------------------------------------------')
+			print('Scale ratio : Magnification of the picture')
+			print('------------------------------------------')
+			print('')
 		else:
 			print('Error : wrong input, pls input again')
 	
@@ -1439,14 +1444,24 @@ def input_tileSize():
 	print('You can run the benchmark to determine the best value of "tile size" for your computer.')
 	print('--------------------------------------------------------------------------------------')
 	while True:
-		tileSize = input('Tile size(>=32, default='+default_value+'): ').strip(' ')
+		tileSize = input('Tile size( >=32 / help, default='+default_value+'): ').strip(' ').lower()
 		if tileSize.isdigit():
 			if int(tileSize) > 0:
 				break
 			else:
+				os.system('cls')
 				print('wrong input, pls input again')
 		elif tileSize == '':
 			break
+		elif tileSize == 'help':
+			os.system('cls')
+			print('-----------------------------------------------------------------------------------------')
+			print('Tile size : This value will affacts GPU memory usage.')
+			print('Larger tile size means waifu2x will use more GPU memory and run faster.')
+			print('Smaller tile size means waifu2x will use less GPU memory and run slower.')
+			print('The "Benchmark" in the main menu can help you to determine the best value of "tile size".')
+			print('-----------------------------------------------------------------------------------------')
+			print('')
 		else:
 			os.system('cls')
 			print('wrong input, pls input again')
@@ -1462,9 +1477,14 @@ def input_noiseLevel():
 	settings_values = ReadSettings()
 	default_value = settings_values['noiseLevel']
 	while True:
-		noiseLevel = input('Denoise level(-1/0/1/2/3, default='+default_value+'): ').strip(' ')
-		if noiseLevel in ['-1','0','1','2','3','','r','R']:
+		noiseLevel = input('Denoise level(-1/0/1/2/3/help, default='+default_value+'): ').strip(' ').lower()
+		if noiseLevel in ['-1','0','1','2','3','','r']:
 			break
+		elif noiseLevel == 'help':
+			print('----------------------------------------------------------------------')
+			print('Denoise level: large value means strong denoise effect, -1 = no effect')
+			print('----------------------------------------------------------------------')
+			print('')
 		else:
 			print('wrong input, pls input again')
 	
@@ -1548,9 +1568,14 @@ def input_gifCompresslevel():
 	settings_values = ReadSettings()
 	default_value = settings_values['gifCompresslevel']
 	while True:
-		gifCompresslevel = input('Compress level(1/2/3/4, default='+default_value+'): ').strip(' ')
-		if gifCompresslevel in ['1','2','3','4','','r','R']:
+		gifCompresslevel = input('Compress level(1/2/3/4/help, default='+default_value+'): ').strip(' ').lower()
+		if gifCompresslevel in ['1','2','3','4','','r']:
 			break
+		elif gifCompresslevel == 'help':
+			print('-----------------------------------------------------------')
+			print('Compress level : higher level means strong compress effect.')
+			print('-----------------------------------------------------------')
+			print('')
 		else:
 			print('wrong input, pls input again')
 	
@@ -1582,6 +1607,7 @@ def input_gpuId():
 	gpuId_list = View_GPU_ID()
 	if gpuId_list == []:
 		input('Press Enter key to return')
+		return 0
 	gpuId_list_str = ''
 	for id_ in gpuId_list:
 		gpuId_list_str = gpuId_list_str+'/'+str(id_)
@@ -1648,19 +1674,18 @@ def input_image_quality():
 	settings_values = ReadSettings()
 	default_value = settings_values['image_quality']
 	while True:
-		image_quality = input('Image quality ( 100 (Almost lossless) ~ 1 (Most lossy) , defalut = '+str(default_value)+' ):').strip(' ')
+		image_quality = input('Image quality ( 100 (Almost lossless) ~ 1 (Most lossy) , defalut = '+str(default_value)+' ):').strip(' ').lower()
 		if image_quality.isdigit():
 			if int(image_quality) >= 1 and int(image_quality) <= 100:
 				return int(image_quality)
 				break
 			else:
 				print('wrong input, pls input again')
-		elif image_quality.lower() == 'r':
+		elif image_quality == 'r':
 			return 'r'
 		elif image_quality == '':
 			return default_value
 		else:
-			os.system('cls')
 			print('wrong input, pls input again')
 			
 def input_scan_subfolders():
