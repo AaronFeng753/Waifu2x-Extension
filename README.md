@@ -3,7 +3,7 @@
 # What is Waifu2x-Extension?
 Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutional Neural Networks.
 
-Based on waifu2x-ncnn-vulkan. 
+Based on waifu2x-ncnn-vulkan (version 20190712). 
 
 Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that support `Vulakn`, even Intel GPU. 
 
@@ -66,7 +66,7 @@ https://www.lcdf.org/gifsicle/
 # 什么是"Waifu2x扩展" ?
 借助深度卷积神经网络进行超分辨率放大动漫风格的艺术作品, 包括图片,gif动态图片以及视频.
 
-基于waifu2x-ncnn-vulkan.
+基于waifu2x-ncnn-vulkan (version 20190712).
 
 借助于waifu2x-ncnn-vulkan, Waifu2x-Extension可以借助任何支持`Vulkan`的显卡进行运算, 即便是Intel集成显卡.
 
