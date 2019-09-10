@@ -39,10 +39,10 @@ New features brought by this extension:
 
 ### **`GIF`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
-Original Imgae 960x600:
+`Original Imgae 960x600:`
 ![Original Imgae](/Samples/image/Original_[960x600].jpg)
 
-After 8x magnification 7680x4800:
+`After 8x magnification 7680x4800:`
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[7680x4800].jpg)
 
 # Screenshot
