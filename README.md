@@ -39,11 +39,11 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 
 ### **`GIF`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
-#### Original Imgae 960x600:
-![Original Imgae](/Samples/image/Original_[960x600].jpg)
+#### Original Imgae 480x300:
+![Original Imgae](/Samples/image/Original_[480x300].jpg)
 
-#### After 8x magnification 7680x4800:
-![Scaled Imgae](/Samples/image/Waifu2x_8x_[7680x4800].jpg)
+#### After 8x magnification 3840x2400:
+![Scaled Imgae](/Samples/image/Waifu2x_8x_[3840x2400].jpg)
 
 # Screenshot
 ![mainmenu](/screenshot/mainmenu.png) 
@@ -103,11 +103,11 @@ https://www.lcdf.org/gifsicle/
 
 ### **`GIF动态图`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
-#### 原图 960x600:
-![Original Imgae](/Samples/image/Original_[960x600].jpg)
+#### 原图 480x300:
+![Original Imgae](/Samples/image/Original_[480x300].jpg)
 
-#### 8倍放大后 7680x4800:
-![Scaled Imgae](/Samples/image/Waifu2x_8x_[7680x4800].jpg)
+#### 8倍放大后 3840x2400:
+![Scaled Imgae](/Samples/image/Waifu2x_8x_[3840x2400].jpg)
 
 # 截图
 ![mainmenu](/screenshot/mainmenu.png) 
