@@ -93,7 +93,6 @@ def ChooseFormat():
 		print('( 1 / 2 / 3 / 4 /...../ E / D ): ')
 		mode = input().strip(' ').lower()
 		Set_cols_lines(120,38)
-		time.sleep(0.15)
 		if mode == "1":
 			os.system('cls')
 			Image_Gif_Scale_Denoise()
@@ -1288,7 +1287,6 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 				current_cols = Get_cols_lines()[0]
 				if (PrograssBar_len_new+Add_len) > current_cols:
 					Set_cols_lines(cols = PrograssBar_len_new+Add_len+1,lines=38)
-					time.sleep(0.1)
 					
 				PrograssBar_len_old = PrograssBar_len_new
 				sys.stdout.write(PrograssBar+' '*Add_len)
@@ -1308,7 +1306,6 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 				current_cols = Get_cols_lines()[0]
 				if (PrograssBar_len_new+Add_len) > current_cols:
 					Set_cols_lines(cols = PrograssBar_len_new+Add_len+1,lines=38)
-					time.sleep(0.1)
 				
 				PrograssBar_len_old = PrograssBar_len_new
 				sys.stdout.write(PrograssBar+' '*Add_len)
@@ -1346,9 +1343,7 @@ def Clock(TotalFileNum,FinishedFileNum):
 		
 		current_cols = Get_cols_lines()[0]
 		if (clockStr_len_new+Add_len) > current_cols:
-			Set_cols_lines(cols = clockStr_len_new+Add_len+1,lines=38)
-			time.sleep(0.1)
-		
+			Set_cols_lines(cols = clockStr_len_new+Add_len+1,lines=38)		
 		sys.stdout.write(clockStr+' '*Add_len)
 		sys.stdout.flush()
 		time.sleep(1)
@@ -2379,9 +2374,19 @@ class ResizeWindow_Thread(threading.Thread):
 
 def ResizeWindow():
 	while True:
-		settings_values = ReadSettings()
-		cols = settings_values['cols_resize']
-		lines = settings_values['lines_resize']
+		cols = 120
+		lines = 38
+		
+		try:
+			settings_values = ReadSettings()
+			cols = settings_values['cols_resize']
+			lines = settings_values['lines_resize']
+		except BaseException:
+			time.sleep(0.02)
+			settings_values = ReadSettings()
+			cols = settings_values['cols_resize']
+			lines = settings_values['lines_resize']
+
 		h = ctypes.windll.kernel32.GetStdHandle(-12)
 		csbi = ctypes.create_string_buffer(22)
 		res = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(h, csbi)
@@ -2395,7 +2400,7 @@ def ResizeWindow():
 				os.system('Resize-window.exe '+str(cols)+' '+str(lines))
 		else:
 			os.system('Resize-window.exe '+str(cols)+' '+str(lines))
-		time.sleep(0.2)
+		time.sleep(0.05)
 
 def Set_cols_lines(cols,lines):
 	settings_values = ReadSettings()
@@ -2403,6 +2408,8 @@ def Set_cols_lines(cols,lines):
 	settings_values['lines_resize'] = lines
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
+	while Complete_ResizeWindow(cols,lines):
+		time.sleep(0.01)
 	return 0
 
 def Get_cols_lines():
@@ -2410,6 +2417,23 @@ def Get_cols_lines():
 	cols = settings_values['cols_resize']
 	lines = settings_values['lines_resize']
 	return [cols,lines]
+
+def Complete_ResizeWindow(cols,lines):
+	h = ctypes.windll.kernel32.GetStdHandle(-12)
+	csbi = ctypes.create_string_buffer(22)
+	res = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(h, csbi)
+	
+	if res:
+		(bufx, bufy, curx, cury, wattr,
+		 left, top, right, bottom, maxx, maxy) = struct.unpack("hhhhHhhhhhh", csbi.raw)
+		sizex = right - left + 1
+		sizey = bottom - top + 1
+		if sizex == cols and sizey == lines:
+			return False
+		else:
+			return True
+	else:
+		return True
 
 	
 #=============================== Benchmark =============================
@@ -2721,8 +2745,7 @@ def init():		#初始化函数
 		
 		thread_resizeWindow=ResizeWindow_Thread()
 		thread_resizeWindow.start()
-		time.sleep(0.1)
-		
+		Set_cols_lines(20,20)
 		ChooseFormat()
 		
 		if thread_resizeWindow.isAlive()==True:
