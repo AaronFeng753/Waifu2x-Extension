@@ -33,11 +33,11 @@ New features brought by this extension:
 - And more
 
 # Samples
-**`Image`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/image
+### **`Image`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/image
 
-**`Video`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/video
+### **`Video`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/video
 
-**`GIF`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
+### **`GIF`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
 Original Imgae 960x600:
 ![Original Imgae](/Samples/image/Original_[960x600].jpg)
@@ -93,11 +93,11 @@ https://www.lcdf.org/gifsicle/
 - 以及更多
 
 # 示例
-Image : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/image
+### **`图片`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/image
 
-Video : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/video
+### **`视频`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/video
 
-GIF : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
+### **`GIF动态图`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
 原图 960x600:
 ![Original Imgae](/Samples/image/Original_[960x600].jpg)
