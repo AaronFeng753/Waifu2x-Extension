@@ -8,7 +8,7 @@ Based on waifu2x-ncnn-vulkan.
 # Features
 New features brought by this extension:
 - More friendly way of interacting
-- Support 4x magnification
+- Support 4x & 8x magnification
 - Batch zoom in still images and GIF dynamic images
 - Batch enlarge video files
 - Personalization
@@ -38,7 +38,7 @@ GIF : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 Original Imgae 960x600:
 ![Original Imgae](/Samples/image/Original_[960x600].jpg)
 
-After 8x magnification(coming soon) 7680x4800:
+After 8x magnification 7680x4800:
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[7680x4800].jpg)
 
 # Screenshot
@@ -67,7 +67,7 @@ https://www.lcdf.org/gifsicle/
 扩展带来的新功能有:
 
 - 更友好的交互方式
-- 支持4倍放大
+- 支持 4倍 & 8倍 放大
 - 批量放大静态图片与GIF动态图片
 - 批量放大视频文件
 - 个性化设置
@@ -97,7 +97,7 @@ GIF : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 原图 960x600:
 ![Original Imgae](/Samples/image/Original_[960x600].jpg)
 
-8倍放大后(即将更新) 7680x4800:
+8倍放大后 7680x4800:
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[7680x4800].jpg)
 
 # 截图
