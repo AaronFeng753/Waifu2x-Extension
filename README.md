@@ -5,12 +5,12 @@ Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutiona
 
 Based on waifu2x-ncnn-vulkan. 
 
-Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that support Vulakn, even Intel GPU. 
+Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that support `Vulakn`, even Intel GPU. 
 
 Already been tested on AMD RX550 and Intel UHD 620.
 
 # Features
-New features brought by this extension:
+### New features brought by this extension:
 - More friendly way of interacting
 - Support 4x & 8x magnification
 - Batch zoom in still images and GIF dynamic images
@@ -39,10 +39,10 @@ New features brought by this extension:
 
 ### **`GIF`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
-`Original Imgae 960x600:`
+#### Original Imgae 960x600:
 ![Original Imgae](/Samples/image/Original_[960x600].jpg)
 
-`After 8x magnification 7680x4800:`
+#### After 8x magnification 7680x4800:
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[7680x4800].jpg)
 
 # Screenshot
@@ -69,7 +69,7 @@ https://www.lcdf.org/gifsicle/
 基于waifu2x-ncnn-vulkan.
 
 # 功能与特性
-扩展带来的新功能有:
+### 扩展带来的新功能有:
 
 - 更友好的交互方式
 - 支持 4倍 & 8倍 放大
@@ -99,10 +99,10 @@ https://www.lcdf.org/gifsicle/
 
 ### **`GIF动态图`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
-原图 960x600:
+#### 原图 960x600:
 ![Original Imgae](/Samples/image/Original_[960x600].jpg)
 
-8倍放大后 7680x4800:
+#### 8倍放大后 7680x4800:
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[7680x4800].jpg)
 
 # 截图
@@ -123,8 +123,8 @@ https://www.lcdf.org/gifsicle/
 
 # Donate 捐赠
 
-如果这个扩展程序帮助了您, 欢迎您捐赠支持开发者. 
+## 如果这个扩展程序帮助了您, 欢迎您捐赠支持开发者. 
 
-If this extension helps you, you are welcome to donate to support developers.
+## If this extension helps you, you are welcome to donate to support developers.
 
 ![donate](/donate.jpg)
