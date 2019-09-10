@@ -7,7 +7,7 @@ Based on waifu2x-ncnn-vulkan.
 
 Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that support `Vulakn`, even Intel GPU. 
 
-Already been tested on AMD RX550, NVIDIA GeForce GTX 1070 and Intel UHD 620.
+Already been tested on `AMD` RX550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 620.
 
 # Features
 ### New features brought by this extension:
@@ -70,7 +70,7 @@ https://www.lcdf.org/gifsicle/
 
 借助于waifu2x-ncnn-vulkan, Waifu2x-Extension可以借助任何支持vulkan的显卡进行运算, 即便是Intel集成显卡.
 
-已经在 AMD RX550, Intel UHD 620 和 NVIDIA GeForce GTX 1070 上通过测试.
+已经在 `AMD` RX550, `Intel` UHD 620 和 `NVIDIA` GeForce GTX 1070 上通过测试.
 
 # 功能与特性
 ### 扩展带来的新功能有:
