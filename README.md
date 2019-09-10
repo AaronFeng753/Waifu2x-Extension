@@ -51,6 +51,7 @@ After 8x magnification 7680x4800:
 
 # Download: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
+# Credits:
 waifu2x-ncnn-vulkan:
 https://github.com/nihui/waifu2x-ncnn-vulkan
 
@@ -110,6 +111,7 @@ GIF : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
 # 下载: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
+# Wafu2x扩展的诞生离不开以下开源项目:
 waifu2x-ncnn-vulkan:
 https://github.com/nihui/waifu2x-ncnn-vulkan
 
