@@ -1,11 +1,19 @@
 #!/usr/bin/python  
 # -*- coding: utf-8 -*- 
 
+'''
+更新日志
+- 改进 进度显示
+- 提高运行速度
+- 优化窗口大小调整策略
+- 修复bug
+'''
+
 import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v2.75'
+Version_current='v2.85'
 
 import time
 import threading
@@ -47,13 +55,14 @@ def ChooseFormat():
 	optimizeGif = '[ '+settings_values['optimizeGif']+' ]' 
 	
 	while True:
+		Set_cols_lines(66,38)
 		print('┌──────────────────────────────────────────────────────────────┐')
 		print('│ Waifu2x-Extension | '+Version_current+' | Author: Aaron Feng '+' '*(19-len(Version_current))+'│')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ Github: https://github.com/AaronFeng753/Waifu2x-Extension    │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print("│ Attention: This software's scale & denoise function is only  │")
-		print('│ designed for process 2D illust files(image,gif,video).       │')
+		print('│ designed for process Anime-style art (Image,GIF,Video).      │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ 1 : Scale & Denoise Image & GIF.  2 : Scale & Denoise Video. │')
 		print('├──────────────────────────────────────────────────────────────┤')
@@ -83,6 +92,8 @@ def ChooseFormat():
 		print('└──────────────────────────────────────────────────────────────┘')
 		print('( 1 / 2 / 3 / 4 /...../ E / D ): ')
 		mode = input().strip(' ').lower()
+		Set_cols_lines(120,38)
+		time.sleep(0.15)
 		if mode == "1":
 			os.system('cls')
 			Image_Gif_Scale_Denoise()
@@ -190,8 +201,6 @@ def ChooseFormat():
 
 #===================================================== Scale & Denoise Image & GIF ========================================
 def Image_Gif_Scale_Denoise():
-	print('PS:In the new version, we merged the previous three modes.')
-	print('----------------------------------------------------------')
 	print("================= Scale & Denoise Image & GIF ================")
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder or a file")
@@ -365,7 +374,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 	Total_folder_num = len(inputPathList)
 	Finished_folder_num = 1
 	for inputPath in inputPathList:
-		Window_Title('  [Scale Images]  Folder: ('+str(Finished_folder_num)+'/'+str(Total_folder_num)+')')
+		Window_Title(Add_str_1 ='  [Scale Images]  Folder: ('+str(Finished_folder_num)+'/'+str(Total_folder_num)+')')
 		oldfilenumber=FileCount(inputPath)
 		scalepath = inputPath+"\\scaled_waifu2x\\"
 		orginalFileNameAndFullname = {}
@@ -374,25 +383,24 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				orginalFileNameAndFullname[fileName]= fileNameAndExt
 			break
-		if scale == '4':
+		
+		if os.path.exists(inputPath+"\\scaled_waifu2x\\") == True:
+			os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\\"+'"')
+		os.mkdir(inputPath+"\\scaled_waifu2x\\")
+		
+		if scale in ['4','8']:
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 1)
 			thread1.start()
 		else:
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 0)
 			thread1.start()
 		
-		if os.path.exists(inputPath+"\\scaled_waifu2x\\") == True:
-			os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\\"+'"')
-		os.mkdir(inputPath+"\\scaled_waifu2x\\")
-		
-		if scale == '4':
+		if scale in ['4','8']:
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
+			while thread1.isAlive():
+				time.sleep(1.1)
 			
 			for files in os.walk(scalepath):
 				for fileNameAndExt in files[2]:
@@ -409,18 +417,22 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 							old_file_list.append(os.path.splitext(fname)[0])
 					break
 			
+			old_file_list_prograsssbar=[]
+			for path,useless,fnames in os.walk(scalepath):
+					for fname in fnames:
+						old_file_list_prograsssbar.append(fname)
+					break
+			
 			thread_DelOldFileThread_4x=DelOldFileThread_4x(scalepath,old_file_list)
 			thread_DelOldFileThread_4x.start()
-			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2)
+			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 2,old_file_list_prograsssbar = old_file_list_prograsssbar)
 			thread1.start()
 			print('')
-			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
+			while thread1.isAlive():
+				time.sleep(1.1)
 			
 			while thread_DelOldFileThread_4x.isAlive():
 				time.sleep(1)
@@ -430,16 +442,50 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 					fileName=os.path.splitext(os.path.splitext(fileNameAndExt)[0])[0]
 					fileNameAndExt_new = orginalFileNameAndFullname[fileName]
 					os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt_new+".png"))
+		
+		if scale == '8':
+			
+			old_file_list=[]
+			for path,useless,fnames in os.walk(scalepath):
+					for fname in fnames:
+						f_name_ext = os.path.splitext(fname)[0]
+						f_name = os.path.splitext(fname)[0]
+						if f_name == f_name_ext:
+							old_file_list.append(os.path.splitext(fname)[0])
+					break
+			old_file_list_prograsssbar=[]
+			for path,useless,fnames in os.walk(scalepath):
+					for fname in fnames:
+						old_file_list_prograsssbar.append(fname)
+					break
+			
+			thread_DelOldFileThread_4x=DelOldFileThread_4x(scalepath,old_file_list)
+			thread_DelOldFileThread_4x.start()
+			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 3,old_file_list_prograsssbar=old_file_list_prograsssbar)
+			thread1.start()
+			
+			print('')
+			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			
+			while thread1.isAlive():
+				time.sleep(1.1)
+			
+			while thread_DelOldFileThread_4x.isAlive():
+				time.sleep(1)
+			
+			for files in os.walk(inputPath+'\\scaled_waifu2x\\'):
+				for fileNameAndExt in files[2]:
+					fileName_new = os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',fileName_new))
 			
 			
 		else:
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 		
-		if thread1.isAlive()==True:
-			time.sleep(2)
-			if thread1.isAlive()==True:
-				stop_thread(thread1)
+		while thread1.isAlive():
+			time.sleep(1.1)
 			
 		if saveAsJPG.lower() == 'y':
 			print('\n Convert image..... \n')
@@ -485,7 +531,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled_waifu2x\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\"")
 		Finished_folder_num = Finished_folder_num + 1
-	Window_Title('')
+	Window_Title('','')
 
 #=============================================  Process_ImageModeC  ======================================================
 
@@ -499,13 +545,18 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 		thread1=ClockThread(TotalFileNum,FinishedFileNum)
 		thread1.start()
 		
-		if scale == '4':
+		if scale in ['4','8']:
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-
+			print('')
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+		
+		if scale == '8':	
+			print('')
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+"_Waifu2x.png"+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+	
 		else:
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
@@ -546,7 +597,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 	Total_num = len(Gif_inputPathList_files)
 	finished_num = 1
 	for inputPath in Gif_inputPathList_files:
-		Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')')
+		Window_Title(Add_str_1 ='  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')')
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
 		TIME_GAP=getDuration(inputPath)
@@ -554,13 +605,6 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		splitGif(inputPath,scaledFilePath)
 		
 		oldfilenumber=FileCount(scaledFilePath+'_split')
-		
-		orginalFileNameAndFullname = {}
-		for files in os.walk(scaledFilePath+'_split'):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				orginalFileNameAndFullname[fileName]= fileNameAndExt
-			break
 				
 		scalepath = scaledFilePath+'_split\\scaled\\'
 		
@@ -569,15 +613,13 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		os.mkdir(scaledFilePath+'_split\\scaled')
 		
 		print('scal images.....')
-		if scale == '4': 
+		if scale in ['4','8']: 
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 1)
 			thread1.start()
 			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
+			while thread1.isAlive():
+				time.sleep(1.1)
 			
 			for files in os.walk(scalepath):
 				for fileNameAndExt in files[2]:
@@ -593,42 +635,79 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 						old_file_list.append(os.path.splitext(fname)[0])
 				break
 			
+			old_file_list_prograsssbar=[]
+			for path,useless,fnames in os.walk(scalepath):
+					for fname in fnames:
+						old_file_list_prograsssbar.append(fname)
+					break
+			
 			thread_DelOldFileThread_4x=DelOldFileThread_4x(scalepath,old_file_list)
 			thread_DelOldFileThread_4x.start()
-			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2)
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 2,old_file_list_prograsssbar=old_file_list_prograsssbar)
 			thread1.start()	
+			
 			print('')	
-			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			
+			while thread1.isAlive():
+				time.sleep(1.1)
+				
 			while thread_DelOldFileThread_4x.isAlive():
 				time.sleep(1)
 			
-			for files in os.walk(inputPath+'\\scaled\\'):
+			for files in os.walk(scalepath):
 				for fileNameAndExt in files[2]:
 					fileName=os.path.splitext(os.path.splitext(fileNameAndExt)[0])[0]
-					fileNameAndExt_new = orginalFileNameAndFullname[fileName]
-					os.rename(os.path.join(inputPath+'\\scaled\\',fileNameAndExt),os.path.join(inputPath+'\\scaled\\',fileNameAndExt_new+".png"))
+					os.rename(os.path.join(scalepath,fileNameAndExt),os.path.join(scalepath,fileName+'.png'))
+			print('')
+		if scale == '8':
+			old_file_list=[]
+			for path,useless,fnames in os.walk(scalepath):
+				for fname in fnames:
+					f_name_ext = os.path.splitext(fname)[0]
+					f_name = os.path.splitext(fname)[0]
+					if f_name == f_name_ext:
+						old_file_list.append(os.path.splitext(fname)[0])
+				break
+			old_file_list_prograsssbar=[]
+			for path,useless,fnames in os.walk(scalepath):
+					for fname in fnames:
+						old_file_list_prograsssbar.append(fname)
+					break
+			thread_DelOldFileThread_4x=DelOldFileThread_4x(scalepath,old_file_list)
+			thread_DelOldFileThread_4x.start()
+			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 3,old_file_list_prograsssbar = old_file_list_prograsssbar)
+			thread1.start()	
+			print('')	
+			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			
+			while thread1.isAlive():
+				time.sleep(1.1)
+				
+			while thread_DelOldFileThread_4x.isAlive():
+				time.sleep(1)
+			for files in os.walk(scalepath):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(os.path.splitext(fileNameAndExt)[0])[0]
+					os.rename(os.path.join(scalepath,fileNameAndExt),os.path.join(scalepath,fileName+'.png'))
+			
+			
 		else:
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 0)
 			thread1.start()
 			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread1.isAlive()==True:
-				time.sleep(2)
-				if thread1.isAlive()==True:
-					stop_thread(thread1)
+			
+			while thread1.isAlive():
+				time.sleep(1.1)
+				
+			for files in os.walk(scalepath):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(os.path.splitext(fileNameAndExt)[0])[0]
+					os.rename(os.path.join(scalepath,fileNameAndExt),os.path.join(scalepath,fileName+'.png'))
 		print('')	
-		
-		for files in os.walk(scaledFilePath+'_split\\scaled\\'):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
-				os.rename(os.path.join(scaledFilePath+'_split\\scaled\\',fileNameAndExt),os.path.join(scaledFilePath+'_split\\scaled\\',originalName+".png"))
-		orginalFileNameAndFullname = {}
 		
 		print('Assembling Gif.....')
 		assembleGif(scaledFilePath,TIME_GAP)
@@ -657,7 +736,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		else:
 			print('')
 		finished_num = finished_num+1
-	Window_Title('')
+	Window_Title('','')
 #============================================== DelOldFileThread_4x ===========================================
 class DelOldFileThread_4x(threading.Thread):
 	def __init__(self,inputpath,oldfile_list):
@@ -688,8 +767,6 @@ class DelOldFileThread_4x(threading.Thread):
 
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
-	print('PS:In the new version, we merged the previous three modes.')
-	print('----------------------------------------------------------')
 	print("================ Scale & Denoise Video ===============")
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder or a video file")
@@ -802,7 +879,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 	total_num = len(inputPathList_files)
 	finished_num = 1
 	for inputPath in inputPathList_files:
-		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
+		Window_Title(Add_str_1 ='  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
 		video2images(inputPath) #拆解视频
 		
 		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'
@@ -812,7 +889,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
 		os.mkdir(frames_dir+"\\scaled\\")
 		
-		if scale == '4':
+		if scale in ['4','8']:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
 			thread2.start()
 			thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
@@ -820,10 +897,9 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
-			if thread2.isAlive()==True:
-				time.sleep(2)
-				if thread2.isAlive()==True:
-					stop_thread(thread2)
+			while thread2.isAlive():
+				time.sleep(1.1)
+					
 			while thread_VideoDelFrameThread.isAlive():
 				time.sleep(1)
 			
@@ -846,16 +922,57 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
 			thread_VideoDelFrameThread_4x.start()
 			
-			thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2)
+			old_file_list_prograsssbar=[]
+			for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
+					for fname in fnames:
+						old_file_list_prograsssbar.append(fname)
+					break
+					
+			thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2,old_file_list_prograsssbar=old_file_list_prograsssbar)
 			thread2.start()
 			print('')
-			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'0'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
-			if thread2.isAlive()==True:
-				time.sleep(2)
-				if thread2.isAlive()==True:
-					stop_thread(thread2)
+			while thread2.isAlive():
+				time.sleep(1.1)
+					
+			while thread_VideoDelFrameThread_4x.isAlive():
+				time.sleep(1)
+			
+			for files in os.walk(frames_dir+"\\scaled"):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+		if scale == '8':
+			video_dir = os.path.dirname(inputPath)+'\\'
+			frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+			frame_list = []
+			for path,useless,fnames in os.walk(frames_scaled_dir):
+					for fname in fnames:
+						f_name_ext = os.path.splitext(fname)[0]
+						f_name = os.path.splitext(fname)[0]
+						if f_name == f_name_ext:
+							frame_list.append(os.path.splitext(fname)[0])
+					break
+			
+			thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
+			thread_VideoDelFrameThread_4x.start()
+			
+			old_file_list_prograsssbar=[]
+			for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
+					for fname in fnames:
+						old_file_list_prograsssbar.append(fname)
+					break
+					
+			thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 3,old_file_list_prograsssbar=old_file_list_prograsssbar)
+			thread2.start()
+			print('')
+			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			
+			while thread2.isAlive():
+				time.sleep(1.1)
 					
 			while thread_VideoDelFrameThread_4x.isAlive():
 				time.sleep(1)
@@ -872,12 +989,13 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			thread_VideoDelFrameThread.start()
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			if thread2.isAlive()==True:
-				time.sleep(2)
-				if thread2.isAlive()==True:
-					stop_thread(thread2)
+			
+			while thread2.isAlive():
+				time.sleep(1.1)
+			
 			while thread_VideoDelFrameThread.isAlive():
 				time.sleep(1)
+			
 			for files in os.walk(frames_dir+"\\scaled"):
 				for fileNameAndExt in files[2]:
 					fileName=os.path.splitext(fileNameAndExt)[0]
@@ -893,11 +1011,9 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')	
 		finished_num = finished_num+1
-	Window_Title('')
+	Window_Title('','')
 #============================= Compress_image_gif ===============================
 def Compress_image_gif():
-	print('PS:In the new version, we merged the previous three modes.')
-	print('----------------------------------------------------------')
 	print("================= Compress image & gif ================")
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder or a file")
@@ -1102,18 +1218,19 @@ def FileCount(countPath):
 	return file_count
 
 class PrograssBarThread (threading.Thread):
-    def __init__(self, OldFileNum, ScalePath, scale = '2', round_ = 0):
+    def __init__(self, OldFileNum, ScalePath, scale = '2', round_ = 0, old_file_list_prograsssbar = []):
         threading.Thread.__init__(self)
         self.OldFileNum = OldFileNum
         self.ScalePath = ScalePath
         self.scale = scale
         self.round_ = round_
+        self.old_file_list_prograsssbar = old_file_list_prograsssbar
     def run(self):
-        PrograssBar(self.OldFileNum,self.ScalePath,self.scale,self.round_)
+        PrograssBar(self.OldFileNum,self.ScalePath,self.scale,self.round_,self.old_file_list_prograsssbar)
 
 
-def PrograssBar(OldFileNum,ScalePath,scale,round_):
-	Eta = 0
+def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
+	ETA = 0
 	NewFileNum_Old=0
 	PrograssBar_len_old = 0
 	if OldFileNum != 0:
@@ -1123,12 +1240,10 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 		print('\n')
 		while NewFileNum <= OldFileNum and os.path.exists(ScalePath):
 			NewFileNum=0
-			if round_ == 2:
+			if round_ > 1:
 				for path,useless,fnames in os.walk(ScalePath):
-					for f_name_ext_ext in fnames:
-						f_name_ext = os.path.splitext(f_name_ext_ext)[0]
-						f_name = os.path.splitext(f_name_ext)[0]
-						if f_name_ext != f_name:
+					for fname in fnames:
+						if fname not in old_file_list_prograsssbar:
 							NewFileNum = NewFileNum+1
 					break
 			else:
@@ -1154,36 +1269,52 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_):
 			if NewFileNum > 0:
 				if NewFileNum > NewFileNum_Old:
 					avgTimeCost = int(time_now-time_start)/NewFileNum
-					Eta = int(avgTimeCost*(OldFileNum-NewFileNum))
+					ETA = int(avgTimeCost*(OldFileNum-NewFileNum))
 					NewFileNum_Old = NewFileNum
-			if Eta != 0:
-				if Eta > 1:
-					Eta=Eta-1
-				if scale == '4':
-					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+"  "+"["+'ETA: '+Seconds2hms(Eta)+" ]"
+			
+			if ETA != 0:
+				if ETA > 1:
+					ETA=ETA-1
+				ETA_str = time.strftime('%H:%M:%S', time.localtime(time.time()+ETA))
+				if scale in ['4','8']:
+					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"+" "+"["+'Time Remaining: '+Seconds2hms(ETA)+" ] "+'[ETA: '+ETA_str+' ]'
 				else:
-					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"+"  "+"["+'ETA: '+Seconds2hms(Eta)+" ]"
+					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"+"  "+"["+'Time Remaining: '+Seconds2hms(ETA)+" ] "+'[ETA: '+ETA_str+' ]'
 				PrograssBar_len_new = len(PrograssBar)
 				Add_len = PrograssBar_len_old - PrograssBar_len_new
 				if Add_len < 0:
 					Add_len = 0
+				
+				current_cols = Get_cols_lines()[0]
+				if (PrograssBar_len_new+Add_len) > current_cols:
+					Set_cols_lines(cols = PrograssBar_len_new+Add_len+1,lines=38)
+					time.sleep(0.1)
+					
 				PrograssBar_len_old = PrograssBar_len_new
 				sys.stdout.write(PrograssBar+' '*Add_len)
 				sys.stdout.flush()
 					
 				
 			else:
-				if scale == '4':
-					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"
+				if scale in ['4','8']:
+					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"
 				else:
-					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time cost: '+timeCost_str+" ]"
+					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"
 				PrograssBar_len_new = len(PrograssBar)
 				Add_len = PrograssBar_len_old - PrograssBar_len_new
 				if Add_len < 0:
 					Add_len = 0
+				
+				current_cols = Get_cols_lines()[0]
+				if (PrograssBar_len_new+Add_len) > current_cols:
+					Set_cols_lines(cols = PrograssBar_len_new+Add_len+1,lines=38)
+					time.sleep(0.1)
+				
 				PrograssBar_len_old = PrograssBar_len_new
 				sys.stdout.write(PrograssBar+' '*Add_len)
 				sys.stdout.flush()
+			if NewFileNum == OldFileNum:
+				return 0
 			time.sleep(1)
 			
 #====================================== Clock ==================================
@@ -1200,12 +1331,25 @@ def Clock(TotalFileNum,FinishedFileNum):
 	startTime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 	image_time_start = time.time()
 	time.sleep(2)
+	clockStr_len_old = 0
 	while True:
 		image_time_now = time.time()
 		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 		timeCost = int(image_time_now-image_time_start)
 		clockStr = "\r"+"Prograss:("+str(FinishedFileNum)+'/'+str(TotalFileNum)+") "+"["+startTime+"]--->["+timeStr+"] = "+Seconds2hms(timeCost)
-		sys.stdout.write(clockStr)
+		
+		clockStr_len_new = len(clockStr)
+		Add_len = clockStr_len_old - clockStr_len_new
+		if Add_len < 0:
+			Add_len = 0
+		clockStr_len_old = clockStr_len_new
+		
+		current_cols = Get_cols_lines()[0]
+		if (clockStr_len_new+Add_len) > current_cols:
+			Set_cols_lines(cols = clockStr_len_new+Add_len+1,lines=38)
+			time.sleep(0.1)
+		
+		sys.stdout.write(clockStr+' '*Add_len)
 		sys.stdout.flush()
 		time.sleep(1)
 			
@@ -1421,8 +1565,8 @@ def input_scale():
 	default_value = settings_values['scale']
 
 	while True:
-		scale = input('Scale ratio(1/2/4/help, default='+default_value+'): ').strip(' ').lower()
-		if scale in ['1','2','4','','r']:
+		scale = input('Scale ratio(1/2/4/8/help, default='+default_value+'): ').strip(' ').lower()
+		if scale in ['1','2','4','8','','r']:
 			break
 		elif scale == 'help':
 			print('------------------------------------------')
@@ -1854,19 +1998,24 @@ def Settings():
 		print(' 4: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
 		print(' 5: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
 		print(' 6: Image quality ( When compress images ). Current default value: ',settings_values['image_quality'],'\n')
-		print(' 7: Number of threads ( Scale & Denoise ). Current default value: ',settings_values['Number_of_threads'],'\n')
-		print(' 8: Reset error log.\n')
-		print(' 9: Show settings_values.\n')
-		print(' 10: Change interface color.\n')
+		print(' 7: Number of threads ( Scale & Denoise ). Current value: ',settings_values['Number_of_threads'],'\n')
+		print(' 8: Change interface color.\n')
+		print(' 9: Reset error log.\n')
+		print(' 10: Show settings_values.\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
 		mode = input('(1/2/3/..../r): '.upper())
 		mode = mode.lower()
 		if mode == "1":
 			os.system('cls')
-			
+			print('----------------------------------------------------------------------------------------')
+			print('The software\'s update strategy is to use multiple small updates')
+			print('to continuously improve all aspects of the software,')
+			print('rather than releasing a major update every once in a while.')
+			print('So we recommend that you turn on automatic check for updates to improve your experience.')
+			print('----------------------------------------------------------------------------------------')
 			while True:
-				value_ = input('New value(y/n): ').lower()
+				value_ = input('Check for updates at startup? (y/n): ').lower()
 				if value_ in ['y','n']:
 					break
 				else:
@@ -1882,7 +2031,7 @@ def Settings():
 			os.system('cls')
 			
 			while True:
-				value_ = input('New value(1/2/4): ').lower()
+				value_ = input('Default value of "Scale ratio" (1/2/4): ').lower()
 				if value_ in ['1','2','4']:
 					break
 				else:
@@ -1898,7 +2047,7 @@ def Settings():
 			os.system('cls')
 			
 			while True:
-				value_ = input('New value(-1/0/1/2/3): ').lower()
+				value_ = input('Default value of "Denoise Level" (-1/0/1/2/3): ').lower()
 				if value_ in ['-1','0','1','2','3']:
 					break
 				else:
@@ -1914,7 +2063,7 @@ def Settings():
 			os.system('cls')
 			
 			while True:
-				value_ = input('New value(y/n): ').lower()
+				value_ = input('Delete original files when finished? (y/n): ').lower()
 				if value_ in ['y','n']:
 					break
 				else:
@@ -1930,7 +2079,7 @@ def Settings():
 			os.system('cls')
 			
 			while True:
-				value_ = input('New value(1/2/3/4): ').lower()
+				value_ = input('Default value of gif compress level (1/2/3/4): ').lower()
 				if value_ in ['1','2','3','4']:
 					break
 				else:
@@ -1945,7 +2094,7 @@ def Settings():
 		elif mode == "6":
 			os.system('cls')
 			while True:
-				image_quality = input('New value ( 100 ~ 1 ): ').strip(' ')
+				image_quality = input('Default value of image quality ( When compress images ) ( 100 ~ 1 ): ').strip(' ')
 				if image_quality.isdigit():
 					if int(image_quality) >= 1 and int(image_quality) <= 100:
 						break
@@ -1987,6 +2136,11 @@ def Settings():
 		
 		elif mode == "8":
 			os.system('cls')
+			Set_default_color()
+			os.system('cls')
+		
+		elif mode == "9":
+			os.system('cls')
 			
 			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
 				f.write('')
@@ -1999,20 +2153,17 @@ def Settings():
 			
 			os.system('cls')
 		
-		elif mode == "9":
+		elif mode == "10":
 			os.system('cls')
 			
 			for key,val in settings_values.items():
-				print(key+' : '+val)
+				print(str(key)+' : '+str(val))
 			print('--------------------------')
 			input('press Enter key to return.')
 			
 			os.system('cls')
 			
-		elif mode == "10":
-			os.system('cls')
-			Set_default_color()
-			os.system('cls')
+		
 		
 		
 		elif mode == "r":
@@ -2028,11 +2179,12 @@ def Settings():
 			os.system('cls')
 
 def ReadSettings():
-	default_values = {'SettingVersion':'3','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+	default_values = {'SettingVersion':'4','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
-						'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2'}
+						'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
+						'cols_resize':140,'lines_resize':38}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -2226,9 +2378,10 @@ class ResizeWindow_Thread(threading.Thread):
 		ResizeWindow()
 
 def ResizeWindow():
-	cols = 145
-	lines = 38
 	while True:
+		settings_values = ReadSettings()
+		cols = settings_values['cols_resize']
+		lines = settings_values['lines_resize']
 		h = ctypes.windll.kernel32.GetStdHandle(-12)
 		csbi = ctypes.create_string_buffer(22)
 		res = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(h, csbi)
@@ -2239,10 +2392,24 @@ def ResizeWindow():
 			sizex = right - left + 1
 			sizey = bottom - top + 1
 			if sizex != cols or sizey != lines:
-				os.system('Resize-window.exe 145 38')
+				os.system('Resize-window.exe '+str(cols)+' '+str(lines))
 		else:
-			os.system('Resize-window.exe 145 38')
+			os.system('Resize-window.exe '+str(cols)+' '+str(lines))
 		time.sleep(0.2)
+
+def Set_cols_lines(cols,lines):
+	settings_values = ReadSettings()
+	settings_values['cols_resize'] = cols
+	settings_values['lines_resize'] = lines
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
+	return 0
+
+def Get_cols_lines():
+	settings_values = ReadSettings()
+	cols = settings_values['cols_resize']
+	lines = settings_values['lines_resize']
+	return [cols,lines]
 
 	
 #=============================== Benchmark =============================
@@ -2255,7 +2422,7 @@ def Benchmark():
 		return 0
 	wait_to_cool_time=int(input('How many seconds do you wanna wait to cool your computer during the test: '))
 	
-	Window_Title('[Running benchmark]')
+	Window_Title(Add_str_1 ='[Running benchmark]')
 	print('-------------------------------------------------------')
 	print('This benchmark is gonna take a while, pls wait.....')
 	print('-------------------------------------------------------')
@@ -2307,7 +2474,7 @@ def Benchmark():
 	if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-	Window_Title('')
+	Window_Title('','')
 	print('==================================================================')
 	print('The best value of "tile size" of your computer is:',old_tileSize)
 	if input('Do you wanna use the result value? (y/n): ').lower().strip(' ') != 'y':
@@ -2461,8 +2628,8 @@ def View_GPU_ID_start():
 	return gpuId_list
 	
 #=============================== Default Window Title =================
-def Window_Title(Add_str = ''):
-	os.system('title = Waifu2x-Extension '+Version_current+' by Aaron Feng '+Add_str)
+def Window_Title(Add_str_1 = '',Add_str_2 = ''):
+	os.system('title = Waifu2x-Extension '+Version_current+' by Aaron Feng '+Add_str_1+' '+Add_str_2)
 
 #============================================  Deduplicate_list  ===================================
 
@@ -2526,7 +2693,7 @@ def Set_default_color():
 #==========================================  Init  ==================================================================
 
 def init():		#初始化函数
-	Window_Title('')	#更改控制台标题
+	Window_Title('','')	#更改控制台标题
 	ChangeColor_default()	#更改文字颜色
 	
 	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
@@ -2551,12 +2718,16 @@ def init():		#初始化函数
 				print('------------------------------------------------------------')
 				input('Press Enter to continue.')
 		os.system('cls')
+		
 		thread_resizeWindow=ResizeWindow_Thread()
 		thread_resizeWindow.start()
-		time.sleep(0.2)
+		time.sleep(0.1)
+		
 		ChooseFormat()
+		
 		if thread_resizeWindow.isAlive()==True:
 			stop_thread(thread_resizeWindow)
+			
 	else:
 		os.system('cls')
 		print('-'*40)
