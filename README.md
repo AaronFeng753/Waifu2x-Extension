@@ -1,6 +1,5 @@
 #### 中文版说明:https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README-CN.md
 # Waifu2x-Extension
-
 # What is Waifu2x-Extension?
 Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutional Neural Networks.
 
