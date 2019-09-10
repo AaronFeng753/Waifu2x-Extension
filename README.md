@@ -48,7 +48,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 #### Original GIF 500 x 372 (493 KB):
 ![Original GIF](/Samples/gif/2_original.gif)
 
-#### After 2x magnification, level 2 denoise and gif optimize 1000 x 744 (3.86 MB):
+#### After 2x magnification, level 2 denoise and gif optimize 1000 x 744 (3.91 MB):
 ![Original GIF](/Samples/gif/2_waifu2x_compressed.gif)
 
 # Screenshot
@@ -114,6 +114,12 @@ https://www.lcdf.org/gifsicle/
 
 #### 8倍放大以及3级降噪后 3840x2400 (.jpg 525 KB):
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[3840x2400].jpg)
+
+#### 原GIF 500 x 372 (493 KB):
+![Original GIF](/Samples/gif/2_original.gif)
+
+#### 经过2倍放大, 2级降噪以及gif优化处理后 1000 x 744 (3.91 MB):
+![Original GIF](/Samples/gif/2_waifu2x_compressed.gif)
 
 # 截图
 ![mainmenu](/screenshot/mainmenu.png) 
