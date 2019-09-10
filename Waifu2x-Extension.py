@@ -374,7 +374,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 	Total_folder_num = len(inputPathList)
 	Finished_folder_num = 1
 	for inputPath in inputPathList:
-		Window_Title(Add_str_1 ='  [Scale Images]  Folder: ('+str(Finished_folder_num)+'/'+str(Total_folder_num)+')')
+		Window_Title('  [Scale Images]  Folder: ('+str(Finished_folder_num)+'/'+str(Total_folder_num)+')')
 		oldfilenumber=FileCount(inputPath)
 		scalepath = inputPath+"\\scaled_waifu2x\\"
 		orginalFileNameAndFullname = {}
@@ -531,7 +531,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled_waifu2x\\*.*\" \""+inputPath+"\"")
 		os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\"")
 		Finished_folder_num = Finished_folder_num + 1
-	Window_Title('','')
+	Window_Title('')
 
 #=============================================  Process_ImageModeC  ======================================================
 
@@ -597,7 +597,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 	Total_num = len(Gif_inputPathList_files)
 	finished_num = 1
 	for inputPath in Gif_inputPathList_files:
-		Window_Title(Add_str_1 ='  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')')
+		Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')')
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
 		TIME_GAP=getDuration(inputPath)
@@ -736,7 +736,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		else:
 			print('')
 		finished_num = finished_num+1
-	Window_Title('','')
+	Window_Title('')
 #============================================== DelOldFileThread_4x ===========================================
 class DelOldFileThread_4x(threading.Thread):
 	def __init__(self,inputpath,oldfile_list):
@@ -879,7 +879,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 	total_num = len(inputPathList_files)
 	finished_num = 1
 	for inputPath in inputPathList_files:
-		Window_Title(Add_str_1 ='  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
+		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
 		video2images(inputPath) #拆解视频
 		
 		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'
@@ -1011,7 +1011,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		if delorginal.lower() == 'y':
 			os.system('del /q "'+inputPath+'"')	
 		finished_num = finished_num+1
-	Window_Title('','')
+	Window_Title('')
 #============================= Compress_image_gif ===============================
 def Compress_image_gif():
 	print("================= Compress image & gif ================")
@@ -2422,7 +2422,7 @@ def Benchmark():
 		return 0
 	wait_to_cool_time=int(input('How many seconds do you wanna wait to cool your computer during the test: '))
 	
-	Window_Title(Add_str_1 ='[Running benchmark]')
+	Window_Title('[Running benchmark]')
 	print('-------------------------------------------------------')
 	print('This benchmark is gonna take a while, pls wait.....')
 	print('-------------------------------------------------------')
@@ -2474,7 +2474,7 @@ def Benchmark():
 	if notificationSound.lower() == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
-	Window_Title('','')
+	Window_Title('')
 	print('==================================================================')
 	print('The best value of "tile size" of your computer is:',old_tileSize)
 	if input('Do you wanna use the result value? (y/n): ').lower().strip(' ') != 'y':
@@ -2628,8 +2628,8 @@ def View_GPU_ID_start():
 	return gpuId_list
 	
 #=============================== Default Window Title =================
-def Window_Title(Add_str_1 = '',Add_str_2 = ''):
-	os.system('title = Waifu2x-Extension '+Version_current+' by Aaron Feng '+Add_str_1+' '+Add_str_2)
+def Window_Title(Add_str = ''):
+	os.system('title = Waifu2x-Extension '+Version_current+' by Aaron Feng '+Add_str)
 
 #============================================  Deduplicate_list  ===================================
 
@@ -2693,7 +2693,7 @@ def Set_default_color():
 #==========================================  Init  ==================================================================
 
 def init():		#初始化函数
-	Window_Title('','')	#更改控制台标题
+	Window_Title('')	#更改控制台标题
 	ChangeColor_default()	#更改文字颜色
 	
 	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
