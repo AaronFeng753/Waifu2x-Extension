@@ -12,7 +12,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 # Features
 ### New features brought by this extension:
 - More friendly way of interacting
-- Support 4x & 8x magnification
+- Support 1x/2x/4x/8x magnification
 - Batch zoom in still images and GIF dynamic images
 - Batch enlarge video files
 - Personalization
@@ -76,7 +76,7 @@ https://www.lcdf.org/gifsicle/
 ### 扩展带来的新功能有:
 
 - 更友好的交互方式
-- 支持 4倍 & 8倍 放大
+- 支持 1x/2x/4x/8x 放大
 - 批量放大静态图片与GIF动态图片
 - 批量放大视频文件
 - 个性化设置
