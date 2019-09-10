@@ -68,7 +68,7 @@ https://www.lcdf.org/gifsicle/
 
 基于waifu2x-ncnn-vulkan.
 
-借助于waifu2x-ncnn-vulkan, Waifu2x-Extension可以借助任何支持vulkan的显卡进行运算, 即便是Intel集成显卡.
+借助于waifu2x-ncnn-vulkan, Waifu2x-Extension可以借助任何支持`Vulkan`的显卡进行运算, 即便是Intel集成显卡.
 
 已经在 `AMD` RX550, `Intel` UHD 620 和 `NVIDIA` GeForce GTX 1070 上通过测试.
 
