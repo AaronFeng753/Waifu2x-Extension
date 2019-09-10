@@ -42,7 +42,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 #### Original Imgae 480x300:
 ![Original Imgae](/Samples/image/Original_[480x300].jpg)
 
-#### After 8x magnification 3840x2400:
+#### After 8x magnification and level 3 denoise 3840x2400:
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[3840x2400].jpg)
 
 # Screenshot
@@ -106,7 +106,7 @@ https://www.lcdf.org/gifsicle/
 #### 原图 480x300:
 ![Original Imgae](/Samples/image/Original_[480x300].jpg)
 
-#### 8倍放大后 3840x2400:
+#### 8倍放大以及3级降噪后 3840x2400:
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[3840x2400].jpg)
 
 # 截图
