@@ -42,7 +42,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 #### Original Imgae 480x300 (.jpg 93.2 KB):
 ![Original Imgae](/Samples/image/Original_[480x300].jpg)
 
-#### After 8x magnification and level 3 denoise 3840x2400 (.jpg 525 KB):
+#### After 8x magnification, level 3 denoise and compress 3840x2400 (.jpg 525 KB):
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[3840x2400].jpg)
 
 #### Original GIF 500 x 372 (493 KB):
