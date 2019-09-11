@@ -4,9 +4,14 @@
 '''
 
 waifu2x-ncnn-vulkan version 20190712
+Anime4K Java v0.9 Beta
+ffmpeg version 4.2
+gifsicle version 1.92
 
 更新日志
-- 
+- 集成Anime4k, 用于放大视频(实验性)
+你可以在设置选项中更改'Video scale mode'来启用Anime4k
+- 删除部分冗余代码
 
 '''
 
@@ -14,7 +19,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v2.9'
+Version_current='v2.95'
 
 import time
 import threading
@@ -55,7 +60,15 @@ def ChooseFormat():
 	
 	optimizeGif = '[ '+settings_values['optimizeGif']+' ]' 
 	
+	Video_str = 'Scale & Denoise Video.'
+	
+	if settings_values['Video_scale_mode'] == 'anime4k':
+		Video_str = 'Scale Video.(Anime4k) '
+	else:
+		Video_str = 'Scale & Denoise Video.'
+	
 	while True:
+		
 		Set_cols_lines(65,37)
 		Set_cols_lines(66,38)
 		print('┌──────────────────────────────────────────────────────────────┐')
@@ -66,7 +79,7 @@ def ChooseFormat():
 		print("│ Attention: This software's scale & denoise function is only  │")
 		print('│ designed for process Anime-style art (Image,GIF,Video).      │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ 1 : Scale & Denoise Image & GIF.  2 : Scale & Denoise Video. │')
+		print('│ 1 : Scale & Denoise Image & GIF.  2 : '+Video_str+' │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ 3 : Compress Image & GIF.                                    │')
 		print('├──────────────────────────────────────────────────────────────┤')
@@ -102,7 +115,13 @@ def ChooseFormat():
 			
 		elif mode == "2":
 			os.system('cls')
-			Scale_Denoise_Video()
+			
+			settings_values = ReadSettings()
+			if settings_values['Video_scale_mode'] == 'anime4k':
+				Scale_Denoise_Video_Anime4K()
+			else:
+				Scale_Denoise_Video()
+				
 			os.system('cls')
 			
 		elif mode == "3":
@@ -158,6 +177,12 @@ def ChooseFormat():
 		elif mode == "11":
 			os.system('cls')
 			Settings()
+			settings_values = ReadSettings()
+			if settings_values['Video_scale_mode'] == 'anime4k':
+				Video_str = 'Scale Video.          '
+			else:
+				Video_str = 'Scale & Denoise Video.'
+				
 			os.system('cls')
 			
 		elif mode == "12":
@@ -768,7 +793,7 @@ class DelOldFileThread_4x(threading.Thread):
 
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
-	print("================ Scale & Denoise Video ===============")
+	print("================ Scale & Denoise Video - Waifu2x ===============")
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder or a video file")
 	print("Scaled files will be in the input-path \n")
@@ -1013,6 +1038,186 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			os.system('del /q "'+inputPath+'"')	
 		finished_num = finished_num+1
 	Window_Title('')
+
+#=============================================  Scale & Denoise Video - Anime4K  ====================================
+def Scale_Denoise_Video_Anime4K():
+	print('')
+	print('              !!! This is an Experimental Function !!! \n')
+	print("======================== Scale Video - Anime4K =======================")
+	print("Type 'r' to return to the previous menu")
+	print("Type 'o' to stop input more path, and input path must be a folder or a video file")
+	print("Scaled files will be in the input-path \n")
+	settings_values = ReadSettings()
+	inputPathOver = True
+	inputPathList = []
+
+	while inputPathOver:
+		inputPathError = True
+		while inputPathError:
+			inputPath = input('input-path: ')
+			inputPath=inputPath.strip('"').strip('\\').strip(' ')
+			
+			if inputPath.lower() == 'o':
+				inputPathOver = False
+				inputPathError = False
+				break
+			elif inputPath.lower() == 'r':
+				return 1
+			elif inputPath == '' or os.path.exists(inputPath) == False:
+				print('-----------------------------')
+				print('Error,input-path is invalid!!')
+				print('-----------------------------')
+			else:
+				inputPathError = False
+		if inputPathOver == True:
+			inputPathList.append(inputPath)
+	inputPathList = Deduplicate_list(inputPathList)
+	
+	pathlist_files_folder = Separate_files_folder(inputPathList)
+	
+	inputPathList_files = pathlist_files_folder[0]
+	inputPathList_folders = pathlist_files_folder[1]
+	scan_subfolders = 'n'
+	if inputPathList_folders != []:
+		scan_subfolders = input_scan_subfolders()
+		if scan_subfolders.lower() == 'r':
+			return 1
+	
+	if scan_subfolders.lower() == 'y':
+		subfolders_list = []
+		for inputPathList_folders_folder_scan in inputPathList_folders:
+			for path_scansub,useless,filename in os.walk(inputPathList_folders_folder_scan):
+				for dirs in os.walk(path_scansub):
+					subfolders_list.append(str(dirs[0]))
+				break
+		inputPathList_folders = subfolders_list
+	
+	scale = input_scale_Anime4k()
+	if scale.lower() == 'r':
+		return 1
+
+	notificationSound = settings_values['notificationSound']
+		
+	delorginal = input_delorginal()
+	if delorginal.lower() == 'r':
+		return 1
+		
+	turnoff = input_turnoff()
+	if turnoff.lower() == 'r':
+		return 1
+		
+	print('--------------------------------------------')
+	
+	total_time_start=time.time()
+	 
+	inputPathList_file_video = []
+	for folders in inputPathList_folders:
+		for path,useless,fnames in os.walk(folders):
+			for fname in fnames:
+				inputPathList_file_video.append(path+'\\'+fname)
+			break
+	inputPathList_files = inputPathList_file_video + inputPathList_files
+	process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal)
+	total_time_end=time.time()
+	
+	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
+	if turnoff.lower()=='y':
+		os.system('shutdown -s')
+	if notificationSound.lower() == 'y':
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
+	input('\npress Enter key to exit')
+
+#======================================= process_video_modeABC_Anime4K ============================
+
+class Video_scale_Anime4K_Thread (threading.Thread):
+	def __init__(self,frame,out_path,scale):
+		threading.Thread.__init__(self)
+		self.frame = frame
+		self.out_path =out_path
+		self.scale =scale
+        
+	def run(self):
+		frame = self.frame
+		out_path = self.out_path
+		scale=self.scale
+		
+		fram_fname = frame.split("\\")[-1]
+		os.system('java -jar Anime4K\\Anime4K.jar "'+frame+'" "'+out_path+'\\'+fram_fname+'.png" '+scale)
+
+def Video_scale_Anime4K(in_path,out_path,scale):
+	
+	max_threads = cpu_count()
+	
+	thread_files = []
+	
+	Frame_list = []
+	for path,useless,fnames in os.walk(in_path):
+		for fname in fnames:
+			Frame_list.append(path+'\\'+fname)
+		break
+	for frame in Frame_list:
+		thread_files.append(frame)
+		if len(thread_files) == max_threads:
+			for frame in thread_files:
+				thread1=Video_scale_Anime4K_Thread(frame,out_path,scale)
+				thread1.start()
+			while True:
+				if thread1.isAlive()== False:
+					break
+			thread_files = []
+	if thread_files != []:
+		for frame in thread_files:
+			thread1=Video_scale_Anime4K_Thread(frame,out_path,scale)
+			thread1.start()
+		while True:
+			if thread1.isAlive()== False:
+				break
+		thread_files = []
+
+def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
+	total_num = len(inputPathList_files)
+	finished_num = 1
+	for inputPath in inputPathList_files:
+		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
+		video2images(inputPath) #拆解视频
+		
+		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'
+		
+		oldfilenumber=FileCount(frames_dir)
+		if os.path.exists(frames_dir+"\\scaled\\") == True:
+			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
+		os.mkdir(frames_dir+"\\scaled\\")
+			
+		thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+		thread2.start()
+		thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+		thread_VideoDelFrameThread.start()
+		Video_scale_Anime4K(frames_dir,frames_dir+"\\scaled",scale)
+		
+		while thread2.isAlive():
+			time.sleep(1.1)
+		
+		while thread_VideoDelFrameThread.isAlive():
+			time.sleep(1)
+		
+		for files in os.walk(frames_dir+"\\scaled"):
+			for fileNameAndExt in files[2]:
+				fileName=os.path.splitext(fileNameAndExt)[0]
+				os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+		
+		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+		
+	
+				
+		if os.path.splitext(inputPath)[1] != '.mp4':
+			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
+			
+		if delorginal.lower() == 'y':
+			os.system('del /q "'+inputPath+'"')	
+		finished_num = finished_num+1
+	Window_Title('')
+
 #============================= Compress_image_gif ===============================
 def Compress_image_gif():
 	print("================= Compress image & gif ================")
@@ -1277,7 +1482,7 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 				if ETA > 1:
 					ETA=ETA-1
 				ETA_str = time.strftime('%H:%M:%S', time.localtime(time.time()+ETA))
-				if scale in ['4','8']:
+				if scale in ['4','8'] and round_ != 0:
 					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"+" "+"["+'Time Remaining: '+Seconds2hms(ETA)+" ] "+'[ETA: '+ETA_str+' ]'
 				else:
 					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"+"  "+"["+'Time Remaining: '+Seconds2hms(ETA)+" ] "+'[ETA: '+ETA_str+' ]'
@@ -1296,7 +1501,7 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					
 				
 			else:
-				if scale in ['4','8']:
+				if scale in ['4','8'] and round_ != 0:
 					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"
 				else:
 					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"
@@ -1557,8 +1762,30 @@ def input_scale():
 	
 	if scale == '':
 		scale = default_value
-	elif scale == '1':
-		models = 'models-cunet'
+
+	return scale
+
+def input_scale_Anime4k():
+	settings_values = ReadSettings()
+	default_value = settings_values['scale']
+
+	while True:
+		scale = input('Scale ratio(2/3/4/.../help, default='+default_value+'): ').strip(' ').lower()
+		if scale.isdigit():
+			if int(scale) > 1:
+				return str(int(scale))
+		elif scale == 'r':
+			break
+		elif scale == 'help':
+			print('------------------------------------------')
+			print('Scale ratio : Magnification of the picture')
+			print('------------------------------------------')
+			print('')
+		else:
+			print('Error : wrong input, pls input again')
+	
+	if scale == '':
+		scale = default_value
 	return scale
 	
 def input_tileSize():
@@ -1971,16 +2198,17 @@ def Settings():
 			settings_values = json.load(f)
 		print('                                  Settings')
 		print('-----------------------------------------------------------------------------')
-		print(' 1: Check for updates at startup. Current value: '+settings_values['CheckUpdate']+'\n')
-		print(' 2: Default value of "Scale ratio". Current value: '+settings_values['scale']+'\n')
-		print(' 3: Default value of "Denoise Level". Current value: '+settings_values['noiseLevel']+'\n')
-		print(' 4: Delete original files when finished? Current default value: '+settings_values['delorginal']+'\n')
-		print(' 5: Gif compress level. Current default value: '+settings_values['gifCompresslevel']+'\n')
-		print(' 6: Image quality ( When compress images ). Current default value: ',settings_values['image_quality'],'\n')
-		print(' 7: Number of threads ( Scale & Denoise ). Current value: ',settings_values['Number_of_threads'],'\n')
-		print(' 8: Change interface color.\n')
-		print(' 9: Reset error log.\n')
-		print(' 10: Show settings_values.\n')
+		print(' 1: Check for updates at startup. Current value: [ '+settings_values['CheckUpdate']+' ]\n')
+		print(' 2: Default value of "Scale ratio". Current value: [ '+settings_values['scale']+' ]\n')
+		print(' 3: Default value of "Denoise Level". Current value: [ '+settings_values['noiseLevel']+' ]\n')
+		print(' 4: Delete original files when finished? Current default value: [ '+settings_values['delorginal']+' ]\n')
+		print(' 5: Gif compress level. Current default value: [ '+settings_values['gifCompresslevel']+' ]\n')
+		print(' 6: Image quality ( When compress images ). Current default value: [ ',settings_values['image_quality'],' ]\n')
+		print(' 7: Number of threads ( Scale & Denoise ). Current value: [ ',settings_values['Number_of_threads'],' ]\n')
+		print(' 8: Video scale mode. Current value: [ ',settings_values['Video_scale_mode'],' ]\n')
+		print(' 9: Change interface color.\n')
+		print(' 10: Reset error log.\n')
+		print(' 11: Show settings_values.\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
 		mode = input('(1/2/3/..../r): '.upper())
@@ -2114,11 +2342,57 @@ def Settings():
 			os.system('cls')
 		
 		elif mode == "8":
+			
+			
+			os.system('cls')
+			
+			while True:
+				value_ = input('Video scale mode (Waifu2x/Anime4k): ').lower().strip(' ')
+				if value_ in ['waifu2x','anime4k']:
+					break
+				else:
+					print('invalid value, pls input again')
+			if value_ == 'anime4k':
+				os.system('cls')
+				ChangeColor_warning()
+				print('                               !! ATTENTION !!\n')
+				print('=========================================================================================\n')
+				print('Anime4k dosen\'t support denoise and won\'t improve image quilty as much as Waifu2x.\n')
+				print('Therefore, even this program support Anime4k, we don\'t recommand you to use it.\n')
+				print('But Anime4k is faster than Waifu2x, so if you think speed is more important then quality,\n')
+				print('then feel free to use it.\n')
+				print('=========================================================================================\n')
+				input('Press Enter to continue')
+				
+				os.system('cls')
+				print('                               !! ATTENTION !!\n')
+				print('=========================================================================================\n')
+				print('This program uses the Java version of Anime4k.\n')
+				print('So there may be compatibility issues.\n')
+				print('To solve these issues, we recommend that you follow these steps:\n')
+				print('(if compatibility issues occured)\n')
+				print('1. Install the latest version of JDK and JRE\n')
+				print('2. Try to enlarge the video using Anime4k mode\n')
+				print('3. If Anime4k still doesn\'t work, re-compile Anime4k yourself and try again\n')
+				print('Installation of the JDK and the JRE on Microsoft Windows Platforms:')
+				print('https://docs.oracle.com/javase/10/install/installation-jdk-and-jre-microsoft-windows-platforms.htm \n')
+				print('Anime4K :')
+				print('https://github.com/bloc97/Anime4K \n')
+				print('=========================================================================================\n')
+				input('Press Enter to continue')
+				ChangeColor_default()
+			settings_values['Video_scale_mode']=value_
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+			os.system('cls')
+		
+		elif mode == "9":
 			os.system('cls')
 			Set_default_color()
 			os.system('cls')
 		
-		elif mode == "9":
+		elif mode == "10":
 			os.system('cls')
 			
 			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
@@ -2132,7 +2406,7 @@ def Settings():
 			
 			os.system('cls')
 		
-		elif mode == "10":
+		elif mode == "11":
 			os.system('cls')
 			
 			for key,val in settings_values.items():
@@ -2158,12 +2432,12 @@ def Settings():
 			os.system('cls')
 
 def ReadSettings():
-	default_values = {'SettingVersion':'4','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+	default_values = {'SettingVersion':'5.5','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
-						'cols_resize':140,'lines_resize':38}
+						'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -2566,7 +2840,7 @@ def FindImageFiles(inputPathList):
 			break
 	return False
 
-#======================================= View_GPU_ID() ===========================
+#======================================= View_GPU_ID() ==================================
 def View_GPU_ID():
 	print('----------------------------')
 	print('        Loading....')
