@@ -11,7 +11,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 
 # Features
 ### New features brought by this extension:
-- More friendly way of interacting
+- More friendly way of interacting and easy to use.
 - Support 1x/2x/4x/8x magnification
 - Batch zoom in still images and GIF dynamic images
 - Batch enlarge video files
