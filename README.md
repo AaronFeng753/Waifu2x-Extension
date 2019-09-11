@@ -51,6 +51,9 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 #### After 2x magnification, level 2 denoise and gif optimize 1000 x 744 (3.91 MB):
 ![Original GIF](/Samples/gif/2_waifu2x_compressed.gif)
 
+#### Github doesn't support play video online, pls check link below:
+### **`Video`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/video
+
 # Screenshot
 ![mainmenu](/screenshot/mainmenu.png) 
 ![running](/screenshot/running.png) 
