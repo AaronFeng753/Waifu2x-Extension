@@ -19,7 +19,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v2.95'
+Version_current='v2.9'
 
 import time
 import threading
