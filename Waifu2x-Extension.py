@@ -9,9 +9,8 @@ ffmpeg version 4.2
 gifsicle version 1.92
 
 更新日志
-- 集成Anime4k, 用于放大视频(实验性)
-你可以在设置选项中更改'Video scale mode'来启用Anime4k
-- 删除部分冗余代码
+- 新增设置选项 "Rename result images"
+- 支持设置Anime4k的线程数, 在 "Settings"-->"Number of threads ( Scale Video (Anime4k) )"
 
 '''
 
@@ -19,7 +18,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v2.9'
+Version_current='v2.96'
 
 import time
 import threading
@@ -522,17 +521,24 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 					jpgFile = path+'\\'+fname+'.jpg'
 					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = JpgQuality)
 					os.remove(pngFile)
+		settings_values = ReadSettings()
+		Rename_result_images = settings_values['Rename_result_images']
+		if Rename_result_images.lower() == 'y':
+			for files in os.walk(inputPath+'\\scaled_waifu2x\\'):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
+					if saveAsJPG.lower() == 'y':
+						os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',originalName+"_Waifu2x.jpg"))
+					else:
+						os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',originalName+"_Waifu2x.png"))
+		elif Rename_result_images.lower() == 'n':
+			for files in os.walk(inputPath+'\\scaled_waifu2x\\'):
+				for fileNameAndExt in files[2]:
+					fileName_new = os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',fileName_new))
 			
-		
-		for files in os.walk(inputPath+'\\scaled_waifu2x\\'):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
-				if saveAsJPG.lower() == 'y':
-					os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',originalName+"_Waifu2x.jpg"))
-				else:
-					os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',originalName+"_Waifu2x.png"))
-		
+			
 		orginalFileNameAndFullname = {}
 		
 		print('')
@@ -554,8 +560,9 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 				print('will not be deleted.')
 				print('------------------------------------------------------------------------------')
 		print('Copy files...')
-		os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled_waifu2x\\*.*\" \""+inputPath+"\"")
-		os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\"")
+		if Rename_result_images.lower() == 'y':
+			os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled_waifu2x\\*.*\" \""+inputPath+"\"")
+			os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\"")
 		Finished_folder_num = Finished_folder_num + 1
 	Window_Title('')
 
@@ -1146,8 +1153,8 @@ class Video_scale_Anime4K_Thread (threading.Thread):
 		os.system('java -jar Anime4K\\Anime4K.jar "'+frame+'" "'+out_path+'\\'+fram_fname+'.png" '+scale)
 
 def Video_scale_Anime4K(in_path,out_path,scale):
-	
-	max_threads = cpu_count()
+	settings_values = ReadSettings()
+	max_threads = settings_values['Number_of_threads_Anime4k']
 	
 	thread_files = []
 	
@@ -2207,8 +2214,10 @@ def Settings():
 		print(' 7: Number of threads ( Scale & Denoise ). Current value: [ ',settings_values['Number_of_threads'],' ]\n')
 		print(' 8: Video scale mode. Current value: [ ',settings_values['Video_scale_mode'],' ]\n')
 		print(' 9: Change interface color.\n')
-		print(' 10: Reset error log.\n')
-		print(' 11: Show settings_values.\n')
+		print(' 10: Number of threads ( Scale Video (Anime4k) ). Current value: [ ',settings_values['Number_of_threads_Anime4k'],' ]\n')
+		print(' 11: Rename result images. Current value: [ ',settings_values['Rename_result_images'],' ]\n')
+		print(' 12: Reset error log.\n')
+		print(' 13: Show settings_values.\n')
 		print(' R : Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
 		mode = input('(1/2/3/..../r): '.upper())
@@ -2391,8 +2400,51 @@ def Settings():
 			os.system('cls')
 			Set_default_color()
 			os.system('cls')
-		
+			
 		elif mode == "10":
+			os.system('cls')
+			print('------------------------------')
+			print('Recommanded value:',cpu_count())
+			print('------------------------------')
+			while True:
+				Number_of_threads_Anime4k = input('Number of threads ( Scale Video (Anime4k) ) (1/2/3/4...):').lower().strip(' ')
+				if Number_of_threads_Anime4k.isdigit():
+					if int(Number_of_threads_Anime4k) > 0:
+						Number_of_threads_Anime4k = int(Number_of_threads_Anime4k)
+						break
+					else:
+						print('Wrong input.')
+				else:
+					print('Wrong input.')
+			settings_values['Number_of_threads_Anime4k']=Number_of_threads_Anime4k
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+			os.system('cls')
+		
+		elif mode == '11':
+			os.system('cls')
+			print('------------------------------------------------------------------')
+			print('If the value of "Rename result images" == "n":')
+			print('The result images will stay in input-path\\scaled_waifu2x')
+			print('and we won\'t rename them, no "_waifu2x" at the end of file name')
+			print('')
+			print('If the value of "Rename result images" == "y":')
+			print('The result images will stay in input-path')
+			print('and we will rename them, add "_waifu2x" at the end of file name')
+			print('------------------------------------------------------------------')
+			while True:
+				Rename_result_images = input('Rename result images?(y/n): ').lower().strip(' ')
+				if Rename_result_images in ['y','n']:
+					break
+				else:
+					print('Wrong input.')
+			settings_values['Rename_result_images']=Rename_result_images
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+			os.system('cls')
+			
+		
+		elif mode == "12":
 			os.system('cls')
 			
 			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
@@ -2406,7 +2458,7 @@ def Settings():
 			
 			os.system('cls')
 		
-		elif mode == "11":
+		elif mode == "13":
 			os.system('cls')
 			
 			for key,val in settings_values.items():
@@ -2432,12 +2484,14 @@ def Settings():
 			os.system('cls')
 
 def ReadSettings():
-	default_values = {'SettingVersion':'5.5','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+	cpu_num = cpu_count()
+	default_values = {'SettingVersion':'6','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
-						'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x'}
+						'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x','Number_of_threads_Anime4k':cpu_num,
+						'Rename_result_images':'y'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
