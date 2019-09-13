@@ -1,0 +1,112 @@
+﻿<job id="InputBoxInJS">
+<script language="VBScript">
+	Function VBInputBox(text, title, defaultText)
+		VBInputBox = InputBox(text, title, defaultText)
+	End Function
+</script>
+
+<script language="JScript">
+
+var WshShell = WScript.CreateObject("WScript.Shell");
+var objFSO = new ActiveXObject("Scripting.FileSystemObject");
+findWaifuFolder(); //check paths
+
+//Languages list
+var langs = {}, tm = {"en": "eng,english,ｅｎ,ｅｎｇ,ｅｎｇｌｉｓｈ", "ru": "rus,russian,русский,руский,ру,ｒｕ,ｒｕｓ,ｒｕｓｓｉａｎ", "ja": "jp,jap,japanese,nihongo,日本語,にほんご,ｊａ,ｊｐ,ｊａｐ,ｊａｐａｎｅｓｅ,ｎｉｈｏｎｇｏ"};
+for (var i in tm) {
+	langs[i] = i;
+	var a = tm[i].split(",");
+	for (var j = a.length; j--;) langs[a[j]] = i;
+}
+
+//Choose language
+while (true) {
+	var lang = VBInputBox('\
+		Select your language:\n\
+		\n\
+		en — English\n\
+		ru — Русский (Russian)\n\
+		ja — 日本語 (Japanese)\
+	'.replace(/\t/g, ""), "Select your language", "en");
+	if (!lang) WScript.Quit(0); else lang = lang.toLowerCase();
+	if (lang　in langs) {
+		lang = langs[lang];
+		break;
+	}else{
+		echo('\
+			You have written incorrect language. Please type en/ru/ja.\n\n\
+			Вы ввели неверный язык. Пожалуйста, введите en/ru/ja.\n\n\
+			言語が正しくありません。「en/ru/ja」を書いてください\
+		'.replace(/\t/g, ""), 16, 0, "Unknown language");
+	}
+}
+
+//Create shortcuts
+var strSendTo = WshShell.SpecialFolders("SendTo");
+oneShortcut("waifu_n1",   "waifuExecuter.wsf", "--without_typing --scale_ratio 1 --noise_level 1");
+oneShortcut("waifu_n2",   "waifuExecuter.wsf", "--without_typing --scale_ratio 1 --noise_level 2");
+oneShortcut("waifu2x_n0", "waifuExecuter.wsf", "--without_typing --scale_ratio 2 --noise_level 0");
+oneShortcut("waifu2x_n1", "waifuExecuter.wsf", "--without_typing --scale_ratio 2 --noise_level 1");
+oneShortcut("waifu2x_n2", "waifuExecuter.wsf", "--without_typing --scale_ratio 2 --noise_level 2");
+oneShortcut("waifuCustomizable", "waifuExecuter.wsf", "");
+
+//Success message
+echo({en: '\
+	Scripts have been successfully added to "Send To" menu. Now you can highlight few files, click right button on them, choose "Send To" item and then choose on the one of this option:\n\n\
+	\
+	waifu_n1 — denoise\n\
+	waifu_n2 — aggressive denoise\n\
+	waifu2x_n0 — 4x expansion\n\
+	waifu2x_n1 — 4x expansion and denoise\n\
+	waifu2x_n2 — 4x expansion and aggressive denoise\n\
+	waifuCustomizable — specify all the options by yourself\
+', ru: '\
+	Скрипты успешно добавлены в меню "Отправить". Теперь Вы можете нажать правой кнопкой на любое изображение или сразу несколько изображений, выбрать пункт "Отправить" и кликнуть на один из вариантов:\n\
+	\n\
+	waifu_n1 — устранить шум\n\
+	waifu_n2 — агрессивно устранить шум\n\
+	waifu2x_n0 — увеличить картинку в 4 раза без устранения шума\n\
+	waifu2x_n1 — увеличить картинку в 4 раза и устранить шум\n\
+	waifu2x_n2 — увеличить картинку в 4 раза и агрессивно устранить шум\n\
+	waifuCustomizable — самостоятельно указать все опции\
+', ja: '\
+	スクリプトは送るメニューに追加されました。いくつかの画像を右クリックして、「送る」メニューからアイテムを選ぶとwaifu2xで処理できます。\n\
+	\n\
+	「waifu_n1」 はノイズ除去\n\
+	「waifu_n2」 はアグレッシブノイズ除去\n\
+	「waifu2x_n0」 は4倍拡大\n\
+	「waifu2x_n1」 は4倍拡大とノイズ除去\n\
+	「waifu2x_n2」 は4倍拡大とアグレッシブノイズ除去\n\
+	「waifuCustomizable」 はオプションを自分で指定できます\
+'}[lang].replace(/\t/g, ""), 64, 0, "ExtendedSendTo 1.0.3 - " + {en: "Install success!", ru: "Установка успешно завершена", ja: "インストールは成功しました"}[lang]);
+
+//Create one shortcut
+function oneShortcut(name, file, args) {
+	var oShellLink = WshShell.CreateShortcut(strSendTo + "\\" + name + ".lnk");
+	oShellLink.TargetPath = "WScript";
+	oShellLink.WindowStyle = 1;
+	oShellLink.IconLocation = WshShell.CurrentDirectory + '\\icon.ico';
+	oShellLink.Description = "Waifu2x";
+	oShellLink.Arguments = '"' + WshShell.CurrentDirectory + "\\" + file + '" --lang ' + lang + ' ' + args;
+	oShellLink.Save();
+}
+
+//Find waifu2x-converter folder
+function findWaifuFolder() {
+	var tm = WScript.ScriptFullName, x = tm.length, dir, exec;
+	for (var i = 0;; i++) {
+		x = tm.lastIndexOf("\\", x - 1);
+		if (x === -1 || i >= 2) error("You should put ExtendedSendTo folder to folder with waifu2x-converter program before install.\n\nПеред установкой Вы должны поместить папку ExtendedSendTo в папку с программой waifu2x-converter.\n\nインストール前にExtendedSendToフォルダーをwaifu2x-converterプログラムフォルダーに置きましてください。", 2);
+		if (objFSO.FileExists(tm.substr(0, x + 1) + "waifu2x-converter_x64.exe")) return {dir: tm.substr(0, x + 1), exec: "waifu2x-converter_x64.exe"};
+		if (objFSO.FileExists(tm.substr(0, x + 1) + "waifu2x-converter_x86.exe")) return {dir: tm.substr(0, x + 1), exec: "waifu2x-converter_x86.exe"};
+		if (objFSO.FileExists(tm.substr(0, x + 1) + "waifu2x-converter.exe"))     return {dir: tm.substr(0, x + 1), exec: "waifu2x-converter.exe"};
+	}
+}
+
+//Standart functions
+function echo(s, opt, wait, theTitle) { return WshShell.Popup(s, wait ? wait : 0, theTitle ? theTitle : title(), opt ? opt : 0); }
+function error(s, crit) { echo(s,  crit == 1 ? 48 : (crit == 2 ? 16 : 0),  0,  crit === 2 ? "Error" : "");  WScript.Quit(0); }
+function title() { return "ExtendedSendTo 1.0.3, Waifu2x"; }
+
+</script>
+</job>

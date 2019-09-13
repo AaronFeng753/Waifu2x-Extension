@@ -1,0 +1,234 @@
+﻿<job id="InputBoxInJS">
+<script language="VBScript">
+	Function VBInputBox(text, title, defaultText)
+		VBInputBox = InputBox(text, title, defaultText)
+	End Function
+</script>
+
+<script language="JScript">
+
+var WshShell = new ActiveXObject("WScript.Shell");
+var objFSO = new ActiveXObject("Scripting.FileSystemObject");
+if (!Date.now) Date.now=function now(){return new Date().getTime();};
+if (!String.prototype.trim) String.prototype.trim = function () { return this.replace(/^\s+|\s+$/g, ''); };
+
+//Process WScript.Arguments
+for (var i = 0, options = {}, files = []; i < WScript.Arguments.length; i++) {
+	var tm = WScript.Arguments(i);
+	if (tm.charAt(0) === "-") {
+		if (tm === "--without_typing") {
+			options[tm] = true;
+		}else{
+			if (i + 1 < WScript.Arguments.length) i++, options[tm] = WScript.Arguments(i);
+		}
+	}else{
+		files.push(tm);
+	}
+}
+if (files.length === 0) {
+	error('\
+		To start you should drag files to this script or execute it from "Send To" menu.\n\n\
+		Вы должны перетащить нужные файлы на этот скрипт или вызвать его из меню "Отправить".\n\n\
+		このスクリプトにファイルをドラッグドロップするか、"送る"メニューから実行してください。\
+	'.replace(/\t/g, ""));
+}
+var lang = {en:1, ru:1, ja:1}[options["--lang"]] ? options["--lang"] : "en";
+
+//Constant options
+var tm          = findWaifuFolder();
+var dir         = tm.dir;
+var exec        = dir + tm.exec;
+var window_mode = 0;
+
+//Typing options
+if (!options["--without_typing"]) {
+	var help = {en: '\
+		Type options. Examples:\n\n\
+		"n1" — denoise\n\n\
+		"2x" — 4x expansion without denoise\n\n\
+		"3x_n2" — 9x expansion and aggressive denoise\n\n\
+		"n1 : mai_$$_waifu##" — denoise, output file name is "mai_$$_waifu##" where $$ will be replaced by input file name and ## will be replaced by processing type (example: 2x_n1)\n\n\
+		\nAdditionally:\n\n\n\
+		"2.5x_n0,gray,7J" — 6.25x expansion without denoise using trasforming model for uncolored images, work with not GPU, but with CPU in 7 threads\n\n\
+		"plist" — show list of available processors and hardware acceleration methods\n\n\
+		"n1,p2" — denoise using option number 2 from plist command\
+	', ru: '\
+		Введите нужные опции. Примеры:\n\n\
+		«n1» — устранить шум\n\n\
+		«2x» — увеличить картинку в 4 раза без устранения шума\n\n\
+		«3x_n2» — увеличить картинку в 9 раз и агрессивно устраненить шум\n\n\
+		«n1 : mai_$$_waifu##» — устранить шум, выходное имя файла "mai_$$_waifu##", где вместо $$ будет подставлено исходное имя файла, вместо ## будет поставлен тип преобразования, например 2x_n1\n\n\
+		\nДополнительно:\n\n\n\
+		«2.5x_n0,gray,7J» — увеличить картинку в 6.25 раза без устранения шума, используя модель преобразования для нецветных изображений, работать не на видекарте, а на процессоре в 7 потоков\n\n\
+		«plist» — вывести список доступных процессоров и методов аппаратного ускорения\n\n\
+		«n1,p2» — устранить шум, использовать вариант №2 из plist\
+	', ja: '\
+		オプションを書いてください。例：\n\n\
+		"n1" — ノイズ除去\n\n\
+		"2x" — ノイズ除去なしで4倍拡大\n\n\
+		"3x_n2" — ノイズ除去強 + 9倍拡大\n\n\
+		"n1 : mai_$$_waifu##" — ノイズ除去、出力ファイル名をmai_$$_waifu##に指定。$$は入力ファイル名に、##は処理タイプ(2x_n1など)に置き換え\n\n\
+		\n加えて：\n\n\n\
+		"2.5x_n0,gray,7J" — ノイズ除去なしで6.25倍拡大、Yモデルで変換、GPUなし、7スレッドで処理\n\n\
+		"plist" — 処理装置とハードウェアアクセラレーション方法のリストを見ます\n\n\
+		"n1,p2" — plistの二番オプションでノイズ除去\
+	'}[lang].replace(/\t/g, "");
+	
+	var s = "";
+	while (true) {
+		s = VBInputBox(help, title(), s);
+		if (s) s = s.trim();
+		if (s === "" || s === '""') error({en: "Empty string, operation is cancelled.", ru: "Вы ввели пустую строку, операция отменена.", ja: "文字列が空です。"}[lang], 0);
+		if (!s) WScript.Quit(0);
+		
+		if (s === "plist") {
+			listProcessor();
+		}else{
+			var vopt = parseString(s);
+			if (vopt) break;
+		}
+	}
+}else{
+	var vopt = initOptions({});
+	if (!vopt) WScript.Quit(0);
+}
+
+//Process files
+var time0 = Date.now(), subtime1 = time0, ok = 0, fail = 0, ans = [];
+for (var i = 0; i < files.length; i++) {
+	var subtime0 = subtime1;
+	var input = files[i], x1 = input.lastIndexOf("\\"), path = x1 === -1 ? "" : input.substr(0, x1 + 1), name = x1 === -1 ? input : input.substr(x1 + 1), x2 = name.lastIndexOf(".");
+	var output = path + vopt.name_mask.replace(/\$\$/g, x2 === -1 ? name : name.substr(0, x2)).replace(/##/g, vopt.s_label) + ".png";
+	var code = runProgram('"' + exec + '"' + vopt.s_params + ' -i "' + input + '" -o "' + output + '"', window_mode, true);
+	if (code === 0) ok++; else fail++;
+	ans.push((code === 0 ? {en: "ok", ru: "ок", ja: "ok"}[lang] : "fail") + " — " + nameByFile(output) + "  (" + ((Date.now() - subtime0) / 1000).toFixed(3) + {en: " sec)", ru: " сек)", ja: "秒)"}[lang]);
+	subtime1 = Date.now();
+}
+var passedTime = ((subtime1 - time0) / 1000).toFixed(3);
+echo({
+	en: passedTime + " sec,  success: " + ok + " / " + (ok + fail) + (fail ? "\n\nFAIL: " + fail : ""),
+	ru: passedTime + " сек,  успешно: " + ok + " / " + (ok + fail) + (fail ? "\n\nНЕУСПЕШНО: " + fail : ""),
+	ja: passedTime + "秒,  成功: " + ok + " / " + (ok + fail) + (fail ? "\n\n失敗: " + fail : "")
+}[lang] + "\n\n" + ans.join("\n"), fail ? 48 : 64);
+
+
+
+//Parse string
+function parseString(s) {
+	var opt = {};
+	var x = s.indexOf(":");
+	if (x !== -1) opt.name_mask = s.substr(x + 1).trim(), s = s.substr(0, x);
+	
+	var arr = s.replace(/_/g, ",").split(",");
+	for (var i = 0; i < arr.length; i++) {
+		var s = arr[i].trim();
+		if (s) {
+			if      (s === "n0")   opt.noise_level = 0;     //n0
+			else if (s === "n1")   opt.noise_level = 1;     //n1
+			else if (s === "n2")   opt.noise_level = 2;     //n2
+			else if (s === "gray") opt.model_type = "gray"; //gray
+			else if (s.charAt(s.length - 1) === "x" && isNumber(s.substr(0, s.length - 1), 1)) opt.scale_ratio = +s.substr(0, s.length - 1); //2x
+			else if (s.charAt(s.length - 1) === "J" && isInt(s.substr(0, s.length - 1), 1))    opt.jobs = +s.substr(0, s.length - 1);        //7J
+			else if (s.charAt(0) === "x"            && isNumber(s.substr(1), 1))               opt.scale_ratio = +s.substr(1);               //x2
+			else if (s.charAt(0) === "J"            && isInt(s.substr(1), 1))                  opt.jobs = +s.substr(1);                      //J7
+			else if (s.charAt(0) === "p"            && isInt(s.substr(1), 0))                  opt.processor = +s.substr(1);                 //p1
+			else return void(echo({en: 'String is incorrect. You have written "' + s + '" but it does not match the pattern of the examples.', ru: 'Неверный формат строки. Вы ввели "' + s + '", это не соответствует шаблону из примеров.', ja: '文字列がおかしいです。「' + s + '」が書いれあるけど例のパターンと違う。'}[lang]));
+		}
+	}
+	return initOptions(opt);
+}
+
+//Init variable options
+function initOptions(opt) {
+	var a = {};
+	a.noise_level   = choose(opt.noise_level, options["--noise_level"], 0);
+	a.scale_ratio   = choose(opt.scale_ratio, options["--scale_ratio"], 1);
+	a.model_type    = choose(opt.model_type,  options["--model_type"],  "rgb");
+	a.jobs          = choose(opt.jobs,        options["--jobs"],        files.length == 1 ? 7 : 4);
+	a.processor     = choose(opt.processor,   options["--processor"],   0);
+	a.name_mask     = choose(opt.name_mask,   options["--name_mask"],   "$$_waifu##");
+	
+	a.s_mode        = a.noise_level == 0 ? "scale" : a.scale_ratio > 1 ? "noise_scale" : "noise";
+	a.s_noise_level = a.noise_level == 0 ? "" : "--noise_level " + a.noise_level;
+	a.s_model_dir   = dir + (a.model_type === "gray" ? "models" : "models_rgb");
+	a.s_disable_gpu = typeof(choose(opt.jobs, options["--jobs"])) === "number" ? "--disable-gpu" : "";
+	
+	a.s_params      = ' --mode $s_mode $s_noise_level --scale_ratio $scale_ratio --jobs $jobs $s_disable_gpu --processor $processor'.replace(/\$[a-zA-Z0-9_]+/g, function(s) { return a[s.substr(1)]; });
+	a.s_params     += ' --model_dir "' + a.s_model_dir + '"';
+	a.s_label       = (a.scale_ratio > 1 ? a.scale_ratio + "x" : "") + "_n" + a.noise_level + (a.model_type === "gray" ? "_" + a.model_type : "");
+	
+	if (a.scale_ratio <= 1 && a.noise_level == 0) {
+		echo({en: "You did not type any transformations (scale or denoise).", ru: "Вы не ввели необходимые преобразования (масштабирование или устранение шума).", ja: "何も変換を書きませんでした（ノイズ除去か拡大）。"}[lang]);
+		return false;
+	}
+	if (a.name_mask == "$$") {
+		var tm = echo({en: "WARNING! Because you typed $$ all png-files will be overwritten. Are you sure?", ru: "ВНИМАНИЕ! Поскольку Вы ввели $$, все png-файлы будут перезаписаны. Вы уверены?", ja: "警告！「$$」を書くと処理のPNG画像はすべて上書きされます。続行しますか？"}[lang], 3 + 48);
+		if (tm !== 6) return false;
+	}
+	if (!objFSO.FolderExists(a.s_model_dir)) {
+		echo({en: "Transformation model folder not found (" + nameByFile(a.s_model_dir) + ").", ru: "Папка с моделью преобразования не найдена (" + nameByFile(a.s_model_dir) + ").", ja: "変換モデルフォルダーが見つかりません(" + nameByFile(a.s_model_dir) + ")。"}[lang], 16);
+		return false;
+	}
+	return a;
+	
+	function choose() {
+		for (var i = 0; i < arguments.length; i++) {
+			if (typeof(arguments[i]) !== "undefined") return arguments[i];
+		}
+	}
+}
+
+//listProcessor
+function listProcessor() {
+	var tm = runProgram('"' + exec + '" --list-processor', 0, true, true);
+	if (tm.code !== 0) {
+		if (tm.stderr.indexOf("PARSE ERROR:") !== -1) {
+			echo({en: "For use this function you should update waifu2x-converter-cpp.", ru: "Для использования этой функции Вы должны обновить waifu2x-converter-cpp.", ja: "この機能を使用するにはwaifu2x-converter-cppをアップデートしてください。"}[lang], 16);
+		}else{
+			echo({en: "Error while getting the list.", ru: "Ошибка при получении списка.", ja: "リストを取得するときにエラーが発生しました。"}[lang], 16);
+		}
+	}else{
+		echo({en: "Available processors and hardware acceleration methods list:", ru: "Список доступных процессоров и методов аппаратного ускорения:", ja: "処理装置とハードウェアアクセラレーション方法のリスト："}[lang] + "\n\n" + tm.stdout.replace(/  +/g, " ").replace(/ ?\)\: .*/g, ")").replace(/ \((CUDA|OpenCL|FMA|AVX)\)/g, "  —  $1"));
+	}
+}
+
+//Run program
+function runProgram(cmd, window_mode, needWait, needStdout) {
+	try {
+		if (needStdout) {
+			var oExec = WshShell.Exec(cmd);
+			while (oExec.Status == 0) WScript.Sleep(100);
+			return {code: oExec.ExitCode, stdout: oExec.StdOut.ReadAll(), stderr: oExec.StdErr.ReadAll()};
+		}else{
+			return WshShell.Run(cmd, window_mode, needWait);
+		}
+	} catch(e) {
+		cmd = cmd.trim();
+		var x = cmd.indexOf(cmd.charAt(0) === '"' ? '"' : cmd.charAt(0) === "'" ? "'" : " ", 1);
+		var name = nameByFile(x === -1 ? cmd : cmd.substr(1, x - 1));
+		error({en: "Can not run " + name + ". May be you try exec 64-bit version on 32-bit operating system or access denied.", ru: "Произошла ошибка при запуске " + name + ". Возможно, Вы пытаетесь запустить 64-битную версию на 32-битной системе, или запретили запуск файла.", ja: name + "を実行できません。64ビット版を32ビット版オペレーティング·システムで実行したかアクセスが拒否された可能性があります。"}[lang], 2);
+	}
+}
+
+//Find waifu2x-converter folder
+function findWaifuFolder() {
+	var tm = WScript.ScriptFullName, x = tm.length, dir, exec;
+	for (var i = 0;; i++) {
+		x = tm.lastIndexOf("\\", x - 1);
+		if (x === -1 || i >= 2) error({en: "waifu2x-converter_x64.exe not found", ru: "waifu2x-converter_x64.exe не найден", ja: "waifu2x-converter_x64.exeは見つかりません"}[lang || "en"], 2);
+		if (objFSO.FileExists(tm.substr(0, x + 1) + "waifu2x-converter_x64.exe")) return {dir: tm.substr(0, x + 1), exec: "waifu2x-converter_x64.exe"};
+		if (objFSO.FileExists(tm.substr(0, x + 1) + "waifu2x-converter_x86.exe")) return {dir: tm.substr(0, x + 1), exec: "waifu2x-converter_x86.exe"};
+		if (objFSO.FileExists(tm.substr(0, x + 1) + "waifu2x-converter.exe"))     return {dir: tm.substr(0, x + 1), exec: "waifu2x-converter.exe"};
+	}
+}
+
+//Standart functions
+function isInt(num, min) { return parseInt(num, 10).toString() == num && num != "NaN" && +num >= min; }
+function isNumber(num, min) { return parseFloat(num, 10).toString() == num && num != "NaN" && num != "Infinity" && +num >= min; }
+function nameByFile(s) { var x = s.lastIndexOf("\\"); if (x === -1) error({en: "Error while processing filename.", ru: "Произошла ошибка при обработке имени файла.", ja: "ファイル名処理するときにエラーが発生しました。"}[lang], 2); return s.substr(x + 1); }
+function echo(s, opt, wait, theTitle) { return WshShell.Popup(s, wait ? wait : 0, theTitle ? theTitle : title(), opt ? opt : 0); }
+function error(s, crit) { echo(s,  crit == 1 ? 48 : (crit == 2 ? 16 : 0),  0,  crit === 2 ? "Error" : "");  WScript.Quit(0); }
+function title() { return "ExtendedSendTo 1.0.3, Waifu2x"; }
+
+</script>
+</job>
