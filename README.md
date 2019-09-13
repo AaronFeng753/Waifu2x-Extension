@@ -7,14 +7,15 @@ Based on waifu2x-ncnn-vulkan (version 20190712) and Waifu2x-converter .
 
 Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that support `Vulakn`, even Intel GPU. 
 
-If your gpu doesn't support vulkan, you can use Waifu2x-converter.
+If your gpu doesn't support vulkan, you can use Waifu2x-converter, which is also intergrated into the Waifu2x-Extension.
 
 Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 620.
 
 # Features
 ### New features brought by this extension:
 - More friendly way of interacting and easy to use.
-- Support 1x/2x/4x/8x magnification
+- Achieved with waifu2x-ncnn-vulkan, waifu2x-converter and Anime4K.
+- Support 1x/2x/4x/8x/.... magnification
 - Batch zoom in still images and GIF dynamic images
 - Batch enlarge video files (Waifu2x-ncnn-vulkan & Anime 4k)
 - Personalization
