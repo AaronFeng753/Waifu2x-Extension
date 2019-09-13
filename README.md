@@ -16,8 +16,8 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 - More friendly way of interacting and easy to use.
 - Achieved with waifu2x-ncnn-vulkan, waifu2x-converter and Anime4K.
 - Support 1x/2x/4x/8x/.... magnification
-- Batch zoom in still images and GIF dynamic images
-- Batch enlarge video files (Waifu2x-ncnn-vulkan & Anime 4k)
+- Batch zoom in still images and GIF dynamic images (Waifu2x-ncnn-vulkan & Waifu2x-converter)
+- Batch enlarge video files (Waifu2x-ncnn-vulkan & Waifu2x-converter & Anime 4k)
 - Personalization
 - Online update
 - Save the enlarged image target as .jpg
@@ -75,6 +75,9 @@ https://www.lcdf.org/gifsicle/
 
 Anime4K:
 https://github.com/bloc97/Anime4K
+
+Waifu2x-converter:
+https://github.com/WL-Amigo/waifu2x-converter-cpp
 
 # Donate
 
