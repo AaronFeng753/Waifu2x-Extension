@@ -20,14 +20,12 @@ gifsicle version 1.92
 -----------------------------------------------
 
 更新日志
-- 调整 Anime4k 默认线程数量
-- 集成 waifu2x-converter, 支持使用 waifu2x-converter 放大图片,GIF,视频
-- 细节调整与优化
+- 
 
 ------------------------------------------------
 
 To do:
-- 集成 waifu2x-converter
+- 审核代码, 修复代码, 提高稳定性
 
 '''
 
@@ -35,7 +33,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v3.0'
+Version_current='v3.1'
 
 import time
 import threading
@@ -922,6 +920,25 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	
 	input('\npress Enter key to return to the menu')
 
+#=================================================  waifu2x_converter_Thread  ============================================
+
+class waifu2x_converter_Thread(threading.Thread):
+	def __init__(self,inputPath,outputPath,scale,noiseLevel):
+		threading.Thread.__init__(self)
+		self.inputPath = inputPath
+		self.outputPath = outputPath
+		self.scale = scale
+		self.noiseLevel = noiseLevel
+        
+	def run(self):
+		inputPath = self.inputPath  
+		outputPath = self.outputPath 
+		scale = self.scale 
+		noiseLevel = self.noiseLevel 
+
+		model_dir = 'waifu2x-converter\\models_rgb'
+		os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+outputPath+'" --scale_ratio '+scale+' --noise_level '+noiseLevel+' --model_dir '+model_dir)
+
 
 #=============================================  Process_ImageModeC_waifu2x_converter  ======================================================
 
@@ -963,6 +980,7 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 
 #==============================================  process_gif_scale_modeABC_waifu2x_converter =================================================
 def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel,optimizeGif,delorginal):
+	settings_values = ReadSettings()
 	Gif_inputPathList_files = []
 	for inputPath in inputPathList_files:
 		file_ext = os.path.splitext(inputPath)[1]
@@ -995,15 +1013,35 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		model_dir = 'waifu2x-converter\\models_rgb'
 		for path,useless,fnames in os.walk(input_folder):
 			total_frame = len(fnames)
-			finished_frame = 1
+			
+			max_threads = settings_values['Number_of_threads_Waifu2x_converter']
+			finished_frame = max_threads
+			thread_files = []
 			for fname in fnames:
 				Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')  Frames: ('+str(finished_frame)+'/'+str(total_frame)+')')
-				os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+path+'\\'+fname+'" -o "'+output_folder+'\\'+fname+'" --scale_ratio '+scale+' --noise_level '+noiseLevel+' --model_dir '+model_dir)
-				finished_frame = finished_frame + 1
+				thread_files.append(fname)
+				if len(thread_files) == max_threads:
+					for fname_ in thread_files:
+						thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_,scale,noiseLevel)
+						thread1.start()
+					while True:
+						if thread1.isAlive()== False:
+							break
+					finished_frame = finished_frame+len(thread_files)
+					thread_files = []
+			if thread_files != []:
+				finished_frame = total_frame
+				Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')  Frames: ('+str(finished_frame)+'/'+str(total_frame)+')')
+				for fname_ in thread_files:
+					thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_,scale,noiseLevel)
+					thread1.start()
+				while True:
+					if thread1.isAlive()== False:
+						break
+				thread_files = []
 			break
 			
 		print('')	
-		
 		print('Assembling Gif.....')
 		assembleGif(scaledFilePath,TIME_GAP)
 		print('Gif assembled')
@@ -1157,6 +1195,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 
 #======================================= process_video_modeABC_waifu2x_converter ============================
 def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel,delorginal):
+	settings_values = ReadSettings()
 	total_num = len(inputPathList_files)
 	finished_num = 1
 	for inputPath in inputPathList_files:
@@ -1178,11 +1217,32 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		model_dir = 'waifu2x-converter\\models_rgb'
 		for path,useless,fnames in os.walk(input_folder):
 			total_frames = len(fnames)
-			finished_frames = 1
+			max_threads = settings_values['Number_of_threads_Waifu2x_converter']
+			finished_frames = max_threads
+			thread_files = []
 			for fname in fnames:
 				Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')  Frames:('+str(finished_frames)+'/'+str(total_frames)+')')
-				os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+path+'\\'+fname+'" -o "'+output_folder+'\\'+fname+'.png'+'" --scale_ratio '+scale+' --noise_level '+noiseLevel+' --model_dir '+model_dir)
-				finished_frames = finished_frames+1
+				thread_files.append(fname)
+				if len(thread_files) == max_threads:
+					for fname_ in thread_files:
+						thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
+						thread1.start()
+					while True:
+						if thread1.isAlive()== False:
+							break
+					finished_frames = finished_frames+len(thread_files)
+					thread_files = []
+				
+			if thread_files != []:
+				finished_frames = total_frames
+				Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')  Frames: ('+str(finished_frames)+'/'+str(total_frames)+')')
+				for fname_ in thread_files:
+					thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
+					thread1.start()
+				while True:
+					if thread1.isAlive()== False:
+						break
+				thread_files = []
 			break
 		
 		while thread_VideoDelFrameThread.isAlive():
@@ -2029,14 +2089,17 @@ def splitGif(gifFileName,scaledFilePath):
 def assembleGif(scaledFilePath,TIME_GAP):
 	image_list=[]
 	gif_name=scaledFilePath+'_waifu2x.gif'
-	
+	filelist_name=[]
+
 	for path,useless,fnames in os.walk(scaledFilePath+'_split\\scaled'):
 		for fname in fnames:
-			image_list.append(path+'\\'+fname)
+			filelist_name.append(int(os.path.splitext(fname)[0]))
 		break
-	
-	image_list.sort()
-
+		
+	filelist_name.sort()
+		
+	for file_name in filelist_name:
+		image_list.append(scaledFilePath+'_split\\scaled'+'\\'+str(file_name)+'.png')
 	frames = []  
 	for image_name in image_list:  
 		frames.append(imageio.imread(image_name))  
@@ -2591,21 +2654,22 @@ def checkUpdate_start(Version_current):
 #========================Verify Files=====================
 
 def VerifyFiles():
-	FilesList = ['ffmpeg.exe', 'msvcp140.dll', 'vcomp140.dll', 
-	'vcruntime140.dll', 'vulkan-1.dll', 'waifu2x-ncnn-vulkan.exe', 
-	'noise0_model.bin', 'noise0_model.param', 'noise0_scale2.0x_model.bin', 
-	'noise0_scale2.0x_model.param', 'noise1_model.bin', 'noise1_model.param', 
-	'noise1_scale2.0x_model.bin', 'noise1_scale2.0x_model.param', 'noise2_model.bin', 
-	'noise2_model.param', 'noise2_scale2.0x_model.bin', 'noise2_scale2.0x_model.param', 
-	'noise3_model.bin', 'noise3_model.param', 'noise3_scale2.0x_model.bin', 
-	'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param', 
-	'noise0_scale2.0x_model.bin', 'noise0_scale2.0x_model.param', 'noise1_scale2.0x_model.bin', 
-	'noise1_scale2.0x_model.param', 'noise2_scale2.0x_model.bin', 'noise2_scale2.0x_model.param', 
-	'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param','gifsicle.exe',
-	'NotificationSound_waifu2xExtension.mp3','Benchmark_Image_waifu2x_extension_1.png','Benchmark_Image_waifu2x_extension_2.png',
-	'Benchmark_Image_waifu2x_extension_3.png','Benchmark_Image_waifu2x_extension_4.png','Benchmark_Image_waifu2x_extension_5.png',
-	'Benchmark_Image_waifu2x_extension_6.png','Benchmark_Image_waifu2x_extension_7.png','Benchmark_Image_waifu2x_extension_8.png',
-	'vgi_waifu2x_extension.jpg','Resize-window.exe']
+	FilesList = ['ffmpeg.exe', 'gifsicle.exe', 'msvcp140.dll', 'NotificationSound_waifu2xExtension.mp3', 'Resize-window.exe', 'vcomp140.dll', 
+					'vcruntime140.dll', 'vulkan-1.dll', 'Waifu2x-Extension.exe', 'Waifu2x-Extension.py', 'waifu2x-ncnn-vulkan.exe', 'Anime4K.jar', 
+					'aparapi-1.10.0.jar', 'aparapi-jni-1.4.1.jar', 'bcel-6.2.jar', 'scala-library-2.12.6.jar', 'Benchmark_Image_waifu2x_extension_1.png', 
+					'Benchmark_Image_waifu2x_extension_2.png', 'Benchmark_Image_waifu2x_extension_3.png', 'Benchmark_Image_waifu2x_extension_4.png', 
+					'Benchmark_Image_waifu2x_extension_5.png', 'Benchmark_Image_waifu2x_extension_6.png', 'Benchmark_Image_waifu2x_extension_7.png', 
+					'Benchmark_Image_waifu2x_extension_8.png', 'noise0_model.bin', 'noise0_model.param', 'noise0_scale2.0x_model.bin', 
+					'noise0_scale2.0x_model.param', 'noise1_model.bin', 'noise1_model.param', 'noise1_scale2.0x_model.bin', 'noise1_scale2.0x_model.param', 
+					'noise2_model.bin', 'noise2_model.param', 'noise2_scale2.0x_model.bin', 'noise2_scale2.0x_model.param', 'noise3_model.bin', 
+					'noise3_model.param', 'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 'scale2.0x_model.bin', 'scale2.0x_model.param', 
+					'noise0_scale2.0x_model.bin', 'noise0_scale2.0x_model.param', 'noise1_scale2.0x_model.bin', 'noise1_scale2.0x_model.param', 
+					'noise2_scale2.0x_model.bin', 'noise2_scale2.0x_model.param', 'noise3_scale2.0x_model.bin', 'noise3_scale2.0x_model.param', 
+					'scale2.0x_model.bin', 'scale2.0x_model.param', 'vgi_waifu2x_extension.jpg', 'gfx804.bin', 'install.bat', 'install.js', 'uninstall.bat', 
+					'uninstall.js', 'w2xc.dll', 'w2xcr.exe', 'waifu2x-converter_x64.exe', 'icon.ico', 'install.wsf', 'LICENSE', 'readme.txt', 'uninstall.wsf', 
+					'waifuExecuter.wsf', 'w2xc.lib', 'w2xconv.h', 'Makefile', 'w2xc.c', 'w2xcr.c', 'noise1_model.json', 'noise1_model.json.bin', 
+					'noise2_model.json', 'noise2_model.json.bin', 'scale2.0x_model.json', 'scale2.0x_model.json.bin', 'noise1_model.json', 
+					'noise1_model.json.bin', 'noise2_model.json', 'noise2_model.json.bin', 'scale2.0x_model.json', 'scale2.0x_model.json.bin']
 	
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	FilesList_current = []
@@ -2622,7 +2686,7 @@ def VerifyFiles():
 	else:
 		return 'verified'
 
-#=================  Settings  ================
+#=====================================================  Settings  =============================================================
 
 def Settings():
 	while True:
@@ -2637,18 +2701,18 @@ def Settings():
 		print(' 4: Delete original files when finished? Current default value: [ '+settings_values['delorginal']+' ]\n')
 		print(' 5: Gif compress level. Current default value: [ '+settings_values['gifCompresslevel']+' ]\n')
 		print(' 6: Image quality ( When compress images ). Current default value: [ ',settings_values['image_quality'],' ]\n')
-		print(' 7: Number of threads ( Scale & Denoise ). Current value: [ ',settings_values['Number_of_threads'],' ]\n')
-		
+		print(' 7: Number of threads ( Scale & Denoise (Waifu2x-ncnn-vulkan) ). Current value: [ ',settings_values['Number_of_threads'],' ]\n')
 		print(' 8: Change interface color.\n')
 		print(' 9: Number of threads ( Scale Video (Anime4k) ). Current value: [ ',settings_values['Number_of_threads_Anime4k'],' ]\n')
 		print(' 10: Rename result images. Current value: [ ',settings_values['Rename_result_images'],' ]\n')
 		print(' 11: Video scale mode. Current value: [ ',settings_values['Video_scale_mode'],' ]\n')
 		print(' 12: Image & GIF scale mode. Current value: [ ',settings_values['Image_GIF_scale_mode'],' ]\n')
-		print(' 13: Reset error log.\n')
-		print(' 14: Show settings_values.\n')
-		print(' R : Return to the main menu.')
+		print(' 13: Number of threads ( Scale & Denoise (Waifu2x-converter) ). Current value: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]\n')
+		print(' RE: Reset error log.\n')
+		print(' S: Show settings_values.\n')
+		print(' R: Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/..../r): '.upper())
+		mode = input('(1/2/3/..../RE/S/R): ')
 		mode = mode.lower()
 		if mode == "1":
 			os.system('cls')
@@ -2920,6 +2984,26 @@ def Settings():
 		
 		elif mode == "13":
 			os.system('cls')
+			print('-----------')
+			print('Default: 1')
+			print('-----------')
+			while True:
+				Number_of_threads_Waifu2x_converter = input('Number of threads ( Scale & Denoise (Waifu2x-converter) ) (1/2/3/4...):').lower().strip(' ')
+				if Number_of_threads_Waifu2x_converter.isdigit():
+					if int(Number_of_threads_Waifu2x_converter) > 0:
+						Number_of_threads_Waifu2x_converter = int(Number_of_threads_Waifu2x_converter)
+						break
+					else:
+						print('Wrong input.')
+				else:
+					print('Wrong input.')
+			settings_values['Number_of_threads_Waifu2x_converter']=Number_of_threads_Waifu2x_converter
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+			os.system('cls')
+		
+		elif mode == "re":
+			os.system('cls')
 			
 			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
 				f.write('')
@@ -2932,12 +3016,13 @@ def Settings():
 			
 			os.system('cls')
 		
-		elif mode == "14":
+		elif mode == "s":
 			os.system('cls')
 			
 			for key,val in settings_values.items():
 				print(str(key)+' : '+str(val))
-			print('--------------------------')
+			print('')
+			print('--------------------------------------')
 			input('press Enter key to return.')
 			
 			os.system('cls')
@@ -2961,13 +3046,13 @@ def ReadSettings():
 	cpu_num = int(cpu_count() / 2)
 	if cpu_num < 1 :
 		cpu_num = 1
-	default_values = {'SettingVersion':'7','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+	default_values = {'SettingVersion':'8','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
 						'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
-						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan'}
+						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -3526,12 +3611,17 @@ def init():		#初始化函数
 				json.dump(settings_values,f)
 			if View_GPU_ID_start() == []:
 				os.system('cls')
-				print('------------------------------------------------------------')
+				print('----------------------------------------------')
 				print(' No GPU availabel for waifu2x-ncnn-vulkan.')
 				print(' Pls upgrade or reinstall your GPU driver.')
-				print(' Or enable waifu2x-converter in the setting.')
-				print('------------------------------------------------------------')
-				input('Press Enter to continue.')
+				print('----------------------------------------------')
+				if input('Do you wanna enable "waifu2x-converter" now?(Y/N): ').strip(' ').lower() == 'y':
+					settings_values = ReadSettings()
+					settings_values['Image_GIF_scale_mode']='waifu2x-converter'
+					settings_values['Video_scale_mode']='waifu2x-converter'
+					with open('waifu2x-extension-setting','w+') as f:
+						json.dump(settings_values,f)
+						
 		os.system('cls')
 		
 		thread_resizeWindow=ResizeWindow_Thread()
