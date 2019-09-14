@@ -13,19 +13,23 @@ Already been tested on AMD RX 550, NVIDIA GeForce GTX 1070 and Intel UHD 620.
 -----------------------------------------------
 
 waifu2x-ncnn-vulkan version 20190712
+
 Anime4K Java v0.9 Beta
+
 ffmpeg version 4.2
+
 gifsicle version 1.92
 
 -----------------------------------------------
 
 更新日志
-- 
+- 修正在 Anime4k 模式下进度条显示的问题
 
 ------------------------------------------------
 
 To do:
-- 审核代码, 修复代码, 提高稳定性
+- 审核代码, 修复bug, 提高稳定性
+- 视频文件保护,检测到放大后文件后再删除源文件
 
 '''
 
@@ -33,7 +37,7 @@ import os
 os.system('cls')
 print('Loading.......')
 
-Version_current='v3.1'
+Version_current='v3.15'
 
 import time
 import threading
@@ -121,7 +125,7 @@ def ChooseFormat():
 		print('└──────────────────────────────────────────────────────────────┘')
 		print('( 1 / 2 / 3 / 4 /...../ E / D ): ')
 		mode = input().strip(' ').lower()
-		Set_cols_lines(125,38)
+		Set_cols_lines(120,38)
 		if mode == "1":
 			os.system('cls')
 			settings_values = ReadSettings()
@@ -1958,16 +1962,24 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"+" "+"["+'Time Remaining: '+Seconds2hms(ETA)+" ] "+'[ETA: '+ETA_str+' ]'
 				else:
 					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"+"  "+"["+'Time Remaining: '+Seconds2hms(ETA)+" ] "+'[ETA: '+ETA_str+' ]'
-				PrograssBar_len_new = len(PrograssBar)
-				Add_len = PrograssBar_len_old - PrograssBar_len_new
-				if Add_len < 0:
-					Add_len = 0
+				# ~ PrograssBar_len_new = len(PrograssBar)
+				# ~ Add_len = PrograssBar_len_old - PrograssBar_len_new
+				# ~ if Add_len < 0:
+					# ~ Add_len = 0
 				
-				current_cols = Get_cols_lines()[0]
-				if (PrograssBar_len_new+Add_len) > current_cols:
-					Set_cols_lines(cols = PrograssBar_len_new+Add_len+1,lines=38)
+				# ~ current_cols = Get_cols_lines()[0]
+				# ~ if (PrograssBar_len_new+Add_len) > current_cols:
+					# ~ Set_cols_lines(cols = PrograssBar_len_new+Add_len+1,lines=38)
 					
-				PrograssBar_len_old = PrograssBar_len_new
+				# ~ PrograssBar_len_old = PrograssBar_len_new
+				
+				PrograssBar_len_new = len(PrograssBar)
+				current_cols = Get_cols_lines()[0]
+				if PrograssBar_len_new > current_cols:
+					Set_cols_lines(cols = PrograssBar_len_new,lines=38)
+				current_cols = Get_cols_lines()[0]
+				Add_len = current_cols-PrograssBar_len_new
+				
 				sys.stdout.write(PrograssBar+' '*Add_len)
 				sys.stdout.flush()
 					
@@ -1977,16 +1989,24 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"
 				else:
 					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"
+				# ~ PrograssBar_len_new = len(PrograssBar)
+				# ~ Add_len = PrograssBar_len_old - PrograssBar_len_new
+				# ~ if Add_len < 0:
+					# ~ Add_len = 0
+				
+				# ~ current_cols = Get_cols_lines()[0]
+				# ~ if (PrograssBar_len_new+Add_len) > current_cols:
+					# ~ Set_cols_lines(cols = PrograssBar_len_new+Add_len+1,lines=38)
+				
+				# ~ PrograssBar_len_old = PrograssBar_len_new
+				
 				PrograssBar_len_new = len(PrograssBar)
-				Add_len = PrograssBar_len_old - PrograssBar_len_new
-				if Add_len < 0:
-					Add_len = 0
-				
 				current_cols = Get_cols_lines()[0]
-				if (PrograssBar_len_new+Add_len) > current_cols:
-					Set_cols_lines(cols = PrograssBar_len_new+Add_len+1,lines=38)
+				if PrograssBar_len_new > current_cols:
+					Set_cols_lines(cols = PrograssBar_len_new,lines=38)
+				current_cols = Get_cols_lines()[0]
+				Add_len = current_cols-PrograssBar_len_new
 				
-				PrograssBar_len_old = PrograssBar_len_new
 				sys.stdout.write(PrograssBar+' '*Add_len)
 				sys.stdout.flush()
 			if NewFileNum == OldFileNum:
@@ -2027,7 +2047,7 @@ def Clock(TotalFileNum,FinishedFileNum):
 		sys.stdout.flush()
 		time.sleep(1)
 			
-#======================== Multithread management ===========================
+#===================================================== Multithread management ==================================================
 def _async_raise(tid, exctype):
    """raises the exception, performs cleanup if needed"""
    tid = ctypes.c_long(tid)
@@ -2046,7 +2066,7 @@ def _async_raise(tid, exctype):
 def stop_thread(thread):
    _async_raise(thread.ident, SystemExit)
 
-#================================ DelOriginalFiles ==========================
+#======================================================= DelOriginalFiles =======================================
 def DelOrgFiles(inputPath):
 	
 	Exts=[".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]
@@ -2057,7 +2077,7 @@ def DelOrgFiles(inputPath):
 				os.remove(path+'\\'+fname)
 		break
 	
-#======================================== GIF ===========================================
+#======================================================= GIF ======================================================
 def getDuration(FILENAME):
 	PIL_Image_object = Image.open(FILENAME)
 	PIL_Image_object.seek(0)
@@ -2118,7 +2138,7 @@ def compress_gif(inputpath,compress_level):
 	
 	
 	
-#====================== Video ==============================
+#=========================================================== Video =========================================================
 def video2images(inputpath):
 	video_dir = os.path.dirname(inputpath)+'\\'
 	video_path_filename = os.path.splitext(inputpath)[0]
@@ -2218,7 +2238,7 @@ class VideoDelFrameThread_4x(threading.Thread):
 				break
 			time.sleep(0.5)
 	
-#====================== input ============================
+#===================================================== input ====================================================
 def input_scale():
 	settings_values = ReadSettings()
 	default_value = settings_values['scale']
@@ -2570,7 +2590,7 @@ def input_sleepMode():
 	return sleepMode
 	
 
-#======================== Seconds 2 h:m:s =========================
+#======================================================= Seconds 2 h:m:s =======================================================
 def Seconds2hms(seconds):
 	if seconds > 59 and seconds < 3600:
 		minutes = int(seconds/60)
@@ -2584,7 +2604,7 @@ def Seconds2hms(seconds):
 		return str(hours)+'h : '+str(minutes)+'m : '+str(seconds)+'s'
 	else:
 		return str(seconds)+'s'
-#============================= Check Update =====================
+#=========================================================== Check Update ============================================================
 def checkUpdate():
 	print('Checking update....')
 	try:
@@ -2651,7 +2671,7 @@ def checkUpdate_start(Version_current):
 	except BaseException:
 		os.system('cls')
 
-#========================Verify Files=====================
+#====================================================== Verify Files =================================================================
 
 def VerifyFiles():
 	FilesList = ['ffmpeg.exe', 'gifsicle.exe', 'msvcp140.dll', 'NotificationSound_waifu2xExtension.mp3', 'Resize-window.exe', 'vcomp140.dll', 
@@ -3072,7 +3092,7 @@ def ReadSettings():
 
 
 		
-#======================== Logger =============================
+#==================================================== Logger =====================================================
 
 class Logger(object):
 	def __init__(self, filename='default.log', stream=sys.stdout):
@@ -3086,7 +3106,7 @@ class Logger(object):
 	def flush(self):
 		pass
 
-#==================== Admin ===========================
+#=================================================== Admin ===================================================
 def AdminTest():
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	tmp_dir = current_dir+'\\'+'admintest.tmp'
@@ -3104,7 +3124,7 @@ def AdminTest():
 	else:
 		os.system('del /q "'+tmp_dir+'"')
 		return True
-#============================= Error_Log ====================================
+#==================================================== Error_Log ==================================================
 
 def Error_Log():	#读取错误日志
 	if os.path.exists('Error_Log_Waifu2x-Extension.log') == True:	#判断错误日志文件是否存在
@@ -3123,7 +3143,7 @@ def Error_Log():	#读取错误日志
 		print('Error : error log file is missing.')	#提示错误日志文件丢失
 		input('Press Enter key to return.')
 
-#===================== Multi-thread Gif Compress =======================
+#============================================= Multi-thread Gif Compress =================================================
 class GifCompressThread (threading.Thread):
 	def __init__(self,inputPath,gifCompresslevel,delorginal):
 		threading.Thread.__init__(self)
@@ -3175,7 +3195,7 @@ def Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal):
 				break
 		thread_files = []
 		
-#===================== Multi-thread Image Compress =======================
+#=============================================== Multi-thread Image Compress ======================================
 class ImageCompressThread (threading.Thread):
 	def __init__(self,inputPath,delorginal,JpgQuality):
 		threading.Thread.__init__(self)
@@ -3227,7 +3247,7 @@ def Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality):
 				break
 		thread_files = []
 
-#================================= Play Notification Sound====================
+#=============================================== Play Notification Sound======================================
 
 class Play_Notification_Sound_Thread (threading.Thread):
 	def __init__(self):
@@ -3236,7 +3256,7 @@ class Play_Notification_Sound_Thread (threading.Thread):
 	def run(self):
 		playsound('NotificationSound_waifu2xExtension.mp3')
 
-#================================ Resize Window ==========================
+#=================================================== Resize Window ===============================================
 
 class ResizeWindow_Thread(threading.Thread):
 	def __init__(self):
