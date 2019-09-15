@@ -24,12 +24,17 @@ gifsicle version 1.92
 
 更新日志
 - 修正在 Anime4k 模式下进度条显示的问题
+- 视频文件保护
+- 完善启动时的兼容性检查,并且在主菜单中加入兼容性检查选项
+- 优化性能
+
 
 ------------------------------------------------
 
 To do:
 - 审核代码, 修复bug, 提高稳定性
-- 视频文件保护,检测到放大后文件后再删除源文件
+- 检测waifu2x-converter是否可用
+
 
 '''
 
@@ -56,6 +61,8 @@ from multiprocessing import cpu_count
 import traceback
 from playsound import playsound
 import struct
+
+#======================================================== MAIN MENU ==============================================================
 
 def ChooseFormat():
 	
@@ -113,13 +120,13 @@ def ChooseFormat():
 		print('│                                                              │')
 		print('│ 10 : Optimize .gif?(Scale & Denoise): '+optimizeGif+'                  │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ 11 : Settings.           12 : Benchmark.                     │')
+		print('│ 11 : Settings.            12 : Benchmark.                    │')
 		print('│                                                              │')
-		print('│ 13 : Read error log.     14 : Check update.                  │')
+		print('│ 13 : Read error log.      14 : Check update.                 │')
 		print('│                                                              │')
-		print('│ 15 : Readme.             16 : License.                       │')
+		print('│ 15 : Readme.              16 : License.                      │')
 		print('│                                                              │')
-		print('│ E : Exit.                                                    │')
+		print('│ 17 : Compatibility test   E : Exit.                          │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│                D : Donate 捐赠. (Alipay 支付宝)              │')
 		print('└──────────────────────────────────────────────────────────────┘')
@@ -232,6 +239,12 @@ def ChooseFormat():
 			os.system('cls')
 			license_()
 			os.system('cls')
+		
+		elif mode == "17":
+			os.system('cls')
+			Compatibility_Test(False)
+			os.system('cls')
+			
 		elif mode == "e":
 			ChangeColor_cmd_original()
 			os.system('cls')
@@ -279,7 +292,7 @@ def Image_Gif_Scale_Denoise():
 				print('-----------------------------')
 			else:
 				inputPathError = False
-		if inputPathOver == True:
+		if inputPathOver :
 			inputPathList.append(inputPath)
 			
 	inputPathList = Deduplicate_list(inputPathList)
@@ -434,7 +447,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 				orginalFileNameAndFullname[fileName]= fileNameAndExt
 			break
 		
-		if os.path.exists(inputPath+"\\scaled_waifu2x\\") == True:
+		if os.path.exists(inputPath+"\\scaled_waifu2x\\") :
 			os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\\"+'"')
 		os.mkdir(inputPath+"\\scaled_waifu2x\\")
 		
@@ -619,7 +632,7 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"_Waifu2x.png\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 		
-		if thread1.isAlive()==True:
+		if thread1.isAlive():
 			stop_thread(thread1)	
 		print('')	
 		
@@ -666,7 +679,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 				
 		scalepath = scaledFilePath+'_split\\scaled\\'
 		
-		if os.path.exists(scaledFilePath+'_split\\scaled') == True:
+		if os.path.exists(scaledFilePath+'_split\\scaled') :
 			os.system("rd /s/q \""+scaledFilePath+'_split\\scaled'+'"')
 		os.mkdir(scaledFilePath+'_split\\scaled')
 		
@@ -824,7 +837,7 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 				print('-----------------------------')
 			else:
 				inputPathError = False
-		if inputPathOver == True:
+		if inputPathOver :
 			inputPathList.append(inputPath)
 			
 	inputPathList = Deduplicate_list(inputPathList)
@@ -1006,7 +1019,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 				
 		scalepath = scaledFilePath+'_split\\scaled\\'
 		
-		if os.path.exists(scaledFilePath+'_split\\scaled') == True:
+		if os.path.exists(scaledFilePath+'_split\\scaled') :
 			os.system("rd /s/q \""+scaledFilePath+'_split\\scaled'+'"')
 		os.mkdir(scaledFilePath+'_split\\scaled')
 		
@@ -1131,7 +1144,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 				print('-----------------------------')
 			else:
 				inputPathError = False
-		if inputPathOver == True:
+		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
 	
@@ -1209,7 +1222,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'
 		
 		oldfilenumber=FileCount(frames_dir)
-		if os.path.exists(frames_dir+"\\scaled\\") == True:
+		if os.path.exists(frames_dir+"\\scaled\\") :
 			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
 		os.mkdir(frames_dir+"\\scaled\\")
 		
@@ -1259,13 +1272,19 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		
 		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
 		
-	
-				
 		if os.path.splitext(inputPath)[1] != '.mp4':
-			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
-			
+			os.remove(os.path.splitext(inputPath)[0]+'.mp4')
+		
+		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
+	
 		if delorginal.lower() == 'y':
-			os.system('del /q "'+inputPath+'"')	
+			if os.path.exists(res_video):
+				if os.path.getsize(res_video) > 0:
+					os.system('del /q "'+inputPath+'"')	
+				else:
+					print('Error occured, failed to generate result video.')
+			else:
+				print('Error occured, failed to generate result video.')
 		finished_num = finished_num+1
 	Window_Title('')
 
@@ -1298,7 +1317,7 @@ def Scale_Denoise_Video():
 				print('-----------------------------')
 			else:
 				inputPathError = False
-		if inputPathOver == True:
+		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
 	
@@ -1389,7 +1408,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'
 		
 		oldfilenumber=FileCount(frames_dir)
-		if os.path.exists(frames_dir+"\\scaled\\") == True:
+		if os.path.exists(frames_dir+"\\scaled\\") :
 			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
 		os.mkdir(frames_dir+"\\scaled\\")
 		
@@ -1510,10 +1529,20 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 	
 				
 		if os.path.splitext(inputPath)[1] != '.mp4':
-			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
+			os.remove(os.path.splitext(inputPath)[0]+'.mp4')
 			
+		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
+	
+		if os.path.splitext(inputPath)[1] != '.mp4':
+			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
 		if delorginal.lower() == 'y':
-			os.system('del /q "'+inputPath+'"')	
+			if os.path.exists(res_video):
+				if os.path.getsize(res_video) > 0:
+					os.system('del /q "'+inputPath+'"')	
+				else:
+					print('Error occured, failed to generate result video.')
+			else:
+				print('Error occured, failed to generate result video.')
 		finished_num = finished_num+1
 	Window_Title('')
 
@@ -1545,7 +1574,7 @@ def Scale_Denoise_Video_Anime4K():
 				print('-----------------------------')
 			else:
 				inputPathError = False
-		if inputPathOver == True:
+		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
 	
@@ -1661,7 +1690,7 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'
 		
 		oldfilenumber=FileCount(frames_dir)
-		if os.path.exists(frames_dir+"\\scaled\\") == True:
+		if os.path.exists(frames_dir+"\\scaled\\") :
 			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
 		os.mkdir(frames_dir+"\\scaled\\")
 			
@@ -1689,12 +1718,22 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		if os.path.splitext(inputPath)[1] != '.mp4':
 			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
 			
+		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
+	
+		if os.path.splitext(inputPath)[1] != '.mp4':
+			os.remove(os.path.splitext(inputPath)[0]+'.mp4')
 		if delorginal.lower() == 'y':
-			os.system('del /q "'+inputPath+'"')	
+			if os.path.exists(res_video):
+				if os.path.getsize(res_video) > 0:
+					os.system('del /q "'+inputPath+'"')	
+				else:
+					print('Error occured, failed to generate result video.')
+			else:
+				print('Error occured, failed to generate result video.')
 		finished_num = finished_num+1
 	Window_Title('')
 
-#============================= Compress_image_gif ===============================
+#===================================================== Compress_image_gif ====================================================
 def Compress_image_gif():
 	print("================= Compress image & gif ================")
 	print("Type 'r' to return to the previous menu")
@@ -1722,7 +1761,7 @@ def Compress_image_gif():
 				print('-----------------------------')
 			else:
 				inputPathError = False
-		if inputPathOver == True:
+		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
 	
@@ -1792,9 +1831,9 @@ def Compress_image_gif():
 			break
 	inputPathList_files = inputPathList_files+inputPathList_files_input
 			
-	if gif_exist == True :
+	if gif_exist  :
 		process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal,multiThread)
-	if image_exist == True :
+	if image_exist  :
 		Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality)
 			
 	total_time_end=time.time()
@@ -1805,7 +1844,7 @@ def Compress_image_gif():
 		thread_notification.start()
 	input('\npress enter key to return to the menu')
 	
-#=================================== Process_compress_image ===============================================
+#========================================================== Process_compress_image ======================================================
 
 def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality):
 	if multiThread.lower() == 'y':
@@ -1848,7 +1887,8 @@ def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality
 				
 			print('--------------------------------------------')
 
-#========================================== process_gif_compress_modeABC ===============================
+#============================================================= process_gif_compress_modeABC ===================================================
+
 def process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal,multiThread):
 	if multiThread.lower() == 'y':
 		print('Start compressing .gif, pls wait....')
@@ -2095,7 +2135,7 @@ def getDuration(FILENAME):
 def splitGif(gifFileName,scaledFilePath):
 	im = Image.open(gifFileName)
 	pngDir = scaledFilePath+'_split'
-	if os.path.exists(scaledFilePath+'_split') == True:
+	if os.path.exists(scaledFilePath+'_split') :
 			os.system("rd /s/q \""+scaledFilePath+'_split'+'"')
 	os.mkdir(scaledFilePath+'_split')
 	try:
@@ -2151,7 +2191,7 @@ def video2images(inputpath):
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
 	
-	if os.path.exists(frames_dir) == True:
+	if os.path.exists(frames_dir) :
 			os.system("rd /s/q \""+frames_dir+'"')
 	os.mkdir(frames_dir)
 
@@ -2701,7 +2741,7 @@ def VerifyFiles():
 		if fname not in FilesList_current:
 			FileNotFound = True
 			print('Error: "'+fname+'" not found.')
-	if FileNotFound == True:
+	if FileNotFound :
 		return 'error'
 	else:
 		return 'verified'
@@ -3127,7 +3167,7 @@ def AdminTest():
 #==================================================== Error_Log ==================================================
 
 def Error_Log():	#读取错误日志
-	if os.path.exists('Error_Log_Waifu2x-Extension.log') == True:	#判断错误日志文件是否存在
+	if os.path.exists('Error_Log_Waifu2x-Extension.log') :	#判断错误日志文件是否存在
 		webbrowser.open('Error_Log_Waifu2x-Extension.log')
 		log_size = round(os.path.getsize('Error_Log_Waifu2x-Extension.log')/1024)
 		if log_size > 200:
@@ -3365,7 +3405,7 @@ def Benchmark():
 	old_time_cost = 100000
 	old_tileSize = 0
 	
-	if os.path.exists(scaledFilePath) == True:
+	if os.path.exists(scaledFilePath) :
 		os.system("rd /s/q \""+scaledFilePath+"\"")
 	
 	for x in range(0,50):
@@ -3460,7 +3500,7 @@ def RecoverGifFiles(inputPathList):
 					new_path = inputPath+'\\'+fname
 					os.system('copy /y "'+old_path+'" "'+new_path+'"')
 					os.system('del /q "'+old_path+'"')
-			if os.path.exists(inputPath+'\\protectfiles_waifu2x_extension') == True:
+			if os.path.exists(inputPath+'\\protectfiles_waifu2x_extension') :
 				os.system('rd /s/q "'+inputPath+'\\protectfiles_waifu2x_extension'+'"')
 			break
 			
@@ -3493,10 +3533,10 @@ def View_GPU_ID():
 		load_proc_save_str = ' -j 1:1:1 '
 		inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
 		scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.png'
-		if os.path.exists(scaledFilePath) == True:
+		if os.path.exists(scaledFilePath) :
 			os.system("del /q \""+scaledFilePath+"\"")
 		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
-		if os.path.exists(scaledFilePath)==True:
+		if os.path.exists(scaledFilePath):
 			gpuId_list.append(gpuId)
 			os.system("del /q \""+scaledFilePath+"\"")
 		else:
@@ -3514,36 +3554,97 @@ def View_GPU_ID():
 		print('------------------------------------------')
 	return gpuId_list
 
-def View_GPU_ID_start():
+#======================================================  Compatibility_Test =============================================================
+
+def Compatibility_Test(Init):
+	
+	waifu2x_ncnn_vulkan_avaliable = False
+	waifu2x_converter_avaliable = False
+	Anime4k_avaliable = False
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
+	scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.jpg'
+	
 	os.system('cls')
 	print('----------------------------')
 	print('        Loading....')
 	print('----------------------------')
+	
+	#============== 测试waifu2x-ncnn-vulkan ==============
+	
 	gpuId = 0
 	gpuId_list = []
 	for x in range(0,10):
 		gpuId_str = ' -g '+str(gpuId)
 		settings_values = ReadSettings()
-		current_dir = os.path.dirname(os.path.abspath(__file__))
 		models = 'models-upconv_7_anime_style_art_rgb'
 		scale = '2'
 		noiseLevel = '0'
 		tileSize = '50'
 		load_proc_save_str = ' -j 1:1:1 '
-		inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
-		scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.jpg'
-		if os.path.exists(scaledFilePath) == True:
+		
+		if os.path.exists(scaledFilePath):
 			os.system("del /q \""+scaledFilePath+"\"")
 		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
-		if os.path.exists(scaledFilePath)==True:
-			gpuId_list.append(gpuId)
+		if os.path.exists(scaledFilePath):
+			waifu2x_ncnn_vulkan_avaliable = True
 			os.system("del /q \""+scaledFilePath+"\"")
 			break
 		else:
 			break
 		gpuId = gpuId+1
+	
+	#=========================== 测试waifu2x-converter ===================
+	if os.path.exists(scaledFilePath):
+		os.system("del /q \""+scaledFilePath+"\"")
+		
+	model_dir = 'waifu2x-converter\\models_rgb'
+	os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+scaledFilePath+'" --scale_ratio '+'2'+' --noise_level '+'2'+' --model_dir '+model_dir)
+	
+	if os.path.exists(scaledFilePath):
+		waifu2x_converter_avaliable = True
+		os.system("del /q \""+scaledFilePath+"\"")
+	
+	#======================== 测试 Anime4k ===============================
+	if os.path.exists(scaledFilePath):
+		os.system("del /q \""+scaledFilePath+"\"")
+	
+	os.system('java -jar Anime4K\\Anime4K.jar "'+inputPath+'" "'+scaledFilePath+'" '+'2')
+	
+	if os.path.exists(scaledFilePath):
+		Anime4k_avaliable = True
+		os.system("del /q \""+scaledFilePath+"\"")
+	
+	#====================== 输出测试结果 =======================
 	os.system('cls')
-	return gpuId_list
+	print('------------------------------------------------')
+	print('Compatible with waifu2x-ncnn-vulkan : ',waifu2x_ncnn_vulkan_avaliable)
+	print('Compatible with waifu2x-converter : ',waifu2x_converter_avaliable)
+	print('Compatible with Anime4k : ',Anime4k_avaliable)
+	print('------------------------------------------------')
+	if waifu2x_ncnn_vulkan_avaliable and waifu2x_converter_avaliable and Anime4k_avaliable:
+		print('')
+		if Init:
+			time.sleep(3)
+		else:
+			input('Press Enter key to continue.')
+	else:
+		ChangeColor_warning()
+		print('')
+		print('Warning, there is a compatibility issue on the current computer.') 
+		print('Please try to reinstall or update the graphics driver.')
+		print('If the compatibility issue is still not resolved, enable the compatible components in the settings.')
+		print('')
+		print('----------------------------')
+		print('Press Enter key to continue.')
+		print('----------------------------')
+		input()
+		os.system('cls')
+		ChangeColor_default()
+		
+		
+		
 	
 #=============================== Default Window Title =================
 def Window_Title(Add_str = ''):
@@ -3629,18 +3730,7 @@ def init():		#初始化函数
 			settings_values['First_Time_Boot_Up'] = 'n'
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
-			if View_GPU_ID_start() == []:
-				os.system('cls')
-				print('----------------------------------------------')
-				print(' No GPU availabel for waifu2x-ncnn-vulkan.')
-				print(' Pls upgrade or reinstall your GPU driver.')
-				print('----------------------------------------------')
-				if input('Do you wanna enable "waifu2x-converter" now?(Y/N): ').strip(' ').lower() == 'y':
-					settings_values = ReadSettings()
-					settings_values['Image_GIF_scale_mode']='waifu2x-converter'
-					settings_values['Video_scale_mode']='waifu2x-converter'
-					with open('waifu2x-extension-setting','w+') as f:
-						json.dump(settings_values,f)
+			Compatibility_Test(True)
 						
 		os.system('cls')
 		
@@ -3649,7 +3739,7 @@ def init():		#初始化函数
 		
 		ChooseFormat()
 		
-		if thread_resizeWindow.isAlive()==True:
+		if thread_resizeWindow.isAlive():
 			stop_thread(thread_resizeWindow)
 			
 	else:
