@@ -79,6 +79,10 @@ https://github.com/bloc97/Anime4K
 Waifu2x-converter:
 https://github.com/WL-Amigo/waifu2x-converter-cpp
 
+Icon:
+Icons made by : Freepik (https://www.flaticon.com/authors/freepik)
+From Flaticon : https://www.flaticon.com/
+
 # Donate
 
 ## If this extension helps you, you are welcome to donate to support developers.
