@@ -23,13 +23,14 @@ gifsicle version 1.92
 -----------------------------------------------
 
 更新日志
-- 
+- 提高一些情况下waifu2x-ncnn-vulkan的执行效率
+- 完善waifu2x-converter的多线程,现已支持多线程放大图片
 
 
 ------------------------------------------------
 
 To do:
-- waifu2x-converter 图片放大 多线程
+- 性能优化
 
 
 '''
@@ -55,7 +56,7 @@ import traceback
 from playsound import playsound
 import struct
 
-Version_current='v3.15'
+Version_current='v3.2'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -311,7 +312,7 @@ def Image_Gif_Scale_Denoise():
 					subfolders_list.append(str(dirs[0]))
 				break
 		inputPathList_folders = subfolders_list
-		
+	
 	scale = input_scale()
 	if scale.lower() == 'r':
 		return 1
@@ -375,6 +376,16 @@ def Image_Gif_Scale_Denoise():
 	
 	total_time_start=time.time()
 	
+	#======================== 同文件夹下的单个文件合并到一个文件夹内 ==========================
+	Dict_New_folder_Old_folder_RemoveList = Image_File_2_Folder(inputPathList_files)
+	Dict_New_folder_Old_folder = Dict_New_folder_Old_folder_RemoveList[0]
+	RemoveList = Dict_New_folder_Old_folder_RemoveList[1]
+	if RemoveList != []:
+		for key in Dict_New_folder_Old_folder:
+			inputPathList_folders.append(key)
+		for path in RemoveList:
+			inputPathList_files.remove(path)
+	
 	#=================================== 文件夹 =========================
 	if inputPathList_folders != []:
 		if Gif_exists:
@@ -401,6 +412,9 @@ def Image_Gif_Scale_Denoise():
 		if Image_exists:
 			Process_ImageModeAB(inputPathList_folders,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,delorginal)
 			RecoverGifFiles(inputPathList_folders)
+			
+	if RemoveList != []:
+		Remove_File_2_Folder(Dict_New_folder_Old_folder)
 	#======================= 单文件 =========================
 	if inputPathList_files != []:
 		if Gif_exists:
@@ -953,25 +967,30 @@ class waifu2x_converter_Thread(threading.Thread):
 		os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+outputPath+'" --scale_ratio '+scale+' --noise_level '+noiseLevel+' --model_dir '+model_dir)
 
 
-#=============================================  Process_ImageModeC_waifu2x_converter  ======================================================
+class waifu2x_converter_Thread_ImageModeC(threading.Thread):
+	def __init__(self,inputPath,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal):
+		threading.Thread.__init__(self)
+		self.inputPath = inputPath
+		self.JpgQuality = JpgQuality
+		self.noiseLevel = noiseLevel
+		self.scale = scale
+		self.saveAsJPG = saveAsJPG
+		self.delorginal = delorginal
+        
+	def run(self):
+		inputPath = self.inputPath 
+		JpgQuality = self.JpgQuality 
+		noiseLevel = self.noiseLevel 
+		scale = self.scale
+		saveAsJPG = self.saveAsJPG 
+		delorginal = self.delorginal 
 
-def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal):
-	TotalFileNum = len(inputPathList_Image)
-	FinishedFileNum = 1
-	for inputPath in inputPathList_Image:
-		Window_Title('  [Scale Imgae]  Files: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')')
 		scaledFilePath = os.path.splitext(inputPath)[0]
 		fileNameAndExt=str(os.path.basename(inputPath))
 		
-		# ~ thread1=ClockThread(TotalFileNum,FinishedFileNum)
-		# ~ thread1.start()
 		model_dir = 'waifu2x-converter\\models_rgb'
 		os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+scaledFilePath+"_Waifu2x.png"+'" --scale_ratio '+scale+' --noise_level '+noiseLevel+' --model_dir '+model_dir)
-		# ~ if thread1.isAlive()==True:
-			# ~ stop_thread(thread1)	
 		print('')	
-		
-			
 		if saveAsJPG.lower() == 'y':
 			if os.path.exists(scaledFilePath+"_Waifu2x.png"):
 				print('\n Convert image..... \n')
@@ -988,7 +1007,39 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 				print(' '+inputPath)
 				print(' will not be deleted.')
 				print('----------------------------------------------------------------')
-		FinishedFileNum = FinishedFileNum+1
+
+#=============================================  Process_ImageModeC_waifu2x_converter  ======================================================
+
+def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal):
+	settings_values = ReadSettings()
+	TotalFileNum = len(inputPathList_Image)
+	max_threads = settings_values['Number_of_threads_Waifu2x_converter']
+	FinishedFileNum = max_threads
+	thread_files = []
+	for inputPath in inputPathList_Image:
+		Window_Title('  [Scale Imgae]  Files: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')')
+		
+		thread_files.append(inputPath)
+		if len(thread_files) == max_threads:
+			for fname_ in thread_files:
+				thread1=waifu2x_converter_Thread_ImageModeC(fname_,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal)
+				thread1.start()
+			while True:
+				if thread1.isAlive()== False:
+					break
+			FinishedFileNum = FinishedFileNum+len(thread_files)
+			thread_files = []
+	if thread_files != []:
+		FinishedFileNum = TotalFileNum
+		Window_Title('  [Scale Imgae]  Files: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')')
+		for fname_ in thread_files:
+				thread1=waifu2x_converter_Thread_ImageModeC(fname_,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal)
+				thread1.start()
+		while True:
+			if thread1.isAlive()== False:
+				break
+		thread_files = []
+				
 	Window_Title('')
 
 #==============================================  process_gif_scale_modeABC_waifu2x_converter =================================================
@@ -3485,7 +3536,7 @@ def MoveGifFiles(inputPathList):
 						os.mkdir(inputPath+'\\protectfiles_waifu2x_extension')
 					new_path = path+'\\protectfiles_waifu2x_extension\\'+fname
 					os.system('copy /y "'+old_path+'" "'+new_path+'"')
-					os.system('del /q "'+old_path+'"')
+					os.remove(old_path)
 			if path_gif_exist:
 				inputPathList_gif.append(inputPath)
 				path_gif_exist = False
@@ -3658,7 +3709,7 @@ def Deduplicate_list(The_List):
 	New_List = sorted(list(set(The_List)))
 	return New_List
 	
-#============================================  Separate_files_folder  ===================================
+#=========================================================  Separate_files_folder  ======================================================
 def Separate_files_folder(paths_list):
 	list_folders = []
 	list_files = []
@@ -3668,7 +3719,7 @@ def Separate_files_folder(paths_list):
 		elif os.path.isfile(path):
 		    list_files.append(path)
 	return [list_files,list_folders]
-#================================================ Change Color ======================
+#============================================================= Change Color =============================================================
 def ChangeColor_default():
 	settings_values = ReadSettings()
 	os.system('color '+settings_values['default_color'])
@@ -3710,6 +3761,56 @@ def Set_default_color():
 			os.system('cls')
 			input('Wrong input,press Enter to continue.')
 			os.system('cls')
+
+#===================================================== MOVE FILE =========================================================
+def Move_file_org_new(org_path,new_path):
+	if os.path.exists(os.path.dirname(new_path)) == False:
+		os.mkdir(os.path.dirname(new_path))
+	if os.path.exists(new_path):
+		os.remove(new_path)
+	os.system('copy /y "'+org_path+'" "'+new_path+'"')
+	if os.path.exists(new_path):
+		os.remove(org_path)
+	else:
+		print('Error: Move_file_org_new() -  new_path doesn\'t exists')
+
+#=================================================== Image_File_2_Folder ==========================================================
+def Image_File_2_Folder(FileList):
+	File_folder_full_dict = {}
+	File_folder_final_dict = {}
+	
+	for file_ in FileList:
+		if os.path.splitext(file_)[1] in [".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]:
+			File_folder_full_dict[os.path.dirname(file_)] = []
+	for file_ in FileList:
+		if os.path.splitext(file_)[1] in [".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]:
+			File_folder_full_dict[os.path.dirname(file_)].append(file_)
+	for key in File_folder_full_dict:
+		if len(File_folder_full_dict[key]) > 1:
+			File_folder_final_dict[key] = File_folder_full_dict[key]
+	Dict_New_folder_Old_folder={}
+	
+	RemoveList = []
+	for vals in File_folder_final_dict.values():
+		for val in vals:
+			RemoveList.append(val)
+	
+	for key in File_folder_final_dict:
+		New_folder = key+'\\waifu2x_image_folder'
+		Old_folder = key
+		Dict_New_folder_Old_folder[New_folder] = Old_folder
+		for Org_file in File_folder_final_dict[key]:
+			fname = Org_file.split('\\')[-1]
+			New_file = New_folder+'\\'+fname
+			Move_file_org_new(Org_file,New_file)
+	return [Dict_New_folder_Old_folder,RemoveList]
+
+def Remove_File_2_Folder(Dict_New_folder_Old_folder):
+	for key,val in Dict_New_folder_Old_folder.items():
+		os.system('copy /y "'+key+"\\*.*\" \""+val+'"')
+		os.system("rd /s/q \""+key+'"')
+
+	
 
 #==========================================  Init  ==================================================================
 
