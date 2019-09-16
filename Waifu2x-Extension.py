@@ -23,27 +23,20 @@ gifsicle version 1.92
 -----------------------------------------------
 
 更新日志
-- 修正在 Anime4k 模式下进度条显示的问题
-- 视频文件保护
-- 完善启动时的兼容性检查,并且在主菜单中加入兼容性检查选项
-- 优化性能
+- 
 
 
 ------------------------------------------------
 
 To do:
-- 审核代码, 修复bug, 提高稳定性
-- 检测waifu2x-converter是否可用
+- waifu2x-converter 图片放大 多线程
 
 
 '''
 
-import os
-os.system('cls')
 print('Loading.......')
 
-Version_current='v3.15'
-
+import os
 import time
 import threading
 import sys
@@ -61,6 +54,8 @@ from multiprocessing import cpu_count
 import traceback
 from playsound import playsound
 import struct
+
+Version_current='v3.15'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -237,6 +232,7 @@ def ChooseFormat():
 		
 		elif mode == "16":
 			os.system('cls')
+			Set_cols_lines(120,43)
 			license_()
 			os.system('cls')
 		
@@ -2714,8 +2710,8 @@ def checkUpdate_start(Version_current):
 #====================================================== Verify Files =================================================================
 
 def VerifyFiles():
-	FilesList = ['ffmpeg.exe', 'gifsicle.exe', 'msvcp140.dll', 'NotificationSound_waifu2xExtension.mp3', 'Resize-window.exe', 'vcomp140.dll', 
-					'vcruntime140.dll', 'vulkan-1.dll', 'Waifu2x-Extension.exe', 'Waifu2x-Extension.py', 'waifu2x-ncnn-vulkan.exe', 'Anime4K.jar', 
+	FilesList = ['ffmpeg.exe', 'gifsicle.exe', 'MSVCP140.dll', 'NotificationSound_waifu2xExtension.mp3', 'Resize-window.exe', 'vcomp140.dll', 
+					'VCRUNTIME140.dll', 'vulkan-1.dll', 'Waifu2x-Extension.exe', 'Waifu2x-Extension.py', 'waifu2x-ncnn-vulkan.exe', 'Anime4K.jar', 
 					'aparapi-1.10.0.jar', 'aparapi-jni-1.4.1.jar', 'bcel-6.2.jar', 'scala-library-2.12.6.jar', 'Benchmark_Image_waifu2x_extension_1.png', 
 					'Benchmark_Image_waifu2x_extension_2.png', 'Benchmark_Image_waifu2x_extension_3.png', 'Benchmark_Image_waifu2x_extension_4.png', 
 					'Benchmark_Image_waifu2x_extension_5.png', 'Benchmark_Image_waifu2x_extension_6.png', 'Benchmark_Image_waifu2x_extension_7.png', 
@@ -3449,6 +3445,9 @@ def license_():
 	print('The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n')
 	print('THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n')
 	print('------------------------------------------')
+	print('Icons made by : Freepik (https://www.flaticon.com/authors/freepik)')
+	print('From Flaticon : https://www.flaticon.com/')
+	print('------------------------------------------')
 	print('中文:')
 	print('注意:中文版本由机器翻译生成, 仅供无法阅读英语者参考, 可能包含错误, 一切以英文原版许可证为准.')
 	print('---------------------------------------------')
@@ -3456,6 +3455,9 @@ def license_():
 	print('特此授予任何获得本软件和相关文档文件（“软件”）副本的人免费许可，以无限制地交易本软件，包括但不限于使用，复制，修改，合并的权利在符合以下条件的前提下，发布，分发，再许可，并允许向其提供软件的人员这样做：\n')
 	print('上述版权声明和本许可声明应包含在本软件的所有副本或实质部分中。\n')
 	print('本软件按“原样”提供，不提供任何明示或暗示的保证，包括但不限于适销性，特定用途的适用性和不侵权的保证。在任何情况下，作者或版权所有者均不对任何索赔，损害或其他责任承担任何责任，无论是在合同，侵权行为还是其他方面的行为，由本软件引起或与之相关，或与本软件的使用或其他交易有关。软件。\n')
+	print('------------------------------------------')
+	print('图标作者 : Freepik ( https://www.flaticon.com/authors/freepik )')
+	print('来自 Flaticon : https://www.flaticon.com/')
 	print('------------------------------------------')
 	input('Press Enter key to return to the main menu.')
 
@@ -3743,7 +3745,6 @@ def init():		#初始化函数
 			stop_thread(thread_resizeWindow)
 			
 	else:
-		os.system('cls')
 		print('-'*40)
 		download_latest = input('Some files are missing. Do you wanna download the latest package?(y/n): ')
 		if download_latest.lower() == 'y':
