@@ -23,7 +23,10 @@ gifsicle version 1.92
 -----------------------------------------------
 
 更新日志
-- 
+- 提供兼容性问题修复建议
+- 加快启动速度
+- 优化更新体验, 启动检查更新更改为后台进行检查, 如有更新再进行弹窗.
+- 性能优化
 
 
 ------------------------------------------------
@@ -31,7 +34,6 @@ gifsicle version 1.92
 To do:
 - 性能优化
 - 修改文件校验机制，改为读取文件，以实现编译后一样可以正常校验文件
-- 提供兼容性问题修复建议
 
 
 '''
@@ -57,13 +59,17 @@ import traceback
 from playsound import playsound
 import struct
 
-Version_current='v3.2'
+Version_current='v3.25'
 
 #======================================================== MAIN MENU ==============================================================
 
 def ChooseFormat():
 	
 	settings_values = ReadSettings()
+	
+	if settings_values['CheckUpdate'] == 'y':
+		thread_CheckUpdate=CheckUpdate_start_thread()
+		thread_CheckUpdate.start()
 	
 	tileSize = '[ '+settings_values['tileSize']+' ]'
 	
@@ -129,7 +135,9 @@ def ChooseFormat():
 		print('└──────────────────────────────────────────────────────────────┘')
 		print('( 1 / 2 / 3 / 4 /...../ E / D ): ')
 		mode = input().strip(' ').lower()
+			
 		Set_cols_lines(120,38)
+		
 		if mode == "1":
 			os.system('cls')
 			settings_values = ReadSettings()
@@ -2747,11 +2755,17 @@ def checkUpdate():
 		print('Failed to establish connection, pls check your internet or try again, press Enter key to return....\n')
 		input()
 		os.system('cls')
-	
+
+class CheckUpdate_start_thread(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+        
+	def run(self):
+		CheckUpdate_start()
+
 		
-def checkUpdate_start(Version_current):
-	os.system('cls')
-	print('Checking update....')
+def CheckUpdate_start():
+	#print('Checking update....')
 	try:
 		headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
 		r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
@@ -2764,21 +2778,41 @@ def checkUpdate_start(Version_current):
 		Version_latest = p_split_name.split(title)[1]
 		
 		if Version_current != Version_latest:
-			os.system('cls')
-			print('New update : '+Version_latest)
-			while True:
-				print('If you don\'t wanna check for updates at startup. You can change the settings.')
-				download_update = input('Do you wanna download the update?(y/n): ')
-				if download_update in ['y','n','Y','N']:
-					break
-				else:
-					print('wrong input, pls input again')
-			if download_update.lower() == 'y':
-				webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
+			
+			settings_values = ReadSettings()
+			
+			update_bat_str=[
+			'@echo off \n',
+			'color '+settings_values['default_color']+' \n',
+			'title = Waifu2x-Extension '+Version_current+' by Aaron Feng  [ New Update Available ] \n',
+			'echo Current version : '+Version_current+'\n',
+			'echo New update : '+Version_latest+'\n',
+			'echo If you don\'t wanna check for updates at startup. You can change the settings. \n',
+			'echo Do you wanna download the update?(y/n): \n',
+			'set user_input=N\n',
+			'set /p user_input= \n',
+			'if %user_input%==Y goto update \n',
+			'if %user_input%==N goto exit \n',
+			'if %user_input%==y goto update \n',
+			'if %user_input%==n goto exit \n',
+			'EXIT \n'
+			':update \n',
+			'start https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest \n',
+			'goto exit \n',
+			':exit \n',
+			'EXIT \n'
+			]
+			
+			with open('update_bat.bat','w+') as f:
+				f.writelines(update_bat_str)
+			os.system('start update_bat.bat')
+			
+			return 0
+			
 		else:
-			os.system('cls')
+			return 0
 	except BaseException:
-		os.system('cls')
+		return 0
 
 #====================================================== Verify Files =================================================================
 
@@ -3729,7 +3763,36 @@ def Compatibility_Test(Init):
 	else:
 		ChangeColor_warning()
 		print('Warning, there is a compatibility issue on the current computer.') 
-		print('Please try to reinstall or update the graphics driver.')
+		print('Please follow the suggestions below to fix compatibility issues:')
+		print('----------------------------------------------------------------')
+		print('First of all, check update, make sure you are using the latest Waifu2x-Extension.')
+		if waifu2x_ncnn_vulkan_avaliable == False:
+			print('')
+			print('-------------------------------------------------')
+			print('Waifu2x-ncnn-vulkan:')
+			print('Re-install gpu driver or update it to the latest.')
+			print('And make sure your GPU support Vulkan.')
+			print('-------------------------------------------------')
+			print('')
+			
+		if waifu2x_converter_avaliable == False:
+			print('')
+			print('-------------------------------------------------------------------')
+			print('Waifu2x-converter:')
+			print('Check update, make sure you are using the latest Waifu2x-Extension.')
+			print('If this won\'t fix the problem, then buy a new computer.')
+			print('-------------------------------------------------------------------')
+			print('')
+			
+		if Anime4k_avaliable == False:
+			print('')
+			print('------------------------------')
+			print('Anime4k:')
+			print('Install the latest JDK and JRE')
+			print('------------------------------')
+			print('')
+		
+		
 		print('If the compatibility issue is still not resolved, enable the compatible components in the settings.')
 		print('')
 		print('----------------------------')
@@ -3874,9 +3937,6 @@ def init():		#初始化函数
 		f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Start running\n')
 		
 	settings_values = ReadSettings()
-	
-	if settings_values['CheckUpdate'] == 'y':
-		checkUpdate_start(Version_current)
 		
 	if VerifyFiles() == 'verified':
 		if settings_values['First_Time_Boot_Up'] == 'y':
