@@ -1182,6 +1182,8 @@ class DelOldFileThread_4x(threading.Thread):
 
 #=============================================  Scale & Denoise Video_waifu2x_converter  ====================================
 def Scale_Denoise_Video_waifu2x_converter():
+	print('注意 : 输入路径中不得包含中文字符,会造成兼容性问题.')
+	print('')
 	print("================ Scale & Denoise Video - waifu2x-converter ===============")
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder or a video file")
@@ -1356,6 +1358,8 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
+	print('注意 : 输入路径中不得包含中文字符,会造成兼容性问题.')
+	print('')
 	print("================ Scale & Denoise Video - Waifu2x-ncnn-vulkan ===============")
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder or a video file")
@@ -1619,6 +1623,8 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 
 #=============================================  Scale & Denoise Video - Anime4K  ====================================
 def Scale_Denoise_Video_Anime4K():
+	print('注意 : 输入路径中不得包含中文字符,会造成兼容性问题.')
+	print('')
 	print("======================== Scale Video - Anime4K =======================")
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder or a video file")
