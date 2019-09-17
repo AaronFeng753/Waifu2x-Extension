@@ -25,6 +25,7 @@ gifsicle version 1.92
 更新日志
 - 提高一些情况下waifu2x-ncnn-vulkan的执行效率
 - 完善waifu2x-converter的多线程,现已支持多线程放大图片
+- 代码性能优化
 
 
 ------------------------------------------------
@@ -265,6 +266,7 @@ def Image_Gif_Scale_Denoise():
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder or a file")
 	print("Scaled images & gifs will be in the input path \n")
+	
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -272,6 +274,9 @@ def Image_Gif_Scale_Denoise():
 	JpgQuality=100
 	models = 'models-upconv_7_anime_style_art_rgb'
 	Image_GIF_scale_mode = settings_values['Image_GIF_scale_mode']
+	inputPathError = True
+	inputPath = ''
+	
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
@@ -395,6 +400,7 @@ def Image_Gif_Scale_Denoise():
 				inputPathList_gif = MoveGifFiles(inputPathList_folders)
 				for inputPath in inputPathList_gif:
 					for path,useless,fnames in os.walk(inputPath+'\\protectfiles_waifu2x_extension'):
+						fnames = dict.fromkeys(fnames,'')
 						for fname in fnames:
 							if os.path.splitext(fname)[1] == '.gif':
 								inputPathList_files_gif.append(path+'\\'+fname)
@@ -402,6 +408,7 @@ def Image_Gif_Scale_Denoise():
 			else:
 				for inputPath in inputPathList_folders:
 					for path,useless,fnames in os.walk(inputPath):
+						fnames = dict.fromkeys(fnames,'')
 						for fname in fnames:
 							if os.path.splitext(fname)[1] == '.gif':
 								inputPathList_files_gif.append(path+'\\'+fname)
@@ -483,18 +490,20 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			
 			old_file_list=[]
 			for path,useless,fnames in os.walk(scalepath):
-					for fname in fnames:
-						f_name_ext = os.path.splitext(fname)[0]
-						f_name = os.path.splitext(fname)[0]
-						if f_name == f_name_ext:
-							old_file_list.append(os.path.splitext(fname)[0])
-					break
+				fnames = dict.fromkeys(fnames,'')
+				for fname in fnames:
+					f_name_ext = os.path.splitext(fname)[0]
+					f_name = os.path.splitext(fname)[0]
+					if f_name == f_name_ext:
+						old_file_list.append(os.path.splitext(fname)[0])
+				break
 			
 			old_file_list_prograsssbar=[]
 			for path,useless,fnames in os.walk(scalepath):
-					for fname in fnames:
-						old_file_list_prograsssbar.append(fname)
-					break
+				fnames = dict.fromkeys(fnames,'')
+				for fname in fnames:
+					old_file_list_prograsssbar.append(fname)
+				break
 			
 			thread_DelOldFileThread_4x=DelOldFileThread_4x(scalepath,old_file_list)
 			thread_DelOldFileThread_4x.start()
@@ -520,17 +529,19 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			
 			old_file_list=[]
 			for path,useless,fnames in os.walk(scalepath):
-					for fname in fnames:
-						f_name_ext = os.path.splitext(fname)[0]
-						f_name = os.path.splitext(fname)[0]
-						if f_name == f_name_ext:
-							old_file_list.append(os.path.splitext(fname)[0])
-					break
+				fnames = dict.fromkeys(fnames,'')
+				for fname in fnames:
+					f_name_ext = os.path.splitext(fname)[0]
+					f_name = os.path.splitext(fname)[0]
+					if f_name == f_name_ext:
+						old_file_list.append(os.path.splitext(fname)[0])
+				break
 			old_file_list_prograsssbar=[]
 			for path,useless,fnames in os.walk(scalepath):
-					for fname in fnames:
-						old_file_list_prograsssbar.append(fname)
-					break
+				fnames = dict.fromkeys(fnames,'')
+				for fname in fnames:
+					old_file_list_prograsssbar.append(fname)
+				break
 			
 			thread_DelOldFileThread_4x=DelOldFileThread_4x(scalepath,old_file_list)
 			thread_DelOldFileThread_4x.start()
@@ -709,6 +720,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 			
 			old_file_list=[]
 			for path,useless,fnames in os.walk(scalepath):
+				fnames = dict.fromkeys(fnames,'')
 				for fname in fnames:
 					f_name_ext = os.path.splitext(fname)[0]
 					f_name = os.path.splitext(fname)[0]
@@ -718,9 +730,10 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 			
 			old_file_list_prograsssbar=[]
 			for path,useless,fnames in os.walk(scalepath):
-					for fname in fnames:
-						old_file_list_prograsssbar.append(fname)
-					break
+				fnames = dict.fromkeys(fnames,'')
+				for fname in fnames:
+					old_file_list_prograsssbar.append(fname)
+				break
 			
 			thread_DelOldFileThread_4x=DelOldFileThread_4x(scalepath,old_file_list)
 			thread_DelOldFileThread_4x.start()
@@ -745,6 +758,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		if scale == '8':
 			old_file_list=[]
 			for path,useless,fnames in os.walk(scalepath):
+				fnames = dict.fromkeys(fnames,'')
 				for fname in fnames:
 					f_name_ext = os.path.splitext(fname)[0]
 					f_name = os.path.splitext(fname)[0]
@@ -753,9 +767,10 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 				break
 			old_file_list_prograsssbar=[]
 			for path,useless,fnames in os.walk(scalepath):
-					for fname in fnames:
-						old_file_list_prograsssbar.append(fname)
-					break
+				fnames = dict.fromkeys(fnames,'')
+				for fname in fnames:
+					old_file_list_prograsssbar.append(fname)
+				break
 			thread_DelOldFileThread_4x=DelOldFileThread_4x(scalepath,old_file_list)
 			thread_DelOldFileThread_4x.start()
 			thread1=PrograssBarThread(oldfilenumber,scaledFilePath+'_split\\scaled\\',scale,round_ = 3,old_file_list_prograsssbar = old_file_list_prograsssbar)
@@ -873,6 +888,7 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	
 	for folder in inputPathList_folders:
 		for path,useless,fnames in os.walk(folder):
+			fnames = dict.fromkeys(fnames,'')
 			for fname in fnames:
 				inputPathList_files.append(path+'\\'+fname)
 			break
@@ -1081,6 +1097,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			max_threads = settings_values['Number_of_threads_Waifu2x_converter']
 			finished_frame = max_threads
 			thread_files = []
+			fnames = dict.fromkeys(fnames,'')
 			for fname in fnames:
 				Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')  Frames: ('+str(finished_frame)+'/'+str(total_frame)+')')
 				thread_files.append(fname)
@@ -1242,6 +1259,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 	inputPathList_file_video = []
 	for folders in inputPathList_folders:
 		for path,useless,fnames in os.walk(folders):
+			fnames = dict.fromkeys(fnames,'')
 			for fname in fnames:
 				inputPathList_file_video.append(path+'\\'+fname)
 			break
@@ -1284,6 +1302,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 			max_threads = settings_values['Number_of_threads_Waifu2x_converter']
 			finished_frames = max_threads
 			thread_files = []
+			fnames = dict.fromkeys(fnames,'')
 			for fname in fnames:
 				Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')  Frames:('+str(finished_frames)+'/'+str(total_frames)+')')
 				thread_files.append(fname)
@@ -1429,6 +1448,7 @@ def Scale_Denoise_Video():
 	inputPathList_file_video = []
 	for folders in inputPathList_folders:
 		for path,useless,fnames in os.walk(folders):
+			fnames = dict.fromkeys(fnames,'')
 			for fname in fnames:
 				inputPathList_file_video.append(path+'\\'+fname)
 			break
@@ -1482,21 +1502,23 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
 			frame_list = []
 			for path,useless,fnames in os.walk(frames_scaled_dir):
-					for fname in fnames:
-						f_name_ext = os.path.splitext(fname)[0]
-						f_name = os.path.splitext(fname)[0]
-						if f_name == f_name_ext:
-							frame_list.append(os.path.splitext(fname)[0])
-					break
+				fnames = dict.fromkeys(fnames,'')
+				for fname in fnames:
+					f_name_ext = os.path.splitext(fname)[0]
+					f_name = os.path.splitext(fname)[0]
+					if f_name == f_name_ext:
+						frame_list.append(os.path.splitext(fname)[0])
+				break
 			
 			thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
 			thread_VideoDelFrameThread_4x.start()
 			
 			old_file_list_prograsssbar=[]
 			for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
-					for fname in fnames:
-						old_file_list_prograsssbar.append(fname)
-					break
+				fnames = dict.fromkeys(fnames,'')
+				for fname in fnames:
+					old_file_list_prograsssbar.append(fname)
+				break
 					
 			thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2,old_file_list_prograsssbar=old_file_list_prograsssbar)
 			thread2.start()
@@ -1519,21 +1541,23 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
 			frame_list = []
 			for path,useless,fnames in os.walk(frames_scaled_dir):
-					for fname in fnames:
-						f_name_ext = os.path.splitext(fname)[0]
-						f_name = os.path.splitext(fname)[0]
-						if f_name == f_name_ext:
-							frame_list.append(os.path.splitext(fname)[0])
-					break
+				fnames = dict.fromkeys(fnames,'')
+				for fname in fnames:
+					f_name_ext = os.path.splitext(fname)[0]
+					f_name = os.path.splitext(fname)[0]
+					if f_name == f_name_ext:
+						frame_list.append(os.path.splitext(fname)[0])
+				break
 			
 			thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
 			thread_VideoDelFrameThread_4x.start()
 			
 			old_file_list_prograsssbar=[]
 			for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
-					for fname in fnames:
-						old_file_list_prograsssbar.append(fname)
-					break
+				fnames = dict.fromkeys(fnames,'')
+				for fname in fnames:
+					old_file_list_prograsssbar.append(fname)
+				break
 					
 			thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 3,old_file_list_prograsssbar=old_file_list_prograsssbar)
 			thread2.start()
@@ -1665,6 +1689,7 @@ def Scale_Denoise_Video_Anime4K():
 	inputPathList_file_video = []
 	for folders in inputPathList_folders:
 		for path,useless,fnames in os.walk(folders):
+			fnames = dict.fromkeys(fnames,'')
 			for fname in fnames:
 				inputPathList_file_video.append(path+'\\'+fname)
 			break
@@ -1705,6 +1730,7 @@ def Video_scale_Anime4K(in_path,out_path,scale):
 	
 	Frame_list = []
 	for path,useless,fnames in os.walk(in_path):
+		fnames = dict.fromkeys(fnames,'')
 		for fname in fnames:
 			Frame_list.append(path+'\\'+fname)
 		break
@@ -1873,6 +1899,7 @@ def Compress_image_gif():
 	inputPathList_files = []
 	for folders in inputPathList_folders:
 		for path,useless,fnames in os.walk(folders):
+			fnames = dict.fromkeys(fnames,'')
 			for fname in fnames:
 				inputPathList_files.append(path+'\\'+fname)
 			break
@@ -2011,6 +2038,7 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 			NewFileNum=0
 			if round_ > 1:
 				for path,useless,fnames in os.walk(ScalePath):
+					fnames = dict.fromkeys(fnames,'')
 					for fname in fnames:
 						if fname not in old_file_list_prograsssbar:
 							NewFileNum = NewFileNum+1
@@ -2049,16 +2077,6 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"+" "+"["+'Time Remaining: '+Seconds2hms(ETA)+" ] "+'[ETA: '+ETA_str+' ]'
 				else:
 					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"+"  "+"["+'Time Remaining: '+Seconds2hms(ETA)+" ] "+'[ETA: '+ETA_str+' ]'
-				# ~ PrograssBar_len_new = len(PrograssBar)
-				# ~ Add_len = PrograssBar_len_old - PrograssBar_len_new
-				# ~ if Add_len < 0:
-					# ~ Add_len = 0
-				
-				# ~ current_cols = Get_cols_lines()[0]
-				# ~ if (PrograssBar_len_new+Add_len) > current_cols:
-					# ~ Set_cols_lines(cols = PrograssBar_len_new+Add_len+1,lines=38)
-					
-				# ~ PrograssBar_len_old = PrograssBar_len_new
 				
 				PrograssBar_len_new = len(PrograssBar)
 				current_cols = Get_cols_lines()[0]
@@ -2076,16 +2094,6 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					PrograssBar = "\r"+"Round = "+str(round_)+"  Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"
 				else:
 					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"
-				# ~ PrograssBar_len_new = len(PrograssBar)
-				# ~ Add_len = PrograssBar_len_old - PrograssBar_len_new
-				# ~ if Add_len < 0:
-					# ~ Add_len = 0
-				
-				# ~ current_cols = Get_cols_lines()[0]
-				# ~ if (PrograssBar_len_new+Add_len) > current_cols:
-					# ~ Set_cols_lines(cols = PrograssBar_len_new+Add_len+1,lines=38)
-				
-				# ~ PrograssBar_len_old = PrograssBar_len_new
 				
 				PrograssBar_len_new = len(PrograssBar)
 				current_cols = Get_cols_lines()[0]
@@ -2115,6 +2123,11 @@ def Clock(TotalFileNum,FinishedFileNum):
 	image_time_start = time.time()
 	time.sleep(2)
 	clockStr_len_old = 0
+	timeStr = ''
+	timeCost = ''
+	clockStr = ''
+	
+	
 	while True:
 		image_time_now = time.time()
 		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
@@ -2157,8 +2170,9 @@ def stop_thread(thread):
 def DelOrgFiles(inputPath):
 	
 	Exts=[".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]
-	
+	Exts = dict.fromkeys(Exts,'')
 	for path,useless,fnames in os.walk(inputPath):
+		fnames = dict.fromkeys(fnames,'')
 		for fname in fnames:
 			if os.path.splitext(fname)[1] in Exts:
 				os.remove(path+'\\'+fname)
@@ -2199,15 +2213,17 @@ def assembleGif(scaledFilePath,TIME_GAP):
 	filelist_name=[]
 
 	for path,useless,fnames in os.walk(scaledFilePath+'_split\\scaled'):
+		fnames = dict.fromkeys(fnames,'')
 		for fname in fnames:
 			filelist_name.append(int(os.path.splitext(fname)[0]))
 		break
 		
 	filelist_name.sort()
-		
+	filelist_name = dict.fromkeys(filelist_name,'')
 	for file_name in filelist_name:
 		image_list.append(scaledFilePath+'_split\\scaled'+'\\'+str(file_name)+'.png')
 	frames = []  
+	image_list = dict.fromkeys(image_list,'')
 	for image_name in image_list:  
 		frames.append(imageio.imread(image_name))  
 	imageio.mimsave(gif_name, frames, 'GIF', duration = TIME_GAP)
@@ -2259,10 +2275,7 @@ def images2video(inputpath):
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
 	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio_waifu2x.wav" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
-	
 	os.remove(video_dir+'audio_waifu2x.wav')
-	#os.system('del /q "'+video_dir+'audio_waifu2x.wav"')
-
 	os.system('rd /s/q "'+video_dir+'frames_waifu2x'+'"')
 
 class VideoDelFrameThread(threading.Thread):
@@ -2277,9 +2290,10 @@ class VideoDelFrameThread(threading.Thread):
 		frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
 		frame_list = []
 		for path,useless,fnames in os.walk(frames_dir):
-				for fname in fnames:
-					frame_list.append(os.path.splitext(fname)[0])
-				break
+			fnames = dict.fromkeys(fnames,'')
+			for fname in fnames:
+				frame_list.append(os.path.splitext(fname)[0])
+			break
 		frame_deled_list = []
 		while True:
 			for path,useless,fnames in os.walk(frames_dir):
@@ -2287,6 +2301,7 @@ class VideoDelFrameThread(threading.Thread):
 					return 0
 				break
 			for path,useless,fnames in os.walk(frames_scaled_dir):
+				fnames = dict.fromkeys(fnames,'')
 				for f_name_ext_ext in fnames:
 					f_name_ext = os.path.splitext(f_name_ext_ext)[0]
 					f_name = os.path.splitext(f_name_ext)[0]
@@ -2314,6 +2329,7 @@ class VideoDelFrameThread_4x(threading.Thread):
 			if len(frame_deled_list) == old_filenum:
 				return 0
 			for path,useless,fnames in os.walk(frames_scaled_dir):
+				fnames = dict.fromkeys(fnames,'')
 				for f_name_ext_ext in fnames:
 					f_name_ext = os.path.splitext(f_name_ext_ext)[0]
 					f_name = os.path.splitext(f_name_ext)[0]
@@ -2655,8 +2671,8 @@ def input_scan_subfolders():
 	return scan_subfolders
 
 def input_sleepMode():
+	sleepMode = ''
 	while True:
-		
 		sleepMode = input('Enable sleep mode?( y / n / help , default = n ): ').strip(' ').lower()
 		if sleepMode in ['y','n','','r','help']:
 			if sleepMode == 'help':
@@ -2777,12 +2793,14 @@ def VerifyFiles():
 					'waifuExecuter.wsf', 'w2xc.lib', 'w2xconv.h', 'Makefile', 'w2xc.c', 'w2xcr.c', 'noise1_model.json', 'noise1_model.json.bin', 
 					'noise2_model.json', 'noise2_model.json.bin', 'scale2.0x_model.json', 'scale2.0x_model.json.bin', 'noise1_model.json', 
 					'noise1_model.json.bin', 'noise2_model.json', 'noise2_model.json.bin', 'scale2.0x_model.json', 'scale2.0x_model.json.bin']
-	
+	FilesList = dict.fromkeys(FilesList,'') 
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	FilesList_current = []
 	for path,useless,fnames in os.walk(current_dir):
+		fnames = dict.fromkeys(fnames,'')
 		for fname in fnames:
 			FilesList_current.append(fname)
+	FilesList_current = dict.fromkeys(FilesList_current,'') 
 	FileNotFound = False
 	for fname in FilesList:
 		if fname not in FilesList_current:
@@ -2792,6 +2810,7 @@ def VerifyFiles():
 		return 'error'
 	else:
 		return 'verified'
+	
 
 #=====================================================  Settings  =============================================================
 
@@ -3133,10 +3152,7 @@ def Settings():
 			input('press Enter key to return.')
 			
 			os.system('cls')
-			
-		
-		
-		
+
 		elif mode == "r":
 			break
 		else:
@@ -3257,7 +3273,7 @@ class GifCompressThread (threading.Thread):
 def Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal):
 	
 	max_threads = cpu_count()
-	
+	file_ext = ''
 	thread_files = []
 	
 	for inputPath in inputPathList_files:
@@ -3309,8 +3325,8 @@ class ImageCompressThread (threading.Thread):
 def Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality):
 	
 	max_threads = cpu_count()
-	
 	thread_files = []
+	file_ext = ''
 	
 	for inputPath in inputPathList_files:
 		file_ext = os.path.splitext(inputPath)[1]
@@ -3514,9 +3530,11 @@ def license_():
 
 #================= Protect files ================
 def FindGifFiles(inputPathList):
+	inputPathList=dict.fromkeys(inputPathList,'')
 	Gif_exist = False
 	for inputPath in inputPathList:
 		for path,useless,fnames in os.walk(inputPath):
+			fnames = dict.fromkeys(fnames,'')
 			for fname in fnames:
 				if os.path.splitext(fname)[1] == ".gif":
 					return True
@@ -3524,10 +3542,16 @@ def FindGifFiles(inputPathList):
 	return False
 
 def MoveGifFiles(inputPathList):
+	
+	inputPathList=dict.fromkeys(inputPathList,'')
 	inputPathList_gif = []
 	path_gif_exist = False
+	old_path=''
+	new_path=''
+	
 	for inputPath in inputPathList:
 		for path,useless,fnames in os.walk(inputPath):
+			fnames = dict.fromkeys(fnames,'')
 			for fname in fnames:
 				if os.path.splitext(fname)[1] == ".gif":
 					path_gif_exist = True
@@ -3541,14 +3565,19 @@ def MoveGifFiles(inputPathList):
 				inputPathList_gif.append(inputPath)
 				path_gif_exist = False
 			break
+			
 	return inputPathList_gif
 
 def RecoverGifFiles(inputPathList):
-	Exts=[".gif"]
+	inputPathList=dict.fromkeys(inputPathList,'')
+	
+	old_path =''
+	new_path =''
+	
 	for inputPath in inputPathList:
 		for path,useless,fnames in os.walk(inputPath+'\\protectfiles_waifu2x_extension'):
 			for fname in fnames:
-				if os.path.splitext(fname)[1] in Exts:
+				if os.path.splitext(fname)[1] == ".gif":
 					old_path = path+'\\'+fname
 					new_path = inputPath+'\\'+fname
 					os.system('copy /y "'+old_path+'" "'+new_path+'"')
@@ -3559,6 +3588,10 @@ def RecoverGifFiles(inputPathList):
 			
 def FindImageFiles(inputPathList):
 	Exts=[".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]
+	
+	Exts=dict.fromkeys(Exts,'')
+	inputPathList=dict.fromkeys(inputPathList,'')
+	
 	Image_exist = False
 	for inputPath in inputPathList:
 		for path,useless,fnames in os.walk(inputPath):
@@ -3575,17 +3608,21 @@ def View_GPU_ID():
 	print('----------------------------')
 	gpuId = 0
 	gpuId_list = []
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	models = 'models-upconv_7_anime_style_art_rgb'
+	scale = '2'
+	noiseLevel = '0'
+	tileSize = '50'
+	load_proc_save_str = ' -j 1:1:1 '
+	inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
+	scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.png'
+	
+	gpuId_str = ''
+	
 	for x in range(0,10):
 		gpuId_str = ' -g '+str(gpuId)
-		settings_values = ReadSettings()
-		current_dir = os.path.dirname(os.path.abspath(__file__))
-		models = 'models-upconv_7_anime_style_art_rgb'
-		scale = '2'
-		noiseLevel = '0'
-		tileSize = '50'
-		load_proc_save_str = ' -j 1:1:1 '
-		inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
-		scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.png'
+		
 		if os.path.exists(scaledFilePath) :
 			os.system("del /q \""+scaledFilePath+"\"")
 		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
@@ -3628,21 +3665,23 @@ def Compatibility_Test(Init):
 	
 	gpuId = 0
 	gpuId_list = []
+	models = 'models-upconv_7_anime_style_art_rgb'
+	scale = '2'
+	noiseLevel = '0'
+	tileSize = '50'
+	load_proc_save_str = ' -j 1:1:1 '
+	gpuId_str = ''
+	
+	if os.path.exists(scaledFilePath):
+		os.system("del /q \""+scaledFilePath+"\"")
+	
 	for x in range(0,10):
 		gpuId_str = ' -g '+str(gpuId)
-		settings_values = ReadSettings()
-		models = 'models-upconv_7_anime_style_art_rgb'
-		scale = '2'
-		noiseLevel = '0'
-		tileSize = '50'
-		load_proc_save_str = ' -j 1:1:1 '
 		
-		if os.path.exists(scaledFilePath):
-			os.system("del /q \""+scaledFilePath+"\"")
 		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
 		if os.path.exists(scaledFilePath):
 			waifu2x_ncnn_vulkan_avaliable = True
-			os.system("del /q \""+scaledFilePath+"\"")
+			os.remove(scaledFilePath)
 			break
 		else:
 			break
@@ -3652,8 +3691,7 @@ def Compatibility_Test(Init):
 	if os.path.exists(scaledFilePath):
 		os.system("del /q \""+scaledFilePath+"\"")
 		
-	model_dir = 'waifu2x-converter\\models_rgb'
-	os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+scaledFilePath+'" --scale_ratio '+'2'+' --noise_level '+'2'+' --model_dir '+model_dir)
+	os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+scaledFilePath+'" --scale_ratio '+'2'+' --noise_level '+'2'+' --model_dir waifu2x-converter\\models_rgb')
 	
 	if os.path.exists(scaledFilePath):
 		waifu2x_converter_avaliable = True
@@ -3676,15 +3714,14 @@ def Compatibility_Test(Init):
 	print('Compatible with waifu2x-converter : ',waifu2x_converter_avaliable)
 	print('Compatible with Anime4k : ',Anime4k_avaliable)
 	print('------------------------------------------------')
+	print('')
 	if waifu2x_ncnn_vulkan_avaliable and waifu2x_converter_avaliable and Anime4k_avaliable:
-		print('')
 		if Init:
 			time.sleep(3)
 		else:
 			input('Press Enter key to continue.')
 	else:
 		ChangeColor_warning()
-		print('')
 		print('Warning, there is a compatibility issue on the current computer.') 
 		print('Please try to reinstall or update the graphics driver.')
 		print('If the compatibility issue is still not resolved, enable the compatible components in the settings.')
@@ -3782,28 +3819,35 @@ def Image_File_2_Folder(FileList):
 	for file_ in FileList:
 		if os.path.splitext(file_)[1] in [".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]:
 			File_folder_full_dict[os.path.dirname(file_)] = []
+			
 	for file_ in FileList:
 		if os.path.splitext(file_)[1] in [".png",".jpg",".jpeg",".tif",".tiff",".bmp",".tga"]:
 			File_folder_full_dict[os.path.dirname(file_)].append(file_)
+			
 	for key in File_folder_full_dict:
 		if len(File_folder_full_dict[key]) > 1:
 			File_folder_final_dict[key] = File_folder_full_dict[key]
-	Dict_New_folder_Old_folder={}
+	
 	
 	RemoveList = []
 	for vals in File_folder_final_dict.values():
 		for val in vals:
 			RemoveList.append(val)
 	
+	Dict_New_folder_Old_folder={}
+	New_folder = ''
+	Old_folder = ''
+	New_file = ''
 	for key in File_folder_final_dict:
 		New_folder = key+'\\waifu2x_image_folder'
 		Old_folder = key
 		Dict_New_folder_Old_folder[New_folder] = Old_folder
 		for Org_file in File_folder_final_dict[key]:
-			fname = Org_file.split('\\')[-1]
-			New_file = New_folder+'\\'+fname
+			New_file = New_folder+'\\'+Org_file.split('\\')[-1]
 			Move_file_org_new(Org_file,New_file)
+			
 	return [Dict_New_folder_Old_folder,RemoveList]
+
 
 def Remove_File_2_Folder(Dict_New_folder_Old_folder):
 	for key,val in Dict_New_folder_Old_folder.items():
