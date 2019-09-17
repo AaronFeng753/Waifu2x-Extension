@@ -65,11 +65,11 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 # Download: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
 # How to fix compatibility issue :
-### waifu2x-ncnn-vulkan:
+#### waifu2x-ncnn-vulkan:
 Re-install gpu driver or update it to the latest.
-### waifu2x-converter:
+#### waifu2x-converter:
 Buy a new conputer.
-### Anime4k:
+#### Anime4k:
 Install the latest JDK and JRE
 
 # Credits:
