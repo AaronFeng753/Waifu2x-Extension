@@ -23,15 +23,15 @@ gifsicle version 1.92
 -----------------------------------------------
 
 更新日志
-- 提高一些情况下waifu2x-ncnn-vulkan的执行效率
-- 完善waifu2x-converter的多线程,现已支持多线程放大图片
-- 代码性能优化
+- 
 
 
 ------------------------------------------------
 
 To do:
 - 性能优化
+- 修改文件校验机制，改为读取文件，以实现编译后一样可以正常校验文件
+- 提供兼容性问题修复建议
 
 
 '''
@@ -2799,7 +2799,7 @@ def VerifyFiles():
 					'waifuExecuter.wsf', 'w2xc.lib', 'w2xconv.h', 'Makefile', 'w2xc.c', 'w2xcr.c', 'noise1_model.json', 'noise1_model.json.bin', 
 					'noise2_model.json', 'noise2_model.json.bin', 'scale2.0x_model.json', 'scale2.0x_model.json.bin', 'noise1_model.json', 
 					'noise1_model.json.bin', 'noise2_model.json', 'noise2_model.json.bin', 'scale2.0x_model.json', 'scale2.0x_model.json.bin']
-	FilesList = dict.fromkeys(FilesList,'') 
+	FilesList = dict.fromkeys(FilesList,'')
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	FilesList_current = []
 	for path,useless,fnames in os.walk(current_dir):
