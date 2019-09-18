@@ -27,6 +27,7 @@ gifsicle version 1.92
 - 加快启动速度
 - 优化更新体验, 启动检查更新更改为后台进行检查, 如有更新再进行弹窗.
 - 性能优化
+- 修复放大视频时可能会出现的路径问题
 
 
 ------------------------------------------------
@@ -1294,7 +1295,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		
 		video2images(inputPath) #拆解视频
 		
-		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'
+		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
 		
 		oldfilenumber=FileCount(frames_dir)
 		if os.path.exists(frames_dir+"\\scaled\\") :
@@ -1484,7 +1485,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
 		video2images(inputPath) #拆解视频
 		
-		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'
+		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
 		
 		oldfilenumber=FileCount(frames_dir)
 		if os.path.exists(frames_dir+"\\scaled\\") :
@@ -1510,7 +1511,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 					fileName=os.path.splitext(fileNameAndExt)[0]
 					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
 			
-			video_dir = os.path.dirname(inputPath)+'\\'
+			video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
 			frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
 			frame_list = []
 			for path,useless,fnames in os.walk(frames_scaled_dir):
@@ -1549,7 +1550,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 					fileName=os.path.splitext(fileNameAndExt)[0]
 					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
 		if scale == '8':
-			video_dir = os.path.dirname(inputPath)+'\\'
+			video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
 			frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
 			frame_list = []
 			for path,useless,fnames in os.walk(frames_scaled_dir):
@@ -1774,7 +1775,7 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
 		video2images(inputPath) #拆解视频
 		
-		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'
+		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
 		
 		oldfilenumber=FileCount(frames_dir)
 		if os.path.exists(frames_dir+"\\scaled\\") :
@@ -2257,7 +2258,7 @@ def compress_gif(inputpath,compress_level):
 	
 #=========================================================== Video =========================================================
 def video2images(inputpath):
-	video_dir = os.path.dirname(inputpath)+'\\'
+	video_dir = os.path.dirname(inputpath)+'\\'.replace("\\\\", "\\")
 	video_path_filename = os.path.splitext(inputpath)[0]
 	video_ext = os.path.splitext(inputpath)[1]
 	if video_ext != '.mp4':
@@ -2282,8 +2283,9 @@ def video2images(inputpath):
 def images2video(inputpath):
 	video_path_filename = os.path.splitext(inputpath)[0]
 	video_ext = os.path.splitext(inputpath)[1]
-	video_dir = os.path.dirname(inputpath)+'\\'
+	video_dir = os.path.dirname(inputpath)+'\\'.replace("\\\\", "\\")
 	frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+	frames_scaled_dir = frames_scaled_dir.replace("\\\\", "\\")
 	cap = cv2.VideoCapture(inputpath)
 	fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -2299,7 +2301,7 @@ class VideoDelFrameThread(threading.Thread):
         
 	def run(self):
 		inputpath = self.inputpath
-		video_dir = os.path.dirname(inputpath)+'\\'
+		video_dir = os.path.dirname(inputpath)+'\\'.replace("\\\\", "\\")
 		frames_dir = video_dir+'frames_waifu2x\\'
 		frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
 		frame_list = []
@@ -2335,7 +2337,7 @@ class VideoDelFrameThread_4x(threading.Thread):
 	def run(self):
 		inputpath = self.inputpath
 		frame_list = self.frame_list
-		video_dir = os.path.dirname(inputpath)+'\\'
+		video_dir = os.path.dirname(inputpath)+'\\'.replace("\\\\", "\\")
 		frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
 		old_filenum = len(frame_list)
 		frame_deled_list = []
