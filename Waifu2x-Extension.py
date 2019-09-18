@@ -3821,6 +3821,7 @@ def Deduplicate_list(The_List):
 def Separate_files_folder(paths_list):
 	list_folders = []
 	list_files = []
+	paths_list = dict.fromkeys(paths_list,'')
 	for path in paths_list:
 		if os.path.isdir(path):
 		    list_folders.append(path)
