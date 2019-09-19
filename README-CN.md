@@ -33,6 +33,7 @@
 - 记录错误日志
 - 睡眠模式
 - 提示音
+- 兼容性测试
 - 以及更多
 
 # 示例
@@ -63,6 +64,14 @@
 
 # 下载: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
+# 如何修复兼容性问题 :
+#### waifu2x-ncnn-vulkan:
+重装或者升级显卡驱动.
+#### waifu2x-converter:
+买台新电脑.
+#### Anime4k:
+安装最新版的JDK和JRE.
+
 # Wafu2x扩展的诞生离不开以下开源项目:
 waifu2x-ncnn-vulkan:
 https://github.com/nihui/waifu2x-ncnn-vulkan
@@ -78,6 +87,13 @@ https://github.com/bloc97/Anime4K
 
 Waifu2x-converter:
 https://github.com/WL-Amigo/waifu2x-converter-cpp
+
+图标:
+
+图标作者 : Freepik (https://www.flaticon.com/authors/freepik)
+
+来自 Flaticon : https://www.flaticon.com/
+
 
 # 捐赠
 
