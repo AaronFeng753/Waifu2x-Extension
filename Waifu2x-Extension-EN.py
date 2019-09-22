@@ -23,9 +23,8 @@ gifsicle version 1.92
 -----------------------------------------------
 
 更新日志
-- 增加重置设置选项
-- !!!! 新增汉化版本 !!!!
-注意!!汉化版版本不与英文版同步更新, 中文版的更新会滞后于英文版, 所以我依旧推荐你使用英文版本.
+- Performance optimization
+- Some improvements
 
 
 
@@ -37,6 +36,23 @@ To do:
 
 '''
 
+print('''
+	____    __    ____  ___       __   _______  __    __      ___   ___   ___ 
+	\   \  /  \  /   / /   \     |  | |   ____||  |  |  |    |__ \  \  \ /  / 
+	 \   \/    \/   / /  ^  \    |  | |  |__   |  |  |  |       ) |  \  V  /  
+	  \            / /  /_\  \   |  | |   __|  |  |  |  |      / /    >   <   
+	   \    /\    / /  _____  \  |  | |  |     |  `--'  |     / /_   /  .  \  
+	    \__/  \__/ /__/     \__\ |__| |__|      \______/     |____| /__/ \__\
+
+
+ __________   ___ .___________. _______ .__   __.      _______. __    ______   .__   __. 
+|   ____\  \ /  / |           ||   ____||  \ |  |     /       ||  |  /  __  \  |  \ |  | 
+|  |__   \  V  /  `---|  |----`|  |__   |   \|  |    |   (----`|  | |  |  |  | |   \|  | 
+|   __|   >   <       |  |     |   __|  |  . `  |     \   \    |  | |  |  |  | |  . `  | 
+|  |____ /  .  \      |  |     |  |____ |  |\   | .----)   |   |  | |  `--'  | |  |\   | 
+|_______/__/ \__\     |__|     |_______||__| \__| |_______/    |__|  \______/  |__| \__| 
+
+''')
 print('Loading.......')
 
 import os
@@ -58,7 +74,7 @@ import traceback
 from playsound import playsound
 import struct
 
-Version_current='v3.3'
+Version_current='v3.32'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -150,6 +166,7 @@ def ChooseFormat():
 			os.system('cls')
 			
 			settings_values = ReadSettings()
+			
 			if settings_values['Video_scale_mode'] == 'anime4k':
 				Scale_Denoise_Video_Anime4K()
 			elif settings_values['Video_scale_mode'] == 'waifu2x-ncnn-vulkan':
@@ -3543,17 +3560,6 @@ def license_():
 	print('Icons made by : Freepik (https://www.flaticon.com/authors/freepik)')
 	print('From Flaticon : https://www.flaticon.com/')
 	print('------------------------------------------')
-	print('中文:')
-	print('注意:中文版本由机器翻译生成, 仅供无法阅读英语者参考, 可能包含错误, 一切以英文原版许可证为准.')
-	print('---------------------------------------------')
-	print('版权所有 2019 Aaron Feng\n')
-	print('特此授予任何获得本软件和相关文档文件（“软件”）副本的人免费许可，以无限制地交易本软件，包括但不限于使用，复制，修改，合并的权利在符合以下条件的前提下，发布，分发，再许可，并允许向其提供软件的人员这样做：\n')
-	print('上述版权声明和本许可声明应包含在本软件的所有副本或实质部分中。\n')
-	print('本软件按“原样”提供，不提供任何明示或暗示的保证，包括但不限于适销性，特定用途的适用性和不侵权的保证。在任何情况下，作者或版权所有者均不对任何索赔，损害或其他责任承担任何责任，无论是在合同，侵权行为还是其他方面的行为，由本软件引起或与之相关，或与本软件的使用或其他交易有关。软件。\n')
-	print('------------------------------------------')
-	print('图标作者 : Freepik ( https://www.flaticon.com/authors/freepik )')
-	print('来自 Flaticon : https://www.flaticon.com/')
-	print('------------------------------------------')
 	input('Press Enter key to return to the main menu.')
 
 #================= Protect files ================
@@ -3736,11 +3742,31 @@ def Compatibility_Test(Init):
 		os.system("del /q \""+scaledFilePath+"\"")
 	
 	#====================== 输出测试结果 =======================
+	
 	os.system('cls')
+	
+	if waifu2x_ncnn_vulkan_avaliable:
+		str_waifu2x_ncnn_vulkan_avaliable = 'YES'
+	else:
+		str_waifu2x_ncnn_vulkan_avaliable = 'NO'
+		
+	if waifu2x_converter_avaliable:
+		str_waifu2x_converter_avaliable = 'YES'
+	else:
+		str_waifu2x_converter_avaliable = 'NO'
+	
+	if Anime4k_avaliable:
+		str_Anime4k_avaliable = 'YES'
+	else:
+		str_Anime4k_avaliable = 'NO'
+		
+		
 	print('------------------------------------------------')
-	print('Compatible with waifu2x-ncnn-vulkan : ',waifu2x_ncnn_vulkan_avaliable)
-	print('Compatible with waifu2x-converter : ',waifu2x_converter_avaliable)
-	print('Compatible with Anime4k : ',Anime4k_avaliable)
+	print('Compatible with waifu2x-ncnn-vulkan : ',str_waifu2x_ncnn_vulkan_avaliable)
+	print('')
+	print('Compatible with waifu2x-converter : ',str_waifu2x_converter_avaliable)
+	print('')
+	print('Compatible with Anime4k : ',str_Anime4k_avaliable)
 	print('------------------------------------------------')
 	print('')
 	if waifu2x_ncnn_vulkan_avaliable and waifu2x_converter_avaliable and Anime4k_avaliable:
@@ -3789,6 +3815,20 @@ def Compatibility_Test(Init):
 		input()
 		os.system('cls')
 		ChangeColor_default()
+		
+		if waifu2x_ncnn_vulkan_avaliable == False and waifu2x_converter_avaliable == True:
+			print('We have detected that waifu2x-converter is available on your computer, do you wanna enable it now??')
+			print('Waifu2x-converter can enlarge image,video,GIF')
+			print('')
+			print('(Y/N): ')
+			enable_waifu2x_converter = input().strip(' ').lower()
+			if enable_waifu2x_converter == 'y':
+				settings_values = ReadSettings()
+				settings_values['Video_scale_mode'] = 'waifu2x-converter'
+				settings_values['Image_GIF_scale_mode'] = 'waifu2x-converter'
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+			os.system('cls')
 		
 		
 		

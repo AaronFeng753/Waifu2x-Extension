@@ -23,9 +23,9 @@ gifsicle version 1.92
 -----------------------------------------------
 
 更新日志
-- 增加重置设置选项
-- !!!! 新增汉化版本 !!!!
-注意!!汉化版版本不与英文版同步更新, 中文版的更新会滞后于英文版, 所以我依旧推荐你使用英文版本.
+- 性能优化
+- 细节改进
+- 翻译修正
 
 
 ------------------------------------------------
@@ -36,6 +36,23 @@ To do:
 
 '''
 
+print('''
+	____    __    ____  ___       __   _______  __    __      ___   ___   ___ 
+	\   \  /  \  /   / /   \     |  | |   ____||  |  |  |    |__ \  \  \ /  / 
+	 \   \/    \/   / /  ^  \    |  | |  |__   |  |  |  |       ) |  \  V  /  
+	  \            / /  /_\  \   |  | |   __|  |  |  |  |      / /    >   <   
+	   \    /\    / /  _____  \  |  | |  |     |  `--'  |     / /_   /  .  \  
+	    \__/  \__/ /__/     \__\ |__| |__|      \______/     |____| /__/ \__\
+
+
+ __________   ___ .___________. _______ .__   __.      _______. __    ______   .__   __. 
+|   ____\  \ /  / |           ||   ____||  \ |  |     /       ||  |  /  __  \  |  \ |  | 
+|  |__   \  V  /  `---|  |----`|  |__   |   \|  |    |   (----`|  | |  |  |  | |   \|  | 
+|   __|   >   <       |  |     |   __|  |  . `  |     \   \    |  | |  |  |  | |  . `  | 
+|  |____ /  .  \      |  |     |  |____ |  |\   | .----)   |   |  | |  `--'  | |  |\   | 
+|_______/__/ \__\     |__|     |_______||__| \__| |_______/    |__|  \______/  |__| \__| 
+
+''')
 print('载入中.......')
 
 import os
@@ -57,7 +74,7 @@ import traceback
 from playsound import playsound
 import struct
 
-Version_current='v3.3'
+Version_current='v3.32'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -97,19 +114,18 @@ def ChooseFormat():
 		Set_cols_lines(65,37)
 		Set_cols_lines(66,38)
 		Window_Title('')
-		print('!!!注意!!!汉化版的更新会滞后于英文版, 我们推荐您尽量使用英文版')
-		print('-------------------------------------------------------------')
-		print(' Waifu2x扩展(汉化版)  '+Version_current+'  作者: Aaron Feng ')
-		print('')
+		print('-'*65)
+		print(' Waifu2x扩展(汉化版)   '+Version_current+'   作者: Aaron Feng ')
+		print('-'*65)
 		print(' Github: https://github.com/AaronFeng753/Waifu2x-Extension    ')
-		print('')
+		print('-'*65)
 		print(" 注意: 本软件的放大与降噪功能仅能用于处理动漫风格的艺术作品")
 		print(" (图片,GIF动态图,视频)")
-		print('')
+		print('-'*65)
 		print(' 1 : 放大与降噪图片和GIF.  2 : '+Video_str)
-		print('')
+		print('-'*65)
 		print(' 3 : 压缩图片与GIF')
-		print('')
+		print('-'*65)
 		print(' 4 : Tile size(块大小): '+tileSize+'   '+'5 : GPU ID: '+gpuId)
 		print('')
 		print(' 6 : 提示音: '+notificationSound)
@@ -121,17 +137,17 @@ def ChooseFormat():
 		print(' 9 : 目标另存为 .jpg?(放大与降噪): '+saveAsJPG+Compress)
 		print('')
 		print(' 10 : 优化 .gif?(放大与降噪): '+optimizeGif)
+		print('-'*65)
+		print(' 11 : 设置.              12 : 基准测试.')
 		print('')
-		print(' 11 : 设置.            12 : 基准测试.')
-		print('                                                              ')
-		print(' 13 : 阅读错误日志.      14 : 检查更新.                 ')
-		print('                                                              ')
-		print(' 15 : 说明文档.         16 : 用户协议.                      ')
-		print('                                                              ')
-		print(' 17 : 兼容性测试         E : 退出.                          ')
+		print(' 13 : 阅读错误日志.      14 : 检查更新.')
 		print('')
+		print(' 15 : 说明文档.          16 : 用户协议.')
+		print('')
+		print(' 17 : 兼容性测试         E : 退出.')
+		print('-'*65)
 		print(' D : 捐赠. (支付宝)              ')
-		print('')
+		print('-'*65)
 		print('( 1 / 2 / 3 / 4 /...../ E / D ): ')
 		mode = input().strip(' ').lower()
 			
@@ -2784,11 +2800,11 @@ def CheckUpdate_start():
 			update_bat_str=[
 			'@echo off \n',
 			'color '+settings_values['default_color']+' \n',
-			'title = Waifu2x-Extension '+Version_current+' by Aaron Feng  [ New Update Available ] \n',
-			'echo Current version : '+Version_current+'\n',
-			'echo New update : '+Version_latest+'\n',
-			'echo If you don\'t wanna check for updates at startup. You can change the settings. \n',
-			'echo Do you wanna download the update?(y/n): \n',
+			'title = Waifu2x扩展 '+Version_current+' 作者: Aaron Feng  [ 检测到新版本 ] \n',
+			'echo 当前版本 : '+Version_current+'\n',
+			'echo 新版本 : '+Version_latest+'\n',
+			'echo 如果你不想在启动时检查更新, 你可以在设置内手动关闭. \n',
+			'echo 你想现在下载更新吗?(y/n): \n',
 			'set user_input=N\n',
 			'set /p user_input= \n',
 			'if %user_input%==Y goto update \n',
@@ -2824,7 +2840,7 @@ def Settings():
 			settings_values = json.load(f)
 		print('                                   设置')
 		print('-----------------------------------------------------------------------------')
-		print(' 1: 检查更新. 当前值: [ '+settings_values['CheckUpdate']+' ]\n')
+		print(' 1: 启动时后台检查更新. 当前值: [ '+settings_values['CheckUpdate']+' ]\n')
 		print(' 2: "放大倍数"的默认值. 当前默认值: [ '+settings_values['scale']+' ]\n')
 		print(' 3: "降噪等级"的默认值. 当前默认值: [ '+settings_values['noiseLevel']+' ]\n')
 		print(' 4: 完成后删除原文件? 当前默认值: [ '+settings_values['delorginal']+' ]\n')
@@ -3463,7 +3479,7 @@ def Complete_ResizeWindow(cols,lines):
 #=============================== Benchmark =============================
 def Benchmark():
 	print('============================== 基准测试 ==============================================')
-	print('基准测试可以帮助你确定 "tile size" 的最佳值.')
+	print('基准测试可以帮助你确定 "tile size(块大小)" 的最佳值.')
 	print('为了获得准确的结果, 请在基准测试运行期间不要使用你的电脑或者在后台运行占用大量资源的任务.')
 	print('---------------------------------------------------------------------------------------')
 	if input('你想现在开始基准测试吗? (y/n): ').lower().strip(' ') != 'y':
@@ -3736,11 +3752,30 @@ def Compatibility_Test(Init):
 		os.system("del /q \""+scaledFilePath+"\"")
 	
 	#====================== 输出测试结果 =======================
+	
 	os.system('cls')
+	
+	if waifu2x_ncnn_vulkan_avaliable:
+		str_waifu2x_ncnn_vulkan_avaliable = '是'
+	else:
+		str_waifu2x_ncnn_vulkan_avaliable = '否'
+		
+	if waifu2x_converter_avaliable:
+		str_waifu2x_converter_avaliable = '是'
+	else:
+		str_waifu2x_converter_avaliable = '否'
+	
+	if Anime4k_avaliable:
+		str_Anime4k_avaliable = '是'
+	else:
+		str_Anime4k_avaliable = '否'
+	
 	print('------------------------------------------------')
-	print('是否兼容 waifu2x-ncnn-vulkan : ',waifu2x_ncnn_vulkan_avaliable)
-	print('是否兼容 waifu2x-converter : ',waifu2x_converter_avaliable)
-	print('是否兼容 Anime4k : ',Anime4k_avaliable)
+	print('是否兼容 waifu2x-ncnn-vulkan : ',str_waifu2x_ncnn_vulkan_avaliable)
+	print('')
+	print('是否兼容 waifu2x-converter : ',str_waifu2x_converter_avaliable)
+	print('')
+	print('是否兼容 Anime4k : ',str_Anime4k_avaliable)
 	print('------------------------------------------------')
 	print('')
 	if waifu2x_ncnn_vulkan_avaliable and waifu2x_converter_avaliable and Anime4k_avaliable:
@@ -3781,17 +3816,29 @@ def Compatibility_Test(Init):
 			print('')
 		
 		
-		print('如果依旧无法修复兼容问题, 请在设置中启用当前兼容的组件.')
+		print('如果按照上面的建议操作后依旧无法修复兼容问题, 请在启用当前兼容的组件.')
 		print('')
-		print('----------------------------')
+		print('--------------------')
 		print('按 Enter 键以继续.')
-		print('----------------------------')
+		print('--------------------')
 		input()
 		os.system('cls')
 		ChangeColor_default()
 		
-		
-		
+		if waifu2x_ncnn_vulkan_avaliable == False and waifu2x_converter_avaliable == True:
+			print('我们检测到waifu2x-converter在您的电脑上可用, 是否现在启用??')
+			print('waifu2x-converter支持放大 图片,视频,GIF')
+			print('')
+			print('(Y/N): ')
+			enable_waifu2x_converter = input().strip(' ').lower()
+			if enable_waifu2x_converter == 'y':
+				settings_values = ReadSettings()
+				settings_values['Video_scale_mode'] = 'waifu2x-converter'
+				settings_values['Image_GIF_scale_mode'] = 'waifu2x-converter'
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+			os.system('cls')
+
 	
 #=============================== Default Window Title =================
 def Window_Title(Add_str = ''):
