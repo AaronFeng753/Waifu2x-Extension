@@ -25,6 +25,7 @@ gifsicle version 1.92
 更新日志
 - Performance optimization
 - Some improvements
+- bug fix
 
 
 
@@ -74,7 +75,7 @@ import traceback
 from playsound import playsound
 import struct
 
-Version_current='v3.32'
+Version_current='v3.35'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -314,7 +315,7 @@ def Image_Gif_Scale_Denoise():
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
 				print('-----------------------------')
-				print('Error,input-path is invalid!!')
+				print('Error,input path is invalid!!')
 				print('-----------------------------')
 			else:
 				inputPathError = False
@@ -503,8 +504,12 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
+			time_wait_prograssbar = 0
 			while thread1.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 			
 			for files in os.walk(scalepath):
 				for fileNameAndExt in files[2]:
@@ -537,8 +542,12 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
+			time_wait_prograssbar = 0
 			while thread1.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 			
 			while thread_DelOldFileThread_4x.isAlive():
 				time.sleep(1)
@@ -576,8 +585,12 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\\scaled_waifu2x"+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
+			time_wait_prograssbar = 0
 			while thread1.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 			
 			while thread_DelOldFileThread_4x.isAlive():
 				time.sleep(1)
@@ -592,8 +605,12 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			print("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+inputPath+"\\scaled_waifu2x\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 		
+		time_wait_prograssbar = 0
 		while thread1.isAlive():
+			time_wait_prograssbar = time_wait_prograssbar+1
 			time.sleep(1.1)
+			if time_wait_prograssbar == 2:
+				break
 			
 		if saveAsJPG == 'y':
 			print('\n Convert image..... \n')
@@ -637,11 +654,16 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			if files_num_inputPath == files_num_inputPath_scaled:
 				DelOrgFiles(inputPath)
 			else:
-				print('------------------------------------------------------------------------------')
-				print('Error occured, in order to save your files, the original files in this folder:')
-				print(inputPath)
-				print('will not be deleted.')
-				print('------------------------------------------------------------------------------')
+				list_Content=[
+					'echo ------------------------------------------------------------------------------\n',
+					'echo Error occured, in order to save your files, the original files in this folder:\n',
+					'echo '+inputPath+'\n'
+					'echo will not be deleted.\n'
+					'echo ------------------------------------------------------------------------------\n'
+				]
+				
+				Pop_up_window('Error_file_not_del','Error',list_Content,'')
+
 		print('Copy files...')
 		if Rename_result_images.lower() == 'y':
 			os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled_waifu2x\\*.*\" \""+inputPath+"\"")
@@ -693,11 +715,15 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 			if os.path.exists(scaledFilePath+"_Waifu2x.png") or os.path.exists(scaledFilePath+"_Waifu2x.jpg"):
 				os.system('del /q "'+inputPath+'"')
 			else:
-				print('----------------------------------------------------------------')
-				print(' Error occured, in order to save your files, the original file :')
-				print(' '+inputPath)
-				print(' will not be deleted.')
-				print('----------------------------------------------------------------')
+				list_Content=[
+					'echo --------------------------------------------------------------\n',
+					'echo Error occured, in order to save your files, the original file :\n',
+					'echo '+inputPath+'\n'
+					'echo will not be deleted.\n'
+					'echo --------------------------------------------------------------\n'
+				]
+				
+				Pop_up_window('Error_file_not_del','Error',list_Content,'')
 		FinishedFileNum = FinishedFileNum+1
 		
 #==============================================  process_gif_scale_modeABC =================================================
@@ -734,8 +760,13 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 			thread1.start()
 			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+			
+			time_wait_prograssbar = 0
 			while thread1.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 			
 			for files in os.walk(scalepath):
 				for fileNameAndExt in files[2]:
@@ -768,8 +799,12 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
+			time_wait_prograssbar = 0
 			while thread1.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 				
 			while thread_DelOldFileThread_4x.isAlive():
 				time.sleep(1)
@@ -803,8 +838,12 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split\\scaled'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
+			time_wait_prograssbar = 0
 			while thread1.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 				
 			while thread_DelOldFileThread_4x.isAlive():
 				time.sleep(1)
@@ -820,8 +859,12 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 			print("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+scaledFilePath+'_split'+"\" -o \""+scaledFilePath+'_split\\scaled'+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
+			time_wait_prograssbar = 0
 			while thread1.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 				
 			for files in os.walk(scalepath):
 				for fileNameAndExt in files[2]:
@@ -841,13 +884,16 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 				if os.path.getsize(gif_name)>0:
 					os.system('del /q "'+inputPath+'"')
 			else:
-				print('----------------------------------------------------------------')
-				print(' Error occured, in order to save your files, the original file :')
-				print(' '+inputPath)
-				print(' will not be deleted.')
-				print('----------------------------------------------------------------')
+				list_Content=[
+					'echo --------------------------------------------------------------\n',
+					'echo Error occured, in order to save your files, the original file :\n',
+					'echo '+inputPath+'\n'
+					'echo will not be deleted.\n'
+					'echo --------------------------------------------------------------\n'
+				]
+				
+				Pop_up_window('Error_file_not_del','Error',list_Content,'')
 			
-		
 		if optimizeGif == 'y':
 			print('Compressing gif....')
 			compress_gif(scaledFilePath+'_waifu2x.gif','1')
@@ -882,7 +928,7 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
 				print('-----------------------------')
-				print('Error,input-path is invalid!!')
+				print('Error,input path is invalid!!')
 				print('-----------------------------')
 			else:
 				inputPathError = False
@@ -1042,11 +1088,16 @@ class waifu2x_converter_Thread_ImageModeC(threading.Thread):
 			if os.path.exists(scaledFilePath+"_Waifu2x.png") or os.path.exists(scaledFilePath+"_Waifu2x.jpg"):
 				os.system('del /q "'+inputPath+'"')
 			else:
-				print('----------------------------------------------------------------')
-				print(' Error occured, in order to save your files, the original file :')
-				print(' '+inputPath)
-				print(' will not be deleted.')
-				print('----------------------------------------------------------------')
+				list_Content=[
+					'echo --------------------------------------------------------------\n',
+					'echo Error occured, in order to save your files, the original file :\n',
+					'echo '+inputPath+'\n'
+					'echo will not be deleted.\n'
+					'echo --------------------------------------------------------------\n'
+				]
+				
+				Pop_up_window('Error_file_not_del','Error',list_Content,'')
+
 
 #=============================================  Process_ImageModeC_waifu2x_converter  ======================================================
 
@@ -1159,11 +1210,15 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 				if os.path.getsize(gif_name)>0:
 					os.system('del /q "'+inputPath+'"')
 			else:
-				print('----------------------------------------------------------------')
-				print(' Error occured, in order to save your files, the original file :')
-				print(' '+inputPath)
-				print(' will not be deleted.')
-				print('----------------------------------------------------------------')
+				list_Content=[
+					'echo --------------------------------------------------------------\n',
+					'echo Error occured, in order to save your files, the original file :\n',
+					'echo '+inputPath+'\n'
+					'echo will not be deleted.\n'
+					'echo --------------------------------------------------------------\n'
+				]
+				
+				Pop_up_window('Error_file_not_del','Error',list_Content,'')
 			
 		
 		if optimizeGif == 'y':
@@ -1206,7 +1261,7 @@ class DelOldFileThread_4x(threading.Thread):
 
 #=============================================  Scale & Denoise Video_waifu2x_converter  ====================================
 def Scale_Denoise_Video_waifu2x_converter():
-	print('注意 : 输入路径中不得包含中文字符,会造成兼容性问题.')
+	print('Note: Chinese characters can not be included in the input path, which will cause compatibility problems.')
 	print('')
 	print("================ Scale & Denoise Video - waifu2x-converter ===============")
 	print("Type 'r' to return to the previous menu")
@@ -1230,7 +1285,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 				return 1
 			elif inputPath == '' or os.path.exists(inputPath) == False:
 				print('-----------------------------')
-				print('Error,input-path is invalid!!')
+				print('Error,input path is invalid!!')
 				print('-----------------------------')
 			else:
 				inputPathError = False
@@ -1382,7 +1437,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
-	print('注意 : 输入路径中不得包含中文字符,会造成兼容性问题.')
+	print('Note: Chinese characters can not be included in the input path, which will cause compatibility problems.')
 	print('')
 	print("================ Scale & Denoise Video - Waifu2x-ncnn-vulkan ===============")
 	print("Type 'r' to return to the previous menu")
@@ -1407,7 +1462,7 @@ def Scale_Denoise_Video():
 				return 1
 			elif inputPath == '' or os.path.exists(inputPath) == False:
 				print('-----------------------------')
-				print('Error,input-path is invalid!!')
+				print('Error,input path is invalid!!')
 				print('-----------------------------')
 			else:
 				inputPathError = False
@@ -1515,8 +1570,12 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
+			time_wait_prograssbar = 0
 			while thread2.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 					
 			while thread_VideoDelFrameThread.isAlive():
 				time.sleep(1)
@@ -1554,8 +1613,12 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
+			time_wait_prograssbar = 0
 			while thread2.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 					
 			while thread_VideoDelFrameThread_4x.isAlive():
 				time.sleep(1)
@@ -1593,8 +1656,12 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
+			time_wait_prograssbar = 0
 			while thread2.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 					
 			while thread_VideoDelFrameThread_4x.isAlive():
 				time.sleep(1)
@@ -1612,8 +1679,12 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 			print("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			os.system("waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
 			
+			time_wait_prograssbar = 0
 			while thread2.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
 				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
 			
 			while thread_VideoDelFrameThread.isAlive():
 				time.sleep(1)
@@ -1647,7 +1718,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 
 #=============================================  Scale & Denoise Video - Anime4K  ====================================
 def Scale_Denoise_Video_Anime4K():
-	print('注意 : 输入路径中不得包含中文字符,会造成兼容性问题.')
+	print('Note: Chinese characters can not be included in the input path, which will cause compatibility problems.')
 	print('')
 	print("======================== Scale Video - Anime4K =======================")
 	print("Type 'r' to return to the previous menu")
@@ -1671,7 +1742,7 @@ def Scale_Denoise_Video_Anime4K():
 				return 1
 			elif inputPath == '' or os.path.exists(inputPath) == False:
 				print('-----------------------------')
-				print('Error,input-path is invalid!!')
+				print('Error,input path is invalid!!')
 				print('-----------------------------')
 			else:
 				inputPathError = False
@@ -1803,8 +1874,12 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		thread_VideoDelFrameThread.start()
 		Video_scale_Anime4K(frames_dir,frames_dir+"\\scaled",scale)
 		
+		time_wait_prograssbar = 0
 		while thread2.isAlive():
+			time_wait_prograssbar = time_wait_prograssbar+1
 			time.sleep(1.1)
+			if time_wait_prograssbar == 2:
+				break
 		
 		while thread_VideoDelFrameThread.isAlive():
 			time.sleep(1)
@@ -1860,7 +1935,7 @@ def Compress_image_gif():
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
 				print('-----------------------------')
-				print('Error,input-path is invalid!!')
+				print('Error,input path is invalid!!')
 				print('-----------------------------')
 			else:
 				inputPathError = False
@@ -3952,12 +4027,13 @@ def Remove_File_2_Folder(Dict_New_folder_Old_folder):
 
 
 #================================================ Pop-up window ===============================================
-def Pop_up_window(FileName,Title,Content):
-	FileName = FileName.strip(' ')
+def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
+	settings_values = ReadSettings()
+	str_FileName = str_FileName.strip(' ')
 	start_bat_str=[
 		'@echo off \n',
 		'color '+settings_values['default_color']+' \n',
-		'title = Waifu2x扩展 '+Version_current+' 作者: Aaron Feng  [ '+Title+' ] \n',
+		'title = Waifu2x扩展 '+Version_current+' 作者: Aaron Feng  [ '+str_Title+' ] \n',
 		]
 	
 	end_bat_str=[
@@ -3966,12 +4042,21 @@ def Pop_up_window(FileName,Title,Content):
 		'EXIT \n',
 		]
 	
-	Full_bat_str= start_bat_str+Content+end_bat_str
+	wait_time_str = [
+	'\necho. \n'
+	'TIMEOUT /T '+str(str_wait_time)+' /NOBREAK \n',
+	'EXIT \n'
+	]
 	
-	with open(FileName+'.bat','w+') as f:
+	if str_wait_time == '':
+		Full_bat_str= start_bat_str+list_Content+end_bat_str
+	else:
+		Full_bat_str= start_bat_str+list_Content+wait_time_str
+	
+	with open(str_FileName+'.bat','w+') as f:
 		f.writelines(Full_bat_str)
 	
-	os.system('start '+FileName+'.bat')
+	os.system('start '+str_FileName+'.bat')
 	
 	return 0 
 
