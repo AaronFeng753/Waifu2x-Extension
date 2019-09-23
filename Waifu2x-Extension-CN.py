@@ -2371,7 +2371,7 @@ class VideoDelFrameThread_4x(threading.Thread):
 				break
 			time.sleep(0.5)
 	
-#===================================================== input ====================================================
+#===================================================== 输 入 ====================================================
 def input_scale():
 	settings_values = ReadSettings()
 	default_value = settings_values['scale']
@@ -2495,7 +2495,7 @@ def input_delorginal():
 	settings_values = ReadSettings()
 	default_value = settings_values['delorginal']
 	while True:
-		delorginal = input('删除原文件?(y/n, 默认='+default_value+'): ').strip(' ')
+		delorginal = input('删除原文件?(y/n, 默认='+default_value+'): ').strip(' ').lower()
 		if delorginal in ['y','n','Y','N','','r','R']:
 			break
 		else:
@@ -2507,7 +2507,7 @@ def input_delorginal():
 	
 def input_turnoff():
 	while True:
-		turnoff = input('完成任务后关闭电脑?(y/n, 默认=n): ').strip(' ')
+		turnoff = input('完成任务后关闭电脑?(y/n, 默认=n): ').strip(' ').lower()
 		if turnoff in ['y','n','Y','N','','r','R']:
 			break
 		else:
@@ -2520,7 +2520,7 @@ def input_turnoff():
 def input_saveAsJPG():
 	settings_values = ReadSettings()
 	while True:
-		saveAsJPG = input('目标另存为.jpg? (y/n, 默认=y): ').strip(' ')
+		saveAsJPG = input('目标另存为.jpg? (y/n, 默认=y): ').strip(' ').lower()
 		if saveAsJPG in ['y','n','Y','N','']:
 			break
 		else:
@@ -2533,7 +2533,7 @@ def input_saveAsJPG():
 	
 	if saveAsJPG.lower() == 'y':
 		while True:
-			Compress = input('压缩 .jpg 文件?(近乎无损) (y/n, 默认=y): ').strip(' ')
+			Compress = input('压缩 .jpg 文件?(近乎无损) (y/n, 默认=y): ').strip(' ').lower()
 			if Compress in ['y','n','Y','N','',]:
 				break
 			else:
@@ -2550,7 +2550,7 @@ def input_optimizeGif():
 	print('''这会轻微影响GIF的画质, 但是会节省大量存储空间.
 ----------------------------------------------------------------------------------''')
 	while True:
-		optimizeGif = input('优化 .gif? (y/n, 默认=y): ').strip(' ')
+		optimizeGif = input('优化 .gif? (y/n, 默认=y): ').strip(' ').lower()
 		if optimizeGif in ['y','n','Y','N','']:
 			break
 		else:
@@ -2587,7 +2587,7 @@ def input_multiThread():
 	settings_values = ReadSettings()
 	default_value = 'y'
 	while True:
-		multiThread = input('启用多线程(压缩)? (y/n, default='+default_value+'): ').strip(' ')
+		multiThread = input('启用多线程(压缩)? (y/n, default='+default_value+'): ').strip(' ').lower()
 		if multiThread in ['y','n','Y','N','']:
 			break
 		else:
@@ -2611,7 +2611,7 @@ def input_gpuId():
 	for id_ in gpuId_list:
 		gpuId_list_str = gpuId_list_str+'/'+str(id_)
 	while True:
-		gpuId = input('GPU ID (auto (自动)'+gpuId_list_str+', 默认='+default_value+'): ').strip(' ')
+		gpuId = input('GPU ID (auto (自动)'+gpuId_list_str+', 默认='+default_value+'): ').strip(' ').lower()
 		if gpuId.isdigit():
 			if int(gpuId) in gpuId_list:
 				break
@@ -2638,7 +2638,7 @@ def input_notificationSound():
 	settings_values = ReadSettings()
 	default_value = 'y'
 	while True:
-		notificationSound = input('启用提示音? (y/n, 默认='+default_value+'): ').strip(' ')
+		notificationSound = input('启用提示音? (y/n, 默认='+default_value+'): ').strip(' ').lower()
 		if notificationSound in ['y','n','Y','N','']:
 			break
 		else:
@@ -2656,7 +2656,7 @@ def input_multiThread_Scale():
 	settings_values = ReadSettings()
 	default_value = 'y'
 	while True:
-		multiThread_Scale = input('启用多线程(放大与降噪)(对于waifu2x-ncnn-vulkan)? (y/n, 默认='+default_value+'): ')
+		multiThread_Scale = input('启用多线程(放大与降噪)(对于waifu2x-ncnn-vulkan)? (y/n, 默认='+default_value+'): ').strip(' ').lower()
 		if multiThread_Scale in ['y','n','Y','N','']:
 			break
 		else:
@@ -2689,7 +2689,7 @@ def input_image_quality():
 			
 def input_scan_subfolders():
 	while True:
-		scan_subfolders = input('扫描子文件夹? ( y/n, 默认= n ): ').strip(' ')
+		scan_subfolders = input('扫描子文件夹? ( y/n, 默认= n ): ').strip(' ').lower()
 		if scan_subfolders in ['y','n','Y','N','R','r','']:
 			break
 		else:
@@ -2753,9 +2753,11 @@ def checkUpdate():
 		
 		if Version_current != Version_latest:
 			os.system('cls')
-			print('检测到新版本 : '+Version_latest)
+			print(' 检测到新版本 : '+Version_latest)
+			print(' 通过修改hosts加速github访问：https://share.weiyun.com/5u4OPP3 ')
+			print(' -----------------------------------------------------------')
 			while True:
-				download_update = input('你想下载更新吗?(y/n): ')
+				download_update = input(' 你想现在下载更新吗?(y/n): ')
 				if download_update in ['y','n','Y','N']:
 					break
 				else:
@@ -2804,6 +2806,8 @@ def CheckUpdate_start():
 			'echo 当前版本 : '+Version_current+'\n',
 			'echo 新版本 : '+Version_latest+'\n',
 			'echo 如果你不想在启动时检查更新, 你可以在设置内手动关闭. \n',
+			'echo 通过修改hosts加速github访问：https://share.weiyun.com/5u4OPP3 \n',
+			'echo ------------------------------------------------------------ \n',
 			'echo 你想现在下载更新吗?(y/n): \n',
 			'set user_input=N\n',
 			'set /p user_input= \n',
