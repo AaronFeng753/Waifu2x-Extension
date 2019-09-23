@@ -3,12 +3,17 @@
 
 '''
 
-What is Waifu2x-Extension?
+什么是"Waifu2x扩展" ?
 
-Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutional Neural Networks.
-Based on waifu2x-ncnn-vulkan (version 20190712).
-Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that support Vulakn, even Intel GPU.
-Already been tested on AMD RX 550, NVIDIA GeForce GTX 1070 and Intel UHD 620.
+借助深度卷积神经网络进行超分辨率放大动漫风格的艺术作品, 包括图片,gif动态图片以及视频.
+
+基于waifu2x-ncnn-vulkan (version 20190712) 和 Waifu2x-converter.
+
+借助于waifu2x-ncnn-vulkan, Waifu2x-Extension可以借助任何支持Vulkan的显卡进行运算, 即便是Intel集成显卡.
+
+如果你的GPU不支持vulkan, 你也可以使用集成在扩展中的Waifu2x-converter.
+
+已经在 AMD RX 550, Intel UHD 620 和 NVIDIA GeForce GTX 1070 上通过测试.
 
 -----------------------------------------------
 
@@ -329,10 +334,10 @@ def Image_Gif_Scale_Denoise():
 	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
-		if scan_subfolders.lower() == 'r':
+		if scan_subfolders == 'r':
 			return 1
 	
-	if scan_subfolders.lower() == 'y':
+	if scan_subfolders == 'y':
 		subfolders_list = []
 		for inputPathList_folders_folder_scan in inputPathList_folders:
 			for path_scansub,useless,filename in os.walk(inputPathList_folders_folder_scan):
@@ -342,24 +347,24 @@ def Image_Gif_Scale_Denoise():
 		inputPathList_folders = subfolders_list
 	
 	scale = input_scale()
-	if scale.lower() == 'r':
+	if scale == 'r':
 		return 1
 	if scale == '1':
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
-	if noiseLevel.lower() == 'r':
+	if noiseLevel == 'r':
 		return 1
 		
 	tileSize = settings_values['tileSize']
 	multiThread_Scale = settings_values['multiThread_Scale']
 	load_proc_save_str = settings_values['load_proc_save_str']
-	if multiThread_Scale.lower() == 'n':
+	if multiThread_Scale == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	gpuId = settings_values['gpuId']
 	notificationSound = settings_values['notificationSound']
 	gpuId_str=''
-	if gpuId.lower() != 'auto':
+	if gpuId != 'auto':
 		gpuId_str = ' -g '+gpuId
 	
 	Gif_exists = False
@@ -382,21 +387,21 @@ def Image_Gif_Scale_Denoise():
 	if Image_exists:
 		saveAsJPG = settings_values['saveAsJPG']
 		Compress = settings_values['Compress']
-		if Compress.lower() == 'y':
+		if Compress == 'y':
 			JpgQuality=90
 	
 	delorginal = input_delorginal()
-	if delorginal.lower() == 'r':
+	if delorginal == 'r':
 		return 1
 	
 	turnoff = input_turnoff()
-	if turnoff.lower() == 'r':
+	if turnoff == 'r':
 		return 1
 	
 	sleepMode = input_sleepMode()
-	if sleepMode.lower() == 'r':
+	if sleepMode == 'r':
 		return 1
-	elif sleepMode.lower() == 'y':
+	elif sleepMode == 'y':
 		load_proc_save_str = ' -j 1:1:1 '
 		notificationSound = 'n'
 		
@@ -463,9 +468,9 @@ def Image_Gif_Scale_Denoise():
 	total_time_end=time.time()
 	
 	print('\n 总共用时: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
-	if turnoff.lower()=='y':
+	if turnoff=='y':
 		os.system('shutdown -s')
-	if notificationSound.lower() == 'y':
+	if notificationSound == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
 	
@@ -594,7 +599,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 		while thread1.isAlive():
 			time.sleep(1.1)
 			
-		if saveAsJPG.lower() == 'y':
+		if saveAsJPG == 'y':
 			print('\n 转换图片中..... \n')
 			for path,useless,fnames in os.walk(inputPath+'\\scaled_waifu2x\\'):
 				for fnameAndExt in fnames:
@@ -610,7 +615,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 				for fileNameAndExt in files[2]:
 					fileName=os.path.splitext(fileNameAndExt)[0]
 					originalName=list(orginalFileNameAndFullname.keys())[list(orginalFileNameAndFullname.values()).index(fileName)]
-					if saveAsJPG.lower() == 'y':
+					if saveAsJPG == 'y':
 						os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',originalName+"_Waifu2x.jpg"))
 					else:
 						os.rename(os.path.join(inputPath+'\\scaled_waifu2x\\',fileNameAndExt),os.path.join(inputPath+'\\scaled_waifu2x\\',originalName+"_Waifu2x.png"))
@@ -624,7 +629,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 		orginalFileNameAndFullname = {}
 		
 		print('')
-		if delorginal.lower() == 'y':
+		if delorginal == 'y':
 			files_num_inputPath = 0
 			files_num_inputPath_scaled = 0
 			for path,useless,fnames in os.walk(inputPath):
@@ -681,14 +686,14 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 		print('')	
 		
 			
-		if saveAsJPG.lower() == 'y':
+		if saveAsJPG == 'y':
 			if os.path.exists(scaledFilePath+"_Waifu2x.png"):
 				print('\n Convert image..... \n')
 				imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
 				os.remove(scaledFilePath+"_Waifu2x.png")
 		
 		
-		if delorginal.lower() == 'y':
+		if delorginal == 'y':
 			if os.path.exists(scaledFilePath+"_Waifu2x.png") or os.path.exists(scaledFilePath+"_Waifu2x.jpg"):
 				os.system('del /q "'+inputPath+'"')
 			else:
@@ -834,7 +839,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
 		
-		if delorginal.lower() == 'y':
+		if delorginal == 'y':
 			gif_name=scaledFilePath+'_waifu2x.gif'
 			if os.path.exists(gif_name):
 				if os.path.getsize(gif_name)>0:
@@ -847,7 +852,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 				print('----------------------------------------------------------------')
 			
 		
-		if optimizeGif.lower() == 'y':
+		if optimizeGif == 'y':
 			print('压缩 gif....')
 			compress_gif(scaledFilePath+'_waifu2x.gif','1')
 			os.remove(scaledFilePath+'_waifu2x.gif')
@@ -897,10 +902,10 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
-		if scan_subfolders.lower() == 'r':
+		if scan_subfolders == 'r':
 			return 1
 	
-	if scan_subfolders.lower() == 'y':
+	if scan_subfolders == 'y':
 		subfolders_list = []
 		for inputPathList_folders_folder_scan in inputPathList_folders:
 			for path_scansub,useless,filename in os.walk(inputPathList_folders_folder_scan):
@@ -918,13 +923,13 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 			
 	
 	scale = input_scale_Anime4k_waifu2x_converter()
-	if scale.lower() == 'r':
+	if scale == 'r':
 		return 1
 	if scale == '1':
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel_waifu2x_converter()
-	if noiseLevel.lower() == 'r':
+	if noiseLevel == 'r':
 		return 1
 
 	notificationSound = settings_values['notificationSound']
@@ -945,15 +950,15 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	if Image_exists:
 		saveAsJPG = settings_values['saveAsJPG']
 		Compress = settings_values['Compress']
-		if Compress.lower() == 'y':
+		if Compress == 'y':
 			JpgQuality=90
 	
 	delorginal = input_delorginal()
-	if delorginal.lower() == 'r':
+	if delorginal == 'r':
 		return 1
 	
 	turnoff = input_turnoff()
-	if turnoff.lower() == 'r':
+	if turnoff == 'r':
 		return 1
 		
 	print('--------------------------------------------')
@@ -978,9 +983,9 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	total_time_end=time.time()
 	
 	print('\n 总消耗时间: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
-	if turnoff.lower()=='y':
+	if turnoff=='y':
 		os.system('shutdown -s')
-	if notificationSound.lower() == 'y':
+	if notificationSound == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
 	
@@ -1030,14 +1035,14 @@ class waifu2x_converter_Thread_ImageModeC(threading.Thread):
 		model_dir = 'waifu2x-converter\\models_rgb'
 		os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+scaledFilePath+"_Waifu2x.png"+'" --scale_ratio '+scale+' --noise_level '+noiseLevel+' --model_dir '+model_dir)
 		print('')	
-		if saveAsJPG.lower() == 'y':
+		if saveAsJPG == 'y':
 			if os.path.exists(scaledFilePath+"_Waifu2x.png"):
 				print('\n 转换图片..... \n')
 				imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
 				os.remove(scaledFilePath+"_Waifu2x.png")
 		
 		
-		if delorginal.lower() == 'y':
+		if delorginal == 'y':
 			if os.path.exists(scaledFilePath+"_Waifu2x.png") or os.path.exists(scaledFilePath+"_Waifu2x.jpg"):
 				os.system('del /q "'+inputPath+'"')
 			else:
@@ -1152,7 +1157,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
 		
-		if delorginal.lower() == 'y':
+		if delorginal == 'y':
 			gif_name=scaledFilePath+'_waifu2x.gif'
 			if os.path.exists(gif_name):
 				if os.path.getsize(gif_name)>0:
@@ -1165,7 +1170,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 				print('----------------------------------------------------------------')
 			
 		
-		if optimizeGif.lower() == 'y':
+		if optimizeGif == 'y':
 			print('压缩 gif....')
 			compress_gif(scaledFilePath+'_waifu2x.gif','1')
 			os.remove(scaledFilePath+'_waifu2x.gif')
@@ -1244,10 +1249,10 @@ def Scale_Denoise_Video_waifu2x_converter():
 	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
-		if scan_subfolders.lower() == 'r':
+		if scan_subfolders == 'r':
 			return 1
 	
-	if scan_subfolders.lower() == 'y':
+	if scan_subfolders == 'y':
 		subfolders_list = []
 		for inputPathList_folders_folder_scan in inputPathList_folders:
 			for path_scansub,useless,filename in os.walk(inputPathList_folders_folder_scan):
@@ -1257,23 +1262,23 @@ def Scale_Denoise_Video_waifu2x_converter():
 		inputPathList_folders = subfolders_list
 	
 	scale = input_scale_Anime4k_waifu2x_converter()
-	if scale.lower() == 'r':
+	if scale == 'r':
 		return 1
 	if scale == '1':
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel_waifu2x_converter()
-	if noiseLevel.lower() == 'r':
+	if noiseLevel == 'r':
 		return 1
 	
 	notificationSound = settings_values['notificationSound']
 		
 	delorginal = input_delorginal()
-	if delorginal.lower() == 'r':
+	if delorginal == 'r':
 		return 1
 		
 	turnoff = input_turnoff()
-	if turnoff.lower() == 'r':
+	if turnoff == 'r':
 		return 1
 	
 		
@@ -1293,9 +1298,9 @@ def Scale_Denoise_Video_waifu2x_converter():
 	total_time_end=time.time()
 	
 	print('\n 总共消耗时间: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
-	if turnoff.lower()=='y':
+	if turnoff=='y':
 		os.system('shutdown -s')
-	if notificationSound.lower() == 'y':
+	if notificationSound == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
 	input('\n 按下 Enter 键以退出')
@@ -1368,7 +1373,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		
 		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
 	
-		if delorginal.lower() == 'y':
+		if delorginal == 'y':
 			if os.path.exists(res_video):
 				if os.path.getsize(res_video) > 0:
 					os.system('del /q "'+inputPath+'"')	
@@ -1421,10 +1426,10 @@ def Scale_Denoise_Video():
 	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
-		if scan_subfolders.lower() == 'r':
+		if scan_subfolders == 'r':
 			return 1
 	
-	if scan_subfolders.lower() == 'y':
+	if scan_subfolders == 'y':
 		subfolders_list = []
 		for inputPathList_folders_folder_scan in inputPathList_folders:
 			for path_scansub,useless,filename in os.walk(inputPathList_folders_folder_scan):
@@ -1434,37 +1439,37 @@ def Scale_Denoise_Video():
 		inputPathList_folders = subfolders_list
 	
 	scale = input_scale()
-	if scale.lower() == 'r':
+	if scale == 'r':
 		return 1
 	if scale == '1':
 		models = 'models-cunet'
 	
 	noiseLevel = input_noiseLevel()
-	if noiseLevel.lower() == 'r':
+	if noiseLevel == 'r':
 		return 1
 	multiThread_Scale = settings_values['multiThread_Scale']
 	load_proc_save_str = settings_values['load_proc_save_str']
-	if multiThread_Scale.lower() == 'n':
+	if multiThread_Scale == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
 	notificationSound = settings_values['notificationSound']
 	gpuId = settings_values['gpuId']
 	gpuId_str=''
-	if gpuId.lower() != 'auto':
+	if gpuId != 'auto':
 		gpuId_str = ' -g '+gpuId
 		
 	delorginal = input_delorginal()
-	if delorginal.lower() == 'r':
+	if delorginal == 'r':
 		return 1
 		
 	turnoff = input_turnoff()
-	if turnoff.lower() == 'r':
+	if turnoff == 'r':
 		return 1
 	
 	sleepMode = input_sleepMode()
-	if sleepMode.lower() == 'r':
+	if sleepMode == 'r':
 		return 1
-	elif sleepMode.lower() == 'y':
+	elif sleepMode == 'y':
 		load_proc_save_str = ' -j 1:1:1 '
 		notificationSound = 'n'
 		
@@ -1484,9 +1489,9 @@ def Scale_Denoise_Video():
 	total_time_end=time.time()
 	
 	print('\n总共消耗时间: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
-	if turnoff.lower()=='y':
+	if turnoff=='y':
 		os.system('shutdown -s')
-	if notificationSound.lower() == 'y':
+	if notificationSound == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
 	input('\n按下 Enter 键以退出')
@@ -1633,7 +1638,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 	
 		if os.path.splitext(inputPath)[1] != '.mp4':
 			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
-		if delorginal.lower() == 'y':
+		if delorginal == 'y':
 			if os.path.exists(res_video):
 				if os.path.getsize(res_video) > 0:
 					os.system('del /q "'+inputPath+'"')	
@@ -1685,10 +1690,10 @@ def Scale_Denoise_Video_Anime4K():
 	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
-		if scan_subfolders.lower() == 'r':
+		if scan_subfolders == 'r':
 			return 1
 	
-	if scan_subfolders.lower() == 'y':
+	if scan_subfolders == 'y':
 		subfolders_list = []
 		for inputPathList_folders_folder_scan in inputPathList_folders:
 			for path_scansub,useless,filename in os.walk(inputPathList_folders_folder_scan):
@@ -1698,17 +1703,17 @@ def Scale_Denoise_Video_Anime4K():
 		inputPathList_folders = subfolders_list
 	
 	scale = input_scale_Anime4k_waifu2x_converter()
-	if scale.lower() == 'r':
+	if scale == 'r':
 		return 1
 
 	notificationSound = settings_values['notificationSound']
 		
 	delorginal = input_delorginal()
-	if delorginal.lower() == 'r':
+	if delorginal == 'r':
 		return 1
 		
 	turnoff = input_turnoff()
-	if turnoff.lower() == 'r':
+	if turnoff == 'r':
 		return 1
 		
 	print('--------------------------------------------')
@@ -1727,9 +1732,9 @@ def Scale_Denoise_Video_Anime4K():
 	total_time_end=time.time()
 	
 	print('\n总共消耗时间: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
-	if turnoff.lower()=='y':
+	if turnoff=='y':
 		os.system('shutdown -s')
-	if notificationSound.lower() == 'y':
+	if notificationSound == 'y':
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
 	input('\n按下 Enter 键以退出')
@@ -1824,7 +1829,7 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 	
 		if os.path.splitext(inputPath)[1] != '.mp4':
 			os.remove(os.path.splitext(inputPath)[0]+'.mp4')
-		if delorginal.lower() == 'y':
+		if delorginal == 'y':
 			if os.path.exists(res_video):
 				if os.path.getsize(res_video) > 0:
 					os.system('del /q "'+inputPath+'"')	
@@ -1874,10 +1879,10 @@ def Compress_image_gif():
 	scan_subfolders = 'n'
 	if inputPathList_folders != []:
 		scan_subfolders = input_scan_subfolders()
-		if scan_subfolders.lower() == 'r':
+		if scan_subfolders == 'r':
 			return 1
 	
-	if scan_subfolders.lower() == 'y':
+	if scan_subfolders == 'y':
 		subfolders_list = []
 		for inputPathList_folders_folder_scan in inputPathList_folders:
 			for path_scansub,useless,filename in os.walk(inputPathList_folders_folder_scan):
@@ -1909,11 +1914,11 @@ def Compress_image_gif():
 		gif_exist = True
 	if gif_exist:
 		gifCompresslevel=input_gifCompresslevel()
-		if gifCompresslevel.lower() == 'r':
+		if gifCompresslevel == 'r':
 				return 1
 	
 	delorginal = input_delorginal()
-	if delorginal.lower() == 'r':
+	if delorginal == 'r':
 		return 1
 	multiThread = settings_values['multiThread']
 	notificationSound = settings_values['notificationSound']
@@ -1942,7 +1947,7 @@ def Compress_image_gif():
 	total_time_end=time.time()
 		
 	print('\n总共消耗时间: ',total_time_end-total_time_start,'s\n')
-	if notificationSound.lower() == 'y':
+	if notificationSound == 'y':
 		thread_notification=Play_Notification_Sound_Thread()
 		thread_notification.start()
 	input('\n按下 Enter 键来返回主菜单')
@@ -1950,7 +1955,7 @@ def Compress_image_gif():
 #========================================================== Process_compress_image ======================================================
 
 def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality):
-	if multiThread.lower() == 'y':
+	if multiThread == 'y':
 		print('开始压缩图片, 请稍等....')
 		Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality)
 		time.sleep(1)
@@ -1985,7 +1990,7 @@ def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality
 				print('压缩后大小:'+compressed_size)
 				print('节省了 '+saved_size_str+' !')
 				print('')	
-				if delorginal.lower() == 'y':
+				if delorginal == 'y':
 					os.system('del /q "'+inputPath+'"')
 				
 			print('--------------------------------------------')
@@ -1993,7 +1998,7 @@ def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality
 #============================================================= process_gif_compress_modeABC ===================================================
 
 def process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal,multiThread):
-	if multiThread.lower() == 'y':
+	if multiThread == 'y':
 		print('开始压缩 .gif, 请稍等....')
 		Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal)
 		time.sleep(1)
@@ -2027,7 +2032,7 @@ def process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal
 				print('压缩后大小:'+compressed_size)
 				print('节省了 '+saved_size_str+' !')
 				print('')	
-				if delorginal.lower() == 'y':
+				if delorginal == 'y':
 					os.system('del /q "'+inputPath+'"')
 				
 			print('--------------------------------------------')
@@ -2496,7 +2501,7 @@ def input_delorginal():
 	default_value = settings_values['delorginal']
 	while True:
 		delorginal = input('删除原文件?(y/n, 默认='+default_value+'): ').strip(' ').lower()
-		if delorginal in ['y','n','Y','N','','r','R']:
+		if delorginal in ['y','n','','r']:
 			break
 		else:
 			print('输入无效, 请再次输入')
@@ -2508,7 +2513,7 @@ def input_delorginal():
 def input_turnoff():
 	while True:
 		turnoff = input('完成任务后关闭电脑?(y/n, 默认=n): ').strip(' ').lower()
-		if turnoff in ['y','n','Y','N','','r','R']:
+		if turnoff in ['y','n','','r']:
 			break
 		else:
 			print('输入无效, 请再次输入')
@@ -2521,7 +2526,7 @@ def input_saveAsJPG():
 	settings_values = ReadSettings()
 	while True:
 		saveAsJPG = input('目标另存为.jpg? (y/n, 默认=y): ').strip(' ').lower()
-		if saveAsJPG in ['y','n','Y','N','']:
+		if saveAsJPG in ['y','n','']:
 			break
 		else:
 			print('输入无效, 请再次输入')
@@ -2531,7 +2536,7 @@ def input_saveAsJPG():
 		
 	settings_values['saveAsJPG']=saveAsJPG
 	
-	if saveAsJPG.lower() == 'y':
+	if saveAsJPG == 'y':
 		while True:
 			Compress = input('压缩 .jpg 文件?(近乎无损) (y/n, 默认=y): ').strip(' ').lower()
 			if Compress in ['y','n','Y','N','',]:
@@ -2551,7 +2556,7 @@ def input_optimizeGif():
 ----------------------------------------------------------------------------------''')
 	while True:
 		optimizeGif = input('优化 .gif? (y/n, 默认=y): ').strip(' ').lower()
-		if optimizeGif in ['y','n','Y','N','']:
+		if optimizeGif in ['y','n','']:
 			break
 		else:
 			print('输入无效, 请再次输入')
@@ -2588,7 +2593,7 @@ def input_multiThread():
 	default_value = 'y'
 	while True:
 		multiThread = input('启用多线程(压缩)? (y/n, default='+default_value+'): ').strip(' ').lower()
-		if multiThread in ['y','n','Y','N','']:
+		if multiThread in ['y','n','']:
 			break
 		else:
 			print('输入无效, 请再次输入')
@@ -2621,8 +2626,7 @@ def input_gpuId():
 				print('----------------------------')
 		elif gpuId == '':
 			break
-		elif gpuId.lower() == 'auto':
-			gpuId = gpuId.lower()
+		elif gpuId == 'auto':
 			break
 		else:
 			os.system('cls')
@@ -2639,7 +2643,7 @@ def input_notificationSound():
 	default_value = 'y'
 	while True:
 		notificationSound = input('启用提示音? (y/n, 默认='+default_value+'): ').strip(' ').lower()
-		if notificationSound in ['y','n','Y','N','']:
+		if notificationSound in ['y','n','']:
 			break
 		else:
 			os.system('cls')
@@ -2657,7 +2661,7 @@ def input_multiThread_Scale():
 	default_value = 'y'
 	while True:
 		multiThread_Scale = input('启用多线程(放大与降噪)(对于waifu2x-ncnn-vulkan)? (y/n, 默认='+default_value+'): ').strip(' ').lower()
-		if multiThread_Scale in ['y','n','Y','N','']:
+		if multiThread_Scale in ['y','n','']:
 			break
 		else:
 			print('输入无效, 请再次输入')
@@ -2690,7 +2694,7 @@ def input_image_quality():
 def input_scan_subfolders():
 	while True:
 		scan_subfolders = input('扫描子文件夹? ( y/n, 默认= n ): ').strip(' ').lower()
-		if scan_subfolders in ['y','n','Y','N','R','r','']:
+		if scan_subfolders in ['y','n','r','']:
 			break
 		else:
 			print('输入无效, 请再次输入')
@@ -2862,8 +2866,7 @@ def Settings():
 		print(' S: 显示 settings_values.\n')
 		print(' R: 返回主菜单.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/..../RE/RS/S/R): ')
-		mode = mode.lower()
+		mode = input('(1/2/3/..../RE/RS/S/R): ').strip(' ').lower()
 		if mode == "1":
 			os.system('cls')
 			print('----------------------------------------------------------------------------------------')
@@ -2873,7 +2876,7 @@ def Settings():
 			print('所以我们强烈建议您打开自动更新检查来保证您的使用体验.')
 			print('----------------------------------------------------------------------------------------')
 			while True:
-				value_ = input('启动时检查更新? (y/n): ').lower()
+				value_ = input('启动时检查更新? (y/n): ').strip(' ').lower()
 				if value_ in ['y','n']:
 					break
 				else:
@@ -2889,7 +2892,7 @@ def Settings():
 			os.system('cls')
 			
 			while True:
-				value_ = input('"放大比例"的默认值 (1/2/4): ').lower()
+				value_ = input('"放大比例"的默认值 (1/2/4): ').strip(' ').lower()
 				if value_ in ['1','2','4']:
 					break
 				else:
@@ -2905,7 +2908,7 @@ def Settings():
 			os.system('cls')
 			
 			while True:
-				value_ = input('"降噪等级"的默认值 (-1/0/1/2/3): ').lower()
+				value_ = input('"降噪等级"的默认值 (-1/0/1/2/3): ').strip(' ').lower()
 				if value_ in ['-1','0','1','2','3']:
 					break
 				else:
@@ -2921,7 +2924,7 @@ def Settings():
 			os.system('cls')
 			
 			while True:
-				value_ = input('完成后删除原文件? (y/n): ').lower()
+				value_ = input('完成后删除原文件? (y/n): ').strip(' ').lower()
 				if value_ in ['y','n']:
 					break
 				else:
@@ -2937,7 +2940,7 @@ def Settings():
 			os.system('cls')
 			
 			while True:
-				value_ = input('GIF压缩等级的默认值 (1/2/3/4): ').lower()
+				value_ = input('GIF压缩等级的默认值 (1/2/3/4): ').strip(' ').lower()
 				if value_ in ['1','2','3','4']:
 					break
 				else:
@@ -2952,7 +2955,7 @@ def Settings():
 		elif mode == "6":
 			os.system('cls')
 			while True:
-				image_quality = input('图像质量的默认值 ( 压缩静态图像时 ) ( 100 ~ 1 ): ').strip(' ')
+				image_quality = input('图像质量的默认值 ( 压缩静态图像时 ) ( 100 ~ 1 ): ').strip(' ').lower()
 				if image_quality.isdigit():
 					if int(image_quality) >= 1 and int(image_quality) <= 100:
 						break
@@ -2974,7 +2977,7 @@ def Settings():
 			print('这个设置选项只在 waifu2x-ncnn-vulkan 模式内生效')
 			print('-----------------------------------------------------------------')
 			while True:
-				Number_of_threads = input('线程数(放大与降噪) ( 2 / 3 / 4 /.... ; default = 2 ): ').strip(' ')
+				Number_of_threads = input('线程数(放大与降噪) ( 2 / 3 / 4 /.... ; default = 2 ): ').strip(' ').lower()
 				if Number_of_threads.isdigit():
 					if int(Number_of_threads) >= 2:
 						break
@@ -3315,7 +3318,7 @@ class GifCompressThread (threading.Thread):
 		else:
 			saved_size_str = str(saved_size)+'KB'
 			print('\n'+'成功压缩 '+inputPath+'\n')
-			if delorginal.lower() == 'y':
+			if delorginal == 'y':
 				os.system('del /q "'+inputPath+'"')
 
 def Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal):
@@ -3367,7 +3370,7 @@ class ImageCompressThread (threading.Thread):
 			print('\n'+'无法压缩 ['+inputPath+'] 该图片或许已经被压缩过了.\n你可以尝试减少 "图像质量" 的值.'+'\n')
 		else:
 			print('\n'+'压缩完成 '+inputPath+'\n')
-			if delorginal.lower() == 'y':
+			if delorginal == 'y':
 				os.system('del /q "'+inputPath+'"')
 
 def Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality):
@@ -3503,14 +3506,14 @@ def Benchmark():
 	noiseLevel = '3'
 	gpuId = settings_values['gpuId']
 	gpuId_str=''
-	if gpuId.lower() != 'auto':
+	if gpuId != 'auto':
 		gpuId_str = ' -g '+gpuId
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	inputPath = current_dir+'\\'+'benchmark-files-waifu2x-extension'
 	scaledFilePath = inputPath+'\\scaled'
 	multiThread_Scale = settings_values['multiThread_Scale']
 	load_proc_save_str = settings_values['load_proc_save_str']
-	if multiThread_Scale.lower() == 'n':
+	if multiThread_Scale == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = 50
 	old_time_cost = 100000
@@ -3539,7 +3542,7 @@ def Benchmark():
 		tileSize=tileSize+50
 		print('等待 '+str(wait_to_cool_time)+' 秒来冷却你的电脑.')
 		time.sleep(wait_to_cool_time)
-	if notificationSound.lower() == 'y':
+	if notificationSound == 'y':
 			thread_Notification=Play_Notification_Sound_Thread()
 			thread_Notification.start()
 	Window_Title('')
