@@ -23,16 +23,14 @@ gifsicle version 1.92
 -----------------------------------------------
 
 更新日志
-- Performance optimization
-- Some improvements
-- bug fix
+- 
 
 
 
 ------------------------------------------------
 
 To do:
-- 性能优化
+- 
 
 
 '''
@@ -153,7 +151,7 @@ def ChooseFormat():
 		print('( 1 / 2 / 3 / 4 /...../ E / D / R ): ')
 		mode = input().strip(' ').lower()
 			
-		Set_cols_lines(120,38)
+		Set_cols_lines(120,40)
 		
 		if mode == "1":
 			os.system('cls')
@@ -2939,10 +2937,11 @@ def Settings():
 		print(' 13: Number of threads ( Scale & Denoise (Waifu2x-converter) ). Current value: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]\n')
 		print(' RE: Reset error log.\n')
 		print(' RS: Reset settings.\n')
+		print(' RL: Reset language setting(for Waifu2x-Extension-Start.exe).\n')
 		print(' S: Show settings_values.\n')
 		print(' R: Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/..../RE/RS/S/R): ').strip(' ').lower()
+		mode = input('(1/2/3/..../RE/RS/RL/S/R): ').strip(' ').lower()
 		if mode == "1":
 			os.system('cls')
 			print('----------------------------------------------------------------------------------------')
@@ -3265,6 +3264,17 @@ def Settings():
 			
 				
 			
+			input('Setting reseted, press Enter key to return.')
+			
+			os.system('cls')
+		
+		elif mode == "rl":
+			os.system('cls')
+			
+			print('loading....')
+			if os.path.exists('config_waifu2xEX_start'):
+				os.remove('config_waifu2xEX_start')
+			os.system('cls')
 			input('Setting reseted, press Enter key to return.')
 			
 			os.system('cls')
