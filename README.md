@@ -1,6 +1,6 @@
 # Waifu2x-Extension
 #### 中文版说明:https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README-CN.md
-#### 汉化版已更新到v3.3: https://github.com/AaronFeng753/Waifu2x-Extension/releases/tag/v3.3
+#### 本软件已支持简体中文语言
 #### 通过修改host加速github访问：https://share.weiyun.com/5u4OPP3
 # What is Waifu2x-Extension?
 Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutional Neural Networks.
