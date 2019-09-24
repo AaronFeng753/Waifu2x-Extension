@@ -122,9 +122,9 @@ def ChooseFormat():
 		Set_cols_lines(66,38)
 		Window_Title('')
 		print('-'*65)
-		print(' Waifu2x扩展(汉化版)   '+Version_current+'   作者: Aaron Feng ')
+		print(' Waifu2x扩展(汉化版)   '+Version_current+'   作者: Aaron Feng')
 		print('-'*65)
-		print(' Github: https://github.com/AaronFeng753/Waifu2x-Extension    ')
+		print(' Github: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('-'*65)
 		print(" 注意: 本软件的放大与降噪功能仅能用于处理动漫风格的艺术作品")
 		print(" (图片,GIF动态图,视频)")
@@ -153,9 +153,9 @@ def ChooseFormat():
 		print('')
 		print(' 17 : 兼容性测试         E : 退出.')
 		print('-'*65)
-		print(' D : 捐赠. (支付宝)              ')
+		print(' D : 捐赠. (支付宝)      R : 反馈&建议')
 		print('-'*65)
-		print('( 1 / 2 / 3 / 4 /...../ E / D ): ')
+		print('( 1 / 2 / 3 / 4 /...../ E / D / R ): ')
 		mode = input().strip(' ').lower()
 			
 		Set_cols_lines(120,38)
@@ -283,6 +283,11 @@ def ChooseFormat():
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/donate.jpg')
 			os.system('cls')
 			print(' 谢谢您 !!!  :)')
+		elif mode == "r":
+			os.system('cls')
+			print('Loading.......')
+			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/issues/new')
+			os.system('cls')
 		else:
 			os.system('cls')
 			ChangeColor_warning()
@@ -1267,7 +1272,7 @@ class DelOldFileThread_4x(threading.Thread):
 
 #=============================================  Scale & Denoise Video_waifu2x_converter  ====================================
 def Scale_Denoise_Video_waifu2x_converter():
-	print('注意 : 输入路径中不得包含中文字符,会造成兼容性问题.')
+	print('注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
 	print('')
 	print("================ 放大与降噪视频 - waifu2x-converter ===============")
 	print("输入 'r' 返回上一级菜单")
@@ -1443,7 +1448,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
-	print('注意 : 输入路径中不得包含中文字符,会造成兼容性问题.')
+	print('注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
 	print('')
 	print("================ 放大与降噪视频 - Waifu2x-ncnn-vulkan ===============")
 	print("输入 'r' 以返回上一级菜单")
@@ -1724,7 +1729,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 
 #=============================================  Scale & Denoise Video - Anime4K  ====================================
 def Scale_Denoise_Video_Anime4K():
-	print('注意 : 输入路径中不得包含中文字符,会造成兼容性问题.')
+	print('注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
 	print('')
 	print("======================== 放大视频 - Anime4K =======================")
 	print("输入 'r' 以返回上一级菜单")
@@ -2904,7 +2909,7 @@ def CheckUpdate_start():
 			'EXIT \n'
 			]
 			
-			with open('update_bat.bat','w+') as f:
+			with open('update_bat.bat','w+',encoding='ANSI') as f:
 				f.writelines(update_bat_str)
 			os.system('start update_bat.bat')
 			
@@ -4070,7 +4075,7 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 	else:
 		Full_bat_str= start_bat_str+list_Content+wait_time_str
 	
-	with open(str_FileName+'.bat','w+') as f:
+	with open(str_FileName+'.bat','w+',encoding='ANSI') as f:
 		f.writelines(Full_bat_str)
 	
 	os.system('start '+str_FileName+'.bat')
