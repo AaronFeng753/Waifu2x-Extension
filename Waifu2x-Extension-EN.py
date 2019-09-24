@@ -148,9 +148,9 @@ def ChooseFormat():
 		print('│                                                              │')
 		print('│ 17 : Compatibility test   E : Exit.                          │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│                D : Donate 捐赠. (Alipay 支付宝)              │')
+		print('│ D : Donate. (Alipay)      R : Report Bugs & Suggestions      │')
 		print('└──────────────────────────────────────────────────────────────┘')
-		print('( 1 / 2 / 3 / 4 /...../ E / D ): ')
+		print('( 1 / 2 / 3 / 4 /...../ E / D / R ): ')
 		mode = input().strip(' ').lower()
 			
 		Set_cols_lines(120,38)
@@ -279,6 +279,11 @@ def ChooseFormat():
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/donate.jpg')
 			os.system('cls')
 			print('                     Thank you!!!  :)')
+		elif mode == "r":
+			os.system('cls')
+			print('Loading.......')
+			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/issues/new')
+			os.system('cls')
 		else:
 			os.system('cls')
 			ChangeColor_warning()
@@ -1262,7 +1267,8 @@ class DelOldFileThread_4x(threading.Thread):
 
 #=============================================  Scale & Denoise Video_waifu2x_converter  ====================================
 def Scale_Denoise_Video_waifu2x_converter():
-	print('Note: Chinese characters can not be included in the input path, which will cause compatibility problems.')
+	print('Note: The input path must not contain Chinese characters or other special characters,')
+	print('which will cause compatibility problems.')
 	print('')
 	print("================ Scale & Denoise Video - waifu2x-converter ===============")
 	print("Type 'r' to return to the previous menu")
@@ -1438,7 +1444,8 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
-	print('Note: Chinese characters can not be included in the input path, which will cause compatibility problems.')
+	print('Note: The input path must not contain Chinese characters or other special characters,')
+	print('which will cause compatibility problems.')
 	print('')
 	print("================ Scale & Denoise Video - Waifu2x-ncnn-vulkan ===============")
 	print("Type 'r' to return to the previous menu")
@@ -1719,7 +1726,8 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 
 #=============================================  Scale & Denoise Video - Anime4K  ====================================
 def Scale_Denoise_Video_Anime4K():
-	print('Note: Chinese characters can not be included in the input path, which will cause compatibility problems.')
+	print('Note: The input path must not contain Chinese characters or other special characters,')
+	print('which will cause compatibility problems.')
 	print('')
 	print("======================== Scale Video - Anime4K =======================")
 	print("Type 'r' to return to the previous menu")
@@ -2895,7 +2903,7 @@ def CheckUpdate_start():
 			'EXIT \n'
 			]
 			
-			with open('update_bat.bat','w+') as f:
+			with open('update_bat.bat','w+',encoding='ANSI') as f:
 				f.writelines(update_bat_str)
 			os.system('start update_bat.bat')
 			
@@ -4054,7 +4062,7 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 	else:
 		Full_bat_str= start_bat_str+list_Content+wait_time_str
 	
-	with open(str_FileName+'.bat','w+') as f:
+	with open(str_FileName+'.bat','w+',encoding='ANSI') as f:
 		f.writelines(Full_bat_str)
 	
 	os.system('start '+str_FileName+'.bat')
