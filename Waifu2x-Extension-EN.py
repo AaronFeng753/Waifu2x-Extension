@@ -74,6 +74,7 @@ from multiprocessing import cpu_count
 import traceback
 from playsound import playsound
 import struct
+import psutil
 
 Version_current='v3.35'
 
@@ -4060,6 +4061,15 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 	
 	return 0 
 
+#================================= 判断进程是否存在 ================================
+def Process_exist(str_processname):
+    pl = psutil.pids()
+    for pid in pl:
+        if psutil.Process(pid).name() == str_processname:
+            return True
+            break
+    else:
+        return False
 
 #==========================================  Init  ==================================================================
 
