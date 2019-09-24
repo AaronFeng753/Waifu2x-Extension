@@ -28,16 +28,13 @@ gifsicle version 1.92
 -----------------------------------------------
 
 更新日志
-- 性能优化
-- 细节改进
-- 翻译修正
-- 修复bug
+- 
 
 
 ------------------------------------------------
 
 To do:
-- 性能优化
+- 
 
 
 '''
@@ -153,12 +150,12 @@ def ChooseFormat():
 		print('')
 		print(' 17 : 兼容性测试         E : 退出.')
 		print('-'*65)
-		print(' D : 捐赠. (支付宝)      R : 反馈&建议')
+		print(' D : 捐赠. (支付宝)      R : 提交反馈')
 		print('-'*65)
 		print('( 1 / 2 / 3 / 4 /...../ E / D / R ): ')
 		mode = input().strip(' ').lower()
 			
-		Set_cols_lines(120,38)
+		Set_cols_lines(120,40)
 		
 		if mode == "1":
 			os.system('cls')
@@ -2945,10 +2942,11 @@ def Settings():
 		print(' 13: 线程数 ( 放大与降噪 (Waifu2x-converter) ). 当前值: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]\n')
 		print(' RE: 重置错误日志.\n')
 		print(' RS: 重置设置.\n')
+		print(' RL: 重置语言设置 (Waifu2x-Extension-Start.exe).\n')
 		print(' S: 显示 settings_values.\n')
 		print(' R: 返回主菜单.')
 		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/..../RE/RS/S/R): ').strip(' ').lower()
+		mode = input('(1/2/3/..../RE/RS/RL/S/R): ').strip(' ').lower()
 		if mode == "1":
 			os.system('cls')
 			print('----------------------------------------------------------------------------------------')
@@ -3271,6 +3269,17 @@ def Settings():
 			
 				
 			
+			input('设置已重置, 按下Enter返回.')
+			
+			os.system('cls')
+		
+		elif mode == "rl":
+			os.system('cls')
+			
+			print('请稍等....')
+			if os.path.exists('config_waifu2xEX_start'):
+				os.remove('config_waifu2xEX_start')
+			os.system('cls')
 			input('设置已重置, 按下Enter返回.')
 			
 			os.system('cls')
