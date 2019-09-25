@@ -30,7 +30,10 @@ gifsicle version 1.92
 ------------------------------------------------
 
 To do:
-- 
+- 为只有状态栏的模式加入 ETA
+- 完善汉化修复,错误翻译
+- 尝试优化 进度条 性能
+- 加入, anime4k线程数量测试, converter线程数量测试, 统一到benchmark里
 
 
 '''
@@ -51,8 +54,8 @@ print('''
 	|  |____ /  .  \      |  |     |  |____ |  |\   | .----)   |   |  | |  `--'  | |  |\   | 
 	|_______/__/ \__\     |__|     |_______||__| \__| |_______/    |__|  \______/  |__| \__| 
 
+                                           Loading.......
 ''')
-print('Loading.......')
 
 import os
 import time
@@ -74,7 +77,7 @@ from playsound import playsound
 import struct
 import psutil
 
-Version_current='v3.35'
+Version_current='v3.351'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -2138,14 +2141,18 @@ class PrograssBarThread (threading.Thread):
 
 
 def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
+	
 	ETA = 0
 	NewFileNum_Old=0
 	PrograssBar_len_old = 0
+	
 	if OldFileNum != 0:
+		
 		NewFileNum=0
 		time_start = time.time()
 		time.sleep(2.5)
 		print('\n')
+		
 		while NewFileNum <= OldFileNum and os.path.exists(ScalePath):
 			NewFileNum=0
 			if round_ > 1:
@@ -2160,7 +2167,7 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					for singleFile in files[2]:
 						if str(os.path.splitext(singleFile)[1]) in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
 							NewFileNum=NewFileNum+1
-				
+
 			if NewFileNum==0:
 				Percent = 0
 				BarStr = ''
@@ -2196,7 +2203,8 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					Set_cols_lines(cols = PrograssBar_len_new,lines=38)
 				current_cols = Get_cols_lines()[0]
 				Add_len = current_cols-PrograssBar_len_new
-				
+				if Add_len < 0:
+					Add_len = 0
 				sys.stdout.write(PrograssBar+' '*Add_len)
 				sys.stdout.flush()
 					
@@ -2213,7 +2221,8 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					Set_cols_lines(cols = PrograssBar_len_new,lines=38)
 				current_cols = Get_cols_lines()[0]
 				Add_len = current_cols-PrograssBar_len_new
-				
+				if Add_len < 0:
+					Add_len = 0
 				sys.stdout.write(PrograssBar+' '*Add_len)
 				sys.stdout.flush()
 			if NewFileNum == OldFileNum:
@@ -4085,7 +4094,6 @@ def Process_exist(str_processname):
     for pid in pl:
         if psutil.Process(pid).name() == str_processname:
             return True
-            break
     else:
         return False
 
