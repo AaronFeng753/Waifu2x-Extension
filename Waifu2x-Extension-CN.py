@@ -34,8 +34,10 @@ gifsicle version 1.92
 ------------------------------------------------
 
 To do:
-- 
-
+- 为只有状态栏的模式加入 ETA
+- 完善汉化修复,错误翻译
+- 尝试优化 进度条 性能
+- 加入, anime4k线程数量测试, converter线程数量测试, 统一到benchmark里
 
 '''
 
@@ -55,8 +57,9 @@ print('''
 	|  |____ /  .  \      |  |     |  |____ |  |\   | .----)   |   |  | |  `--'  | |  |\   | 
 	|_______/__/ \__\     |__|     |_______||__| \__| |_______/    |__|  \______/  |__| \__| 
 
+
+                                           载入中.......
 ''')
-print('载入中.......')
 
 import os
 import time
@@ -78,7 +81,7 @@ from playsound import playsound
 import struct
 import psutil
 
-Version_current='v3.35'
+Version_current='v3.351'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -4097,12 +4100,10 @@ def Process_exist(str_processname):
     for pid in pl:
         if psutil.Process(pid).name() == str_processname:
             return True
-            break
     else:
         return False
 
 #==========================================  Init  ==================================================================
-
 def init():		#初始化函数
 	Window_Title('')	#更改控制台标题
 	ChangeColor_default()	#更改文字颜色
