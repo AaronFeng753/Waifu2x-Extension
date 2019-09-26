@@ -23,17 +23,21 @@ gifsicle version 1.92
 -----------------------------------------------
 
 更新日志
-- 
+- converter 视频放大增加ETA
+- converter GIF放大增加ETA
+- converter 图片放大增加ETA
+- 修复 converter代码内 无法正常检测线程的bug
+
 
 
 
 ------------------------------------------------
 
 To do:
-- 为只有状态栏的模式加入 ETA
 - 完善汉化修复,错误翻译
 - 尝试优化 进度条 性能
 - 加入, anime4k线程数量测试, converter线程数量测试, 统一到benchmark里
+- 启动时即改变窗口大小, 确保正常展示启动标题
 
 
 '''
@@ -1039,6 +1043,7 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 		thread_Notification.start()
 	
 	input('\npress Enter key to return to the menu')
+	Window_Title('')
 
 #=================================================  waifu2x_converter_Thread  ============================================
 
@@ -1104,6 +1109,7 @@ class waifu2x_converter_Thread_ImageModeC(threading.Thread):
 				]
 				
 				Pop_up_window('Error_file_not_del','Error',list_Content,'')
+		return 0
 
 
 #=============================================  Process_ImageModeC_waifu2x_converter  ======================================================
@@ -1112,33 +1118,52 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 	settings_values = ReadSettings()
 	TotalFileNum = len(inputPathList_Image)
 	max_threads = settings_values['Number_of_threads_Waifu2x_converter']
-	FinishedFileNum = max_threads
+	FinishedFileNum = 0
 	thread_files = []
+	ETA = 'Null'
+	time_start_scale = time.time()
+	
 	for inputPath in inputPathList_Image:
-		Window_Title('  [Scale Imgae]  Files: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')')
+		Window_Title('  [Scale Imgae]  Files: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')  ETA: '+ETA)
 		
 		thread_files.append(inputPath)
 		if len(thread_files) == max_threads:
 			for fname_ in thread_files:
-				thread1=waifu2x_converter_Thread_ImageModeC(fname_,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal)
-				thread1.start()
+				thread_image=waifu2x_converter_Thread_ImageModeC(fname_,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal)
+				thread_image.start()
 			while True:
-				if thread1.isAlive()== False:
+				if thread_image.isAlive()== False:
 					break
+				else:
+					time.sleep(0.02)
 			FinishedFileNum = FinishedFileNum+len(thread_files)
+			
+			remain_frames = TotalFileNum - FinishedFileNum
+			time_cost = time.time()-time_start_scale
+			time_remain = (time_cost/FinishedFileNum)*remain_frames
+			ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
+			
 			thread_files = []
+			
 	if thread_files != []:
-		FinishedFileNum = TotalFileNum
-		Window_Title('  [Scale Imgae]  Files: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')')
+		#FinishedFileNum = TotalFileNum
+		Window_Title('  [Scale Imgae]  Files: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')  ETA: '+ETA)
 		for fname_ in thread_files:
-				thread1=waifu2x_converter_Thread_ImageModeC(fname_,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal)
-				thread1.start()
-		while True:
-			if thread1.isAlive()== False:
-				break
+			thread_image=waifu2x_converter_Thread_ImageModeC(fname_,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal)
+			thread_image.start()
 		thread_files = []
-				
+		while True:
+			if thread_image.isAlive()== False:
+				break
+			else:
+				time.sleep(0.02)
+	while True:
+		if Process_exist('waifu2x-converter_x64.exe')== False:
+			break
+		else:
+			time.sleep(0.02)
 	Window_Title('')
+	
 
 #==============================================  process_gif_scale_modeABC_waifu2x_converter =================================================
 def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel,optimizeGif,delorginal):
@@ -1160,6 +1185,8 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		print('Split gif.....')
 		splitGif(inputPath,scaledFilePath)
 		
+		time_start_scale = time.time()
+		
 		oldfilenumber=FileCount(scaledFilePath+'_split')
 				
 		scalepath = scaledFilePath+'_split\\scaled\\'
@@ -1177,11 +1204,13 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			total_frame = len(fnames)
 			
 			max_threads = settings_values['Number_of_threads_Waifu2x_converter']
-			finished_frame = max_threads
+			finished_frame = 0
 			thread_files = []
 			fnames = dict.fromkeys(fnames,'')
+			ETA = 'Null'
+			
 			for fname in fnames:
-				Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')  Frames: ('+str(finished_frame)+'/'+str(total_frame)+')')
+				Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')  Frames: ('+str(finished_frame)+'/'+str(total_frame)+')  ETA: '+ETA)
 				thread_files.append(fname)
 				if len(thread_files) == max_threads:
 					for fname_ in thread_files:
@@ -1191,10 +1220,17 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 						if thread1.isAlive()== False:
 							break
 					finished_frame = finished_frame+len(thread_files)
+					
+					remain_frames = total_frame - finished_frame
+					time_cost = time.time()-time_start_scale
+					time_remain = (time_cost/finished_frame)*remain_frames
+					ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
+					
 					thread_files = []
+					
 			if thread_files != []:
-				finished_frame = total_frame
-				Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')  Frames: ('+str(finished_frame)+'/'+str(total_frame)+')')
+				#finished_frame = total_frame
+				Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')  Frames: ('+str(finished_frame)+'/'+str(total_frame)+')  ETA: '+ETA)
 				for fname_ in thread_files:
 					thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_,scale,noiseLevel)
 					thread1.start()
@@ -1202,8 +1238,13 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 					if thread1.isAlive()== False:
 						break
 				thread_files = []
+				while True:
+					if Process_exist('waifu2x-converter_x64.exe')== False:
+						break
+					else:
+						time.sleep(0.02)
 			break
-			
+		
 		print('')	
 		print('Assembling Gif.....')
 		assembleGif(scaledFilePath,TIME_GAP)
@@ -1371,7 +1412,10 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 	finished_num = 1
 	for inputPath in inputPathList_files:
 		
+		#========================== 拆解视频 ====================
 		video2images(inputPath) #拆解视频
+		
+		time_start_scale = time.time()
 		
 		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
 		
@@ -1389,11 +1433,12 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		for path,useless,fnames in os.walk(input_folder):
 			total_frames = len(fnames)
 			max_threads = settings_values['Number_of_threads_Waifu2x_converter']
-			finished_frames = max_threads
+			finished_frames = 0
 			thread_files = []
 			fnames = dict.fromkeys(fnames,'')
+			ETA = 'Null'
 			for fname in fnames:
-				Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')  Frames:('+str(finished_frames)+'/'+str(total_frames)+')')
+				Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')  Frames:('+str(finished_frames)+'/'+str(total_frames)+')  ETA: '+ETA)
 				thread_files.append(fname)
 				if len(thread_files) == max_threads:
 					for fname_ in thread_files:
@@ -1403,11 +1448,17 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 						if thread1.isAlive()== False:
 							break
 					finished_frames = finished_frames+len(thread_files)
+					
+					remain_frames = total_frames - finished_frames
+					time_cost = time.time()-time_start_scale
+					time_remain = (time_cost/finished_frames)*remain_frames
+					ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
+					
 					thread_files = []
 				
 			if thread_files != []:
-				finished_frames = total_frames
-				Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')  Frames: ('+str(finished_frames)+'/'+str(total_frames)+')')
+				#finished_frames = total_frames
+				Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')  Frames: ('+str(finished_frames)+'/'+str(total_frames)+')  ETA: '+ETA)
 				for fname_ in thread_files:
 					thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
 					thread1.start()
@@ -1415,6 +1466,11 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 					if thread1.isAlive()== False:
 						break
 				thread_files = []
+			while True:
+				if Process_exist('waifu2x-converter_x64.exe')== False:
+					break
+				else:
+					time.sleep(0.02)
 			break
 		
 		while thread_VideoDelFrameThread.isAlive():
@@ -1425,6 +1481,8 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 				fileName=os.path.splitext(fileNameAndExt)[0]
 				os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
 		
+		
+		#====================== 合成视频 ====================
 		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
 		
 		if os.path.splitext(inputPath)[1] != '.mp4':
@@ -4090,12 +4148,16 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 
 #================================= 判断进程是否存在 ================================
 def Process_exist(str_processname):
-    pl = psutil.pids()
-    for pid in pl:
-        if psutil.Process(pid).name() == str_processname:
-            return True
-    else:
-        return False
+	pl = psutil.pids()
+	for pid in pl:
+		try:
+			if psutil.Process(pid).name() == str_processname:
+				return True
+		except BaseException:
+			pass
+
+	else:
+		return False
 
 #==========================================  Init  ==================================================================
 
@@ -4140,7 +4202,8 @@ if __name__ == '__main__':
 			print('---------------------------------------------------')
 			print('                   !!! Error !!!')
 			print('---------------------------------------------------')
-			ErrorStr = str(traceback.print_exc())
+			ErrorStr = traceback.format_exc()
+			print(ErrorStr)
 			
 			with open('Error_Log_Waifu2x-Extension.log','a+') as f:
 				f.write(ErrorStr)
