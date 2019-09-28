@@ -32,17 +32,17 @@ gifsicle version 1.92
 - converter GIF放大增加ETA
 - converter 图片放大增加ETA
 - 修复 converter代码内 无法正常检测线程的bug
+- 更改设置逻辑, 单变量的直接切换(y/n那种)
 
 
 ------------------------------------------------
 
 To do:
-- 完善汉化修复,错误翻译
-- 尝试优化 进度条 性能
 - 加入, anime4k线程数量测试, converter线程数量测试, 统一到benchmark里
-- 启动时即改变窗口大小, 确保正常展示启动标题
+- 完善汉化修复,错误翻译
 
 '''
+
 
 print('''
 		____    __    ____  ___       __   _______  __    __      ___   ___   ___ 
@@ -125,12 +125,12 @@ def ChooseFormat():
 		Set_cols_lines(66,38)
 		Window_Title('')
 		print('-'*65)
-		print(' Waifu2x扩展(汉化版)   '+Version_current+'   作者: Aaron Feng')
+		print(' Waifu2x扩展   '+Version_current+'   作者: Aaron Feng')
 		print('-'*65)
-		print(' Github: https://github.com/AaronFeng753/Waifu2x-Extension')
+		print(' Github主页: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('-'*65)
-		print(" 注意: 本软件的放大与降噪功能仅能用于处理动漫风格的艺术作品")
-		print(" (图片,GIF动态图,视频)")
+		print(" 注意: 本软件的放大与降噪功能仅适用于处理动漫风格的艺术作品")
+		print(" (包括图片,GIF动态图,视频)")
 		print('-'*65)
 		print(' 1 : 放大与降噪图片和GIF.  2 : '+Video_str)
 		print('-'*65)
@@ -2682,19 +2682,13 @@ def input_saveAsJPG():
 
 def input_optimizeGif():
 	settings_values = ReadSettings()
-	print('这会轻微影响GIF的画质, 但是会节省大量存储空间.')
-	print('----------------------------------------------')
-	while True:
-		optimizeGif = input('优化 .gif? (y/n, 默认=y): ').strip(' ').lower()
-		if optimizeGif in ['y','n','']:
-			break
-		else:
-			print('输入无效, 请再次输入')
-	
-	if optimizeGif == '':
-		optimizeGif = 'y'
 		
-	settings_values['optimizeGif'] = optimizeGif
+	if settings_values['optimizeGif'] == 'n':
+		settings_values['optimizeGif'] = 'y'
+		
+	elif settings_values['optimizeGif'] == 'y':
+		settings_values['optimizeGif'] = 'n'
+	
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 	
@@ -2720,18 +2714,13 @@ def input_gifCompresslevel():
 	
 def input_multiThread():
 	settings_values = ReadSettings()
-	default_value = 'y'
-	while True:
-		multiThread = input('启用多线程(压缩)? (y/n, default='+default_value+'): ').strip(' ').lower()
-		if multiThread in ['y','n','']:
-			break
-		else:
-			print('输入无效, 请再次输入')
 	
-	if multiThread == '':
-		multiThread = default_value
-	
-	settings_values['multiThread']=str(multiThread)
+	if settings_values['multiThread']=='n':
+		settings_values['multiThread']='y'
+		
+	elif settings_values['multiThread']=='y':
+		settings_values['multiThread']='n'
+		
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 	
@@ -2770,36 +2759,25 @@ def input_gpuId():
 
 def input_notificationSound():
 	settings_values = ReadSettings()
-	default_value = 'y'
-	while True:
-		notificationSound = input('启用提示音? (y/n, 默认='+default_value+'): ').strip(' ').lower()
-		if notificationSound in ['y','n','']:
-			break
-		else:
-			os.system('cls')
-			print('输入无效, 请再次输入')
 	
-	if notificationSound == '':
-		notificationSound = default_value
+	if settings_values['notificationSound']=='y':
+		settings_values['notificationSound']='n'
 		
-	settings_values['notificationSound']=str(notificationSound)
+	elif settings_values['notificationSound']=='n':
+		settings_values['notificationSound']='y'
+		
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 
 def input_multiThread_Scale():
 	settings_values = ReadSettings()
-	default_value = 'y'
-	while True:
-		multiThread_Scale = input('启用多线程(放大与降噪)(对于waifu2x-ncnn-vulkan)? (y/n, 默认='+default_value+'): ').strip(' ').lower()
-		if multiThread_Scale in ['y','n','']:
-			break
-		else:
-			print('输入无效, 请再次输入')
 	
-	if multiThread_Scale == '':
-		multiThread_Scale = default_value
+	if settings_values['multiThread_Scale']=='n':
+		settings_values['multiThread_Scale']='y'
 	
-	settings_values['multiThread_Scale']=str(multiThread_Scale)
+	elif settings_values['multiThread_Scale']=='y':
+		settings_values['multiThread_Scale']='n'
+	
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 
@@ -3000,15 +2978,17 @@ def Settings():
 		mode = input('(1/2/3/..../RE/RS/RL/S/R): ').strip(' ').lower()
 		if mode == "1":
 			os.system('cls')
-			print('----------------------------------------------------------------------------------------')
-			print('本软件的更新策略是通过多次的小更新')
-			print('来改进软件的各个方面,')
-			print('而不是每隔一大段时间发布一次大更新.')
+			print('------------------------------------------------------------------')
+			print('本软件的更新策略是通过频繁且多次的小更新, 来逐渐改善软件使用体验\n')
+			print('而不是每隔一大段时间发布一次大更新.\n')
 			print('所以我们强烈建议您打开自动更新检查来保证您的使用体验.')
-			print('----------------------------------------------------------------------------------------')
+			print('------------------------------------------------------------------')
 			while True:
 				value_ = input('启动时检查更新? (y/n): ').strip(' ').lower()
 				if value_ in ['y','n']:
+					break
+				elif value_ == '':
+					value_ = settings_values['CheckUpdate']
 					break
 				else:
 					print('无效值, 请再次输入')
@@ -3026,6 +3006,9 @@ def Settings():
 				value_ = input('"放大比例"的默认值 (1/2/4): ').strip(' ').lower()
 				if value_ in ['1','2','4']:
 					break
+				elif value_ == '':
+					value_ = settings_values['scale']
+					break
 				else:
 					print('无效值, 请再次输入')
 					
@@ -3042,6 +3025,9 @@ def Settings():
 				value_ = input('"降噪等级"的默认值 (-1/0/1/2/3): ').strip(' ').lower()
 				if value_ in ['-1','0','1','2','3']:
 					break
+				elif value_ == '':
+					value_ = settings_values['noiseLevel']
+					break
 				else:
 					print('无效值, 请再次输入')
 					
@@ -3052,16 +3038,16 @@ def Settings():
 			os.system('cls')
 			
 		elif mode == "4":
+			
 			os.system('cls')
 			
-			while True:
-				value_ = input('完成后删除原文件? (y/n): ').strip(' ').lower()
-				if value_ in ['y','n']:
-					break
-				else:
-					print('无效值, 请再次输入')
-					
-			settings_values['delorginal']=value_
+			print('Loading...')
+			
+			if settings_values['delorginal'] == 'y':
+				settings_values['delorginal'] = 'n'
+			elif settings_values['delorginal'] == 'n':
+				settings_values['delorginal'] = 'y'
+			
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
 				
@@ -3073,6 +3059,9 @@ def Settings():
 			while True:
 				value_ = input('GIF压缩等级的默认值 (1/2/3/4): ').strip(' ').lower()
 				if value_ in ['1','2','3','4']:
+					break
+				elif value_ == '':
+					value_ = settings_values['gifCompresslevel']
 					break
 				else:
 					print('无效值, 请再次输入')
@@ -3092,6 +3081,9 @@ def Settings():
 						break
 					else:
 						print('输入无效, 请再次输入')
+				elif image_quality == '':
+					image_quality = settings_values['image_quality']
+					break
 				else:
 					print('输入无效, 请再次输入')
 			settings_values['image_quality']=int(image_quality)
@@ -3103,10 +3095,11 @@ def Settings():
 		elif mode== "7":
 			os.system('cls')
 			Number_of_threads=''
-			print('改变这项设置可能会导致性能问题.')
-			print('我们建议您使用默认值.')
+			print('--------------------------------------------------')
+			print('改变这项设置可能会导致性能问题.\n')
+			print('我们建议您使用默认值.\n')
 			print('这个设置选项只在 waifu2x-ncnn-vulkan 模式内生效')
-			print('-----------------------------------------------------------------')
+			print('--------------------------------------------------')
 			while True:
 				Number_of_threads = input('线程数(放大与降噪) ( 2 / 3 / 4 /.... ; default = 2 ): ').strip(' ').lower()
 				if Number_of_threads.isdigit():
@@ -3901,7 +3894,6 @@ def Compatibility_Test(Init):
 		os.system("del /q \""+scaledFilePath+"\"")
 	
 	#====================== 输出测试结果 =======================
-	
 	os.system('cls')
 	
 	if waifu2x_ncnn_vulkan_avaliable:
@@ -3933,7 +3925,11 @@ def Compatibility_Test(Init):
 		else:
 			input('按Enter键以继续')
 	else:
+		Set_cols_lines(120,40)
 		ChangeColor_warning()
+		print('当 waifu2x-ncnn-vulkan 或 waifu2x-converter 可用时,')
+		print('您无需修复兼容性问题也可以正常使用软件内的功能')
+		print('-----------------------------------------------------')
 		print('警告,在当前电脑上出现了兼容性问题') 
 		print('请按照以下建议来修复兼容性问题:')
 		print('----------------------------------------------------------------')
@@ -3965,7 +3961,7 @@ def Compatibility_Test(Init):
 			print('')
 		
 		
-		print('如果按照上面的建议操作后依旧无法修复兼容问题, 请在启用当前兼容的组件.')
+		print('如果按照上面的建议操作后依旧无法修复兼容问题, 请在 设置 中启用当前兼容的组件.')
 		print('')
 		print('--------------------')
 		print('按 Enter 键以继续.')
@@ -3975,7 +3971,7 @@ def Compatibility_Test(Init):
 		ChangeColor_default()
 		
 		if waifu2x_ncnn_vulkan_avaliable == False and waifu2x_converter_avaliable == True:
-			print('我们检测到waifu2x-converter在您的电脑上可用, 是否现在启用??')
+			print('我们检测到waifu2x-converter在您的电脑上可用, 是否现在启用??\n')
 			print('waifu2x-converter支持放大 图片,视频,GIF')
 			print('')
 			print('(Y/N): ')
