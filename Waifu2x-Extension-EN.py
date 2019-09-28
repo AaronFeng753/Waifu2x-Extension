@@ -27,17 +27,13 @@ gifsicle version 1.92
 - converter GIF放大增加ETA
 - converter 图片放大增加ETA
 - 修复 converter代码内 无法正常检测线程的bug
-
-
+- 更改设置逻辑, 单变量的直接切换(y/n那种)
 
 
 ------------------------------------------------
 
 To do:
-- 完善汉化修复,错误翻译
-- 尝试优化 进度条 性能
 - 加入, anime4k线程数量测试, converter线程数量测试, 统一到benchmark里
-- 启动时即改变窗口大小, 确保正常展示启动标题
 
 
 '''
@@ -2697,19 +2693,12 @@ def input_saveAsJPG():
 
 def input_optimizeGif():
 	settings_values = ReadSettings()
-	print('''This will slightly affect the quality of the GIF, but it will save a lot of space.
-----------------------------------------------------------------------------------''')
-	while True:
-		optimizeGif = input('Optimize .gif? (y/n, default=y): ').strip(' ').lower()
-		if optimizeGif in ['y','n','']:
-			break
-		else:
-			print('wrong input, pls input again')
-	
-	if optimizeGif == '':
-		optimizeGif = 'y'
 		
-	settings_values['optimizeGif'] = optimizeGif
+	if settings_values['optimizeGif'] == 'n':
+		settings_values['optimizeGif'] = 'y'
+	elif settings_values['optimizeGif'] == 'y':
+		settings_values['optimizeGif'] = 'n'
+	
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 	
@@ -2735,18 +2724,10 @@ def input_gifCompresslevel():
 	
 def input_multiThread():
 	settings_values = ReadSettings()
-	default_value = 'y'
-	while True:
-		multiThread = input('Enable multithreading(Compress)? (y/n, default='+default_value+'): ').strip(' ').lower()
-		if multiThread in ['y','n','']:
-			break
-		else:
-			print('wrong input, pls input again')
-	
-	if multiThread == '':
-		multiThread = default_value
-	
-	settings_values['multiThread']=str(multiThread)
+	if settings_values['multiThread']=='n':
+		settings_values['multiThread']='y'
+	elif settings_values['multiThread']=='y':
+		settings_values['multiThread']='n'
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 	
@@ -2785,36 +2766,22 @@ def input_gpuId():
 
 def input_notificationSound():
 	settings_values = ReadSettings()
-	default_value = 'y'
-	while True:
-		notificationSound = input('Enable notification sound? (y/n, default='+default_value+'): ').strip(' ').lower()
-		if notificationSound in ['y','n','']:
-			break
-		else:
-			os.system('cls')
-			print('wrong input, pls input again')
-	
-	if notificationSound == '':
-		notificationSound = default_value
-		
-	settings_values['notificationSound']=str(notificationSound)
+	if settings_values['notificationSound']=='y':
+		settings_values['notificationSound']='n'
+	elif settings_values['notificationSound']=='n':
+		settings_values['notificationSound']='y'
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 
 def input_multiThread_Scale():
 	settings_values = ReadSettings()
-	default_value = 'y'
-	while True:
-		multiThread_Scale = input('Enable multithreading(Scale & denoise)(for waifu2x-ncnn-vulkan)? (y/n, default='+default_value+'): ').strip(' ').lower()
-		if multiThread_Scale in ['y','n','']:
-			break
-		else:
-			print('wrong input, pls input again')
 	
-	if multiThread_Scale == '':
-		multiThread_Scale = default_value
+	if settings_values['multiThread_Scale']=='n':
+		settings_values['multiThread_Scale']='y'
 	
-	settings_values['multiThread_Scale']=str(multiThread_Scale)
+	elif settings_values['multiThread_Scale']=='y':
+		settings_values['multiThread_Scale']='n'
+	
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 
@@ -3021,6 +2988,9 @@ def Settings():
 				value_ = input('Check for updates at startup? (y/n): ').strip(' ').lower()
 				if value_ in ['y','n']:
 					break
+				elif value_ == '':
+					value_ = settings_values['CheckUpdate']
+					break
 				else:
 					print('invalid value, pls input again')
 					
@@ -3036,6 +3006,9 @@ def Settings():
 			while True:
 				value_ = input('Default value of "Scale ratio" (1/2/4): ').strip(' ').lower()
 				if value_ in ['1','2','4']:
+					break
+				elif value_ == '':
+					value_ = settings_values['scale']
 					break
 				else:
 					print('invalid value, pls input again')
@@ -3053,6 +3026,9 @@ def Settings():
 				value_ = input('Default value of "Denoise Level" (-1/0/1/2/3): ').strip(' ').lower()
 				if value_ in ['-1','0','1','2','3']:
 					break
+				elif value_ == '':
+					value_ = settings_values['noiseLevel']
+					break
 				else:
 					print('invalid value, pls input again')
 					
@@ -3063,16 +3039,16 @@ def Settings():
 			os.system('cls')
 			
 		elif mode == "4":
+			
 			os.system('cls')
 			
-			while True:
-				value_ = input('Delete original files when finished? (y/n): ').strip(' ').lower()
-				if value_ in ['y','n']:
-					break
-				else:
-					print('invalid value, pls input again')
-					
-			settings_values['delorginal']=value_
+			print('Loading...')
+			
+			if settings_values['delorginal'] == 'y':
+				settings_values['delorginal'] = 'n'
+			elif settings_values['delorginal'] == 'n':
+				settings_values['delorginal'] = 'y'
+			
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
 				
@@ -3084,6 +3060,9 @@ def Settings():
 			while True:
 				value_ = input('Default value of gif compress level (1/2/3/4): ').strip(' ').lower()
 				if value_ in ['1','2','3','4']:
+					break
+				elif value_ == '':
+					value_ = settings_values['gifCompresslevel']
 					break
 				else:
 					print('invalid value, pls input again')
@@ -3103,6 +3082,9 @@ def Settings():
 						break
 					else:
 						print('wrong input, pls input again')
+				elif image_quality == '':
+					image_quality = settings_values['image_quality']
+					break
 				else:
 					print('wrong input, pls input again')
 			settings_values['image_quality']=int(image_quality)
@@ -3114,8 +3096,9 @@ def Settings():
 		elif mode== "7":
 			os.system('cls')
 			Number_of_threads=''
-			print('Change this setting may cause performance issues.')
-			print('We recommend you to use the default setting.')
+			print('-----------------------------------------------------------------')
+			print('Change this setting may cause performance issues.\n')
+			print('We recommend you to use the default setting.\n')
 			print('This setting option only takes effect in waifu2x-ncnn-vulkan mode')
 			print('-----------------------------------------------------------------')
 			while True:
@@ -3901,9 +3884,8 @@ def Compatibility_Test(Init):
 		os.system("del /q \""+scaledFilePath+"\"")
 	
 	#====================== 输出测试结果 =======================
-	
 	os.system('cls')
-	
+	waifu2x_ncnn_vulkan_avaliable = False
 	if waifu2x_ncnn_vulkan_avaliable:
 		str_waifu2x_ncnn_vulkan_avaliable = 'YES'
 	else:
@@ -3934,7 +3916,11 @@ def Compatibility_Test(Init):
 		else:
 			input('Press Enter key to continue.')
 	else:
+		Set_cols_lines(120,40)
 		ChangeColor_warning()
+		print('When waifu2x-ncnn-vulkan or waifu2x-converter is avaliable,')
+		print('You can use all the features in the software without fixing compatibility issues.')
+		print('---------------------------------------------------------------------------------')
 		print('Warning, there is a compatibility issue on the current computer.') 
 		print('Please follow the suggestions below to fix compatibility issues:')
 		print('----------------------------------------------------------------')
@@ -3976,7 +3962,7 @@ def Compatibility_Test(Init):
 		ChangeColor_default()
 		
 		if waifu2x_ncnn_vulkan_avaliable == False and waifu2x_converter_avaliable == True:
-			print('We have detected that waifu2x-converter is available on your computer, do you wanna enable it now??')
+			print('We have detected that waifu2x-converter is available on your computer, do you wanna enable it now??\n')
 			print('Waifu2x-converter can enlarge image,video,GIF')
 			print('')
 			print('(Y/N): ')
