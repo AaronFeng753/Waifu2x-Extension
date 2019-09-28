@@ -1,5 +1,4 @@
 # Waifu2x扩展
-#### 汉化版已更新到v3.3: https://github.com/AaronFeng753/Waifu2x-Extension/releases/tag/v3.3
 #### 通过修改host加速github访问：https://share.weiyun.com/5u4OPP3
 # 什么是"Waifu2x扩展" ?
 借助深度卷积神经网络进行超分辨率放大动漫风格的艺术作品, 包括图片,gif动态图片以及视频.
