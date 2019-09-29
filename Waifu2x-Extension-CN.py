@@ -1125,7 +1125,7 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 	time_start_scale = time.time()
 	
 	for inputPath in inputPathList_Image:
-		Window_Title('  [放大图片]  文件: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')  预计剩余时间: '+ETA)
+		Window_Title('  [放大图片]  文件: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')  预计完成时间: '+ETA)
 		
 		thread_files.append(inputPath)
 		if len(thread_files) == max_threads:
@@ -1145,7 +1145,7 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 			thread_files = []
 	if thread_files != []:
 		#FinishedFileNum = TotalFileNum
-		Window_Title('  [放大图片]  文件: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')  预计剩余时间: '+ETA)
+		Window_Title('  [放大图片]  文件: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')  预计完成时间: '+ETA)
 		for fname_ in thread_files:
 				thread1=waifu2x_converter_Thread_ImageModeC(fname_,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal)
 				thread1.start()
@@ -3618,9 +3618,218 @@ def Complete_ResizeWindow(cols,lines):
 		return True
 
 	
+	
 #=============================== Benchmark =============================
 def Benchmark():
-	print('============================== 基准测试 ==============================================')
+	print('================ 基准测试 ===================')
+	print(' 1.Tile size块大小(对于 waifu2x-ncnn-vulkan)')
+	print('')
+	print(' 2.线程数量(对于 waifu2x-converter)')
+	print('')
+	print(' 3.线程数量(对于 Anime4K)')
+	print('==============================================')
+	print('( 1 / 2 / 3 )')
+	choice_ = input().strip(' ')
+	if choice_ == '1':
+		os.system('cls')
+		Benchmark_vulkan()
+		os.system('cls')
+	elif choice_ == '2':
+		os.system('cls')
+		Benchmark_converter()
+		os.system('cls')
+	elif choice_ == '3':
+		os.system('cls')
+		Benchmark_Anime4K()
+		os.system('cls')
+	else:
+		os.system('cls')
+
+def Benchmark_Anime4K():
+	print('这个基准测试会帮助你确定你的电脑可以同时运行多少个 Anime4k 线程.')
+	print('为了获得准确的结果, 请不要在测试期间使用电脑或者在后台运行占用资源的程式.')
+	print('---------------------------------------------------------------------')
+	if input('你想现在开始运行基准测试吗? (y/n): ').lower().strip(' ') != 'y':
+		return 0
+	wait_to_cool_time=int(input('你想要等待多少秒以使你的电脑冷却: '))
+	
+	Window_Title('[运行基准测试中]')
+	print('-------------------------------------------------------')
+	print('这个基准测试需要运行一段时间,请稍等.....')
+	print('-------------------------------------------------------')
+	print('等待 '+str(wait_to_cool_time)+' 秒以使电脑冷却.')
+	
+	time.sleep(wait_to_cool_time)
+	
+	print('运行中....')
+	
+	settings_values = ReadSettings()
+	notificationSound = settings_values['notificationSound']
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	input_folder = current_dir+'\\'+'benchmark-files-anime4k-waifu2x-extension'
+	output_folder = input_folder+'\\'+'waifu2x_'
+	
+	scale = '2'
+	noiseLevel = '2'
+	Number_of_threads = 1
+	
+	old_time_cost = 1999999
+	old_Number_of_threads = 0
+	
+	if os.path.exists(output_folder):
+		os.system("rd /s/q \""+output_folder+"\"")
+	
+	for x in range(1,129):
+		
+		os.mkdir(output_folder)
+		
+		Number_of_threads = x
+		
+		settings_values['Number_of_threads_Anime4k'] = Number_of_threads
+		with open('waifu2x-extension-setting','w+') as f:
+			json.dump(settings_values,f)
+		
+		
+		time_start=time.time()
+		
+		Video_scale_Anime4K(input_folder,output_folder,scale)
+		
+		time_end=time.time()
+		os.system("rd /s/q \""+output_folder+"\"")
+		new_time_cost = time_end - time_start
+		print('---------------------------------')
+		print('线程数: ',Number_of_threads)
+		print('消耗时间: ',new_time_cost)
+		print('---------------------------------')
+		if new_time_cost <= old_time_cost:
+			old_time_cost = new_time_cost
+			old_Number_of_threads = Number_of_threads
+		else:
+			break
+		print('等待 '+str(wait_to_cool_time)+' 秒以使电脑冷却.')
+		time.sleep(wait_to_cool_time)
+		
+	if notificationSound == 'y':
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
+	Window_Title('')
+	os.system('cls')
+	print('=================================================')
+	print('适合您的电脑的线程数量是:',old_Number_of_threads)
+	if input('是否现在启用结果值? (y/n): ').lower().strip(' ') != 'y':
+		return 0
+	settings_values['Number_of_threads_Anime4k']=old_Number_of_threads
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
+
+
+
+def Benchmark_converter():
+	print('这个基准测试会帮助您确定您的电脑可以运行多少个 waifu2x-converter 线程.')
+	print('为了获得准确的结果,请不要在测试运气期间使用电脑或者在后台运行占用资源的程式')
+	print('-------------------------------------------------------------------------')
+	if input('你想要现在开始运行基准测试吗? (y/n): ').lower().strip(' ') != 'y':
+		return 0
+	wait_to_cool_time=int(input('你想要等待多少秒以使你的电脑冷却: '))
+	
+	Window_Title('[运行基准测试中]')
+	print('-------------------------------------------------------')
+	print('个基准测试需要运行一段时间,请稍等.....')
+	print('-------------------------------------------------------')
+	print('等待 '+str(wait_to_cool_time)+' 秒以使电脑冷却.')
+	
+	time.sleep(wait_to_cool_time)
+	settings_values = ReadSettings()
+	notificationSound = settings_values['notificationSound']
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	input_folder = current_dir+'\\'+'benchmark-files-converter-waifu2x-extension'
+	output_folder = input_folder+'\\'+'waifu2x_'
+	
+	scale = '2'
+	noiseLevel = '2'
+	Number_of_threads = 1
+	
+	old_time_cost = 1999999
+	old_Number_of_threads = 0
+	
+	if os.path.exists(output_folder):
+		os.system("rd /s/q \""+output_folder+"\"")
+	
+	for x in range(1,129):
+		
+		os.mkdir(output_folder)
+		
+		Number_of_threads = x
+		
+		time_start=time.time()
+		
+		for path,useless,fnames in os.walk(input_folder):
+			total_frame = len(fnames)
+			
+			max_threads = Number_of_threads
+			thread_files = []
+			fnames = dict.fromkeys(fnames,'')
+			
+			for fname in fnames:
+				thread_files.append(fname)
+				if len(thread_files) == max_threads:
+					for fname_ in thread_files:
+						thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_,scale,noiseLevel)
+						thread1.start()
+					while True:
+						if thread1.isAlive()== False:
+							break
+	
+					thread_files = []
+	
+			if thread_files != []:
+				for fname_ in thread_files:
+					thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_,scale,noiseLevel)
+					thread1.start()
+				while True:
+					if thread1.isAlive()== False:
+						break
+				thread_files = []
+				while True:
+					if Process_exist('waifu2x-converter_x64.exe')== False:
+						break
+					else:
+						time.sleep(0.02)
+			break
+		
+		time_end=time.time()
+		os.system("rd /s/q \""+output_folder+"\"")
+		new_time_cost = time_end - time_start
+		print('---------------------------------')
+		print('线程数 ',Number_of_threads)
+		print('消耗时间: ',new_time_cost)
+		print('---------------------------------')
+		if new_time_cost <= old_time_cost:
+			old_time_cost = new_time_cost
+			old_Number_of_threads = Number_of_threads
+		else:
+			break
+		print('等待 '+str(wait_to_cool_time)+' 秒以使电脑冷却.')
+		time.sleep(wait_to_cool_time)
+		
+	if notificationSound == 'y':
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
+	Window_Title('')
+	os.system('cls')
+	print('==================================================')
+	print('适合您的电脑的线程数量是:',old_Number_of_threads)
+	if input('你想要现在启用结果值吗? (y/n): ').lower().strip(' ') != 'y':
+		return 0
+	settings_values['Number_of_threads_Waifu2x_converter']=old_Number_of_threads
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
+
+
+
+def Benchmark_vulkan():
 	print('基准测试可以帮助你确定 "tile size(块大小)" 的最佳值.')
 	print('为了获得准确的结果, 请在基准测试运行期间不要使用你的电脑或者在后台运行占用大量资源的任务.')
 	print('---------------------------------------------------------------------------------------')
@@ -3630,7 +3839,7 @@ def Benchmark():
 	
 	Window_Title('[运行基准测试中]')
 	print('-------------------------------------------------------')
-	print('基准测试的运行需要一段时间,请等待.....')
+	print('基准测试需要运行一段时间,请稍等.....')
 	print('-------------------------------------------------------')
 	print('等待 '+str(wait_to_cool_time)+' 秒来冷却您的电脑.')
 	time.sleep(wait_to_cool_time)
@@ -3644,7 +3853,7 @@ def Benchmark():
 	if gpuId != 'auto':
 		gpuId_str = ' -g '+gpuId
 	current_dir = os.path.dirname(os.path.abspath(__file__))
-	inputPath = current_dir+'\\'+'benchmark-files-waifu2x-extension'
+	inputPath = current_dir+'\\'+'benchmark-files-vulkan-waifu2x-extension'
 	scaledFilePath = inputPath+'\\scaled'
 	multiThread_Scale = settings_values['multiThread_Scale']
 	load_proc_save_str = settings_values['load_proc_save_str']
@@ -3925,7 +4134,6 @@ def Compatibility_Test(Init):
 		else:
 			input('按Enter键以继续')
 	else:
-		Set_cols_lines(120,40)
 		ChangeColor_warning()
 		print('当 waifu2x-ncnn-vulkan 或 waifu2x-converter 可用时,')
 		print('您无需修复兼容性问题也可以正常使用软件内的功能')
