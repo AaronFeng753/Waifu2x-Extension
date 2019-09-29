@@ -3621,7 +3621,212 @@ def Complete_ResizeWindow(cols,lines):
 	
 #=============================== Benchmark =============================
 def Benchmark():
-	print('============================== Benchmark ==============================================')
+	print('================ Benchmark ===================')
+	print(' 1.Tile size(for waifu2x-ncnn-vulkan)')
+	print('')
+	print(' 2.Number of threads(for waifu2x-converter)')
+	print('')
+	print(' 3.Number of threads(for Anime4K)')
+	print('==============================================')
+	print('( 1 / 2 / 3 )')
+	choice_ = input().strip(' ')
+	if choice_ == '1':
+		os.system('cls')
+		Benchmark_vulkan()
+		os.system('cls')
+	elif choice_ == '2':
+		os.system('cls')
+		Benchmark_converter()
+		os.system('cls')
+	elif choice_ == '3':
+		os.system('cls')
+		Benchmark_Anime4K()
+		os.system('cls')
+	else:
+		os.system('cls')
+
+def Benchmark_Anime4K():
+	print('This benchmark will help you to determine the right number of threads for Anime4K.')
+	print('In order to get the accurate result, pls do not use your computer during the benchmark.')
+	print('---------------------------------------------------------------------------------------')
+	if input('Do you wanna start the benchmark now? (y/n): ').lower().strip(' ') != 'y':
+		return 0
+	wait_to_cool_time=int(input('How many seconds do you wanna wait to cool your computer during the test: '))
+	
+	Window_Title('[Running benchmark]')
+	print('-------------------------------------------------------')
+	print('This benchmark is gonna take a while, pls wait.....')
+	print('-------------------------------------------------------')
+	print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
+	
+	time.sleep(wait_to_cool_time)
+	settings_values = ReadSettings()
+	notificationSound = settings_values['notificationSound']
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	input_folder = current_dir+'\\'+'benchmark-files-anime4k-waifu2x-extension'
+	output_folder = input_folder+'\\'+'waifu2x_'
+	
+	scale = '2'
+	noiseLevel = '2'
+	Number_of_threads = 1
+	
+	old_time_cost = 1999999
+	old_Number_of_threads = 0
+	
+	if os.path.exists(output_folder):
+		os.system("rd /s/q \""+output_folder+"\"")
+	
+	for x in range(1,129):
+		
+		os.mkdir(output_folder)
+		
+		Number_of_threads = x
+		
+		settings_values['Number_of_threads_Anime4k'] = Number_of_threads
+		with open('waifu2x-extension-setting','w+') as f:
+			json.dump(settings_values,f)
+		
+		
+		time_start=time.time()
+		
+		Video_scale_Anime4K(input_folder,output_folder,scale)
+		
+		time_end=time.time()
+		os.system("rd /s/q \""+output_folder+"\"")
+		new_time_cost = time_end - time_start
+		print('---------------------------------')
+		print('Number of threads: ',Number_of_threads)
+		print('Time cost: ',new_time_cost)
+		print('---------------------------------')
+		if new_time_cost <= old_time_cost:
+			old_time_cost = new_time_cost
+			old_Number_of_threads = Number_of_threads
+		else:
+			break
+		print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
+		time.sleep(wait_to_cool_time)
+		
+	if notificationSound == 'y':
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
+	Window_Title('')
+	os.system('cls')
+	print('=======================================================================')
+	print('The right number of threads for your computer is:',old_Number_of_threads)
+	if input('Do you wanna use the result value? (y/n): ').lower().strip(' ') != 'y':
+		return 0
+	settings_values['Number_of_threads_Anime4k']=old_Number_of_threads
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
+
+
+
+def Benchmark_converter():
+	print('This benchmark will help you to determine the right number of threads for waifu2x-converter.')
+	print('In order to get the accurate result, pls do not use your computer during the benchmark.')
+	print('---------------------------------------------------------------------------------------')
+	if input('Do you wanna start the benchmark now? (y/n): ').lower().strip(' ') != 'y':
+		return 0
+	wait_to_cool_time=int(input('How many seconds do you wanna wait to cool your computer during the test: '))
+	
+	Window_Title('[Running benchmark]')
+	print('-------------------------------------------------------')
+	print('This benchmark is gonna take a while, pls wait.....')
+	print('-------------------------------------------------------')
+	print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
+	
+	time.sleep(wait_to_cool_time)
+	settings_values = ReadSettings()
+	notificationSound = settings_values['notificationSound']
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	input_folder = current_dir+'\\'+'benchmark-files-converter-waifu2x-extension'
+	output_folder = input_folder+'\\'+'waifu2x_'
+	
+	scale = '2'
+	noiseLevel = '2'
+	Number_of_threads = 1
+	
+	old_time_cost = 1999999
+	old_Number_of_threads = 0
+	
+	if os.path.exists(output_folder):
+		os.system("rd /s/q \""+output_folder+"\"")
+	
+	for x in range(1,129):
+		
+		os.mkdir(output_folder)
+		
+		Number_of_threads = x
+		
+		time_start=time.time()
+		
+		for path,useless,fnames in os.walk(input_folder):
+			total_frame = len(fnames)
+			
+			max_threads = Number_of_threads
+			thread_files = []
+			fnames = dict.fromkeys(fnames,'')
+			
+			for fname in fnames:
+				thread_files.append(fname)
+				if len(thread_files) == max_threads:
+					for fname_ in thread_files:
+						thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_,scale,noiseLevel)
+						thread1.start()
+					while True:
+						if thread1.isAlive()== False:
+							break
+	
+					thread_files = []
+	
+			if thread_files != []:
+				for fname_ in thread_files:
+					thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_,scale,noiseLevel)
+					thread1.start()
+				while True:
+					if thread1.isAlive()== False:
+						break
+				thread_files = []
+				while True:
+					if Process_exist('waifu2x-converter_x64.exe')== False:
+						break
+					else:
+						time.sleep(0.02)
+			break
+		
+		time_end=time.time()
+		os.system("rd /s/q \""+output_folder+"\"")
+		new_time_cost = time_end - time_start
+		print('---------------------------------')
+		print('Number of threads: ',Number_of_threads)
+		print('Time cost: ',new_time_cost)
+		print('---------------------------------')
+		if new_time_cost <= old_time_cost:
+			old_time_cost = new_time_cost
+			old_Number_of_threads = Number_of_threads
+		else:
+			break
+		print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
+		time.sleep(wait_to_cool_time)
+		
+	if notificationSound == 'y':
+			thread_Notification=Play_Notification_Sound_Thread()
+			thread_Notification.start()
+	Window_Title('')
+	os.system('cls')
+	print('=======================================================================')
+	print('The right number of threads for your computer is:',old_Number_of_threads)
+	if input('Do you wanna use the result value? (y/n): ').lower().strip(' ') != 'y':
+		return 0
+	settings_values['Number_of_threads_Waifu2x_converter']=old_Number_of_threads
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
+
+
+
+def Benchmark_vulkan():
 	print('This benchmark will help you to determine the best value of "tile size".')
 	print('In order to get the accurate result, pls do not use your computer during the benchmark.')
 	print('---------------------------------------------------------------------------------------')
@@ -3645,7 +3850,7 @@ def Benchmark():
 	if gpuId != 'auto':
 		gpuId_str = ' -g '+gpuId
 	current_dir = os.path.dirname(os.path.abspath(__file__))
-	inputPath = current_dir+'\\'+'benchmark-files-waifu2x-extension'
+	inputPath = current_dir+'\\'+'benchmark-files-vulkan-waifu2x-extension'
 	scaledFilePath = inputPath+'\\scaled'
 	multiThread_Scale = settings_values['multiThread_Scale']
 	load_proc_save_str = settings_values['load_proc_save_str']
@@ -3885,7 +4090,6 @@ def Compatibility_Test(Init):
 	
 	#====================== 输出测试结果 =======================
 	os.system('cls')
-	waifu2x_ncnn_vulkan_avaliable = False
 	if waifu2x_ncnn_vulkan_avaliable:
 		str_waifu2x_ncnn_vulkan_avaliable = 'YES'
 	else:
@@ -3916,7 +4120,6 @@ def Compatibility_Test(Init):
 		else:
 			input('Press Enter key to continue.')
 	else:
-		Set_cols_lines(120,40)
 		ChangeColor_warning()
 		print('When waifu2x-ncnn-vulkan or waifu2x-converter is avaliable,')
 		print('You can use all the features in the software without fixing compatibility issues.')
