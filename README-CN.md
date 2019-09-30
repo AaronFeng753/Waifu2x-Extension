@@ -61,7 +61,7 @@
 ### **`Video`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/video
 
 # 截图
-![mainmenu](/screenshot/mainmenu.png) 
+![mainmenu](/screenshot/mainmenu-cn.png) 
 ![running](/screenshot/running.png) 
 
 # 下载: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
