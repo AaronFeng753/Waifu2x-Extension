@@ -65,6 +65,9 @@
 
 # 下载: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
+# 演示
+![Demonstration-cn](/screenshot/Demonstration-cn.gif) 
+
 # 如何修复兼容性问题 :
 #### waifu2x-ncnn-vulkan:
 重装或者升级显卡驱动.
