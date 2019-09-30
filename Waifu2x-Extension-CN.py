@@ -3,7 +3,7 @@
 
 '''
 
-什么是"Waifu2x扩展" ?
+什么是 Waifu2x-Extension ?
 
 借助深度卷积神经网络进行超分辨率放大动漫风格的艺术作品, 包括图片,gif动态图片以及视频.
 
@@ -21,25 +21,30 @@ waifu2x-ncnn-vulkan version 20190712
 
 Anime4K Java v0.9 Beta
 
-ffmpeg version 4.2
+ffmpeg version 4.2.1
 
 gifsicle version 1.92
+
+Waifu2x-converter version: 2015-11-30T02:17:24
 
 -----------------------------------------------
 
 更新日志
-- converter 视频放大增加ETA
-- converter GIF放大增加ETA
-- converter 图片放大增加ETA
-- 修复 converter代码内 无法正常检测线程的bug
-- 更改设置逻辑, 单变量的直接切换(y/n那种)
+- 为 Waifu2x-converter 模式增加ETA显示
+- 修复 Waifu2x-converter 模式下无法正常检测线程状态的bug
+- 更改部分设置选项
+- 完善 Benchmark, 新增 Anime4k 线程数量测试, Waifu2x-converter 线程数量测试
+- 启动时检测错误日志大小, 如过大则提醒删除
+- 升级ffmpeg版本到4.2.1
+- 修复gif色彩抖动的问题
+- 完善汉化修复,错误翻译
 
 
 ------------------------------------------------
 
 To do:
-- 加入, anime4k线程数量测试, converter线程数量测试, 统一到benchmark里
-- 完善汉化修复,错误翻译
+- 改善gif色彩抖动的问题
+
 
 '''
 
@@ -84,7 +89,7 @@ from playsound import playsound
 import struct
 import psutil
 
-Version_current='v3.351'
+Version_current='v3.5'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -120,12 +125,14 @@ def ChooseFormat():
 	else:
 		Video_str = '放大与降噪视频.'
 	
+	Error_log_clean()
+	
 	while True:
 		Set_cols_lines(65,37)
 		Set_cols_lines(66,38)
 		Window_Title('')
 		print('-'*65)
-		print(' Waifu2x扩展   '+Version_current+'   作者: Aaron Feng')
+		print(' Waifu2x-Extension   '+Version_current+'   作者: Aaron Feng')
 		print('-'*65)
 		print(' Github主页: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('-'*65)
@@ -300,6 +307,8 @@ def ChooseFormat():
 
 #===================================================== Scale & Denoise Image & GIF ========================================
 def Image_Gif_Scale_Denoise():
+	print('注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print('')
 	print("================= 放大与降噪图片和GIF - Waifu2x-ncnn-vulkan ================")
 	print("输入 'r' 返回上一级菜单")
 	print("输入 'o' 来停止输入更多路径, 输入的路径必须是一个有效的文件或者文件夹")
@@ -756,9 +765,9 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		Window_Title('  [放大 GIF]  文件: '+'('+str(finished_num)+'/'+str(Total_num)+')')
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
-		TIME_GAP=getDuration(inputPath)
+		Frames_gif=get_frames_gif(inputPath)
 		print('拆分GIF中.....')
-		splitGif(inputPath,scaledFilePath)
+		splitGif(inputPath,scaledFilePath,Frames_gif)
 		
 		oldfilenumber=FileCount(scaledFilePath+'_split')
 				
@@ -887,7 +896,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		print('')	
 		
 		print('组装GIF.....')
-		assembleGif(scaledFilePath,TIME_GAP)
+		assembleGif(scaledFilePath,Frames_gif,inputPath)
 		print('GIF组装完成')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
@@ -910,10 +919,10 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 			
 		
 		if optimizeGif == 'y':
-			print('压缩 gif....')
+			print('优化 gif....')
 			compress_gif(scaledFilePath+'_waifu2x.gif','1')
 			os.remove(scaledFilePath+'_waifu2x.gif')
-			print('Gif 压缩成功\n')
+			print('Gif 优化完成\n')
 		else:
 			print('')
 		finished_num = finished_num+1
@@ -921,9 +930,11 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 
 #================================================= Image_Gif_Scale_Denoise_waifu2x_converter ===========================================
 def Image_Gif_Scale_Denoise_waifu2x_converter():
+	print('注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print('')
 	print("================= 降噪与放大图片和GIF - Waifu2x-converter  ================")
 	print("输入 'r' 返回上一级菜单")
-	print("输入 'o' 来停止输入更多路径, 注意:输入的路径必须是合法的文件或者文件夹")
+	print("输入 'o' 来停止输入更多路径, 注意:输入的路径必须是有效的文件或者文件夹")
 	print("放大后的图片和GIF会保存在原路径中 \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -1178,9 +1189,9 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 	for inputPath in Gif_inputPathList_files:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
-		TIME_GAP=getDuration(inputPath)
+		Frames_gif=get_frames_gif(inputPath)
 		print('拆分GIF.....')
-		splitGif(inputPath,scaledFilePath)
+		splitGif(inputPath,scaledFilePath,Frames_gif)
 		
 		time_start_scale = time.time()
 		
@@ -1207,7 +1218,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			ETA = 'Null'
 			
 			for fname in fnames:
-				Window_Title('  [放大 GIF]  文件: '+'('+str(finished_num)+'/'+str(Total_num)+')  视频帧: ('+str(finished_frame)+'/'+str(total_frame)+')  预计完成时间: '+ETA)
+				Window_Title('  [放大 GIF]  文件: '+'('+str(finished_num)+'/'+str(Total_num)+')  帧: ('+str(finished_frame)+'/'+str(total_frame)+')  预计完成时间: '+ETA)
 				thread_files.append(fname)
 				if len(thread_files) == max_threads:
 					for fname_ in thread_files:
@@ -1226,7 +1237,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 					thread_files = []
 			if thread_files != []:
 				#finished_frame = total_frame
-				Window_Title('  [放大 GIF]  文件: '+'('+str(finished_num)+'/'+str(Total_num)+')  视频帧: ('+str(finished_frame)+'/'+str(total_frame)+')  预计完成时间: '+ETA)
+				Window_Title('  [放大 GIF]  文件: '+'('+str(finished_num)+'/'+str(Total_num)+')  帧: ('+str(finished_frame)+'/'+str(total_frame)+')  预计完成时间: '+ETA)
 				for fname_ in thread_files:
 					thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_,scale,noiseLevel)
 					thread1.start()
@@ -1243,7 +1254,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			
 		print('')	
 		print('组装 Gif.....')
-		assembleGif(scaledFilePath,TIME_GAP)
+		assembleGif(scaledFilePath,Frames_gif,inputPath)
 		print('Gif 组装完毕')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
@@ -1266,10 +1277,10 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			
 		
 		if optimizeGif == 'y':
-			print('压缩 gif....')
+			print('优化 gif....')
 			compress_gif(scaledFilePath+'_waifu2x.gif','1')
 			os.remove(scaledFilePath+'_waifu2x.gif')
-			print('Gif 压缩完成\n')
+			print('Gif 优化完成\n')
 		else:
 			print('')
 		finished_num = finished_num+1
@@ -1309,7 +1320,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 	print('')
 	print("================ 放大与降噪视频 - waifu2x-converter ===============")
 	print("输入 'r' 返回上一级菜单")
-	print("输入 'o' 以停止输入更多路径, 注意:输入路径必须是一个合法的视频文件或者文件夹")
+	print("输入 'o' 以停止输入更多路径, 注意:输入路径必须是一个有效的视频文件或者文件夹")
 	print("放大后的视频文件会保存在原路径中 \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -1500,7 +1511,7 @@ def Scale_Denoise_Video():
 	print('')
 	print("================ 放大与降噪视频 - Waifu2x-ncnn-vulkan ===============")
 	print("输入 'r' 以返回上一级菜单")
-	print("输入 'o' 以停止输入更多路径, 注意, 输入的路径必须是一个文件夹或者一个视频文件")
+	print("输入 'o' 以停止输入更多路径, 注意, 输入的路径必须是一个有效的文件夹或者一个视频文件")
 	print("处理后的文件会存放在原文件夹内 \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -1781,7 +1792,7 @@ def Scale_Denoise_Video_Anime4K():
 	print('')
 	print("======================== 放大视频 - Anime4K =======================")
 	print("输入 'r' 以返回上一级菜单")
-	print("输入 'o' 以停止输入更多路径, 注意, 输入的路径必须是一个文件夹或者一个视频文件")
+	print("输入 'o' 以停止输入更多路径, 注意, 输入的路径必须是一个有效的文件夹或者一个视频文件")
 	print("处理后的文件会存放在原文件夹内 \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -2343,55 +2354,41 @@ def DelOrgFiles(inputPath):
 		break
 	
 #======================================================= GIF ======================================================
-def getDuration(FILENAME):
-	PIL_Image_object = Image.open(FILENAME)
-	PIL_Image_object.seek(0)
-	frames = 0
-	duration = 0
-	while True:
-		try:
-			frames += 1
-			duration += PIL_Image_object.info['duration']
-			PIL_Image_object.seek(PIL_Image_object.tell() + 1)
-		except EOFError:
-			return (duration / 1000)/frames
-	return None
 
-def splitGif(gifFileName,scaledFilePath):
-	im = Image.open(gifFileName)
-	pngDir = scaledFilePath+'_split'
-	if os.path.exists(scaledFilePath+'_split') :
-			os.system("rd /s/q \""+scaledFilePath+'_split'+'"')
-	os.mkdir(scaledFilePath+'_split')
+def get_frames_gif(FILENAME):
+	frame_current = 0
+	im = Image.open(FILENAME)
 	try:
 	  while True:
-	    current = im.tell()
-	    im.save(pngDir+'/'+str(current)+'.png')
-	    im.seek(current+1)
+	    frame_current = im.tell()
+	    im.seek(frame_current+1)
 	except EOFError:
 	    pass
 	
-def assembleGif(scaledFilePath,TIME_GAP):
-	image_list=[]
-	gif_name=scaledFilePath+'_waifu2x.gif'
-	filelist_name=[]
+	frames = len(str(frame_current))
+	if frames == 0 :
+		frames=1
+	return frames
 
-	for path,useless,fnames in os.walk(scaledFilePath+'_split\\scaled'):
-		fnames = dict.fromkeys(fnames,'')
-		for fname in fnames:
-			filelist_name.append(int(os.path.splitext(fname)[0]))
-		break
-		
-	filelist_name.sort()
-	filelist_name = dict.fromkeys(filelist_name,'')
-	for file_name in filelist_name:
-		image_list.append(scaledFilePath+'_split\\scaled'+'\\'+str(file_name)+'.png')
-	frames = []  
-	image_list = dict.fromkeys(image_list,'')
-	for image_name in image_list:  
-		frames.append(imageio.imread(image_name))  
-	imageio.mimsave(gif_name, frames, 'GIF', duration = TIME_GAP)
+def splitGif(gifFileName,scaledFilePath,frames):
 	
+	if os.path.exists(scaledFilePath+'_split') :
+			os.system("rd /s/q \""+scaledFilePath+'_split'+'"')
+	os.mkdir(scaledFilePath+'_split')
+	
+	os.system('ffmpeg -i "'+gifFileName+'" "'+scaledFilePath+'_split\\%0'+str(frames)+'d.png"')	
+	
+	
+	
+def assembleGif(scaledFilePath,frames,gifFileName):
+	
+	cap = cv2.VideoCapture(gifFileName)
+	fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
+	
+	gif_name=scaledFilePath+'_waifu2x.gif'
+	
+	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+scaledFilePath+'_split\\scaled\\'+'%0'+str(frames)+'d.png" "'+gif_name+'"')
+		
 def compress_gif(inputpath,compress_level):
 	gif_path_filename = os.path.splitext(inputpath)[0]
 	if compress_level == '1':
@@ -2914,7 +2911,7 @@ def CheckUpdate_start():
 			update_bat_str=[
 			'@echo off \n',
 			'color '+settings_values['default_color']+' \n',
-			'title = Waifu2x扩展 '+Version_current+' 作者: Aaron Feng  [ 检测到新版本 ] \n',
+			'title = Waifu2x-Extension '+Version_current+' 作者: Aaron Feng  [ 检测到新版本 ] \n',
 			'echo 当前版本 : '+Version_current+'\n',
 			'echo 新版本 : '+Version_latest+'\n',
 			'echo 如果你不想在启动时检查更新, 你可以在设置内手动关闭. \n',
@@ -2956,7 +2953,7 @@ def Settings():
 			settings_values = json.load(f)
 		print('                                   设置')
 		print('-----------------------------------------------------------------------------')
-		print(' 1: 启动时后台检查更新. 当前值: [ '+settings_values['CheckUpdate']+' ]\n')
+		print(' 1: 启动时后台自动检查更新. 当前值: [ '+settings_values['CheckUpdate']+' ]\n')
 		print(' 2: "放大倍数"的默认值. 当前默认值: [ '+settings_values['scale']+' ]\n')
 		print(' 3: "降噪等级"的默认值. 当前默认值: [ '+settings_values['noiseLevel']+' ]\n')
 		print(' 4: 完成后删除原文件? 当前默认值: [ '+settings_values['delorginal']+' ]\n')
@@ -2971,7 +2968,7 @@ def Settings():
 		print(' 13: 线程数 ( 放大与降噪 (Waifu2x-converter) ). 当前值: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]\n')
 		print(' RE: 重置错误日志.\n')
 		print(' RS: 重置设置.\n')
-		print(' RL: 重置语言设置 (Waifu2x-Extension-Start.exe).\n')
+		print(' RL: 重置启动器的语言设置.\n')
 		print(' S: 显示 settings_values.\n')
 		print(' R: 返回主菜单.')
 		print('-----------------------------------------------------------------------------')
@@ -3141,9 +3138,9 @@ def Settings():
 						Number_of_threads_Anime4k = int(Number_of_threads_Anime4k)
 						break
 					else:
-						print('输入错误.')
+						print('输入无效.')
 				else:
-					print('输入错误.')
+					print('输入无效.')
 			settings_values['Number_of_threads_Anime4k']=Number_of_threads_Anime4k
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
@@ -3205,8 +3202,7 @@ def Settings():
 				print('=========================================================================================\n')
 				print('Anime4k 不支持降噪并且无法像waifu2x那样对图像质量有很大提升.\n')
 				print('所以, 尽管本程序支持Anime4k, 我们依旧极为不推荐您使用它(恕我直言,真的垃圾).\n')
-				print('但是 Anime4k 运行速度比 Waifu2x 更快, 所以如果你认为速度远比图像质量更重要,\n')
-				print('那么请自便.\n')
+				print('但是 Anime4k 运行速度比 Waifu2x 更快, 所以如果你认为速度远比图像质量更重要,那么请自便.')
 				print('=========================================================================================\n')
 				input('按下 Enter 以继续')
 				
@@ -3217,12 +3213,12 @@ def Settings():
 				print('所以可能会出现兼容性问题.\n')
 				print('为了解决这些问题, 我们建议您遵循以下步骤:\n')
 				print('(如果出现兼容性问题的话)\n')
-				print('1. 安装最新版本的 JDK and JRE\n')
+				print('1. 安装 最新版本 的 JDK and JRE\n')
 				print('2. 尝试使用Anime4k模式放大视频\n')
 				print('3. 如果Anime4k依旧无法正常工作, 自己重新编译Anime4k然后替换软件内自带的\n')
-				print('在微软Windows平台安装JAR和JDK的步骤(英文文档):')
+				print('在微软Windows平台安装 JAR 和 JDK 的步骤(英文文档) :')
 				print('https://docs.oracle.com/javase/10/install/installation-jdk-and-jre-microsoft-windows-platforms.htm \n')
-				print('Anime4K的GITHUB :')
+				print('Anime4K 的 Github主页 :')
 				print('https://github.com/bloc97/Anime4K \n')
 				print('=========================================================================================\n')
 				input('按下 Enter 以继续')
@@ -3253,7 +3249,7 @@ def Settings():
 						Image_GIF_scale_mode = 'waifu2x-converter'
 					break
 				else:
-					print('输入错误.')
+					print('输入无效.')
 			settings_values['Image_GIF_scale_mode']=Image_GIF_scale_mode
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
@@ -3271,9 +3267,9 @@ def Settings():
 						Number_of_threads_Waifu2x_converter = int(Number_of_threads_Waifu2x_converter)
 						break
 					else:
-						print('输入错误.')
+						print('输入无效.')
 				else:
-					print('输入错误.')
+					print('输入无效.')
 			settings_values['Number_of_threads_Waifu2x_converter']=Number_of_threads_Waifu2x_converter
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
@@ -3289,7 +3285,7 @@ def Settings():
 				timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 				f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Error log reseted by user.\n')
 			
-			input('错误日志已经重置, 按下Enter返回.')
+			input('错误日志已重置, 按下Enter返回.')
 			
 			os.system('cls')
 		
@@ -3299,11 +3295,11 @@ def Settings():
 			cpu_num = int(cpu_count() / 2)
 			if cpu_num < 1 :
 				cpu_num = 1
-			default_values = {'SettingVersion':'8','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+			default_values = {'SettingVersion':'9','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 								'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 								'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 								'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
-								'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
+								'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
 								'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
 								'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1}
 			current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -3324,7 +3320,7 @@ def Settings():
 			if os.path.exists('config_waifu2xEX_start'):
 				os.remove('config_waifu2xEX_start')
 			os.system('cls')
-			input('设置已重置, 按下Enter返回.')
+			input('启动器的语言设置已重置, 按下Enter返回.')
 			
 			os.system('cls')
 		
@@ -3345,7 +3341,7 @@ def Settings():
 			os.system('cls')
 			ChangeColor_warning()
 			print(' -------------------------------------------------')
-			print(' 错误 : 非法的输入,请按下 Enter 以返回')
+			print(' 错误 : 无效的输入,请按下 Enter 以返回')
 			print(' -------------------------------------------------')
 			input()
 			ChangeColor_default()
@@ -3355,11 +3351,11 @@ def ReadSettings():
 	cpu_num = int(cpu_count() / 2)
 	if cpu_num < 1 :
 		cpu_num = 1
-	default_values = {'SettingVersion':'8','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+	default_values = {'SettingVersion':'9','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
-						'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
+						'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
 						'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
 						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -3431,6 +3427,24 @@ def Error_Log():	#读取错误日志
 	else:
 		print('错误 : 找不到错误日志文件.')	#提示错误日志文件丢失
 		input('按Enter返回')
+
+def Error_log_clean():
+	if os.path.exists('Error_Log_Waifu2x-Extension.log') :	#判断错误日志文件是否存在
+		log_size = round(os.path.getsize('Error_Log_Waifu2x-Extension.log')/1024)
+		if log_size > 500:
+			os.system('cls')
+			del_log = input('错误日志文件过大 (>500KB). 你想要重置错误日志吗?(Y/N): ')
+			if del_log.lower() == 'y':
+				with open('Error_Log_Waifu2x-Extension.log','w+') as f:
+					f.write('')
+				with open('Error_Log_Waifu2x-Extension.log','a+') as f:
+					timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+					f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Error log reseted by user.\n')
+				
+	else:
+		os.system('cls')
+	os.system('cls')
+	
 
 #============================================= Multi-thread Gif Compress =================================================
 class GifCompressThread (threading.Thread):
@@ -3621,13 +3635,13 @@ def Complete_ResizeWindow(cols,lines):
 	
 #=============================== Benchmark =============================
 def Benchmark():
-	print('================ 基准测试 ===================')
+	print('================ 基准测试 =========================')
 	print(' 1.Tile size块大小(对于 waifu2x-ncnn-vulkan)')
 	print('')
-	print(' 2.线程数量(对于 waifu2x-converter)')
+	print(' 2.线程数量(对于 waifu2x-converter) ( 测试版 )')
 	print('')
-	print(' 3.线程数量(对于 Anime4K)')
-	print('==============================================')
+	print(' 3.线程数量(对于 Anime4K) ( 测试版 )')
+	print('==================================================')
 	print('( 1 / 2 / 3 )')
 	choice_ = input().strip(' ')
 	if choice_ == '1':
@@ -3674,13 +3688,19 @@ def Benchmark_Anime4K():
 	noiseLevel = '2'
 	Number_of_threads = 1
 	
+	Original_Number_of_threads = settings_values['Number_of_threads_Anime4k']
+	
 	old_time_cost = 1999999
 	old_Number_of_threads = 0
 	
 	if os.path.exists(output_folder):
 		os.system("rd /s/q \""+output_folder+"\"")
 	
-	for x in range(1,129):
+	cpu_num = int(cpu_count())
+	if cpu_num < 1 :
+		cpu_num = 1
+	
+	for x in range(1,cpu_num+1):
 		
 		os.mkdir(output_folder)
 		
@@ -3717,11 +3737,16 @@ def Benchmark_Anime4K():
 	os.system('cls')
 	print('=================================================')
 	print('适合您的电脑的线程数量是:',old_Number_of_threads)
+	
 	if input('是否现在启用结果值? (y/n): ').lower().strip(' ') != 'y':
-		return 0
-	settings_values['Number_of_threads_Anime4k']=old_Number_of_threads
-	with open('waifu2x-extension-setting','w+') as f:
-		json.dump(settings_values,f)
+		
+		settings_values['Number_of_threads_Anime4k']=Original_Number_of_threads
+		
+	else:
+		
+		settings_values['Number_of_threads_Anime4k']=old_Number_of_threads
+		with open('waifu2x-extension-setting','w+') as f:
+			json.dump(settings_values,f)
 
 
 
@@ -3757,7 +3782,11 @@ def Benchmark_converter():
 	if os.path.exists(output_folder):
 		os.system("rd /s/q \""+output_folder+"\"")
 	
-	for x in range(1,129):
+	cpu_num = int(cpu_count())
+	if cpu_num < 1 :
+		cpu_num = 1
+	
+	for x in range(1,cpu_num+1):
 		
 		os.mkdir(output_folder)
 		
@@ -4195,7 +4224,7 @@ def Compatibility_Test(Init):
 	
 #=============================== Default Window Title =================
 def Window_Title(Add_str = ''):
-	os.system('title = Waifu2x扩展 '+Version_current+' 作者: Aaron Feng '+Add_str)
+	os.system('title = Waifu2x-Extension '+Version_current+' 作者: Aaron Feng '+Add_str)
 
 #============================================  Deduplicate_list  ===================================
 
@@ -4229,9 +4258,9 @@ def Set_default_color():
 	settings_values = ReadSettings()
 	Color_dict = {'0':'0b','1':'09','2':'0a','3':'0c','4':'0d','5':'0e','6':'0f'}
 	while True:
-		print('''设置界面颜色
+		print('''更改界面颜色
 ------------------
-0.湖绿色(初始值)
+0.湖绿色(默认)
 1.蓝色
 2.绿色
 3.红色
@@ -4250,11 +4279,11 @@ def Set_default_color():
 				return 0
 			else:
 				os.system('cls')
-				input('输入错误,按Enter键以继续')
+				input('输入无效,按Enter键以继续')
 				os.system('cls')
 		else:
 			os.system('cls')
-			input('输入错误,按Enter键以继续')
+			input('输入无效,按Enter键以继续')
 			os.system('cls')
 
 #===================================================== MOVE FILE =========================================================
@@ -4319,7 +4348,7 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 	start_bat_str=[
 		'@echo off \n',
 		'color '+settings_values['default_color']+' \n',
-		'title = Waifu2x扩展 '+Version_current+' 作者: Aaron Feng  [ '+str_Title+' ] \n',
+		'title = Waifu2x-Extension '+Version_current+' 作者: Aaron Feng  [ '+str_Title+' ] \n',
 		]
 	
 	end_bat_str=[
@@ -4348,12 +4377,16 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 
 #================================= 判断进程是否存在 ================================
 def Process_exist(str_processname):
-    pl = psutil.pids()
-    for pid in pl:
-        if psutil.Process(pid).name() == str_processname:
-            return True
-    else:
-        return False
+	pl = psutil.pids()
+	for pid in pl:
+		try:
+			if psutil.Process(pid).name() == str_processname:
+				return True
+		except BaseException:
+			pass
+
+	else:
+		return False
 
 #==========================================  Init  ==================================================================
 def init():		#初始化函数
@@ -4403,15 +4436,15 @@ if __name__ == '__main__':
 			with open('Error_Log_Waifu2x-Extension.log','a+') as f:
 				f.write(ErrorStr)
 			
-			print('---------------------------------------------------')
+			print('----------------------------------------------------------------')
 			print('发生了一个错误, 请报告给开发者.')
 			print('')
 			print('反馈链接:')
-			print('https://github.com/AaronFeng753/Waifu2x-Extension/issues')
+			print('https://github.com/AaronFeng753/Waifu2x-Extension/issues/new')
 			print('')
-			print('你可以在这里下载最新版,或许该错误已经在最新版中被修复了:')
+			print('你也可以在这里下载最新版,或许该错误已经在最新版中被修复了:')
 			print('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
-			print('----------------------------------------')
+			print('-----------------------------------------------------------------')
 			print('按Enter以重新启动程序')
 			input()
 			os.system('cls')
@@ -4419,10 +4452,10 @@ if __name__ == '__main__':
 			os.execl(python, python, * sys.argv)
 	else:
 		os.system('cls')
-		print('--------------------------------------------------------------------------------------------------------------')
+		print('----------------------------------------------------------------------')
 		print('我们检测到当前软件所处的文件夹导致软件必须申请\n 管理员权限来继续正常运行.')
 		print('我们建议您将软件移动到另一个文件夹或者直接给予软件管理员权限')
-		print('--------------------------------------------------------------------------------------------------------------')
+		print('----------------------------------------------------------------------')
 		print('按Enter键来重启软件并申请管理员权限. ')
 		input()
 		# Re-run the program with admin rights
