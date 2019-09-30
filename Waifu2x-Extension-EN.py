@@ -16,24 +16,28 @@ waifu2x-ncnn-vulkan version 20190712
 
 Anime4K Java v0.9 Beta
 
-ffmpeg version 4.2
+ffmpeg version 4.2.1
 
 gifsicle version 1.92
+
+Waifu2x-converter version: 2015-11-30T02:17:24
 
 -----------------------------------------------
 
 更新日志
-- converter 视频放大增加ETA
-- converter GIF放大增加ETA
-- converter 图片放大增加ETA
-- 修复 converter代码内 无法正常检测线程的bug
-- 更改设置逻辑, 单变量的直接切换(y/n那种)
+- 为 Waifu2x-converter 模式增加ETA显示
+- 修复 Waifu2x-converter 模式下无法正常检测线程状态的bug
+- 更改部分设置选项
+- 完善 Benchmark, 新增 Anime4k 线程数量测试, Waifu2x-converter 线程数量测试
+- 启动时检测错误日志大小, 如过大则提醒删除
+- 升级ffmpeg版本到4.2.1
+- 改善gif色彩抖动的问题
 
 
 ------------------------------------------------
 
 To do:
-- 加入, anime4k线程数量测试, converter线程数量测试, 统一到benchmark里
+
 
 
 '''
@@ -77,7 +81,7 @@ from playsound import playsound
 import struct
 import psutil
 
-Version_current='v3.351'
+Version_current='v3.5'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -112,6 +116,8 @@ def ChooseFormat():
 		Video_str = 'Scale Video.(Anime4k) '
 	else:
 		Video_str = 'Scale & Denoise Video.'
+	
+	Error_log_clean()
 	
 	while True:
 		Set_cols_lines(65,37)
@@ -294,6 +300,9 @@ def ChooseFormat():
 
 #===================================================== Scale & Denoise Image & GIF ========================================
 def Image_Gif_Scale_Denoise():
+	print('Note: The input path must not contain Chinese characters or other special characters,')
+	print('which will cause compatibility problems.')
+	print('')
 	print("================= Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan ================")
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder or a file")
@@ -749,9 +758,9 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')')
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
-		TIME_GAP=getDuration(inputPath)
+		Frames_gif=get_frames_gif(inputPath)
 		print('Split gif.....')
-		splitGif(inputPath,scaledFilePath)
+		splitGif(inputPath,scaledFilePath,Frames_gif)
 		
 		oldfilenumber=FileCount(scaledFilePath+'_split')
 				
@@ -880,7 +889,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		print('')	
 		
 		print('Assembling Gif.....')
-		assembleGif(scaledFilePath,TIME_GAP)
+		assembleGif(scaledFilePath,Frames_gif,inputPath)
 		print('Gif assembled')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
@@ -913,6 +922,9 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 
 #================================================= Image_Gif_Scale_Denoise_waifu2x_converter ===========================================
 def Image_Gif_Scale_Denoise_waifu2x_converter():
+	print('Note: The input path must not contain Chinese characters or other special characters,')
+	print('which will cause compatibility problems.')
+	print('')
 	print("================= Scale & Denoise Image & GIF - Waifu2x-converter  ================")
 	print("Type 'r' to return to the previous menu")
 	print("Type 'o' to stop input more path, and input path must be a folder or a file")
@@ -1177,9 +1189,10 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 	for inputPath in Gif_inputPathList_files:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
-		TIME_GAP=getDuration(inputPath)
+		Frames_gif=get_frames_gif(inputPath)
 		print('Split gif.....')
-		splitGif(inputPath,scaledFilePath)
+		splitGif(inputPath,scaledFilePath,Frames_gif)
+		
 		
 		time_start_scale = time.time()
 		
@@ -1243,7 +1256,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		
 		print('')	
 		print('Assembling Gif.....')
-		assembleGif(scaledFilePath,TIME_GAP)
+		assembleGif(scaledFilePath,Frames_gif,inputPath)
 		print('Gif assembled')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
@@ -2354,54 +2367,39 @@ def DelOrgFiles(inputPath):
 		break
 	
 #======================================================= GIF ======================================================
-def getDuration(FILENAME):
-	PIL_Image_object = Image.open(FILENAME)
-	PIL_Image_object.seek(0)
-	frames = 0
-	duration = 0
-	while True:
-		try:
-			frames += 1
-			duration += PIL_Image_object.info['duration']
-			PIL_Image_object.seek(PIL_Image_object.tell() + 1)
-		except EOFError:
-			return (duration / 1000)/frames
-	return None
-
-def splitGif(gifFileName,scaledFilePath):
-	im = Image.open(gifFileName)
-	pngDir = scaledFilePath+'_split'
-	if os.path.exists(scaledFilePath+'_split') :
-			os.system("rd /s/q \""+scaledFilePath+'_split'+'"')
-	os.mkdir(scaledFilePath+'_split')
+def get_frames_gif(FILENAME):
+	frame_current = 0
+	im = Image.open(FILENAME)
 	try:
 	  while True:
-	    current = im.tell()
-	    im.save(pngDir+'/'+str(current)+'.png')
-	    im.seek(current+1)
+	    frame_current = im.tell()
+	    im.seek(frame_current+1)
 	except EOFError:
 	    pass
 	
-def assembleGif(scaledFilePath,TIME_GAP):
-	image_list=[]
-	gif_name=scaledFilePath+'_waifu2x.gif'
-	filelist_name=[]
+	frames = len(str(frame_current))
+	if frames == 0 :
+		frames=1
+	return frames
 
-	for path,useless,fnames in os.walk(scaledFilePath+'_split\\scaled'):
-		fnames = dict.fromkeys(fnames,'')
-		for fname in fnames:
-			filelist_name.append(int(os.path.splitext(fname)[0]))
-		break
-		
-	filelist_name.sort()
-	filelist_name = dict.fromkeys(filelist_name,'')
-	for file_name in filelist_name:
-		image_list.append(scaledFilePath+'_split\\scaled'+'\\'+str(file_name)+'.png')
-	frames = []  
-	image_list = dict.fromkeys(image_list,'')
-	for image_name in image_list:  
-		frames.append(imageio.imread(image_name))  
-	imageio.mimsave(gif_name, frames, 'GIF', duration = TIME_GAP)
+def splitGif(gifFileName,scaledFilePath,frames):
+	
+	if os.path.exists(scaledFilePath+'_split') :
+			os.system("rd /s/q \""+scaledFilePath+'_split'+'"')
+	os.mkdir(scaledFilePath+'_split')
+	
+	os.system('ffmpeg -i "'+gifFileName+'" "'+scaledFilePath+'_split\\%0'+str(frames)+'d.png"')	
+	
+	
+	
+def assembleGif(scaledFilePath,frames,gifFileName):
+	
+	cap = cv2.VideoCapture(gifFileName)
+	fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
+	
+	gif_name=scaledFilePath+'_waifu2x.gif'
+	
+	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+scaledFilePath+'_split\\scaled\\'+'%0'+str(frames)+'d.png" "'+gif_name+'"')
 	
 def compress_gif(inputpath,compress_level):
 	gif_path_filename = os.path.splitext(inputpath)[0]
@@ -2971,7 +2969,7 @@ def Settings():
 		print(' 13: Number of threads ( Scale & Denoise (Waifu2x-converter) ). Current value: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]\n')
 		print(' RE: Reset error log.\n')
 		print(' RS: Reset settings.\n')
-		print(' RL: Reset language setting(for Waifu2x-Extension-Start.exe).\n')
+		print(' RL: Reset language setting for launcher.\n')
 		print(' S: Show settings_values.\n')
 		print(' R: Return to the main menu.')
 		print('-----------------------------------------------------------------------------')
@@ -3300,11 +3298,11 @@ def Settings():
 			cpu_num = int(cpu_count() / 2)
 			if cpu_num < 1 :
 				cpu_num = 1
-			default_values = {'SettingVersion':'8','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+			default_values = {'SettingVersion':'9','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 								'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 								'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 								'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
-								'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
+								'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
 								'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
 								'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1}
 			current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -3325,7 +3323,7 @@ def Settings():
 			if os.path.exists('config_waifu2xEX_start'):
 				os.remove('config_waifu2xEX_start')
 			os.system('cls')
-			input('Setting reseted, press Enter key to return.')
+			input(' Language setting reseted, press Enter key to return.')
 			
 			os.system('cls')
 		
@@ -3356,11 +3354,11 @@ def ReadSettings():
 	cpu_num = int(cpu_count() / 2)
 	if cpu_num < 1 :
 		cpu_num = 1
-	default_values = {'SettingVersion':'8','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+	default_values = {'SettingVersion':'9','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
-						'image_quality':'95','load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
+						'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
 						'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
 						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -3432,6 +3430,23 @@ def Error_Log():	#读取错误日志
 	else:
 		print('Error : error log file is missing.')	#提示错误日志文件丢失
 		input('Press Enter key to return.')
+
+def Error_log_clean():
+	if os.path.exists('Error_Log_Waifu2x-Extension.log') :	#判断错误日志文件是否存在
+		log_size = round(os.path.getsize('Error_Log_Waifu2x-Extension.log')/1024)
+		if log_size > 500:
+			os.system('cls')
+			del_log = input('错误日志文件过大 (>500KB). 你想要重置错误日志吗?(Y/N): ')
+			if del_log.lower() == 'y':
+				with open('Error_Log_Waifu2x-Extension.log','w+') as f:
+					f.write('')
+				with open('Error_Log_Waifu2x-Extension.log','a+') as f:
+					timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+					f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Error log reseted by user.\n')
+				
+	else:
+		os.system('cls')
+	os.system('cls')
 
 #============================================= Multi-thread Gif Compress =================================================
 class GifCompressThread (threading.Thread):
@@ -3621,13 +3636,13 @@ def Complete_ResizeWindow(cols,lines):
 	
 #=============================== Benchmark =============================
 def Benchmark():
-	print('================ Benchmark ===================')
+	print('================ Benchmark ==========================')
 	print(' 1.Tile size(for waifu2x-ncnn-vulkan)')
 	print('')
-	print(' 2.Number of threads(for waifu2x-converter)')
+	print(' 2.Number of threads(for waifu2x-converter) ( Beta )')
 	print('')
-	print(' 3.Number of threads(for Anime4K)')
-	print('==============================================')
+	print(' 3.Number of threads(for Anime4K) ( Beta )')
+	print('=====================================================')
 	print('( 1 / 2 / 3 )')
 	choice_ = input().strip(' ')
 	if choice_ == '1':
