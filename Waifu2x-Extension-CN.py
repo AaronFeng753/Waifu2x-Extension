@@ -30,20 +30,13 @@ Waifu2x-converter version: 2015-11-30T02:17:24
 -----------------------------------------------
 
 更新日志
-- 为 Waifu2x-converter 模式增加ETA显示
-- 修复 Waifu2x-converter 模式下无法正常检测线程状态的bug
-- 更改部分设置选项
-- 完善 Benchmark, 新增 Anime4k 线程数量测试, Waifu2x-converter 线程数量测试
-- 启动时检测错误日志大小, 如过大则提醒删除
-- 升级ffmpeg版本到4.2.1
-- 修复gif色彩抖动的问题
-- 完善汉化修复,错误翻译
+- 
 
 
 ------------------------------------------------
 
 To do:
-- 改善gif色彩抖动的问题
+- 修改gif帧数统计方式, 改为使用cv2
 
 
 '''
@@ -250,9 +243,7 @@ def ChooseFormat():
 				Video_str = '放大视频(Anime4k)'
 			else:
 				Video_str = '放大与降噪视频'
-				
 			os.system('cls')
-			
 		elif mode == "12":
 			os.system('cls')
 			Benchmark()
@@ -290,7 +281,7 @@ def ChooseFormat():
 		elif mode == "d":
 			os.system('cls')
 			print('载入中.......')
-			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/donate.jpg')
+			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension#donate')
 			os.system('cls')
 			print(' 谢谢您 !!!  :)')
 		elif mode == "r":
