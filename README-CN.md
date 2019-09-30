@@ -62,7 +62,6 @@
 
 # 截图
 ![mainmenu](/screenshot/mainmenu-cn.png) 
-![running](/screenshot/running.png) 
 
 # 下载: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
