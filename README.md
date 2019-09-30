@@ -98,7 +98,7 @@ From Flaticon : https://www.flaticon.com/
 
 # Donate
 
-## If this extension helps you, you are welcome to donate to support developers.
+## If this extension helps you, please donate to support developers.
 
 ![donate](/donate.jpg)
 
