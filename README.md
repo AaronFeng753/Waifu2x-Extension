@@ -62,6 +62,8 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 
 # Screenshot
 ![mainmenu](/screenshot/mainmenu-en.png) 
+
+# Demonstration
 ![Demonstration-en](/screenshot/Demonstration-en.gif) 
 
 # Download: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
