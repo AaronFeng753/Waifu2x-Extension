@@ -25,13 +25,13 @@ Waifu2x-converter version: 2015-11-30T02:17:24
 -----------------------------------------------
 
 更新日志
-- 
+- 性能优化
 
 
 ------------------------------------------------
 
 To do:
-- 修改gif帧数统计方式, 改为使用cv2
+- 界面美化
 
 
 '''
@@ -151,8 +151,7 @@ def ChooseFormat():
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ D : Donate. (Alipay)      R : Report Bugs & Suggestions      │')
 		print('└──────────────────────────────────────────────────────────────┘')
-		print('( 1 / 2 / 3 / 4 /...../ E / D / R ): ')
-		mode = input().strip(' ').lower()
+		mode = input('( 1 / 2 / 3 / 4 /...../ E / D / R ): ').strip(' ').lower()
 			
 		Set_cols_lines(120,40)
 		
@@ -2362,6 +2361,7 @@ def DelOrgFiles(inputPath):
 	
 #======================================================= GIF ======================================================
 def get_frames_gif(FILENAME):
+	
 	frame_current = 0
 	im = Image.open(FILENAME)
 	try:
