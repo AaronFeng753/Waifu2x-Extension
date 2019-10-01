@@ -30,13 +30,14 @@ Waifu2x-converter version: 2015-11-30T02:17:24
 -----------------------------------------------
 
 更新日志
-- 
+- 改进主菜单
+- 性能优化
 
 
 ------------------------------------------------
 
 To do:
-- 修改gif帧数统计方式, 改为使用cv2
+- 界面美化
 
 
 '''
@@ -124,18 +125,18 @@ def ChooseFormat():
 		Set_cols_lines(65,37)
 		Set_cols_lines(66,38)
 		Window_Title('')
-		print('-'*65)
+		print('─'*65)
 		print(' Waifu2x-Extension   '+Version_current+'   作者: Aaron Feng')
-		print('-'*65)
+		print('─'*65)
 		print(' Github主页: https://github.com/AaronFeng753/Waifu2x-Extension')
-		print('-'*65)
+		print('─'*65)
 		print(" 注意: 本软件的放大与降噪功能仅适用于处理动漫风格的艺术作品")
 		print(" (包括图片,GIF动态图,视频)")
-		print('-'*65)
+		print('─'*65)
 		print(' 1 : 放大与降噪图片和GIF.  2 : '+Video_str)
-		print('-'*65)
+		print('─'*65)
 		print(' 3 : 压缩图片与GIF')
-		print('-'*65)
+		print('─'*65)
 		print(' 4 : Tile size(块大小): '+tileSize+'   '+'5 : GPU ID: '+gpuId)
 		print('')
 		print(' 6 : 提示音: '+notificationSound)
@@ -147,7 +148,7 @@ def ChooseFormat():
 		print(' 9 : 目标另存为 .jpg?(放大与降噪): '+saveAsJPG+Compress)
 		print('')
 		print(' 10 : 优化 .gif?(放大与降噪): '+optimizeGif)
-		print('-'*65)
+		print('─'*65)
 		print(' 11 : 设置.              12 : 基准测试.')
 		print('')
 		print(' 13 : 阅读错误日志.      14 : 检查更新.')
@@ -155,11 +156,10 @@ def ChooseFormat():
 		print(' 15 : 说明文档.          16 : 用户协议.')
 		print('')
 		print(' 17 : 兼容性测试         E : 退出.')
-		print('-'*65)
+		print('─'*65)
 		print(' D : 捐赠. (支付宝)      R : 提交反馈')
-		print('-'*65)
-		print('( 1 / 2 / 3 / 4 /...../ E / D / R ): ')
-		mode = input().strip(' ').lower()
+		print('─'*65)
+		mode = input('( 1 / 2 / 3 / 4 /...../ E / D / R ): ').strip(' ').lower()
 			
 		Set_cols_lines(120,40)
 		
