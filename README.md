@@ -70,7 +70,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 #### waifu2x-ncnn-vulkan:
 Re-install gpu driver or update it to the latest.
 #### waifu2x-converter:
-Buy a new conputer.
+Buy a new computer.
 #### Anime4k:
 Install the latest JDK and JRE
 
