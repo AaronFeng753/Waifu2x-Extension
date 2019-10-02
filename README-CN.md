@@ -16,7 +16,7 @@
 # 功能与特性
 ### 扩展带来的新功能有:
 
-- 更友好的交互方式
+- 用户友好的 CUI (Character User Interface 字符用户界面).
 - 支持 1x/2x/4x/8x 放大
 - 批量放大静态图片与GIF动态图片 (Waifu2x-ncnn-vulkan & Waifu2x-converter)
 - 批量放大视频文件 (Waifu2x-ncnn-vulkan & Waifu2x-converter & Anime 4k)
