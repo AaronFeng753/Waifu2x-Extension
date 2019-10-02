@@ -29,6 +29,7 @@ Waifu2x-converter version: 2015-11-30T02:17:24
 - 重排设置菜单
 - '----'改成'-'*n
 - 将播放提示音集成到一个函数里
+- 延时30秒关机
 
 
 ------------------------------------------------
@@ -291,7 +292,10 @@ def MainMenu():
 		else:
 			os.system('cls')
 			ChangeColor_warning()
-			input('\n Error : wrong input,pls press Enter key to return')
+			print('-'*52)
+			print(' Error : wrong input,pls press Enter key to return')
+			print('-'*52)
+			input()
 			ChangeColor_default()
 			os.system('cls')
 
@@ -477,7 +481,7 @@ def Image_Gif_Scale_Denoise():
 	
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
-		os.system('shutdown -s')
+		ShutDown()
 	Play_Notification_Sound()
 	
 	input('\npress Enter key to return to the menu')
@@ -1035,7 +1039,7 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	
 	print('\n Total time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
-		os.system('shutdown -s')
+		ShutDown()
 	Play_Notification_Sound()
 	
 	input('\n Press Enter key to return to the menu.')
@@ -1393,7 +1397,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 	
 	print('\n Total time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
-		os.system('shutdown -s')
+		ShutDown()
 	Play_Notification_Sound()
 	input('\n Press Enter key to exit')
 
@@ -1597,7 +1601,7 @@ def Scale_Denoise_Video():
 	
 	print('\n Total time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
-		os.system('shutdown -s')
+		ShutDown()
 	Play_Notification_Sound()
 	input('\n Press Enter key to exit')
 	
@@ -1852,7 +1856,7 @@ def Scale_Denoise_Video_Anime4K():
 	
 	print('\n Total time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
-		os.system('shutdown -s')
+		ShutDown()
 	Play_Notification_Sound()
 	input('\n Press Enter key to exit')
 
@@ -4331,6 +4335,15 @@ def Process_exist(str_processname):
 
 	else:
 		return False
+
+#============================================== Shut Down ==============================
+def ShutDown():
+	shutdown_time_str = time.strftime('%H:%M:%S', time.localtime(time.time()+30))
+	print('-'*52)
+	print(' The computer will be turned off at '+shutdown_time_str+' ! !')
+	print('-'*52)
+	time.sleep(30)
+	os.system('shutdown -s')
 
 #==========================================  Init  ==================================================================
 
