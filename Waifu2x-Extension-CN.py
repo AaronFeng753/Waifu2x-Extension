@@ -38,7 +38,9 @@ Waifu2x-converter version: 2015-11-30T02:17:24
 
 To do:
 - 界面美化
-
+- 重排设置菜单
+- '----'改成'-'*n
+- 将播放提示音集成到一个函数里
 
 '''
 
@@ -87,7 +89,7 @@ Version_current='v3.5'
 
 #======================================================== MAIN MENU ==============================================================
 
-def ChooseFormat():
+def MainMenu():
 	
 	settings_values = ReadSettings()
 	
@@ -159,9 +161,9 @@ def ChooseFormat():
 		print('─'*65)
 		print(' D : 捐赠. (支付宝)      R : 提交反馈')
 		print('─'*65)
-		mode = input('( 1 / 2 / 3 / 4 /...../ E / D / R ): ').strip(' ').lower()
+		mode = input('( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower()
 			
-		Set_cols_lines(120,40)
+		Set_cols_lines(120,38)
 		
 		if mode == "1":
 			os.system('cls')
@@ -2810,7 +2812,6 @@ def input_sleepMode():
 				print('------------------------------------------------')
 				print('当睡眠模式启用时, 软件会尝试减少性能需求,')
 				print('以此来减少电脑的运行压力并减少噪音.')
-				print('同时还会关闭提示音.')
 				print('启用该选项会延长程序完成放大与降噪任务的时间')
 				print('-------------------------------------------------')
 			else:
@@ -3283,22 +3284,12 @@ def Settings():
 		elif mode == "rs":
 			os.system('cls')
 			
-			cpu_num = int(cpu_count() / 2)
-			if cpu_num < 1 :
-				cpu_num = 1
-			default_values = {'SettingVersion':'9','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
-								'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
-								'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
-								'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
-								'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
-								'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
-								'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1}
-			current_dir = os.path.dirname(os.path.abspath(__file__))
-			settingPath = current_dir+'\\'+'waifu2x-extension-setting'
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(default_values,f)
+			if os.path.exists('config_waifu2xEX_start'):
+				os.remove('config_waifu2xEX_start')
 			
-				
+			if os.path.exists('waifu2x-extension-setting'):
+				os.remove('waifu2x-extension-setting')
+				ReadSettings()
 			
 			input('设置已重置, 按下Enter返回.')
 			
@@ -4402,7 +4393,7 @@ def init():		#初始化函数
 	thread_resizeWindow=ResizeWindow_Thread()
 	thread_resizeWindow.start()
 	
-	ChooseFormat()
+	MainMenu()
 	
 	if thread_resizeWindow.isAlive():
 		stop_thread(thread_resizeWindow)
