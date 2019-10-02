@@ -26,12 +26,16 @@ Waifu2x-converter version: 2015-11-30T02:17:24
 
 更新日志
 - 性能优化
+- 重排设置菜单
+- '----'改成'-'*n
+- 将播放提示音集成到一个函数里
 
 
 ------------------------------------------------
 
 To do:
 - 界面美化
+
 
 
 '''
@@ -79,7 +83,7 @@ Version_current='v3.5'
 
 #======================================================== MAIN MENU ==============================================================
 
-def ChooseFormat():
+def MainMenu():
 	
 	settings_values = ReadSettings()
 	
@@ -114,8 +118,8 @@ def ChooseFormat():
 	Error_log_clean()
 	
 	while True:
-		Set_cols_lines(65,37)
-		Set_cols_lines(66,38)
+		Set_cols_lines(65,35)
+		Set_cols_lines(66,36)
 		Window_Title('')
 		print('┌──────────────────────────────────────────────────────────────┐')
 		print('│ Waifu2x-Extension | '+Version_current+' | Author: Aaron Feng '+' '*(19-len(Version_current))+'│')
@@ -151,9 +155,9 @@ def ChooseFormat():
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ D : Donate. (Alipay)      R : Report Bugs & Suggestions      │')
 		print('└──────────────────────────────────────────────────────────────┘')
-		mode = input('( 1 / 2 / 3 / 4 /...../ E / D / R ): ').strip(' ').lower()
+		mode = input('( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower()
 			
-		Set_cols_lines(120,40)
+		Set_cols_lines(120,38)
 		
 		if mode == "1":
 			os.system('cls')
@@ -287,19 +291,19 @@ def ChooseFormat():
 		else:
 			os.system('cls')
 			ChangeColor_warning()
-			input('Error : wrong input,pls press Enter key to return')
+			input('\n Error : wrong input,pls press Enter key to return')
 			ChangeColor_default()
 			os.system('cls')
 
 #===================================================== Scale & Denoise Image & GIF ========================================
 def Image_Gif_Scale_Denoise():
-	print('Note: The input path must not contain Chinese characters or other special characters,')
-	print('which will cause compatibility problems.')
+	print(' Note: The input path must not contain Chinese characters or other special characters,')
+	print(' which will cause compatibility problems.')
 	print('')
-	print("================= Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan ================")
-	print("Type 'r' to return to the previous menu")
-	print("Type 'o' to stop input more path, and input path must be a folder or a file")
-	print("Scaled images & gifs will be in the input path \n")
+	print(" ================= Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan ================")
+	print(" Type 'r' to return to the previous menu")
+	print(" Type 'o' to stop input more path, and input path must be a folder or a file")
+	print(" Scaled images & gifs will be in the input path \n")
 	
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -314,7 +318,7 @@ def Image_Gif_Scale_Denoise():
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
-			inputPath = input('input-path: ')
+			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			if inputPath.lower() == 'r':
 				return 1
@@ -323,9 +327,9 @@ def Image_Gif_Scale_Denoise():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('-----------------------------')
-				print('Error,input path is invalid!!')
-				print('-----------------------------')
+				print('-'*32)
+				print(' Error,input path is invalid !!')
+				print('-'*32)
 			else:
 				inputPathError = False
 		if inputPathOver :
@@ -368,7 +372,6 @@ def Image_Gif_Scale_Denoise():
 	if multiThread_Scale == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	gpuId = settings_values['gpuId']
-	notificationSound = settings_values['notificationSound']
 	gpuId_str=''
 	if gpuId != 'auto':
 		gpuId_str = ' -g '+gpuId
@@ -409,9 +412,8 @@ def Image_Gif_Scale_Denoise():
 		return 1
 	elif sleepMode == 'y':
 		load_proc_save_str = ' -j 1:1:1 '
-		notificationSound = 'n'
 		
-	print('--------------------------------------------')
+	print('-'*50)
 	
 	total_time_start=time.time()
 	
@@ -476,9 +478,7 @@ def Image_Gif_Scale_Denoise():
 	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
 		os.system('shutdown -s')
-	if notificationSound == 'y':
-		thread_Notification=Play_Notification_Sound_Thread()
-		thread_Notification.start()
+	Play_Notification_Sound()
 	
 	input('\npress Enter key to return to the menu')
 
@@ -915,13 +915,12 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 
 #================================================= Image_Gif_Scale_Denoise_waifu2x_converter ===========================================
 def Image_Gif_Scale_Denoise_waifu2x_converter():
-	print('Note: The input path must not contain Chinese characters or other special characters,')
-	print('which will cause compatibility problems.')
-	print('')
-	print("================= Scale & Denoise Image & GIF - Waifu2x-converter  ================")
-	print("Type 'r' to return to the previous menu")
-	print("Type 'o' to stop input more path, and input path must be a folder or a file")
-	print("Scaled images & gifs will be in the input path \n")
+	print(' Note: The input path must not contain Chinese characters or other special characters,')
+	print(' which will cause compatibility problems.\n')
+	print(" ================= Scale & Denoise Image & GIF - Waifu2x-converter  ====================")
+	print(" Type 'r' to return to the previous menu")
+	print(" Type 'o' to stop input more path, and input path must be a folder or a file")
+	print(" Scaled images & gifs will be in the input path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -930,7 +929,7 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
-			inputPath = input('input-path: ')
+			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			if inputPath.lower() == 'r':
 				return 1
@@ -939,9 +938,9 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('-----------------------------')
-				print('Error,input path is invalid!!')
-				print('-----------------------------')
+				print('-'*32)
+				print(' Error,input path is invalid !!')
+				print('-'*32)
 			else:
 				inputPathError = False
 		if inputPathOver :
@@ -985,8 +984,6 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	noiseLevel = input_noiseLevel_waifu2x_converter()
 	if noiseLevel == 'r':
 		return 1
-
-	notificationSound = settings_values['notificationSound']
 	
 	Gif_exists = False
 	for file_ in inputPathList_files:
@@ -1015,7 +1012,7 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	if turnoff == 'r':
 		return 1
 		
-	print('--------------------------------------------')
+	print('-'*50)
 	
 	total_time_start=time.time()
 	
@@ -1036,14 +1033,12 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 			Process_ImageModeC_waifu2x_converter(inputPathList_files_images,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal)
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
+	print('\n Total time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
 		os.system('shutdown -s')
-	if notificationSound == 'y':
-		thread_Notification=Play_Notification_Sound_Thread()
-		thread_Notification.start()
+	Play_Notification_Sound()
 	
-	input('\npress Enter key to return to the menu')
+	input('\n Press Enter key to return to the menu.')
 	Window_Title('')
 
 #=================================================  waifu2x_converter_Thread  ============================================
@@ -1311,13 +1306,12 @@ class DelOldFileThread_4x(threading.Thread):
 
 #=============================================  Scale & Denoise Video_waifu2x_converter  ====================================
 def Scale_Denoise_Video_waifu2x_converter():
-	print('Note: The input path must not contain Chinese characters or other special characters,')
-	print('which will cause compatibility problems.')
-	print('')
-	print("================ Scale & Denoise Video - waifu2x-converter ===============")
-	print("Type 'r' to return to the previous menu")
-	print("Type 'o' to stop input more path, and input path must be a folder or a video file")
-	print("Scaled files will be in the input-path \n")
+	print(' Note: The input path must not contain Chinese characters or other special characters,')
+	print(' which will cause compatibility problems.\n')
+	print(" ======================= Scale & Denoise Video - waifu2x-converter ====================")
+	print(" Type 'r' to return to the previous menu")
+	print(" Type 'o' to stop input more path, and input path must be a folder or a video file")
+	print(" Scaled files will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1325,7 +1319,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
-			inputPath = input('input-path: ')
+			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == 'o':
@@ -1335,9 +1329,9 @@ def Scale_Denoise_Video_waifu2x_converter():
 			elif inputPath.lower() == 'r':
 				return 1
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('-----------------------------')
-				print('Error,input path is invalid!!')
-				print('-----------------------------')
+				print('-'*32)
+				print(' Error,input path is invalid !!')
+				print('-'*32)
 			else:
 				inputPathError = False
 		if inputPathOver :
@@ -1372,9 +1366,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 	noiseLevel = input_noiseLevel_waifu2x_converter()
 	if noiseLevel == 'r':
 		return 1
-	
-	notificationSound = settings_values['notificationSound']
-		
+			
 	delorginal = input_delorginal()
 	if delorginal == 'r':
 		return 1
@@ -1384,7 +1376,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 		return 1
 	
 		
-	print('--------------------------------------------')
+	print('-'*50)
 	
 	total_time_start=time.time()
 	 
@@ -1399,13 +1391,11 @@ def Scale_Denoise_Video_waifu2x_converter():
 	process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel,delorginal)
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
+	print('\n Total time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
 		os.system('shutdown -s')
-	if notificationSound == 'y':
-		thread_Notification=Play_Notification_Sound_Thread()
-		thread_Notification.start()
-	input('\npress Enter key to exit')
+	Play_Notification_Sound()
+	input('\n Press Enter key to exit')
 
 #======================================= process_video_modeABC_waifu2x_converter ============================
 def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel,delorginal):
@@ -1497,21 +1487,20 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 				if os.path.getsize(res_video) > 0:
 					os.system('del /q "'+inputPath+'"')	
 				else:
-					print('Error occured, failed to generate result video.')
+					print(' Error occured, failed to generate result video.')
 			else:
-				print('Error occured, failed to generate result video.')
+				print(' Error occured, failed to generate result video.')
 		finished_num = finished_num+1
 	Window_Title('')
 
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
-	print('Note: The input path must not contain Chinese characters or other special characters,')
-	print('which will cause compatibility problems.')
-	print('')
-	print("================ Scale & Denoise Video - Waifu2x-ncnn-vulkan ===============")
-	print("Type 'r' to return to the previous menu")
-	print("Type 'o' to stop input more path, and input path must be a folder or a video file")
-	print("Scaled files will be in the input-path \n")
+	print(' Note: The input path must not contain Chinese characters or other special characters,')
+	print(' which will cause compatibility problems.\n')
+	print(" ===================== Scale & Denoise Video - Waifu2x-ncnn-vulkan ====================")
+	print(" Type 'r' to return to the previous menu")
+	print(" Type 'o' to stop input more path, and input path must be a folder or a video file")
+	print(" Scaled files will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1520,7 +1509,7 @@ def Scale_Denoise_Video():
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
-			inputPath = input('input-path: ')
+			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == 'o':
@@ -1530,9 +1519,9 @@ def Scale_Denoise_Video():
 			elif inputPath.lower() == 'r':
 				return 1
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('-----------------------------')
-				print('Error,input path is invalid!!')
-				print('-----------------------------')
+				print('-'*32)
+				print(' Error,input path is invalid !!')
+				print('-'*32)
 			else:
 				inputPathError = False
 		if inputPathOver :
@@ -1572,7 +1561,6 @@ def Scale_Denoise_Video():
 	if multiThread_Scale == 'n':
 		load_proc_save_str = ' -j 1:1:1 '
 	tileSize = settings_values['tileSize']
-	notificationSound = settings_values['notificationSound']
 	gpuId = settings_values['gpuId']
 	gpuId_str=''
 	if gpuId != 'auto':
@@ -1591,9 +1579,8 @@ def Scale_Denoise_Video():
 		return 1
 	elif sleepMode == 'y':
 		load_proc_save_str = ' -j 1:1:1 '
-		notificationSound = 'n'
 		
-	print('--------------------------------------------')
+	print('-'*50)
 	
 	total_time_start=time.time()
 	 
@@ -1608,13 +1595,11 @@ def Scale_Denoise_Video():
 	process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,delorginal)
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
+	print('\n Total time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
 		os.system('shutdown -s')
-	if notificationSound == 'y':
-		thread_Notification=Play_Notification_Sound_Thread()
-		thread_Notification.start()
-	input('\npress Enter key to exit')
+	Play_Notification_Sound()
+	input('\n Press Enter key to exit')
 	
 #======================================= process_video_modeABC ============================
 def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,delorginal):
@@ -1785,15 +1770,14 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		finished_num = finished_num+1
 	Window_Title('')
 
-#=============================================  Scale & Denoise Video - Anime4K  ====================================
+#=============================================  Scale Video - Anime4K  ====================================
 def Scale_Denoise_Video_Anime4K():
-	print('Note: The input path must not contain Chinese characters or other special characters,')
-	print('which will cause compatibility problems.')
-	print('')
-	print("======================== Scale Video - Anime4K =======================")
-	print("Type 'r' to return to the previous menu")
-	print("Type 'o' to stop input more path, and input path must be a folder or a video file")
-	print("Scaled files will be in the input-path \n")
+	print(' Note: The input path must not contain Chinese characters or other special characters,')
+	print(' which will cause compatibility problems.\n')
+	print(" =============================== Scale Video - Anime4K ==============================")
+	print(" Type 'r' to return to the previous menu")
+	print(" Type 'o' to stop input more path, and input path must be a folder or a video file")
+	print(" Scaled files will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1801,7 +1785,7 @@ def Scale_Denoise_Video_Anime4K():
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
-			inputPath = input('input-path: ')
+			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == 'o':
@@ -1811,9 +1795,9 @@ def Scale_Denoise_Video_Anime4K():
 			elif inputPath.lower() == 'r':
 				return 1
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('-----------------------------')
-				print('Error,input path is invalid!!')
-				print('-----------------------------')
+				print('-'*31)
+				print(' Error,input path is invalid!!')
+				print('-'*31)
 			else:
 				inputPathError = False
 		if inputPathOver :
@@ -1842,8 +1826,6 @@ def Scale_Denoise_Video_Anime4K():
 	scale = input_scale_Anime4k_waifu2x_converter()
 	if scale == 'r':
 		return 1
-
-	notificationSound = settings_values['notificationSound']
 		
 	delorginal = input_delorginal()
 	if delorginal == 'r':
@@ -1853,7 +1835,7 @@ def Scale_Denoise_Video_Anime4K():
 	if turnoff == 'r':
 		return 1
 		
-	print('--------------------------------------------')
+	print('-'*50)
 	
 	total_time_start=time.time()
 	 
@@ -1868,13 +1850,11 @@ def Scale_Denoise_Video_Anime4K():
 	process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal)
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
+	print('\n Total time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
 		os.system('shutdown -s')
-	if notificationSound == 'y':
-		thread_Notification=Play_Notification_Sound_Thread()
-		thread_Notification.start()
-	input('\npress Enter key to exit')
+	Play_Notification_Sound()
+	input('\n Press Enter key to exit')
 
 #======================================= process_video_modeABC_Anime4K ============================
 
@@ -1983,10 +1963,10 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 
 #===================================================== Compress_image_gif ====================================================
 def Compress_image_gif():
-	print("================= Compress image & gif ================")
-	print("Type 'r' to return to the previous menu")
-	print("Type 'o' to stop input more path, and input path must be a folder or a file")
-	print("Compressed images & gifs will be in the input-path \n")
+	print(" ============================= Compress image & gif =============================")
+	print(" Type 'r' to return to the previous menu")
+	print(" Type 'o' to stop input more path, and input path must be a folder or a file")
+	print(" Compressed images & gifs will be in the input-path \n")
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1994,7 +1974,7 @@ def Compress_image_gif():
 	while inputPathOver:
 		inputPathError = True
 		while inputPathError:
-			inputPath = input('input-path: ')
+			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			if inputPath.lower() == 'r':
@@ -2004,9 +1984,9 @@ def Compress_image_gif():
 				inputPathError = False
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
-				print('-----------------------------')
-				print('Error,input path is invalid!!')
-				print('-----------------------------')
+				print('-'*32)
+				print(' Error,input path is invalid !!')
+				print('-'*32)
 			else:
 				inputPathError = False
 		if inputPathOver :
@@ -2062,12 +2042,8 @@ def Compress_image_gif():
 	if delorginal == 'r':
 		return 1
 	multiThread = settings_values['multiThread']
-	notificationSound = settings_values['notificationSound']
 	
-	
-	
-	print('--------------------------------------------')
-	
+	print('-'*50)
 	
 	total_time_start=time.time()
 	
@@ -2087,11 +2063,9 @@ def Compress_image_gif():
 			
 	total_time_end=time.time()
 		
-	print('\ntotal time cost: ',total_time_end-total_time_start,'s\n')
-	if notificationSound == 'y':
-		thread_notification=Play_Notification_Sound_Thread()
-		thread_notification.start()
-	input('\npress enter key to return to the menu')
+	print('\n Total time cost: ',total_time_end-total_time_start,'s\n')
+	Play_Notification_Sound()
+	input('\n Press enter key to return to the menu')
 	
 #========================================================== Process_compress_image ======================================================
 
@@ -2134,7 +2108,7 @@ def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality
 				if delorginal == 'y':
 					os.system('del /q "'+inputPath+'"')
 				
-			print('--------------------------------------------')
+			print('-'*50)
 
 #============================================================= process_gif_compress_modeABC ===================================================
 
@@ -2176,7 +2150,7 @@ def process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal
 				if delorginal == 'y':
 					os.system('del /q "'+inputPath+'"')
 				
-			print('--------------------------------------------')
+			print('-'*50)
 
 #=========================================== Prograss bar ======================================
 def FileCount(countPath):
@@ -2515,7 +2489,7 @@ def input_scale():
 	default_value = settings_values['scale']
 
 	while True:
-		scale = input('Scale ratio(1/2/4/8/help, default='+default_value+'): ').strip(' ').lower()
+		scale = input(' Scale ratio(1/2/4/8/help, default='+default_value+'): ').strip(' ').lower()
 		if scale in ['1','2','4','8','','r']:
 			break
 		elif scale == 'help':
@@ -2536,7 +2510,7 @@ def input_scale_Anime4k_waifu2x_converter():
 	default_value = settings_values['scale']
 
 	while True:
-		scale = input('Scale ratio(2/3/4/.../help, default='+default_value+'): ').strip(' ').lower()
+		scale = input(' Scale ratio(2/3/4/.../help, default='+default_value+'): ').strip(' ').lower()
 		if scale.isdigit():
 			if int(scale) > 1:
 				return str(int(scale))
@@ -2563,7 +2537,7 @@ def input_tileSize():
 	print('You can run the benchmark to determine the best value of "tile size" for your computer.')
 	print('--------------------------------------------------------------------------------------')
 	while True:
-		tileSize = input('Tile size(for waifu2x-ncnn-vulkan)( >=32 / help, default='+default_value+'): ').strip(' ').lower()
+		tileSize = input(' Tile size(for waifu2x-ncnn-vulkan)( >=32 / help, default='+default_value+'): ').strip(' ').lower()
 		if tileSize.isdigit():
 			if int(tileSize) > 0:
 				break
@@ -2574,12 +2548,12 @@ def input_tileSize():
 			break
 		elif tileSize == 'help':
 			os.system('cls')
-			print('-----------------------------------------------------------------------------------------')
-			print('Tile size : This value will affacts GPU memory usage.')
-			print('Larger tile size means waifu2x will use more GPU memory and run faster.')
-			print('Smaller tile size means waifu2x will use less GPU memory and run slower.')
-			print('The "Benchmark" in the main menu can help you to determine the best value of "tile size".')
-			print('-----------------------------------------------------------------------------------------')
+			print('-'*91)
+			print(' Tile size : This value will affacts GPU memory usage.')
+			print(' Larger tile size means waifu2x will use more GPU memory and run faster.')
+			print(' Smaller tile size means waifu2x will use less GPU memory and run slower.')
+			print(' The "Benchmark" in the main menu can help you to determine the best value of "tile size".')
+			print('-'*91)
 			print('')
 		else:
 			os.system('cls')
@@ -2596,13 +2570,13 @@ def input_noiseLevel():
 	settings_values = ReadSettings()
 	default_value = settings_values['noiseLevel']
 	while True:
-		noiseLevel = input('Denoise level(-1/0/1/2/3/help, default='+default_value+'): ').strip(' ').lower()
+		noiseLevel = input(' Denoise level(-1/0/1/2/3/help, default='+default_value+'): ').strip(' ').lower()
 		if noiseLevel in ['-1','0','1','2','3','','r']:
 			break
 		elif noiseLevel == 'help':
-			print('----------------------------------------------------------------------')
-			print('Denoise level: large value means strong denoise effect, -1 = no effect')
-			print('----------------------------------------------------------------------')
+			print('-'*72)
+			print(' Denoise level: large value means strong denoise effect, -1 = no effect')
+			print('-'*72)
 			print('')
 		else:
 			print('wrong input, pls input again')
@@ -2614,13 +2588,13 @@ def input_noiseLevel():
 def input_noiseLevel_waifu2x_converter():
 	settings_values = ReadSettings()
 	while True:
-		noiseLevel = input('Denoise level(1/2, default= 2): ').strip(' ').lower()
+		noiseLevel = input(' Denoise level(1/2, default= 2): ').strip(' ').lower()
 		if noiseLevel in ['1','2','','r']:
 			break
 		elif noiseLevel == 'help':
-			print('---------------------------------------------------------')
-			print('Denoise level: large value means strong denoise effect')
-			print('---------------------------------------------------------')
+			print('-'*57)
+			print(' Denoise level: large value means strong denoise effect')
+			print('-'*57)
 			print('')
 		else:
 			print('wrong input, pls input again')
@@ -2633,7 +2607,7 @@ def input_delorginal():
 	settings_values = ReadSettings()
 	default_value = settings_values['delorginal']
 	while True:
-		delorginal = input('Delete original files?(y/n, default='+default_value+'): ').strip(' ').lower()
+		delorginal = input(' Delete original files?(y/n, default='+default_value+'): ').strip(' ').lower()
 		if delorginal in ['y','n','','r']:
 			break
 		else:
@@ -2645,7 +2619,7 @@ def input_delorginal():
 	
 def input_turnoff():
 	while True:
-		turnoff = input('turn off computer when finished?(y/n, default=n): ').strip(' ').lower()
+		turnoff = input(' Turn off computer when finished?(y/n, default=n): ').strip(' ').lower()
 		if turnoff in ['y','n','','r']:
 			break
 		else:
@@ -2658,7 +2632,7 @@ def input_turnoff():
 def input_saveAsJPG():
 	settings_values = ReadSettings()
 	while True:
-		saveAsJPG = input('Save as .jpg? (y/n, default=y): ').strip(' ').lower()
+		saveAsJPG = input(' Save as .jpg? (y/n, default=y): ').strip(' ').lower()
 		if saveAsJPG in ['y','n','']:
 			break
 		else:
@@ -2671,7 +2645,7 @@ def input_saveAsJPG():
 	
 	if saveAsJPG == 'y':
 		while True:
-			Compress = input('Compress the .jpg file?(Almost lossless) (y/n, default=y): ').strip(' ')
+			Compress = input(' Compress the .jpg file?(Almost lossless) (y/n, default=y): ').strip(' ')
 			if Compress in ['y','n','Y','N','',]:
 				break
 			else:
@@ -2698,7 +2672,7 @@ def input_gifCompresslevel():
 	settings_values = ReadSettings()
 	default_value = settings_values['gifCompresslevel']
 	while True:
-		gifCompresslevel = input('GIF Compress level(1/2/3/4/help, default='+default_value+'): ').strip(' ').lower()
+		gifCompresslevel = input(' GIF Compress level(1/2/3/4/help, default='+default_value+'): ').strip(' ').lower()
 		if gifCompresslevel in ['1','2','3','4','','r']:
 			break
 		elif gifCompresslevel == 'help':
@@ -2728,27 +2702,28 @@ def input_gpuId():
 	default_value = 'auto'
 	gpuId_list = View_GPU_ID()
 	if gpuId_list == []:
-		input('Press Enter key to return')
+		input(' Press Enter key to return')
 		return 0
 	gpuId_list_str = ''
 	for id_ in gpuId_list:
 		gpuId_list_str = gpuId_list_str+'/'+str(id_)
 	while True:
-		gpuId = input('GPU ID (auto (Automatic)'+gpuId_list_str+', default='+default_value+'): ').strip(' ').lower()
+		gpuId = input(' GPU ID (auto (Automatic)'+gpuId_list_str+', default='+default_value+'): ').strip(' ').lower()
 		if gpuId.isdigit():
 			if int(gpuId) in gpuId_list:
 				break
 			else:
 				os.system('cls')
-				print('wrong input, pls input again')
-				print('----------------------------')
+				print(' Wrong input, pls input again')
+				print('-'*30)
 		elif gpuId == '':
 			break
 		elif gpuId == 'auto':
 			break
 		else:
 			os.system('cls')
-			print('wrong input, pls input again')
+			print(' Wrong input, pls input again')
+			print('-'*30)
 		
 	if gpuId == '':
 		gpuId = default_value
@@ -2781,27 +2756,27 @@ def input_image_quality():
 	settings_values = ReadSettings()
 	default_value = settings_values['image_quality']
 	while True:
-		image_quality = input('Image quality ( 100 (Almost lossless) ~ 1 (Most lossy) , defalut = '+str(default_value)+' ):').strip(' ').lower()
+		image_quality = input(' Image quality ( 100 (Almost lossless) ~ 1 (Most lossy) , defalut = '+str(default_value)+' ):').strip(' ').lower()
 		if image_quality.isdigit():
 			if int(image_quality) >= 1 and int(image_quality) <= 100:
 				return int(image_quality)
 				break
 			else:
-				print('wrong input, pls input again')
+				print(' Wrong input, pls input again')
 		elif image_quality == 'r':
 			return 'r'
 		elif image_quality == '':
 			return default_value
 		else:
-			print('wrong input, pls input again')
+			print(' Wrong input, pls input again')
 			
 def input_scan_subfolders():
 	while True:
-		scan_subfolders = input('Scan subfolders? ( y/n, default= n ): ').strip(' ').lower()
+		scan_subfolders = input(' Scan subfolders? ( y/n, default= n ): ').strip(' ').lower()
 		if scan_subfolders in ['y','n','r','']:
 			break
 		else:
-			print('wrong input, pls input again')
+			print(' Wrong input, pls input again')
 	
 	if scan_subfolders == '':
 		scan_subfolders = 'n'
@@ -2811,20 +2786,19 @@ def input_scan_subfolders():
 def input_sleepMode():
 	sleepMode = ''
 	while True:
-		sleepMode = input('Enable sleep mode?( y / n / help , default = n ): ').strip(' ').lower()
+		sleepMode = input(' Enable sleep mode?( y / n / help , default = n ): ').strip(' ').lower()
 		if sleepMode in ['y','n','','r','help']:
 			if sleepMode == 'help':
 				print('')
-				print('--------------------------------------------------------------------------------------------')
-				print('When "sleep mode" is enabled, the software will attempts to reduce performance requirements,')
-				print('thereby reducing the computer\'s operating pressure and thus minimizing noise.')
-				print('And turn off notification sound.')
-				print('Enabling this mode will lengthen the time it takes for the program to complete its task.')
-				print('--------------------------------------------------------------------------------------------')
+				print('-'*95)
+				print(' When "sleep mode" is enabled, the software will attempts to reduce performance requirements,')
+				print(' thereby reducing the computer\'s operating pressure and thus minimizing noise.')
+				print(' Enabling this mode will lengthen the time it takes for the program to complete its task.')
+				print('-'*95)
 			else:
 				break
 		else:
-			print('wrong input, pls input again')
+			print(' Wrong input, pls input again')
 	
 	if sleepMode == '':
 		sleepMode = 'n'
@@ -2872,11 +2846,11 @@ def checkUpdate():
 				webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
 		else:
 			os.system('cls')
-			print('No new update')
-			input('press Enter key to return')
+			print(' No new update')
+			input(' Press Enter key to return')
 	except BaseException:
 		os.system('cls')
-		print('Failed to establish connection, pls check your internet or try again, press Enter key to return....\n')
+		print(' Failed to establish connection, pls check your internet or try again, press Enter key to return....\n')
 		input()
 		os.system('cls')
 
@@ -2889,7 +2863,6 @@ class CheckUpdate_start_thread(threading.Thread):
 
 		
 def CheckUpdate_start():
-	#print('Checking update....')
 	try:
 		headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
 		r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
@@ -2943,41 +2916,51 @@ def CheckUpdate_start():
 
 def Settings():
 	while True:
+		Set_cols_lines(90,37)
+		Set_cols_lines(92,41)
+		
 		settings_values = {}
 		with open('waifu2x-extension-setting','r+') as f:
 			settings_values = json.load(f)
-		print('                                  Settings')
-		print('-----------------------------------------------------------------------------')
+		print('─'*90)
+		print(' '*41+'Settings')
+		print('─'*90)
 		print(' 1: Check for updates at startup. Current value: [ '+settings_values['CheckUpdate']+' ]\n')
 		print(' 2: Default value of "Scale ratio". Current value: [ '+settings_values['scale']+' ]\n')
 		print(' 3: Default value of "Denoise Level". Current value: [ '+settings_values['noiseLevel']+' ]\n')
 		print(' 4: Delete original files when finished? Current default value: [ '+settings_values['delorginal']+' ]\n')
-		print(' 5: Gif compress level. Current default value: [ '+settings_values['gifCompresslevel']+' ]\n')
-		print(' 6: Image quality ( When compress images ). Current default value: [ ',settings_values['image_quality'],' ]\n')
-		print(' 7: Number of threads ( Scale & Denoise (Waifu2x-ncnn-vulkan) ). Current value: [ ',settings_values['Number_of_threads'],' ]\n')
-		print(' 8: Change interface color.\n')
+		print(' 5: Rename result images. Current value: [ ',settings_values['Rename_result_images'],' ]')
+		print('─'*90)
+		print(' 6: Gif compress level. Current default value: [ '+settings_values['gifCompresslevel']+' ]\n')
+		print(' 7: Image quality ( When compress images ). Current default value: [ ',settings_values['image_quality'],' ]')
+		print('─'*90)
+		print(' 8: Number of threads ( Scale & Denoise (Waifu2x-ncnn-vulkan) ). Current value: [ ',settings_values['Number_of_threads'],' ]\n')
 		print(' 9: Number of threads ( Scale Video (Anime4k) ). Current value: [ ',settings_values['Number_of_threads_Anime4k'],' ]\n')
-		print(' 10: Rename result images. Current value: [ ',settings_values['Rename_result_images'],' ]\n')
+		print(' 10: Number of threads ( Scale & Denoise (Waifu2x-converter) ). Current value: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]')
+		print('─'*90)
 		print(' 11: Video scale mode. Current value: [ ',settings_values['Video_scale_mode'],' ]\n')
-		print(' 12: Image & GIF scale mode. Current value: [ ',settings_values['Image_GIF_scale_mode'],' ]\n')
-		print(' 13: Number of threads ( Scale & Denoise (Waifu2x-converter) ). Current value: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]\n')
-		print(' RE: Reset error log.\n')
-		print(' RS: Reset settings.\n')
-		print(' RL: Reset language setting for launcher.\n')
-		print(' S: Show settings_values.\n')
+		print(' 12: Image & GIF scale mode. Current value: [ ',settings_values['Image_GIF_scale_mode'],' ]')
+		print('─'*90)
+		print(' 13: Change interface color.\n')
+		print(' 14: Reset error log.\n')
+		print(' 15: Reset settings.\n')
+		print(' 16: Reset language setting for launcher.\n')
+		print(' 17: Show settings_values.\n')
 		print(' R: Return to the main menu.')
-		print('-----------------------------------------------------------------------------')
-		mode = input('(1/2/3/..../RE/RS/RL/S/R): ').strip(' ').lower()
+		print('─'*90)
+		
+		mode = input('( 1 / 2 / 3 /.../ R ): ').strip(' ').lower()
+		
 		if mode == "1":
 			os.system('cls')
-			print('----------------------------------------------------------------------------------------')
-			print('The software\'s update strategy is to use multiple small updates')
-			print('to continuously improve all aspects of the software,')
-			print('rather than releasing a major update every once in a while.')
-			print('So we recommend that you turn on automatic check for updates to improve your experience.')
-			print('----------------------------------------------------------------------------------------')
+			print('------------------------------------------------------------------------------------------')
+			print(' The software\'s update strategy is to use multiple small updates')
+			print(' to continuously improve all aspects of the software,')
+			print(' rather than releasing a major update every once in a while.')
+			print(' So we recommend that you turn on automatic check for updates to improve your experience.')
+			print('------------------------------------------------------------------------------------------')
 			while True:
-				value_ = input('Check for updates at startup? (y/n): ').strip(' ').lower()
+				value_ = input(' Check for updates at startup? (y/n): ').strip(' ').lower()
 				if value_ in ['y','n']:
 					break
 				elif value_ == '':
@@ -3046,7 +3029,29 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode== "5":
+		elif mode == '5':
+			os.system('cls')
+			print('------------------------------------------------------------------')
+			print('If the value of "Rename result images" == "n":')
+			print('The result images will stay in input-path\\scaled_waifu2x')
+			print('and we won\'t rename them, no "_waifu2x" at the end of file name')
+			print('')
+			print('If the value of "Rename result images" == "y":')
+			print('The result images will stay in input-path')
+			print('and we will rename them, add "_waifu2x" at the end of file name')
+			print('------------------------------------------------------------------')
+			while True:
+				Rename_result_images = input('Rename result images?(y/n): ').lower().strip(' ')
+				if Rename_result_images in ['y','n']:
+					break
+				else:
+					print('Wrong input.')
+			settings_values['Rename_result_images']=Rename_result_images
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+			os.system('cls')
+		
+		elif mode== "6":
 			os.system('cls')
 			
 			while True:
@@ -3065,7 +3070,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode == "6":
+		elif mode == "7":
 			os.system('cls')
 			while True:
 				image_quality = input('Default value of image quality ( When compress images ) ( 100 ~ 1 ): ').strip(' ').lower()
@@ -3085,7 +3090,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode== "7":
+		elif mode== "8":
 			os.system('cls')
 			Number_of_threads=''
 			print('-----------------------------------------------------------------')
@@ -3113,12 +3118,6 @@ def Settings():
 				
 			os.system('cls')
 		
-		
-		elif mode == "8":
-			os.system('cls')
-			Set_default_color()
-			os.system('cls')
-			
 		elif mode == "9":
 			os.system('cls')
 			cpu_num = int(cpu_count() / 2)
@@ -3142,24 +3141,22 @@ def Settings():
 				json.dump(settings_values,f)
 			os.system('cls')
 		
-		elif mode == '10':
+		elif mode == "10":
 			os.system('cls')
-			print('------------------------------------------------------------------')
-			print('If the value of "Rename result images" == "n":')
-			print('The result images will stay in input-path\\scaled_waifu2x')
-			print('and we won\'t rename them, no "_waifu2x" at the end of file name')
-			print('')
-			print('If the value of "Rename result images" == "y":')
-			print('The result images will stay in input-path')
-			print('and we will rename them, add "_waifu2x" at the end of file name')
-			print('------------------------------------------------------------------')
+			print('-----------')
+			print('Default: 1')
+			print('-----------')
 			while True:
-				Rename_result_images = input('Rename result images?(y/n): ').lower().strip(' ')
-				if Rename_result_images in ['y','n']:
-					break
+				Number_of_threads_Waifu2x_converter = input('Number of threads ( Scale & Denoise (Waifu2x-converter) ) (1/2/3/4...):').lower().strip(' ')
+				if Number_of_threads_Waifu2x_converter.isdigit():
+					if int(Number_of_threads_Waifu2x_converter) > 0:
+						Number_of_threads_Waifu2x_converter = int(Number_of_threads_Waifu2x_converter)
+						break
+					else:
+						print('Wrong input.')
 				else:
 					print('Wrong input.')
-			settings_values['Rename_result_images']=Rename_result_images
+			settings_values['Number_of_threads_Waifu2x_converter']=Number_of_threads_Waifu2x_converter
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
 			os.system('cls')
@@ -3252,27 +3249,14 @@ def Settings():
 				json.dump(settings_values,f)
 			os.system('cls')
 		
+		
 		elif mode == "13":
 			os.system('cls')
-			print('-----------')
-			print('Default: 1')
-			print('-----------')
-			while True:
-				Number_of_threads_Waifu2x_converter = input('Number of threads ( Scale & Denoise (Waifu2x-converter) ) (1/2/3/4...):').lower().strip(' ')
-				if Number_of_threads_Waifu2x_converter.isdigit():
-					if int(Number_of_threads_Waifu2x_converter) > 0:
-						Number_of_threads_Waifu2x_converter = int(Number_of_threads_Waifu2x_converter)
-						break
-					else:
-						print('Wrong input.')
-				else:
-					print('Wrong input.')
-			settings_values['Number_of_threads_Waifu2x_converter']=Number_of_threads_Waifu2x_converter
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
+			Set_default_color()
 			os.system('cls')
-		
-		elif mode == "re":
+			
+
+		elif mode == "14":
 			os.system('cls')
 			
 			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
@@ -3286,31 +3270,21 @@ def Settings():
 			
 			os.system('cls')
 		
-		elif mode == "rs":
+		elif mode == "15":
 			os.system('cls')
 			
-			cpu_num = int(cpu_count() / 2)
-			if cpu_num < 1 :
-				cpu_num = 1
-			default_values = {'SettingVersion':'9','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
-								'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
-								'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
-								'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
-								'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
-								'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
-								'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1}
-			current_dir = os.path.dirname(os.path.abspath(__file__))
-			settingPath = current_dir+'\\'+'waifu2x-extension-setting'
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(default_values,f)
+			if os.path.exists('config_waifu2xEX_start'):
+				os.remove('config_waifu2xEX_start')
 			
-				
+			if os.path.exists('waifu2x-extension-setting'):
+				os.remove('waifu2x-extension-setting')
+				ReadSettings()
 			
 			input('Setting reseted, press Enter key to return.')
 			
 			os.system('cls')
 		
-		elif mode == "rl":
+		elif mode == "16":
 			os.system('cls')
 			
 			print('loading....')
@@ -3321,7 +3295,7 @@ def Settings():
 			
 			os.system('cls')
 		
-		elif mode == "s":
+		elif mode == "17":
 			os.system('cls')
 			
 			for key,val in settings_values.items():
@@ -3555,6 +3529,16 @@ class Play_Notification_Sound_Thread (threading.Thread):
 	def run(self):
 		playsound('NotificationSound_waifu2xExtension.mp3')
 
+def Play_Notification_Sound():
+	
+	settings_values = ReadSettings()
+	
+	if settings_values['notificationSound'] == 'y':
+		
+		thread_Notification=Play_Notification_Sound_Thread()
+		thread_Notification.start()
+	
+
 #=================================================== Resize Window ===============================================
 
 class ResizeWindow_Thread(threading.Thread):
@@ -3670,7 +3654,6 @@ def Benchmark_Anime4K():
 	
 	time.sleep(wait_to_cool_time)
 	settings_values = ReadSettings()
-	notificationSound = settings_values['notificationSound']
 	
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	input_folder = current_dir+'\\'+'benchmark-files-anime4k-waifu2x-extension'
@@ -3716,9 +3699,7 @@ def Benchmark_Anime4K():
 		print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
 		time.sleep(wait_to_cool_time)
 		
-	if notificationSound == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
+	Play_Notification_Sound()
 	Window_Title('')
 	os.system('cls')
 	print('=======================================================================')
@@ -3747,7 +3728,6 @@ def Benchmark_converter():
 	
 	time.sleep(wait_to_cool_time)
 	settings_values = ReadSettings()
-	notificationSound = settings_values['notificationSound']
 	
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	input_folder = current_dir+'\\'+'benchmark-files-converter-waifu2x-extension'
@@ -3820,9 +3800,7 @@ def Benchmark_converter():
 		print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
 		time.sleep(wait_to_cool_time)
 		
-	if notificationSound == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
+	Play_Notification_Sound()
 	Window_Title('')
 	os.system('cls')
 	print('=======================================================================')
@@ -3850,7 +3828,6 @@ def Benchmark_vulkan():
 	print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
 	time.sleep(wait_to_cool_time)
 	settings_values = ReadSettings()
-	notificationSound = settings_values['notificationSound']
 	models = 'models-upconv_7_anime_style_art_rgb'
 	scale = '2'
 	noiseLevel = '3'
@@ -3892,9 +3869,7 @@ def Benchmark_vulkan():
 		tileSize=tileSize+50
 		print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
 		time.sleep(wait_to_cool_time)
-	if notificationSound == 'y':
-			thread_Notification=Play_Notification_Sound_Thread()
-			thread_Notification.start()
+	Play_Notification_Sound()
 	Window_Title('')
 	print('==================================================================')
 	print('The best value of "tile size" of your computer is:',old_tileSize)
@@ -4381,7 +4356,7 @@ def init():		#初始化函数
 	thread_resizeWindow=ResizeWindow_Thread()
 	thread_resizeWindow.start()
 	
-	ChooseFormat()
+	MainMenu()
 	
 	if thread_resizeWindow.isAlive():
 		stop_thread(thread_resizeWindow)
