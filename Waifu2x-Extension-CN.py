@@ -42,6 +42,7 @@ Waifu2x-converter version: 2015-11-30T02:17:24
 
 To do:
 - 界面美化
+- anime4k 兼容性检测(独立)
 
 
 
@@ -2489,7 +2490,7 @@ def input_scale():
 	default_value = settings_values['scale']
 
 	while True:
-		scale = input('放大比例(1/2/4/8/help, 默认值='+default_value+'): ').strip(' ').lower()
+		scale = input(' 放大比例(1/2/4/8/help, 默认值='+default_value+'): ').strip(' ').lower()
 		if scale in ['1','2','4','8','','r']:
 			break
 		elif scale == 'help':
@@ -2510,7 +2511,7 @@ def input_scale_Anime4k_waifu2x_converter():
 	default_value = settings_values['scale']
 
 	while True:
-		scale = input('放大比例(2/3/4/.../help, 默认值='+default_value+'): ').strip(' ').lower()
+		scale = input(' 放大比例(2/3/4/.../help, 默认值='+default_value+'): ').strip(' ').lower()
 		if scale.isdigit():
 			if int(scale) > 1:
 				return str(int(scale))
@@ -2537,7 +2538,7 @@ def input_tileSize():
 	print('你可以通过基准测试来确定 "tile size" 的最佳值.')
 	print('--------------------------------------------------------------------------------------')
 	while True:
-		tileSize = input('Tile size(对于 waifu2x-ncnn-vulkan)( >=32 / help, 默认='+default_value+'): ').strip(' ').lower()
+		tileSize = input(' Tile size(对于 waifu2x-ncnn-vulkan)( >=32 / help, 默认='+default_value+'): ').strip(' ').lower()
 		if tileSize.isdigit():
 			if int(tileSize) > 0:
 				break
@@ -2570,7 +2571,7 @@ def input_noiseLevel():
 	settings_values = ReadSettings()
 	default_value = settings_values['noiseLevel']
 	while True:
-		noiseLevel = input('降噪等级(-1/0/1/2/3/help, 默认值='+default_value+'): ').strip(' ').lower()
+		noiseLevel = input(' 降噪等级(-1/0/1/2/3/help, 默认值='+default_value+'): ').strip(' ').lower()
 		if noiseLevel in ['-1','0','1','2','3','','r']:
 			break
 		elif noiseLevel == 'help':
@@ -2588,7 +2589,7 @@ def input_noiseLevel():
 def input_noiseLevel_waifu2x_converter():
 	settings_values = ReadSettings()
 	while True:
-		noiseLevel = input('降噪等级(1/2, 默认= 2): ').strip(' ').lower()
+		noiseLevel = input(' 降噪等级(1/2, 默认= 2): ').strip(' ').lower()
 		if noiseLevel in ['1','2','','r']:
 			break
 		elif noiseLevel == 'help':
@@ -2607,7 +2608,7 @@ def input_delorginal():
 	settings_values = ReadSettings()
 	default_value = settings_values['delorginal']
 	while True:
-		delorginal = input('删除原文件?(y/n, 默认='+default_value+'): ').strip(' ').lower()
+		delorginal = input(' 删除原文件?(y/n, 默认='+default_value+'): ').strip(' ').lower()
 		if delorginal in ['y','n','','r']:
 			break
 		else:
@@ -2619,7 +2620,7 @@ def input_delorginal():
 	
 def input_turnoff():
 	while True:
-		turnoff = input('完成任务后关闭电脑?(y/n, 默认=n): ').strip(' ').lower()
+		turnoff = input(' 完成任务后关闭电脑?(y/n, 默认=n): ').strip(' ').lower()
 		if turnoff in ['y','n','','r']:
 			break
 		else:
@@ -2632,7 +2633,7 @@ def input_turnoff():
 def input_saveAsJPG():
 	settings_values = ReadSettings()
 	while True:
-		saveAsJPG = input('目标另存为.jpg? (y/n, 默认=y): ').strip(' ').lower()
+		saveAsJPG = input(' 目标另存为.jpg? (y/n, 默认=y): ').strip(' ').lower()
 		if saveAsJPG in ['y','n','']:
 			break
 		else:
@@ -2645,7 +2646,7 @@ def input_saveAsJPG():
 	
 	if saveAsJPG == 'y':
 		while True:
-			Compress = input('压缩 .jpg 文件?(近乎无损) (y/n, 默认=y): ').strip(' ').lower()
+			Compress = input(' 压缩 .jpg 文件?(近乎无损) (y/n, 默认=y): ').strip(' ').lower()
 			if Compress in ['y','n','Y','N','',]:
 				break
 			else:
@@ -2673,7 +2674,7 @@ def input_gifCompresslevel():
 	settings_values = ReadSettings()
 	default_value = settings_values['gifCompresslevel']
 	while True:
-		gifCompresslevel = input('GIF压缩等级(1/2/3/4/help, 默认='+default_value+'): ').strip(' ').lower()
+		gifCompresslevel = input(' GIF压缩等级(1/2/3/4/help, 默认='+default_value+'): ').strip(' ').lower()
 		if gifCompresslevel in ['1','2','3','4','','r']:
 			break
 		elif gifCompresslevel == 'help':
@@ -2712,7 +2713,7 @@ def input_gpuId():
 	for id_ in gpuId_list:
 		gpuId_list_str = gpuId_list_str+'/'+str(id_)
 	while True:
-		gpuId = input('GPU ID (auto (自动)'+gpuId_list_str+', 默认='+default_value+'): ').strip(' ').lower()
+		gpuId = input(' GPU ID (auto (自动)'+gpuId_list_str+', 默认='+default_value+'): ').strip(' ').lower()
 		if gpuId.isdigit():
 			if int(gpuId) in gpuId_list:
 				break
@@ -2762,7 +2763,7 @@ def input_image_quality():
 	settings_values = ReadSettings()
 	default_value = settings_values['image_quality']
 	while True:
-		image_quality = input('图像质量 ( 100 (几乎无损) ~ 1 (损失最大) , 默认 = '+str(default_value)+' ):').strip(' ').lower()
+		image_quality = input(' 图像质量 ( 100 (几乎无损) ~ 1 (损失最大) , 默认 = '+str(default_value)+' ):').strip(' ').lower()
 		if image_quality.isdigit():
 			if int(image_quality) >= 1 and int(image_quality) <= 100:
 				return int(image_quality)
@@ -2778,7 +2779,7 @@ def input_image_quality():
 			
 def input_scan_subfolders():
 	while True:
-		scan_subfolders = input('扫描子文件夹? ( y/n, 默认= n ): ').strip(' ').lower()
+		scan_subfolders = input(' 扫描子文件夹? ( y/n, 默认= n ): ').strip(' ').lower()
 		if scan_subfolders in ['y','n','r','']:
 			break
 		else:
@@ -2792,7 +2793,7 @@ def input_scan_subfolders():
 def input_sleepMode():
 	sleepMode = ''
 	while True:
-		sleepMode = input('启用睡眠模式?( y / n / help , 默认 = n ): ').strip(' ').lower()
+		sleepMode = input(' 启用睡眠模式?( y / n / help , 默认 = n ): ').strip(' ').lower()
 		if sleepMode in ['y','n','','r','help']:
 			if sleepMode == 'help':
 				print('')
@@ -3053,6 +3054,8 @@ def Settings():
 				Rename_result_images = input('重命名生成的图片?(y/n): ').lower().strip(' ')
 				if Rename_result_images in ['y','n']:
 					break
+				elif Rename_result_images == '':
+					Rename_result_images=settings_values['Rename_result_images']
 				else:
 					print('错误的输入.')
 			settings_values['Rename_result_images']=Rename_result_images
@@ -3143,6 +3146,8 @@ def Settings():
 						break
 					else:
 						print('输入无效.')
+				elif Number_of_threads_Anime4k == '':
+					Number_of_threads_Anime4k=settings_values['Number_of_threads_Anime4k']
 				else:
 					print('输入无效.')
 			settings_values['Number_of_threads_Anime4k']=Number_of_threads_Anime4k
@@ -3163,6 +3168,8 @@ def Settings():
 						break
 					else:
 						print('输入无效.')
+				elif Number_of_threads_Waifu2x_converter == '':
+					Number_of_threads_Waifu2x_converter = settings_values['Number_of_threads_Waifu2x_converter']
 				else:
 					print('输入无效.')
 			settings_values['Number_of_threads_Waifu2x_converter']=Number_of_threads_Waifu2x_converter
@@ -3195,6 +3202,8 @@ def Settings():
 					elif value_ == '3':
 						value_ = 'anime4k'
 					break
+				elif value_ == '':
+					value_ = settings_values['Video_scale_mode']
 				else:
 					print('无效值, 请再次输入')
 			if value_ == 'anime4k':
@@ -3252,6 +3261,8 @@ def Settings():
 					elif Image_GIF_scale_mode == '2':
 						Image_GIF_scale_mode = 'waifu2x-converter'
 					break
+				elif Image_GIF_scale_mode:
+					Image_GIF_scale_mode = settings_values['Image_GIF_scale_mode']
 				else:
 					print('输入无效.')
 			settings_values['Image_GIF_scale_mode']=Image_GIF_scale_mode
@@ -3623,13 +3634,11 @@ def Complete_ResizeWindow(cols,lines):
 	
 #=============================== Benchmark =============================
 def Benchmark():
-	print('================ 基准测试 =========================')
-	print(' 1.Tile size块大小(对于 waifu2x-ncnn-vulkan)')
-	print('')
-	print(' 2.线程数量(对于 waifu2x-converter) ( 测试版 )')
-	print('')
-	print(' 3.线程数量(对于 Anime4K) ( 测试版 )')
-	print('==================================================')
+	print('==================== 基准测试 =======================\n')
+	print(' 1.Tile size 块大小 ( waifu2x-ncnn-vulkan )\n')
+	print(' 2.线程数量 ( waifu2x-converter ) ( 测试版 )\n')
+	print(' 3.线程数量 ( Anime4K ) ( 测试版 )\n')
+	print('====================================================\n')
 	print('( 1 / 2 / 3 )')
 	choice_ = input().strip(' ')
 	if choice_ == '1':
@@ -4203,11 +4212,11 @@ def Compatibility_Test(Init):
 			os.system('cls')
 
 	
-#=============================== Default Window Title =================
+#================================================== Default Window Title ===============================================================
 def Window_Title(Add_str = ''):
 	os.system('title = Waifu2x-Extension '+Version_current+' 作者: Aaron Feng '+Add_str)
 
-#============================================  Deduplicate_list  ===================================
+#====================================================  Deduplicate_list  ==============================================================
 
 def Deduplicate_list(The_List):
 	New_List = sorted(list(set(The_List)))
@@ -4443,10 +4452,10 @@ if __name__ == '__main__':
 	else:
 		os.system('cls')
 		print('----------------------------------------------------------------------')
-		print('我们检测到当前软件所处的文件夹导致软件必须申请\n 管理员权限来继续正常运行.')
-		print('我们建议您将软件移动到另一个文件夹或者直接给予软件管理员权限')
+		print(' 我们检测到当前软件所处的文件夹导致软件必须申请\n 管理员权限来继续正常运行.')
+		print(' 我们建议您将软件移动到另一个文件夹或者直接给予软件管理员权限')
 		print('----------------------------------------------------------------------')
-		print('按Enter键来重启软件并申请管理员权限. ')
+		print(' 按Enter键来重启软件并申请管理员权限. ')
 		input()
 		# Re-run the program with admin rights
 		ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
