@@ -30,13 +30,15 @@ Waifu2x-converter version: 2015-11-30T02:17:24
 - '----'改成'-'*n
 - 将播放提示音集成到一个函数里
 - 延时30秒关机
+- 各模块的兼容性测试改为独立函数
+- 修复anime4k基准测试的bug
+- 设置中, 切换模式时显示是否兼容
 
 
 ------------------------------------------------
 
 To do:
 - 界面美化
-- anime4k 兼容性检测(独立)
 
 
 
@@ -3193,7 +3195,20 @@ def Settings():
 			os.system('cls')
 		
 		elif mode == "11":
+			
+			vulkan_compat = '[Incompatible] '
+			converter_compat = '[Incompatible] '
+			Anime4k_compat = '[Incompatible] '
+			
+			if settings_values['Compatibility_waifu2x_ncnn_vulkan']:
+				vulkan_compat = ''
+			if settings_values['Compatibility_waifu2x_converter']:
+				converter_compat = ''
+			if settings_values['Compatibility_Anime4k']:
+				Anime4k_compat = ''
+			
 			os.system('cls')
+				
 			print('------------------------------------------------------------------')
 			print('We recommand you to use "waifu2x-ncnn-vulkan".')
 			print('')
@@ -3203,9 +3218,9 @@ def Settings():
 			print('If "waifu2x-converter" also does not work properly on your computer,')
 			print('or you think waifu2x is too slow, you should try "Anime4k"')
 			print('------------------------------------------------------------------')
-			print('1. waifu2x-ncnn-vulkan  [ Speed:★★  Image Quality:★★★ ]\n')
-			print('2. waifu2x-converter  [ Speed:★  Image Quality:★★ ]\n')
-			print('3. Anime4k  [ Speed:★★★  Image Quality:★ ]')
+			print(vulkan_compat+'1. waifu2x-ncnn-vulkan  [ Speed:★★  Image Quality:★★★ ]\n')
+			print(converter_compat+'2. waifu2x-converter  [ Speed:★  Image Quality:★★ ]\n')
+			print(Anime4k_compat+'3. Anime4k  [ Speed:★★★  Image Quality:★ ]')
 			print('------------------------------------------------------------------')
 			while True:
 				value_ = input('Video scale mode (1/2/3): ').lower().strip(' ')
@@ -3257,6 +3272,15 @@ def Settings():
 			os.system('cls')
 		
 		elif mode == '12':
+			
+			vulkan_compat = '[Incompatible] '
+			converter_compat = '[Incompatible] '
+			
+			if settings_values['Compatibility_waifu2x_ncnn_vulkan']:
+				vulkan_compat = ''
+			if settings_values['Compatibility_waifu2x_converter']:
+				converter_compat = ''
+			
 			os.system('cls')
 			print('------------------------------------------------------------------')
 			print('We recommand you to use "waifu2x-ncnn-vulkan".')
@@ -3264,8 +3288,8 @@ def Settings():
 			print('If "waifu2x-ncnn-vulkan" does not work properly on your computer,')
 			print('you should try "waifu2x-converter"')
 			print('------------------------------------------------------------------')
-			print('1. waifu2x-ncnn-vulkan  [ Speed:★★★★  Image Quality:★★★★ ]\n')
-			print('2. waifu2x-converter  [ Speed:★  Image Quality:★★★ ]')
+			print(vulkan_compat+'1. waifu2x-ncnn-vulkan  [ Speed:★★★★  Image Quality:★★★★ ]\n')
+			print(converter_compat+'2. waifu2x-converter  [ Speed:★  Image Quality:★★★ ]')
 			print('------------------------------------------------------------------')
 			while True:
 				Image_GIF_scale_mode = input('Image & GIF scale mode (1 / 2): ').lower().strip(' ')
@@ -3363,7 +3387,8 @@ def ReadSettings():
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
 						'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
-						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1}
+						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1,
+						'Compatibility_waifu2x_ncnn_vulkan':True,'Compatibility_waifu2x_converter':True,'Compatibility_Anime4k':True}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -3740,8 +3765,10 @@ def Benchmark_Anime4K():
 	print('=======================================================================')
 	print('The right number of threads for your computer is:',old_Number_of_threads)
 	if input('Do you wanna use the result value? (y/n): ').lower().strip(' ') != 'y':
-		return 0
-	settings_values['Number_of_threads_Anime4k']=old_Number_of_threads
+		settings_values['Number_of_threads_Anime4k']=Original_Number_of_threads
+	else:
+		settings_values['Number_of_threads_Anime4k']=old_Number_of_threads
+		
 	with open('waifu2x-extension-setting','w+') as f:
 		json.dump(settings_values,f)
 
@@ -4061,6 +4088,15 @@ def Compatibility_Test(Init):
 	waifu2x_converter_avaliable = Compatibility_Test_waifu2x_converter()
 	Anime4k_avaliable = Compatibility_Test_Anime4k()
 	
+	settings_values = ReadSettings()
+	
+	settings_values['Compatibility_waifu2x_ncnn_vulkan'] = waifu2x_ncnn_vulkan_avaliable
+	settings_values['Compatibility_waifu2x_converter'] = waifu2x_converter_avaliable
+	settings_values['Compatibility_Anime4k'] = Anime4k_avaliable
+	
+	with open('waifu2x-extension-setting','w+') as f:
+		json.dump(settings_values,f)
+	
 	#====================== 输出测试结果 =======================
 	os.system('cls')
 	if waifu2x_ncnn_vulkan_avaliable:
@@ -4255,15 +4291,15 @@ def Set_default_color():
 	settings_values = ReadSettings()
 	Color_dict = {'0':'0b','1':'09','2':'0a','3':'0c','4':'0d','5':'0e','6':'0f'}
 	while True:
-		print('''Set_default_color
+		print('''Set default color
 ------------------
-0.Aqua
-1.Blue
-2.Green
-3.Red
-4.Purple
-5.Yellow
-6.White
+ 0.Aqua
+ 1.Blue
+ 2.Green
+ 3.Red
+ 4.Purple
+ 5.Yellow
+ 6.White
 ------------------
 (0/1/2...../6)''')
 		color = input().strip(' ')
