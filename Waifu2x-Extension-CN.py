@@ -308,11 +308,14 @@ def MainMenu():
 
 #===================================================== Scale & Denoise Image & GIF ========================================
 def Image_Gif_Scale_Denoise():
-	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.\n')
-	print("================= 放大与降噪图片和GIF - Waifu2x-ncnn-vulkan =================")
+	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print('─'*72)
+	print("              放大与降噪图片和GIF - Waifu2x-ncnn-vulkan")
+	print('─'*72)
 	print(" 输入 'r' 返回上一级菜单.")
 	print(" 输入 'o' 来停止输入更多路径, 输入的路径必须是一个有效的文件或者文件夹.")
-	print(" 放大后的图片和GIF会保存在原输入路径中. \n")
+	print(" 放大后的图片和GIF会保存在原输入路径中. ")
+	print('─'*72)
 	
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -928,12 +931,14 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 
 #================================================= Image_Gif_Scale_Denoise_waifu2x_converter ===========================================
 def Image_Gif_Scale_Denoise_waifu2x_converter():
-	print('注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
-	print('')
-	print("================= 降噪与放大图片和GIF - Waifu2x-converter  ================")
-	print("输入 'r' 返回上一级菜单")
-	print("输入 'o' 来停止输入更多路径, 注意:输入的路径必须是有效的文件或者文件夹")
-	print("放大后的图片和GIF会保存在原路径中 \n")
+	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print('─'*72)
+	print("                降噪与放大图片和GIF - Waifu2x-converter")
+	print('─'*72)
+	print(" 输入 'r' 返回上一级菜单.")
+	print(" 输入 'o' 来停止输入更多路径, 注意:输入的路径必须是有效的文件或者文件夹.")
+	print(" 放大后的图片和GIF会保存在原路径中.")
+	print('─'*72)
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1311,12 +1316,14 @@ class DelOldFileThread_4x(threading.Thread):
 
 #=============================================  Scale & Denoise Video_waifu2x_converter  ====================================
 def Scale_Denoise_Video_waifu2x_converter():
-	print('注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
-	print('')
-	print("================ 放大与降噪视频 - waifu2x-converter ===============")
-	print("输入 'r' 返回上一级菜单")
-	print("输入 'o' 以停止输入更多路径, 注意:输入路径必须是一个有效的视频文件或者文件夹")
-	print("放大后的视频文件会保存在原路径中 \n")
+	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print('─'*78)
+	print("                     放大与降噪视频 - waifu2x-converter")
+	print('─'*78)
+	print(" 输入 'r' 返回上一级菜单.")
+	print(" 输入 'o' 以停止输入更多路径, 注意:输入路径必须是一个有效的视频文件或者文件夹.")
+	print(" 放大后的视频文件会保存在原路径中.")
+	print('─'*78)
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1498,12 +1505,14 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
-	print('注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
-	print('')
-	print("================ 放大与降噪视频 - Waifu2x-ncnn-vulkan ===============")
-	print("输入 'r' 以返回上一级菜单")
-	print("输入 'o' 以停止输入更多路径, 注意, 输入的路径必须是一个有效的文件夹或者一个视频文件")
-	print("处理后的文件会存放在原文件夹内 \n")
+	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print('─'*85)
+	print("                         放大与降噪视频 - Waifu2x-ncnn-vulkan")
+	print('─'*85)
+	print(" 输入 'r' 以返回上一级菜单.")
+	print(" 输入 'o' 以停止输入更多路径, 注意, 输入的路径必须是一个有效的文件夹或者一个视频文件.")
+	print(" 处理后的文件会存放在原文件夹内.")
+	print('─'*85)
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1775,12 +1784,14 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 
 #=============================================  Scale & Denoise Video - Anime4K  ====================================
 def Scale_Denoise_Video_Anime4K():
-	print('注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
-	print('')
-	print("======================== 放大视频 - Anime4K =======================")
-	print("输入 'r' 以返回上一级菜单")
-	print("输入 'o' 以停止输入更多路径, 注意, 输入的路径必须是一个有效的文件夹或者一个视频文件")
-	print("处理后的文件会存放在原文件夹内 \n")
+	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print('─'*85)
+	print("                                 放大视频 - Anime4K")
+	print('─'*85)
+	print(" 输入 'r' 以返回上一级菜单.")
+	print(" 输入 'o' 以停止输入更多路径, 注意, 输入的路径必须是一个有效的文件夹或者一个视频文件.")
+	print(" 处理后的文件会存放在原文件夹内.")
+	print('─'*85)
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1968,10 +1979,13 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 
 #===================================================== Compress_image_gif ====================================================
 def Compress_image_gif():
-	print("================= 压缩图片与GIF ================")
-	print("输入 'r' 以返回上一级菜单")
-	print("输入 'o' 以停止输入更多路径, 注意, 输入的路径必须是一个文件夹或者一个文件")
-	print("压缩后的图片和GIF会保存在原文件夹内 \n")
+	print('─'*75)
+	print("                               压缩图片与GIF")
+	print('─'*75)
+	print(" 输入 'r' 以返回上一级菜单.")
+	print(" 输入 'o' 以停止输入更多路径, 注意, 输入的路径必须是一个文件夹或者一个文件.")
+	print(" 压缩后的图片和GIF会保存在原文件夹内.")
+	print('─'*75)
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
