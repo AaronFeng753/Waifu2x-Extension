@@ -3,7 +3,7 @@
 
 '''
 
-What is Waifu2x-Extension?
+What is Waifu2x-Extension ?
 
 Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutional Neural Networks.
 Based on waifu2x-ncnn-vulkan (version 20190712).
@@ -4052,60 +4052,14 @@ def Compatibility_Test(Init):
 	waifu2x_converter_avaliable = False
 	Anime4k_avaliable = False
 	
-	current_dir = os.path.dirname(os.path.abspath(__file__))
-	inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
-	scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.jpg'
-	
 	os.system('cls')
-	print('----------------------------')
-	print('        Loading....')
-	print('----------------------------')
+	print('----------------------------------------------')
+	print('  Running compatibility test, please wait...')
+	print('----------------------------------------------')
 	
-	#============== 测试waifu2x-ncnn-vulkan ==============
-	
-	gpuId = 0
-	gpuId_list = []
-	models = 'models-upconv_7_anime_style_art_rgb'
-	scale = '2'
-	noiseLevel = '0'
-	tileSize = '50'
-	load_proc_save_str = ' -j 1:1:1 '
-	gpuId_str = ''
-	
-	if os.path.exists(scaledFilePath):
-		os.system("del /q \""+scaledFilePath+"\"")
-	
-	for x in range(0,10):
-		gpuId_str = ' -g '+str(gpuId)
-		
-		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
-		if os.path.exists(scaledFilePath):
-			waifu2x_ncnn_vulkan_avaliable = True
-			os.remove(scaledFilePath)
-			break
-		else:
-			break
-		gpuId = gpuId+1
-	
-	#=========================== 测试waifu2x-converter ===================
-	if os.path.exists(scaledFilePath):
-		os.system("del /q \""+scaledFilePath+"\"")
-		
-	os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+scaledFilePath+'" --scale_ratio '+'2'+' --noise_level '+'2'+' --model_dir waifu2x-converter\\models_rgb')
-	
-	if os.path.exists(scaledFilePath):
-		waifu2x_converter_avaliable = True
-		os.system("del /q \""+scaledFilePath+"\"")
-	
-	#======================== 测试 Anime4k ===============================
-	if os.path.exists(scaledFilePath):
-		os.system("del /q \""+scaledFilePath+"\"")
-	
-	os.system('java -jar Anime4K\\Anime4K.jar "'+inputPath+'" "'+scaledFilePath+'" '+'2')
-	
-	if os.path.exists(scaledFilePath):
-		Anime4k_avaliable = True
-		os.system("del /q \""+scaledFilePath+"\"")
+	waifu2x_ncnn_vulkan_avaliable = Compatibility_Test_waifu2x_ncnn_vulkan()
+	waifu2x_converter_avaliable = Compatibility_Test_waifu2x_converter()
+	Anime4k_avaliable = Compatibility_Test_Anime4k()
 	
 	#====================== 输出测试结果 =======================
 	os.system('cls')
@@ -4196,8 +4150,73 @@ def Compatibility_Test(Init):
 				with open('waifu2x-extension-setting','w+') as f:
 					json.dump(settings_values,f)
 			os.system('cls')
+
+def Compatibility_Test_waifu2x_ncnn_vulkan():
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
+	scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.jpg'
+	
+	gpuId = 0
+	gpuId_list = []
+	models = 'models-upconv_7_anime_style_art_rgb'
+	scale = '2'
+	noiseLevel = '0'
+	tileSize = '50'
+	load_proc_save_str = ' -j 1:1:1 '
+	gpuId_str = ''
+	
+	if os.path.exists(scaledFilePath):
+		os.system("del /q \""+scaledFilePath+"\"")
+	
+	for x in range(0,10):
+		gpuId_str = ' -g '+str(gpuId)
 		
+		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
+		if os.path.exists(scaledFilePath):
+			os.remove(scaledFilePath)
+			return True
+		else:
+			break
+		gpuId = gpuId+1
 		
+	return False
+
+def Compatibility_Test_waifu2x_converter():
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
+	scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.jpg'
+	
+	
+	if os.path.exists(scaledFilePath):
+		os.system("del /q \""+scaledFilePath+"\"")
+		
+	os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+scaledFilePath+'" --scale_ratio '+'2'+' --noise_level '+'2'+' --model_dir waifu2x-converter\\models_rgb')
+	
+	if os.path.exists(scaledFilePath):
+		return True
+		os.system("del /q \""+scaledFilePath+"\"")
+	else:
+		return False
+
+def Compatibility_Test_Anime4k():
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	inputPath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension.jpg'
+	scaledFilePath = current_dir+'\\viewGpuId-files-waifu2x-extension\\vgi_waifu2x_extension_waifu2x.jpg'
+	
+	
+	if os.path.exists(scaledFilePath):
+		os.system("del /q \""+scaledFilePath+"\"")
+	
+	os.system('java -jar Anime4K\\Anime4K.jar "'+inputPath+'" "'+scaledFilePath+'" '+'2')
+	
+	if os.path.exists(scaledFilePath):
+		return True
+		os.system("del /q \""+scaledFilePath+"\"")
+	else:
+		return False
 		
 	
 #=============================== Default Window Title =================
