@@ -90,7 +90,7 @@ from playsound import playsound
 import struct
 import psutil
 
-Version_current='v3.5'
+Version_current='v3.55'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -3056,6 +3056,7 @@ def Settings():
 					break
 				elif Rename_result_images == '':
 					Rename_result_images=settings_values['Rename_result_images']
+					break
 				else:
 					print('错误的输入.')
 			settings_values['Rename_result_images']=Rename_result_images
@@ -3148,6 +3149,7 @@ def Settings():
 						print('输入无效.')
 				elif Number_of_threads_Anime4k == '':
 					Number_of_threads_Anime4k=settings_values['Number_of_threads_Anime4k']
+					break
 				else:
 					print('输入无效.')
 			settings_values['Number_of_threads_Anime4k']=Number_of_threads_Anime4k
@@ -3170,6 +3172,7 @@ def Settings():
 						print('输入无效.')
 				elif Number_of_threads_Waifu2x_converter == '':
 					Number_of_threads_Waifu2x_converter = settings_values['Number_of_threads_Waifu2x_converter']
+					break
 				else:
 					print('输入无效.')
 			settings_values['Number_of_threads_Waifu2x_converter']=Number_of_threads_Waifu2x_converter
@@ -3216,6 +3219,7 @@ def Settings():
 					break
 				elif value_ == '':
 					value_ = settings_values['Video_scale_mode']
+					break
 				else:
 					print('无效值, 请再次输入')
 			if value_ == 'anime4k':
@@ -3282,8 +3286,9 @@ def Settings():
 					elif Image_GIF_scale_mode == '2':
 						Image_GIF_scale_mode = 'waifu2x-converter'
 					break
-				elif Image_GIF_scale_mode:
+				elif Image_GIF_scale_mode == '':
 					Image_GIF_scale_mode = settings_values['Image_GIF_scale_mode']
+					break
 				else:
 					print('输入无效.')
 			settings_values['Image_GIF_scale_mode']=Image_GIF_scale_mode
@@ -4321,6 +4326,8 @@ def Set_default_color():
 				os.system('cls')
 				input('输入无效,按Enter键以继续')
 				os.system('cls')
+		elif color == '':
+			return 0
 		else:
 			os.system('cls')
 			input('输入无效,按Enter键以继续')
