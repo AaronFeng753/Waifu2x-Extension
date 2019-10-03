@@ -83,7 +83,7 @@ from playsound import playsound
 import struct
 import psutil
 
-Version_current='v3.5'
+Version_current='v3.55'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -3165,6 +3165,7 @@ def Settings():
 						print('Wrong input.')
 				elif Number_of_threads_Anime4k == '':
 					Number_of_threads_Anime4k = settings_values['Number_of_threads_Anime4k']
+					break
 				else:
 					print('Wrong input.')
 			settings_values['Number_of_threads_Anime4k']=Number_of_threads_Anime4k
@@ -3187,6 +3188,7 @@ def Settings():
 						print('Wrong input.')
 				elif Number_of_threads_Waifu2x_converter == '':
 					Number_of_threads_Waifu2x_converter = settings_values['Number_of_threads_Waifu2x_converter']
+					break
 				else:
 					print('Wrong input.')
 			settings_values['Number_of_threads_Waifu2x_converter']=Number_of_threads_Waifu2x_converter
@@ -3234,6 +3236,7 @@ def Settings():
 					break
 				elif value_ == '':
 					value_ = settings_values['Video_scale_mode']
+					break
 				else:
 					print('invalid value, pls input again')
 			if value_ == 'anime4k':
@@ -3301,6 +3304,7 @@ def Settings():
 					break
 				elif Image_GIF_scale_mode=='':
 					Image_GIF_scale_mode = settings_values['Image_GIF_scale_mode']
+					break
 				else:
 					print('Wrong input.')
 			settings_values['Image_GIF_scale_mode']=Image_GIF_scale_mode
