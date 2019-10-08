@@ -38,12 +38,16 @@ Waifu2x-converter version: 2015-11-30T02:17:24
 - 延时30秒关机
 - 各模块的兼容性测试改为独立函数
 - 设置中, 切换模式时显示是否兼容
+- 适配无声视频
+- resize 窗口使用独立文件
 
 
 ------------------------------------------------
 
 To do:
-- 界面美化
+- 想办法解决gif缩放时噪点的问题, 改变组装gif的方式
+
+
 
 
 
@@ -133,14 +137,14 @@ def MainMenu():
 		Set_cols_lines(67,36)
 		Window_Title('')
 		print('─'*65)
-		print(' Waifu2x-Extension   '+Version_current+'   作者: Aaron Feng')
+		print(' Waifu2x-Extension  |  '+Version_current+'  |  作者: Aaron Feng')
 		print('─'*65)
 		print(' Github主页: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('─'*65)
 		print(" 注意: 本软件的放大与降噪功能仅适用于处理动漫风格的艺术作品")
-		print(" (包括图片,GIF动态图,视频)")
+		print(" (包括 图片, GIF动态图, 视频)")
 		print('─'*65)
-		print(' 1 : 放大与降噪图片和GIF.  2 : '+Video_str)
+		print(' 1 : 放大与降噪图片和GIF.      2 : '+Video_str)
 		print('─'*65)
 		print(' 3 : 压缩图片与GIF')
 		print('─'*65)
@@ -308,7 +312,7 @@ def MainMenu():
 
 #===================================================== Scale & Denoise Image & GIF ========================================
 def Image_Gif_Scale_Denoise():
-	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print(' 注意 : 输入路径中不得包含特殊字符,会造成兼容性问题.')
 	print('─'*72)
 	print("              放大与降噪图片和GIF - Waifu2x-ncnn-vulkan")
 	print('─'*72)
@@ -643,7 +647,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 					fname = os.path.splitext(fnameAndExt)[0]
 					jpgFile = path+'\\'+fname+'.jpg'
 					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = JpgQuality)
-					os.remove(pngFile)
+					remove_safe(pngFile)
 		settings_values = ReadSettings()
 		Rename_result_images = settings_values['Rename_result_images']
 		if Rename_result_images.lower() == 'y':
@@ -731,7 +735,7 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 			if os.path.exists(scaledFilePath+"_Waifu2x.png"):
 				print('\n Convert image..... \n')
 				imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
-				os.remove(scaledFilePath+"_Waifu2x.png")
+				remove_safe(scaledFilePath+"_Waifu2x.png")
 		
 		
 		if delorginal == 'y':
@@ -922,7 +926,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		if optimizeGif == 'y':
 			print('优化 gif....')
 			compress_gif(scaledFilePath+'_waifu2x.gif','1')
-			os.remove(scaledFilePath+'_waifu2x.gif')
+			remove_safe(scaledFilePath+'_waifu2x.gif')
 			print('Gif 优化完成\n')
 		else:
 			print('')
@@ -931,7 +935,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 
 #================================================= Image_Gif_Scale_Denoise_waifu2x_converter ===========================================
 def Image_Gif_Scale_Denoise_waifu2x_converter():
-	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print(' 注意 : 输入路径中不得包含特殊字符,会造成兼容性问题.')
 	print('─'*72)
 	print("                降噪与放大图片和GIF - Waifu2x-converter")
 	print('─'*72)
@@ -1107,7 +1111,7 @@ class waifu2x_converter_Thread_ImageModeC(threading.Thread):
 			if os.path.exists(scaledFilePath+"_Waifu2x.png"):
 				print('\n 转换图片..... \n')
 				imageio.imwrite(scaledFilePath+"_Waifu2x.jpg", imageio.imread(scaledFilePath+"_Waifu2x.png"), 'JPG', quality = JpgQuality)
-				os.remove(scaledFilePath+"_Waifu2x.png")
+				remove_safe(scaledFilePath+"_Waifu2x.png")
 		
 		
 		if delorginal == 'y':
@@ -1279,7 +1283,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		if optimizeGif == 'y':
 			print('优化 gif....')
 			compress_gif(scaledFilePath+'_waifu2x.gif','1')
-			os.remove(scaledFilePath+'_waifu2x.gif')
+			remove_safe(scaledFilePath+'_waifu2x.gif')
 			print('Gif 优化完成\n')
 		else:
 			print('')
@@ -1309,14 +1313,14 @@ class DelOldFileThread_4x(threading.Thread):
 					if f_name_ext != f_name:
 						if f_name not in inputpath_deled_list:
 							if f_name in oldfile_list:
-								os.remove(inputpath+f_name+'.png')
+								remove_safe(inputpath+f_name+'.png')
 								inputpath_deled_list.append(f_name)
 				break
 			time.sleep(0.5)
 
 #=============================================  Scale & Denoise Video_waifu2x_converter  ====================================
 def Scale_Denoise_Video_waifu2x_converter():
-	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print(' 注意 : 输入路径中不得包含特殊字符,会造成兼容性问题.')
 	print('─'*78)
 	print("                     放大与降噪视频 - waifu2x-converter")
 	print('─'*78)
@@ -1488,7 +1492,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
 		
 		if os.path.splitext(inputPath)[1] != '.mp4':
-			os.remove(os.path.splitext(inputPath)[0]+'.mp4')
+			remove_safe(os.path.splitext(inputPath)[0]+'.mp4')
 		
 		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
 	
@@ -1505,7 +1509,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
-	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print(' 注意 : 输入路径中不得包含特殊字符,会造成兼容性问题.')
 	print('─'*85)
 	print("                         放大与降噪视频 - Waifu2x-ncnn-vulkan")
 	print('─'*85)
@@ -1765,7 +1769,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 	
 				
 		if os.path.splitext(inputPath)[1] != '.mp4':
-			os.remove(os.path.splitext(inputPath)[0]+'.mp4')
+			remove_safe(os.path.splitext(inputPath)[0]+'.mp4')
 			
 		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
 	
@@ -1784,7 +1788,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 
 #=============================================  Scale & Denoise Video - Anime4K  ====================================
 def Scale_Denoise_Video_Anime4K():
-	print(' 注意 : 输入路径中不得包含中文字符或者其他特殊字符,会造成兼容性问题.')
+	print(' 注意 : 输入路径中不得包含特殊字符,会造成兼容性问题.')
 	print('─'*85)
 	print("                                 放大视频 - Anime4K")
 	print('─'*85)
@@ -1965,7 +1969,7 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
 	
 		if os.path.splitext(inputPath)[1] != '.mp4':
-			os.remove(os.path.splitext(inputPath)[0]+'.mp4')
+			remove_safe(os.path.splitext(inputPath)[0]+'.mp4')
 		if delorginal == 'y':
 			if os.path.exists(res_video):
 				if os.path.getsize(res_video) > 0:
@@ -1979,6 +1983,8 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 
 #===================================================== Compress_image_gif ====================================================
 def Compress_image_gif():
+	print(' 路径和文件名称中包含特殊字符可能会造成兼容性问题,')
+	print(' 如果出现问题请更改文件名和文件夹名称.')
 	print('─'*75)
 	print("                               压缩图片与GIF")
 	print('─'*75)
@@ -2036,7 +2042,7 @@ def Compress_image_gif():
 		if os.path.splitext(file_)[1] in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
 			image_exist=True
 			break
-	if FindImageFiles(inputPathList):
+	if FindImageFiles(inputPathList_folders):
 		image_exist = True
 	if image_exist:
 		image_quality = input_image_quality()
@@ -2050,7 +2056,7 @@ def Compress_image_gif():
 		if os.path.splitext(file_)[1] == '.gif':
 			gif_exist=True
 			break
-	if FindGifFiles(inputPathList):
+	if FindGifFiles(inputPathList_folders):
 		gif_exist = True
 	if gif_exist:
 		gifCompresslevel=input_gifCompresslevel()
@@ -2119,7 +2125,7 @@ def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality
 			
 			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
 			if saved_size <= 0:
-				os.remove(scaledFilePath+"_compressed.jpg")
+				remove_safe(scaledFilePath+"_compressed.jpg")
 				print(' 无法压缩 ['+inputPath+'] 这个图片可能已经被压缩过了. 你可以尝试减小 "image quality" 的值.')
 			else:
 				saved_size_str = str(saved_size)+'KB'
@@ -2161,7 +2167,7 @@ def process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal
 			compressed_size = str(round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024))+'KB'
 			saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
 			if saved_size <= 0:
-				os.remove(scaledFilePath+"_compressed.gif")
+				remove_safe(scaledFilePath+"_compressed.gif")
 				print('无法压缩 '+inputPath)
 			else:
 				saved_size_str = str(saved_size)+'KB'
@@ -2345,7 +2351,7 @@ def DelOrgFiles(inputPath):
 		fnames = dict.fromkeys(fnames,'')
 		for fname in fnames:
 			if os.path.splitext(fname)[1] in Exts:
-				os.remove(path+'\\'+fname)
+				remove_safe(path+'\\'+fname)
 		break
 	
 #======================================================= GIF ======================================================
@@ -2416,8 +2422,7 @@ def video2images(inputpath):
 
 	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
 	
-	if os.path.exists(video_dir+'audio_waifu2x.wav'):
-		os.remove(video_dir+'audio_waifu2x.wav')
+	remove_safe(video_dir+'audio_waifu2x.wav')
 	
 	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+video_dir+'audio_waifu2x.wav"')
 
@@ -2432,7 +2437,9 @@ def images2video(inputpath):
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
 	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio_waifu2x.wav" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
-	os.remove(video_dir+'audio_waifu2x.wav')
+	
+	remove_safe(video_dir+'audio_waifu2x.wav')
+	
 	os.system('rd /s/q "'+video_dir+'frames_waifu2x'+'"')
 
 class VideoDelFrameThread(threading.Thread):
@@ -2464,7 +2471,7 @@ class VideoDelFrameThread(threading.Thread):
 					f_name = os.path.splitext(f_name_ext)[0]
 					if f_name not in frame_deled_list:
 						if f_name in frame_list:
-							os.remove(frames_dir+f_name+'.png')
+							remove_safe(frames_dir+f_name+'.png')
 							frame_deled_list.append(f_name)
 				break
 			time.sleep(0.5)
@@ -2493,7 +2500,7 @@ class VideoDelFrameThread_4x(threading.Thread):
 					if f_name_ext != f_name:
 						if f_name not in frame_deled_list:
 							if f_name in frame_list:
-								os.remove(frames_scaled_dir+f_name+'.png')
+								remove_safe(frames_scaled_dir+f_name+'.png')
 								frame_deled_list.append(f_name)
 				break
 			time.sleep(0.5)
@@ -3332,12 +3339,10 @@ def Settings():
 		elif mode == "15":
 			os.system('cls')
 			
-			if os.path.exists('config_waifu2xEX_start'):
-				os.remove('config_waifu2xEX_start')
+			remove_safe('config_waifu2xEX_start')
 			
-			if os.path.exists('waifu2x-extension-setting'):
-				os.remove('waifu2x-extension-setting')
-				ReadSettings()
+			remove_safe('waifu2x-extension-setting')
+			ReadSettings()
 			
 			input('设置已重置, 按下Enter返回.')
 			
@@ -3347,8 +3352,7 @@ def Settings():
 			os.system('cls')
 			
 			print('请稍等....')
-			if os.path.exists('config_waifu2xEX_start'):
-				os.remove('config_waifu2xEX_start')
+			remove_safe('config_waifu2xEX_start')
 			os.system('cls')
 			input('启动器的语言设置已重置, 按下Enter返回.')
 			
@@ -3381,12 +3385,12 @@ def ReadSettings():
 	cpu_num = int(cpu_count() / 2)
 	if cpu_num < 1 :
 		cpu_num = 1
-	default_values = {'SettingVersion':'9','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+	default_values = {'SettingVersion':'10','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
-						'cols_resize':140,'lines_resize':38,'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
+						'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
 						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1,
 						'Compatibility_waifu2x_ncnn_vulkan':True,'Compatibility_waifu2x_converter':True,'Compatibility_Anime4k':True}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -3493,7 +3497,7 @@ class GifCompressThread (threading.Thread):
 		compress_gif(inputPath,gifCompresslevel)
 		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
 		if saved_size <= 0:
-			os.remove(scaledFilePath+"_compressed.gif")
+			remove_safe(scaledFilePath+"_compressed.gif")
 			print('\n'+'无法压缩 '+inputPath+'\n')
 		else:
 			saved_size_str = str(saved_size)+'KB'
@@ -3546,7 +3550,7 @@ class ImageCompressThread (threading.Thread):
 		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
 		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.jpg")/1024)
 		if saved_size <= 0:
-			os.remove(scaledFilePath+"_compressed.jpg")
+			remove_safe(scaledFilePath+"_compressed.jpg")
 			print('\n'+'无法压缩 ['+inputPath+'] 该图片或许已经被压缩过了.\n你可以尝试减少 "图像质量" 的值.'+'\n')
 		else:
 			print('\n'+'压缩完成 '+inputPath+'\n')
@@ -3614,12 +3618,12 @@ def ResizeWindow():
 		lines = 38
 		
 		try:
-			settings_values = ReadSettings()
+			settings_values = Read_ResizeFile()
 			cols = settings_values['cols_resize']
 			lines = settings_values['lines_resize']
 		except BaseException:
 			time.sleep(0.02)
-			settings_values = ReadSettings()
+			settings_values = Read_ResizeFile()
 			cols = settings_values['cols_resize']
 			lines = settings_values['lines_resize']
 
@@ -3639,17 +3643,17 @@ def ResizeWindow():
 		time.sleep(0.05)
 
 def Set_cols_lines(cols,lines):
-	settings_values = ReadSettings()
+	settings_values = Read_ResizeFile()
 	settings_values['cols_resize'] = cols
 	settings_values['lines_resize'] = lines
-	with open('waifu2x-extension-setting','w+') as f:
+	with open('ResizeFile-waifu2xEX','w+') as f:
 		json.dump(settings_values,f)
 	while Complete_ResizeWindow(cols,lines):
 		time.sleep(0.01)
 	return 0
 
 def Get_cols_lines():
-	settings_values = ReadSettings()
+	settings_values = Read_ResizeFile()
 	cols = settings_values['cols_resize']
 	lines = settings_values['lines_resize']
 	return [cols,lines]
@@ -3670,6 +3674,26 @@ def Complete_ResizeWindow(cols,lines):
 			return True
 	else:
 		return True
+
+def Read_ResizeFile():
+	
+	default_values = {"cols_resize": 20, "lines_resize": 20}
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	settingPath = current_dir+'\\'+'ResizeFile-waifu2xEX'
+	if os.path.exists(settingPath) == False:
+		with open(settingPath,'w+') as f:
+			json.dump(default_values,f)
+		return default_values
+	else:
+		settings_values = {}
+		with open(settingPath,'r+') as f:
+			settings_values = json.load(f)
+		if len(settings_values) != len(default_values):
+			with open(settingPath,'w+') as f:
+				json.dump(default_values,f)
+			return default_values
+		else:
+			return settings_values
 
 	
 	
@@ -4013,7 +4037,7 @@ def MoveGifFiles(inputPathList):
 						os.mkdir(inputPath+'\\protectfiles_waifu2x_extension')
 					new_path = path+'\\protectfiles_waifu2x_extension\\'+fname
 					os.system('copy /y "'+old_path+'" "'+new_path+'"')
-					os.remove(old_path)
+					remove_safe(old_path)
 			if path_gif_exist:
 				inputPathList_gif.append(inputPath)
 				path_gif_exist = False
@@ -4236,7 +4260,7 @@ def Compatibility_Test_waifu2x_ncnn_vulkan():
 		
 		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
 		if os.path.exists(scaledFilePath):
-			os.remove(scaledFilePath)
+			remove_safe(scaledFilePath)
 			return True
 		else:
 			break
@@ -4351,11 +4375,10 @@ def Set_default_color():
 def Move_file_org_new(org_path,new_path):
 	if os.path.exists(os.path.dirname(new_path)) == False:
 		os.mkdir(os.path.dirname(new_path))
-	if os.path.exists(new_path):
-		os.remove(new_path)
+	remove_safe(new_path)
 	os.system('copy /y "'+org_path+'" "'+new_path+'"')
 	if os.path.exists(new_path):
-		os.remove(org_path)
+		remove_safe(org_path)
 	else:
 		print('错误: Move_file_org_new() -  new_path doesn\'t exists')
 
@@ -4448,6 +4471,11 @@ def Process_exist(str_processname):
 
 	else:
 		return False
+
+#==================================== 安全删除 ====================================
+def remove_safe(path_):
+	if os.path.exists(path_):
+		os.remove(path_)
 
 #============================================== Shut Down ==============================
 def ShutDown():
