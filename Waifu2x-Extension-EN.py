@@ -87,7 +87,7 @@ from playsound import playsound
 import struct
 import psutil
 
-Version_current='v3.55'
+Version_current='v3.551'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -2445,9 +2445,14 @@ def images2video(inputpath):
 	fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
-	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio_waifu2x.wav" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
 	
-	remove_safe(video_dir+'audio_waifu2x.wav')
+	
+	if os.path.exists(video_dir+'audio_waifu2x.wav'):
+		os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio_waifu2x.wav" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
+		remove_safe(video_dir+'audio_waifu2x.wav')
+	else:
+		os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
+	
 	
 	os.system('rd /s/q "'+video_dir+'frames_waifu2x'+'"')
 
