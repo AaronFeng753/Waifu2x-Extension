@@ -25,22 +25,12 @@ Waifu2x-converter version: 2015-11-30T02:17:24
 -----------------------------------------------
 
 更新日志
-- 性能优化
-- 重排设置菜单
-- '----'改成'-'*n
-- 将播放提示音集成到一个函数里
-- 延时30秒关机
-- 各模块的兼容性测试改为独立函数
-- 修复anime4k基准测试的bug
-- 设置中, 切换模式时显示是否兼容
-- 适配无声视频
-- resize 窗口使用独立文件
+- 更改gif组装方式,修复生成的gif有噪点的问题
 
 
 ------------------------------------------------
 
 To do:
-- 想办法解决gif缩放时噪点的问题, 改变组装gif的方式
 
 
 
@@ -764,9 +754,9 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')')
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
-		Frames_gif=get_frames_gif(inputPath)
+		Duration_gif=getDuration(inputPath)
 		print('Split gif.....')
-		splitGif(inputPath,scaledFilePath,Frames_gif)
+		splitGif(inputPath,scaledFilePath)
 		
 		oldfilenumber=FileCount(scaledFilePath+'_split')
 				
@@ -895,7 +885,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		print('')	
 		
 		print('Assembling Gif.....')
-		assembleGif(scaledFilePath,Frames_gif,inputPath)
+		assembleGif(scaledFilePath,Duration_gif)
 		print('Gif assembled')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
@@ -1193,9 +1183,9 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 	for inputPath in Gif_inputPathList_files:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
-		Frames_gif=get_frames_gif(inputPath)
+		Duration_gif=getDuration(inputPath)
 		print('Split gif.....')
-		splitGif(inputPath,scaledFilePath,Frames_gif)
+		splitGif(inputPath,scaledFilePath)
 		
 		
 		time_start_scale = time.time()
@@ -1260,7 +1250,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		
 		print('')	
 		print('Assembling Gif.....')
-		assembleGif(scaledFilePath,Frames_gif,inputPath)
+		assembleGif(scaledFilePath,Duration_gif)
 		print('Gif assembled')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
@@ -2364,6 +2354,21 @@ def DelOrgFiles(inputPath):
 		break
 	
 #======================================================= GIF ======================================================
+
+def getDuration(FILENAME):
+	PIL_Image_object = Image.open(FILENAME)
+	PIL_Image_object.seek(0)
+	frames = 0
+	duration = 0
+	while True:
+		try:
+			frames += 1
+			duration += PIL_Image_object.info['duration']
+			PIL_Image_object.seek(PIL_Image_object.tell() + 1)
+		except EOFError:
+			return (duration / 1000)/frames * 100
+	return None
+
 def get_frames_gif(FILENAME):
 	
 	frame_current = 0
@@ -2380,7 +2385,9 @@ def get_frames_gif(FILENAME):
 		frames=1
 	return frames
 
-def splitGif(gifFileName,scaledFilePath,frames):
+def splitGif(gifFileName,scaledFilePath):
+	
+	frames = get_frames_gif(gifFileName)
 	
 	if os.path.exists(scaledFilePath+'_split') :
 			os.system("rd /s/q \""+scaledFilePath+'_split'+'"')
@@ -2388,16 +2395,22 @@ def splitGif(gifFileName,scaledFilePath,frames):
 	
 	os.system('ffmpeg -i "'+gifFileName+'" "'+scaledFilePath+'_split\\%0'+str(frames)+'d.png"')	
 	
-	
-	
-def assembleGif(scaledFilePath,frames,gifFileName):
-	
-	cap = cv2.VideoCapture(gifFileName)
-	fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
+
+def assembleGif(scaledFilePath,Duration):
 	
 	gif_name=scaledFilePath+'_waifu2x.gif'
 	
-	os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+scaledFilePath+'_split\\scaled\\'+'%0'+str(frames)+'d.png" "'+gif_name+'"')
+	os.system('convert -delay '+str(Duration)+' -loop 0 "'+scaledFilePath+'_split\\scaled\\'+'*png" "'+gif_name+'"')
+	
+	
+# ~ def assembleGif(scaledFilePath,frames,gifFileName):
+	
+	# ~ cap = cv2.VideoCapture(gifFileName)
+	# ~ fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
+	
+	# ~ gif_name=scaledFilePath+'_waifu2x.gif'
+	
+	# ~ os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+scaledFilePath+'_split\\scaled\\'+'%0'+str(frames)+'d.png" "'+gif_name+'"')
 	
 def compress_gif(inputpath,compress_level):
 	gif_path_filename = os.path.splitext(inputpath)[0]
