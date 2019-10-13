@@ -22,6 +22,8 @@ gifsicle version 1.92
 
 Waifu2x-converter version: 2015-11-30T02:17:24
 
+ImageMagick 7.0.8-68 Q16 x64 2019-10-05
+
 -----------------------------------------------
 
 更新日志
@@ -77,7 +79,7 @@ from playsound import playsound
 import struct
 import psutil
 
-Version_current='v3.551'
+Version_current='v3.58'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -4544,6 +4546,7 @@ if __name__ == '__main__':
 			print('Press Enter key to restart the software.')
 			input()
 			os.system('cls')
+			ChangeColor_default()
 			python = sys.executable
 			os.execl(python, python, * sys.argv)
 	else:
