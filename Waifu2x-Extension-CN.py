@@ -27,6 +27,8 @@ gifsicle version 1.92
 
 Waifu2x-converter version: 2015-11-30T02:17:24
 
+ImageMagick 7.0.8-68 Q16 x64 2019-10-05
+
 -----------------------------------------------
 
 更新日志
@@ -84,7 +86,7 @@ from playsound import playsound
 import struct
 import psutil
 
-Version_current='v3.551'
+Version_current='v3.58'
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -2882,7 +2884,6 @@ def checkUpdate():
 		if Version_current != Version_latest:
 			os.system('cls')
 			print(' 检测到新版本 : '+Version_latest)
-			print(' 通过修改hosts加速github访问：https://share.weiyun.com/5u4OPP3 ')
 			print(' -----------------------------------------------------------')
 			while True:
 				download_update = input(' 你想现在下载更新吗?(y/n): ')
@@ -2934,7 +2935,6 @@ def CheckUpdate_start():
 			'echo 当前版本 : '+Version_current+'\n',
 			'echo 新版本 : '+Version_latest+'\n',
 			'echo 如果你不想在启动时检查更新, 你可以在设置内手动关闭. \n',
-			'echo 通过修改hosts加速github访问：https://share.weiyun.com/5u4OPP3 \n',
 			'echo ------------------------------------------------------------ \n',
 			'echo 你想现在下载更新吗?(y/n): \n',
 			'set user_input=N\n',
@@ -4564,6 +4564,7 @@ if __name__ == '__main__':
 			print('按Enter以重新启动程序')
 			input()
 			os.system('cls')
+			ChangeColor_default()
 			python = sys.executable
 			os.execl(python, python, * sys.argv)
 	else:
