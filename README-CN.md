@@ -54,7 +54,7 @@
 #### 原GIF 500 x 372 (493 KB):
 ![Original GIF](/Samples/gif/2_original.gif)
 
-#### 经过2倍放大, 2级降噪以及gif优化处理后 1000 x 744 (3.91 MB):
+#### 经过2倍放大, 2级降噪以及gif优化处理后 1000 x 744 (3.77 MB):
 ![Original GIF](/Samples/gif/2_waifu2x_compressed.gif)
 
 #### Github 不支持在线播放视频,请查看下方链接:
