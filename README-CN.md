@@ -76,7 +76,7 @@
 #### Anime4k:
 安装最新版的JDK和JRE.
 
-# Wafu2x扩展的诞生离不开以下开源项目:
+# Wafu2x扩展的诞生离不开以下项目:
 
 - waifu2x-ncnn-vulkan: https://github.com/nihui/waifu2x-ncnn-vulkan
 
