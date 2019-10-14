@@ -77,26 +77,20 @@
 安装最新版的JDK和JRE.
 
 # Wafu2x扩展的诞生离不开以下开源项目:
-waifu2x-ncnn-vulkan:
-https://github.com/nihui/waifu2x-ncnn-vulkan
 
-FFmpeg: 
-https://ffmpeg.org/
+- waifu2x-ncnn-vulkan: https://github.com/nihui/waifu2x-ncnn-vulkan
 
-Gifsicle:
-https://www.lcdf.org/gifsicle/
+- FFmpeg: https://ffmpeg.org/
 
-Anime4K:
-https://github.com/bloc97/Anime4K
+- Gifsicle: https://www.lcdf.org/gifsicle/
 
-Waifu2x-converter:
-https://github.com/WL-Amigo/waifu2x-converter-cpp
+- Anime4K: https://github.com/bloc97/Anime4K
 
-图标:
+- Waifu2x-converter: https://github.com/WL-Amigo/waifu2x-converter-cpp
 
-图标作者 : Freepik (https://www.flaticon.com/authors/freepik)
+- ImageMagick: http://www.imagemagick.org/
 
-来自 Flaticon : https://www.flaticon.com/
+- Icons made by : Freepik (https://www.flaticon.com/authors/freepik) From Flaticon : https://www.flaticon.com/
 
 
 # 捐赠
