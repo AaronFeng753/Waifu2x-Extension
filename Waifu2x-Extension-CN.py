@@ -129,7 +129,7 @@ def MainMenu():
 		Set_cols_lines(67,36)
 		Window_Title('')
 		print('─'*65)
-		print(' Waifu2x-Extension  |  '+Version_current+'  |  作者: Aaron Feng')
+		print('       Waifu2x-Extension  |  '+Version_current+'  |  作者: Aaron Feng')
 		print('─'*65)
 		print(' Github主页: https://github.com/AaronFeng753/Waifu2x-Extension')
 		print('─'*65)
