@@ -26,8 +26,10 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 
 -----------------------------------------------
 
-更新日志
-- 更改gif组装方式,修复生成的gif有噪点的问题
+Update log
+
+- Fix bugs
+- Some improvements
 
 
 ------------------------------------------------
@@ -79,7 +81,7 @@ from playsound import playsound
 import struct
 import psutil
 
-Version_current='v3.58'
+Version_current='v3.6'
 
 #======================================================== MAIN MENU ==============================================================
 
