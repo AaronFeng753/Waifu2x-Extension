@@ -34,18 +34,13 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 更新日志
 
 - 修复bug
-- 一些改进
+- 多处改进
 - 修正部分翻译
 - 提高稳定性
-
 
 ------------------------------------------------
 
 To do:
-
-
-
-
 
 
 '''
@@ -164,7 +159,7 @@ def MainMenu():
 		print('')
 		print(' 17 : 兼容性测试         E : 退出.')
 		print('─'*65)
-		print(' D : 捐赠. (支付宝)      R : 提交反馈')
+		print(' D : 捐赠. (支付宝)      R : 提交反馈(Github)')
 		print('─'*65)
 		mode = input('( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower()
 		
@@ -290,11 +285,13 @@ def MainMenu():
 			print('载入中.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension#donate')
 			os.system('cls')
-			print(' 谢谢您 !!!  :)')
+			print('                        谢谢您 !!!  :)')
 		elif mode == "r":
 			os.system('cls')
 			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/issues/new')
+			os.system('cls')
+		elif mode == "":
 			os.system('cls')
 		else:
 			os.system('cls')
@@ -3394,6 +3391,10 @@ def Settings():
 
 		elif mode == "r":
 			return 0
+			
+		elif mode == "":
+			os.system('cls')
+			
 		else:
 			os.system('cls')
 			ChangeColor_warning()
