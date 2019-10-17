@@ -35,7 +35,7 @@ Update log
 ------------------------------------------------
 
 To do:
-
+- 对要处理的文件的路径进行admintest
 
 '''
 
@@ -3489,7 +3489,7 @@ def AdminTest():
 	if os.path.exists(tmp_dir) == False:
 		try:
 			with open(tmp_dir,'w+') as f:
-				f.write('admintest')
+				f.write('0100000101100001011100100110111101101110')
 		except BaseException:
 			return False
 		if os.path.exists(tmp_dir) == False:
@@ -4533,6 +4533,14 @@ def init():		#初始化函数
 	Window_Title('')	#更改控制台标题
 	ChangeColor_default()	#更改文字颜色
 	
+	#================= 删除冗余文件 ======================
+	if os.path.exists('Error_file_not_del.bat'):
+		remove_safe('Error_file_not_del.bat')
+	
+	if os.path.exists('update_bat.bat'):
+		remove_safe('update_bat.bat')
+	#=======================================================
+	
 	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
 	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
 		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
@@ -4555,7 +4563,6 @@ def init():		#初始化函数
 	
 	if thread_resizeWindow.isAlive():
 		stop_thread(thread_resizeWindow)
-		
 
 #======================== Start ========================
         
