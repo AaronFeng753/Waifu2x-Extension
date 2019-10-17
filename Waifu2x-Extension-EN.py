@@ -30,6 +30,7 @@ Update log
 
 - Fix bugs
 - Some improvements
+- Improve stability
 
 
 ------------------------------------------------
@@ -87,6 +88,8 @@ Version_current='v3.6'
 
 def MainMenu():
 	
+	#=============================== 主菜单 初始化 ================================
+	
 	settings_values = ReadSettings()
 	
 	if settings_values['CheckUpdate'] == 'y':
@@ -117,12 +120,17 @@ def MainMenu():
 	else:
 		Video_str = 'Scale & Denoise Video.'
 	
-	Error_log_clean()
+	#============================== 主菜单 初始化完成 ============================
+	
+	Error_log_clean() # 检查错误日志大小, 判定是否需要提醒user重置日志
 	
 	while True:
-		Set_cols_lines(65,35)
+		
+		Set_cols_lines(65,35) #调整窗口大小
 		Set_cols_lines(66,36)
-		Window_Title('')
+		
+		Window_Title('') #重置窗口title
+		
 		print('┌──────────────────────────────────────────────────────────────┐')
 		print('│       Waifu2x-Extension | '+Version_current+' | Author: Aaron Feng '+' '*(13-len(Version_current))+'│')
 		print('├──────────────────────────────────────────────────────────────┤')
@@ -157,10 +165,15 @@ def MainMenu():
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ D : Donate. (Alipay)      R : Report Bugs & Suggestions      │')
 		print('└──────────────────────────────────────────────────────────────┘')
-		mode = input('( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower()
-			
-		Set_cols_lines(120,38)
 		
+		# 选项输入
+		mode = input('( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower() 
+			
+		Set_cols_lines(120,38) # 更改窗口大小到cmd默认大小
+		
+		#================================ 选项判定 ====================================
+		
+		# 1 - 放大与降噪图片&gif
 		if mode == "1":
 			os.system('cls')
 			settings_values = ReadSettings()
@@ -169,7 +182,8 @@ def MainMenu():
 			elif settings_values['Image_GIF_scale_mode'] == 'waifu2x-converter':
 				Image_Gif_Scale_Denoise_waifu2x_converter()
 			os.system('cls')
-			
+		
+		# 2 - 放大与降噪视频
 		elif mode == "2":
 			os.system('cls')
 			
@@ -183,36 +197,45 @@ def MainMenu():
 				Scale_Denoise_Video_waifu2x_converter()
 				
 			os.system('cls')
-			
+		
+		# 3 - 压缩图片gif
 		elif mode == "3":
 			os.system('cls')
 			Compress_image_gif()
 			os.system('cls')
-			
+		
+		# 4 - 设置 块大小
 		elif mode == "4":
 			os.system('cls')
 			input_tileSize()
 			settings_values = ReadSettings()
 			tileSize = '[ '+settings_values['tileSize']+' ]'
 			os.system('cls')
+		
+		# 5 - 设置 GPU ID
 		elif mode == "5":
 			os.system('cls')
 			input_gpuId()
 			settings_values = ReadSettings()
 			gpuId = '[ '+settings_values['gpuId']+' ]'
 			os.system('cls')
+			
+		# 6 - 开关提示音
 		elif mode == "6":
 			os.system('cls')
 			input_notificationSound()
 			settings_values = ReadSettings()
 			notificationSound = '[ '+settings_values['notificationSound']+' ]'
 			os.system('cls')
+		
+		# 7 - 压缩 多线程 开关
 		elif mode == "7":
 			os.system('cls')
 			input_multiThread()
 			settings_values = ReadSettings()
 			multiThread = '[ '+settings_values['multiThread']+' ]'
 			os.system('cls')
+			
 		elif mode == "8":
 			os.system('cls')
 			input_multiThread_Scale()
@@ -2972,9 +2995,8 @@ def Settings():
 		Set_cols_lines(90,37)
 		Set_cols_lines(92,41)
 		
-		settings_values = {}
-		with open('waifu2x-extension-setting','r+') as f:
-			settings_values = json.load(f)
+		settings_values = ReadSettings()
+		
 		print('─'*90)
 		print(' '*41+'Settings')
 		print('─'*90)
@@ -3427,8 +3449,15 @@ def ReadSettings():
 		return default_values
 	else:
 		settings_values = {}
-		with open('waifu2x-extension-setting','r+') as f:
-			settings_values = json.load(f)
+		
+		try:
+			with open('waifu2x-extension-setting','r+') as f:
+				settings_values = json.load(f)
+		except BaseException:
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(default_values,f)
+			return default_values
+			
 		if len(settings_values) != len(default_values) or settings_values['SettingVersion'] != default_values['SettingVersion']:
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(default_values,f)
@@ -3712,8 +3741,18 @@ def Read_ResizeFile():
 		return default_values
 	else:
 		settings_values = {}
-		with open(settingPath,'r+') as f:
-			settings_values = json.load(f)
+		
+		try:
+			
+			with open(settingPath,'r+') as f:
+				settings_values = json.load(f)
+			
+		except BaseException:
+			
+			with open(settingPath,'w+') as f:
+				json.dump(default_values,f)
+			return default_values
+			
 		if len(settings_values) != len(default_values):
 			with open(settingPath,'w+') as f:
 				json.dump(default_values,f)
@@ -3724,15 +3763,14 @@ def Read_ResizeFile():
 	
 #=============================== Benchmark =============================
 def Benchmark():
-	print('================ Benchmark ==========================')
-	print(' 1.Tile size(for waifu2x-ncnn-vulkan)')
-	print('')
-	print(' 2.Number of threads(for waifu2x-converter) ( Beta )')
-	print('')
-	print(' 3.Number of threads(for Anime4K) ( Beta )')
-	print('=====================================================')
-	print('( 1 / 2 / 3 )')
-	choice_ = input().strip(' ')
+	print('====================  Benchmark  ======================\n')
+	print(' 1: Tile size(for waifu2x-ncnn-vulkan)\n')
+	print(' 2: Number of threads(for waifu2x-converter) ( Beta )\n')
+	print(' 3: Number of threads(for Anime4K) ( Beta )\n')
+	print(' R: Return to the main menu\n')
+	print('=======================================================')
+	print('( 1 / 2 / 3 / R )')
+	choice_ = input().strip(' ').lower()
 	if choice_ == '1':
 		os.system('cls')
 		Benchmark_vulkan()
@@ -3745,6 +3783,8 @@ def Benchmark():
 		os.system('cls')
 		Benchmark_Anime4K()
 		os.system('cls')
+	elif choice_ == 'r':
+		return 0
 	else:
 		os.system('cls')
 
