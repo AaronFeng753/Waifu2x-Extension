@@ -32,13 +32,9 @@ Update log
 - Some improvements
 - Improve stability
 
-
 ------------------------------------------------
 
 To do:
-
-
-
 
 
 '''
@@ -313,12 +309,14 @@ def MainMenu():
 			print('Loading.......')
 			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/issues/new')
 			os.system('cls')
+		elif mode == "":
+			os.system('cls')
 		else:
 			os.system('cls')
 			ChangeColor_warning()
-			print('-'*52)
-			print(' Error : wrong input,pls press Enter key to return')
-			print('-'*52)
+			print('-'*54)
+			print(' Error : wrong input,pls press [Enter] key to return')
+			print('-'*54)
 			input()
 			ChangeColor_default()
 			os.system('cls')
@@ -510,7 +508,7 @@ def Image_Gif_Scale_Denoise():
 		ShutDown()
 	Play_Notification_Sound()
 	
-	input('\npress Enter key to return to the menu')
+	input('\npress [Enter] key to return to the menu')
 
 #========================================= Process_ImageModeAB =============================================
 
@@ -1071,7 +1069,7 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 		ShutDown()
 	Play_Notification_Sound()
 	
-	input('\n Press Enter key to return to the menu.')
+	input('\n Press [Enter] key to return to the menu.')
 	Window_Title('')
 
 #=================================================  waifu2x_converter_Thread  ============================================
@@ -1431,7 +1429,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 	if turnoff=='y':
 		ShutDown()
 	Play_Notification_Sound()
-	input('\n Press Enter key to exit')
+	input('\n Press [Enter] key to exit')
 
 #======================================= process_video_modeABC_waifu2x_converter ============================
 def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel,delorginal):
@@ -1638,7 +1636,7 @@ def Scale_Denoise_Video():
 	if turnoff=='y':
 		ShutDown()
 	Play_Notification_Sound()
-	input('\n Press Enter key to exit')
+	input('\n Press [Enter] key to exit')
 	
 #======================================= process_video_modeABC ============================
 def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_save_str,tileSize,gpuId_str,delorginal):
@@ -1896,7 +1894,7 @@ def Scale_Denoise_Video_Anime4K():
 	if turnoff=='y':
 		ShutDown()
 	Play_Notification_Sound()
-	input('\n Press Enter key to exit')
+	input('\n Press [Enter] key to exit')
 
 #======================================= process_video_modeABC_Anime4K ============================
 
@@ -2112,7 +2110,7 @@ def Compress_image_gif():
 		
 	print('\n Total time cost: ',total_time_end-total_time_start,'s\n')
 	Play_Notification_Sound()
-	input('\n Press enter key to return to the menu')
+	input('\n Press [Enter] key to return to the menu')
 	
 #========================================================== Process_compress_image ======================================================
 
@@ -2359,11 +2357,10 @@ def _async_raise(tid, exctype):
    if res == 0:
       raise ValueError("invalid thread id")
    elif res != 1:
-      # """if it returns a number greater than one, you're in trouble,  
-      # and you should call it again with exc=NULL to revert the effect"""  
+      # if it returns a number greater than one, you're in trouble,  
+      # and you should call it again with exc=NULL to revert the effect
       ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
       raise SystemError("PyThreadState_SetAsyncExc failed")
-
 
 def stop_thread(thread):
    _async_raise(thread.ident, SystemExit)
@@ -2778,7 +2775,7 @@ def input_gpuId():
 	default_value = 'auto'
 	gpuId_list = View_GPU_ID()
 	if gpuId_list == []:
-		input(' Press Enter key to return')
+		input(' Press [Enter] key to return')
 		return 0
 	gpuId_list_str = ''
 	for id_ in gpuId_list:
@@ -2923,10 +2920,10 @@ def checkUpdate():
 		else:
 			os.system('cls')
 			print(' No new update')
-			input(' Press Enter key to return')
+			input(' Press [Enter] key to return')
 	except BaseException:
 		os.system('cls')
-		print(' Failed to establish connection, pls check your internet or try again, press Enter key to return....\n')
+		print(' Failed to establish connection, pls check your internet or try again, press [Enter] key to return....\n')
 		input()
 		os.system('cls')
 
@@ -3300,7 +3297,7 @@ def Settings():
 				print('But Anime4k is faster than Waifu2x, so if you think speed is more important then quality,\n')
 				print('then feel free to use it.\n')
 				print('=========================================================================================\n')
-				input('Press Enter to continue')
+				input('Press [Enter] to continue')
 				
 				os.system('cls')
 				print('                               !! ATTENTION !!\n')
@@ -3317,7 +3314,7 @@ def Settings():
 				print('Anime4K :')
 				print('https://github.com/bloc97/Anime4K \n')
 				print('=========================================================================================\n')
-				input('Press Enter to continue')
+				input('Press [Enter] to continue')
 				ChangeColor_default()
 			settings_values['Video_scale_mode']=value_
 			with open('waifu2x-extension-setting','w+') as f:
@@ -3380,7 +3377,7 @@ def Settings():
 				timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 				f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Error log reseted by user.\n')
 			
-			input('Error log reseted, press Enter key to return.')
+			input('Error log reseted, press [Enter] key to return.')
 			
 			os.system('cls')
 		
@@ -3392,7 +3389,7 @@ def Settings():
 			remove_safe('waifu2x-extension-setting')
 			ReadSettings()
 			
-			input('Setting reseted, press Enter key to return.')
+			input('Setting reseted, press [Enter] key to return.')
 			
 			os.system('cls')
 		
@@ -3402,7 +3399,7 @@ def Settings():
 			print('loading....')
 			remove_safe('config_waifu2xEX_start')
 			os.system('cls')
-			input(' Language setting reseted, press Enter key to return.')
+			input(' Language setting reseted, press [Enter] key to return.')
 			
 			os.system('cls')
 		
@@ -3413,18 +3410,22 @@ def Settings():
 				print(str(key)+' : '+str(val))
 			print('')
 			print('--------------------------------------')
-			input('press Enter key to return.')
+			input('press [Enter] key to return.')
 			
 			os.system('cls')
 
 		elif mode == "r":
 			break
+		
+		elif mode == "":
+			os.system('cls')
+		
 		else:
 			os.system('cls')
 			ChangeColor_warning()
-			print(' -------------------------------------------------')
-			print(' Error : wrong input,pls press Enter key to return')
-			print(' -------------------------------------------------')
+			print(' ----------------------------------------------------')
+			print(' Error : wrong input,pls press [Enter] key to return')
+			print(' ----------------------------------------------------')
 			input()
 			ChangeColor_default()
 			os.system('cls')
@@ -3516,7 +3517,7 @@ def Error_Log():	#读取错误日志
 				
 	else:
 		print('Error : error log file is missing.')	#提示错误日志文件丢失
-		input('Press Enter key to return.')
+		input('Press [Enter] key to return.')
 
 def Error_log_clean():
 	if os.path.exists('Error_Log_Waifu2x-Extension.log') :	#判断错误日志文件是否存在
@@ -4033,17 +4034,16 @@ def Benchmark_vulkan():
 		
 #============================= license_ ========================
 def license_():
-	print('English:')
-	print('------------------------------------------')
+	print('---------------------------------------------------------------------')
 	print('Copyright 2019 Aaron Feng\n')
 	print('Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n')
 	print('The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n')
 	print('THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n')
-	print('------------------------------------------')
-	print('Icons made by : Freepik (https://www.flaticon.com/authors/freepik)')
-	print('From Flaticon : https://www.flaticon.com/')
-	print('------------------------------------------')
-	input('Press Enter key to return to the main menu.')
+	print('---------------------------------------------------------------------')
+	print(' Icons made by : Freepik (https://www.flaticon.com/authors/freepik)')
+	print(' From Flaticon : https://www.flaticon.com/')
+	print('---------------------------------------------------------------------')
+	input(' Press [Enter] key to return to the main menu.\n')
 
 #================= Protect files ================
 def FindGifFiles(inputPathList):
@@ -4217,7 +4217,7 @@ def Compatibility_Test(Init):
 		if Init:
 			time.sleep(3)
 		else:
-			input('Press Enter key to continue.')
+			input('Press [Enter] key to continue.')
 	else:
 		ChangeColor_warning()
 		print('When waifu2x-ncnn-vulkan or waifu2x-converter is avaliable,')
@@ -4256,9 +4256,9 @@ def Compatibility_Test(Init):
 		
 		print('If the compatibility issue is still not resolved, enable the compatible components in the settings.')
 		print('')
-		print('----------------------------')
-		print('Press Enter key to continue.')
-		print('----------------------------')
+		print('-------------------------------')
+		print('Press [Enter] key to continue.')
+		print('-------------------------------')
 		input()
 		os.system('cls')
 		ChangeColor_default()
@@ -4402,13 +4402,13 @@ def Set_default_color():
 				return 0
 			else:
 				os.system('cls')
-				input('Wrong input,press Enter to continue.')
+				input('Wrong input,press [Enter] to continue.')
 				os.system('cls')
 		elif color == '':
 			return 0
 		else:
 			os.system('cls')
-			input('Wrong input,press Enter to continue.')
+			input('Wrong input,press [Enter] to continue.')
 			os.system('cls')
 
 #===================================================== MOVE FILE =========================================================
@@ -4584,8 +4584,8 @@ if __name__ == '__main__':
 			print('')
 			print('You can download the Latest release here, maybe the bug is already fixed:')
 			print('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
-			print('----------------------------------------')
-			print('Press Enter key to restart the software.')
+			print('-------------------------------------------')
+			print('Press [Enter] key to restart the software.')
 			input()
 			os.system('cls')
 			ChangeColor_default()
@@ -4597,7 +4597,7 @@ if __name__ == '__main__':
 		print('We have detected that the current directory of the software is causing the software to apply for administrator\n privileges to continue normal operation.')
 		print('We recommend that you move the software to another directory or give software administrator privileges.')
 		print('--------------------------------------------------------------------------------------------------------------')
-		print('Press Enter key to Re-run the program with admin rights. ')
+		print('Press [Enter] key to Re-run the program with admin rights. ')
 		input()
 		# Re-run the program with admin rights
 		ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
