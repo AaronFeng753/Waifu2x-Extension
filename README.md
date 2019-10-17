@@ -74,7 +74,7 @@ Buy a new computer.
 #### Anime4k:
 Install the latest JDK and JRE
 
-# Integrated component:
+# Integrated component(In releases):
 - waifu2x-ncnn-vulkan version 20190712
 
 - Anime4K Java v0.9 Beta
