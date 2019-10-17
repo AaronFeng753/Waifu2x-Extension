@@ -74,6 +74,20 @@ Buy a new computer.
 #### Anime4k:
 Install the latest JDK and JRE
 
+# Integrated component:
+- waifu2x-ncnn-vulkan version 20190712
+
+- Anime4K Java v0.9 Beta
+
+- ffmpeg version 4.2.1
+
+- gifsicle version 1.92
+
+- Waifu2x-converter version: 2015-11-30T02:17:24
+
+- ImageMagick 7.0.8-68 Q16 x64 2019-10-05
+
+
 # Credits:
 - waifu2x-ncnn-vulkan: https://github.com/nihui/waifu2x-ncnn-vulkan
 
