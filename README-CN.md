@@ -76,7 +76,7 @@
 #### Anime4k:
 安装最新版的JDK和JRE.
 
-# 集成组件:
+# 集成组件(在releases中):
 - waifu2x-ncnn-vulkan version 20190712
 
 - Anime4K Java v0.9 Beta
