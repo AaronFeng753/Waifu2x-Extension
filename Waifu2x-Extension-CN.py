@@ -36,6 +36,7 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 - 修复bug
 - 一些改进
 - 修正部分翻译
+- 提高稳定性
 
 
 ------------------------------------------------
@@ -151,9 +152,9 @@ def MainMenu():
 		print('')
 		print(' 8 : 多线程(放大与降噪): '+multiThread_Scale)
 		print('')
-		print(' 9 : 目标另存为 .jpg?(放大与降噪): '+saveAsJPG+Compress)
+		print(' 9 : 目标另存为 .jpg? (放大与降噪): '+saveAsJPG+Compress)
 		print('')
-		print(' 10 : 优化 .gif?(放大与降噪): '+optimizeGif)
+		print(' 10 : 优化 .gif? (放大与降噪): '+optimizeGif)
 		print('─'*65)
 		print(' 11 : 设置.              12 : 基准测试.')
 		print('')
@@ -166,7 +167,7 @@ def MainMenu():
 		print(' D : 捐赠. (支付宝)      R : 提交反馈')
 		print('─'*65)
 		mode = input('( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower()
-			
+		
 		Set_cols_lines(120,38)
 		
 		if mode == "1":
@@ -2974,9 +2975,8 @@ def Settings():
 		Set_cols_lines(69,37)
 		Set_cols_lines(70,41)
 		
-		settings_values = {}
-		with open('waifu2x-extension-setting','r+') as f:
-			settings_values = json.load(f)
+		settings_values = ReadSettings()
+			
 		print('─'*68)
 		print(' '*32+'设置')
 		print('─'*68)
@@ -3004,6 +3004,7 @@ def Settings():
 		print(' R: 返回主菜单.')
 		print('─'*68)
 		mode = input('( 1 / 2 / 3 /.../ R ): ').strip(' ').lower()
+		
 		if mode == "1":
 			os.system('cls')
 			print('─'*68)
@@ -3380,18 +3381,19 @@ def Settings():
 			os.system('cls')
 		
 		elif mode == "17":
+			
 			os.system('cls')
 			
 			for key,val in settings_values.items():
 				print(str(key)+' : '+str(val))
 			print('')
 			print('--------------------------------------')
-			input('按下Enter返回.')
+			input('按下 Enter 返回.')
 			
 			os.system('cls')
 
 		elif mode == "r":
-			break
+			return 0
 		else:
 			os.system('cls')
 			ChangeColor_warning()
@@ -3422,8 +3424,15 @@ def ReadSettings():
 		return default_values
 	else:
 		settings_values = {}
-		with open('waifu2x-extension-setting','r+') as f:
-			settings_values = json.load(f)
+		
+		try:
+			with open('waifu2x-extension-setting','r+') as f:
+				settings_values = json.load(f)
+		except BaseException:
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(default_values,f)
+			return default_values
+		
 		if len(settings_values) != len(default_values) or settings_values['SettingVersion'] != default_values['SettingVersion']:
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(default_values,f)
@@ -3707,8 +3716,18 @@ def Read_ResizeFile():
 		return default_values
 	else:
 		settings_values = {}
-		with open(settingPath,'r+') as f:
-			settings_values = json.load(f)
+		
+		try:
+			
+			with open(settingPath,'r+') as f:
+				settings_values = json.load(f)
+			
+		except BaseException:
+			
+			with open(settingPath,'w+') as f:
+				json.dump(default_values,f)
+			return default_values
+			
 		if len(settings_values) != len(default_values):
 			with open(settingPath,'w+') as f:
 				json.dump(default_values,f)
@@ -3721,12 +3740,12 @@ def Read_ResizeFile():
 #=============================== Benchmark =============================
 def Benchmark():
 	print('==================== 基准测试 =======================\n')
-	print(' 1.Tile size 块大小 ( waifu2x-ncnn-vulkan )\n')
-	print(' 2.线程数量 ( waifu2x-converter ) ( 测试版 )\n')
-	print(' 3.线程数量 ( Anime4K ) ( 测试版 )\n')
-	print('====================================================\n')
-	print('( 1 / 2 / 3 )')
-	choice_ = input().strip(' ')
+	print(' 1: Tile size 块大小 ( waifu2x-ncnn-vulkan )\n')
+	print(' 2: 线程数量 ( waifu2x-converter ) ( 测试版 )\n')
+	print(' 3: 线程数量 ( Anime4K ) ( 测试版 )\n')
+	print(' R: 返回主菜单\n')
+	print('=====================================================')
+	choice_ = input('( 1 / 2 / 3 / R ): ').strip(' ').lower()
 	if choice_ == '1':
 		os.system('cls')
 		Benchmark_vulkan()
@@ -3739,6 +3758,9 @@ def Benchmark():
 		os.system('cls')
 		Benchmark_Anime4K()
 		os.system('cls')
+	elif choice_ == 'r':
+		os.system('cls')
+		return 0
 	else:
 		os.system('cls')
 
@@ -4573,7 +4595,7 @@ if __name__ == '__main__':
 	else:
 		os.system('cls')
 		print('----------------------------------------------------------------------')
-		print(' 我们检测到当前软件所处的文件夹导致软件必须申请\n 管理员权限来继续正常运行.')
+		print(' 我们检测到当前软件所处的文件夹导致软件必须申请管理员权限来继续正常运行.')
 		print(' 我们建议您将软件移动到另一个文件夹或者直接给予软件管理员权限')
 		print('----------------------------------------------------------------------')
 		print(' 按Enter键来重启软件并申请管理员权限. ')
