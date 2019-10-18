@@ -35,8 +35,9 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 
 - 修复bug
 - 多处改进
-- 修正部分翻译
 - 提高稳定性
+- 改进权限检测
+- 修正部分翻译
 
 ------------------------------------------------
 
@@ -340,7 +341,9 @@ def Image_Gif_Scale_Denoise():
 				print(' 错误,输入路径无效 !!')
 				print('-'*23)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
+				
 		if inputPathOver :
 			inputPathList.append(inputPath)
 			
@@ -957,7 +960,8 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 				print('    错误,输入路径无效 !!')
 				print('-----------------------------')
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 			
@@ -1342,7 +1346,8 @@ def Scale_Denoise_Video_waifu2x_converter():
 				print(' 错误,输入路径无效 !!')
 				print('-'*23)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
@@ -1532,7 +1537,8 @@ def Scale_Denoise_Video():
 				print(' 错误,输入路径无效 !!')
 				print('-'*23)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
@@ -1810,7 +1816,8 @@ def Scale_Denoise_Video_Anime4K():
 				print(' 错误,输入路径无效 !!')
 				print('-'*23)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
@@ -2006,7 +2013,8 @@ def Compress_image_gif():
 				print(' 错误,输入路径无效 !!')
 				print('-'*23)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
@@ -3470,11 +3478,54 @@ def AdminTest():
 		if os.path.exists(tmp_dir) == False:
 			return False
 		else:
-			os.system('del /q "'+tmp_dir+'"')
+			remove_safe(tmp_dir)
 			return True
 	else:
-		os.system('del /q "'+tmp_dir+'"')
+		remove_safe(tmp_dir)
 		return True
+
+def AdminTest_Path(Path_):
+	Path_ = os.path.dirname(Path_)
+	tmp_dir = Path_+'\\'+'admintest.tmp'
+	if os.path.exists(tmp_dir) == False:
+		try:
+			with open(tmp_dir,'w+') as f:
+				f.write('0100000101100001011100100110111101101110')
+		except BaseException:
+			
+			print('-'*55)
+			print(' 当前输入的路径需要授予本软件管理员权限才能对其进行访问')
+			print(' 是否重启本软件并授予管理员权限??')
+			print('-'*55)
+			re_admin = input('(Y/N): ').strip(' ').lower()
+			if re_admin == 'y':
+				# Re-run the program with admin rights
+				ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+			else:
+				print('-'*55)
+				return False
+			
+		if os.path.exists(tmp_dir) == False:
+			
+			print('-'*55)
+			print(' 当前输入的路径需要授予本软件管理员权限才能对其进行访问')
+			print(' 是否重启本软件并授予管理员权限??')
+			print('-'*55)
+			re_admin = input('(Y/N): ').strip(' ').lower()
+			if re_admin == 'y':
+				# Re-run the program with admin rights
+				ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+			else:
+				print('-'*55)
+				return False
+			
+		else:
+			remove_safe(tmp_dir)
+			return True
+	else:
+		remove_safe(tmp_dir)
+		return True
+
 #==================================================== Error_Log ==================================================
 
 def Error_Log():	#读取错误日志
