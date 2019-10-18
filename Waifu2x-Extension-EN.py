@@ -36,7 +36,7 @@ Update log
 ------------------------------------------------
 
 To do:
-- 对要处理的文件的路径进行admintest
+-
 
 '''
 
@@ -296,8 +296,9 @@ def MainMenu():
 			os.system('cls')
 			
 		elif mode == "e":
-			ChangeColor_cmd_original()
 			os.system('cls')
+			ChangeColor_cmd_original()
+			Del_Temp()
 			return 0
 		elif mode == "d":
 			os.system('cls')
@@ -752,7 +753,7 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 		
 		if delorginal == 'y':
 			if os.path.exists(scaledFilePath+"_Waifu2x.png") or os.path.exists(scaledFilePath+"_Waifu2x.jpg"):
-				os.system('del /q "'+inputPath+'"')
+				remove_safe(inputPath)
 			else:
 				list_Content=[
 					'echo --------------------------------------------------------------\n',
@@ -921,7 +922,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 			gif_name=scaledFilePath+'_waifu2x.gif'
 			if os.path.exists(gif_name):
 				if os.path.getsize(gif_name)>0:
-					os.system('del /q "'+inputPath+'"')
+					remove_safe(inputPath)
 			else:
 				list_Content=[
 					'echo --------------------------------------------------------------\n',
@@ -1128,7 +1129,7 @@ class waifu2x_converter_Thread_ImageModeC(threading.Thread):
 		
 		if delorginal == 'y':
 			if os.path.exists(scaledFilePath+"_Waifu2x.png") or os.path.exists(scaledFilePath+"_Waifu2x.jpg"):
-				os.system('del /q "'+inputPath+'"')
+				remove_safe(inputPath)
 			else:
 				list_Content=[
 					'echo --------------------------------------------------------------\n',
@@ -1287,7 +1288,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			gif_name=scaledFilePath+'_waifu2x.gif'
 			if os.path.exists(gif_name):
 				if os.path.getsize(gif_name)>0:
-					os.system('del /q "'+inputPath+'"')
+					remove_safe(inputPath)
 			else:
 				list_Content=[
 					'echo --------------------------------------------------------------\n',
@@ -1523,7 +1524,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		if delorginal == 'y':
 			if os.path.exists(res_video):
 				if os.path.getsize(res_video) > 0:
-					os.system('del /q "'+inputPath+'"')	
+					remove_safe(inputPath)	
 				else:
 					print(' Error occured, failed to generate result video.')
 			else:
@@ -1800,11 +1801,11 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
 	
 		if os.path.splitext(inputPath)[1] != '.mp4':
-			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
+			remove_safe(os.path.splitext(inputPath)[0]+'.mp4')
 		if delorginal == 'y':
 			if os.path.exists(res_video):
 				if os.path.getsize(res_video) > 0:
-					os.system('del /q "'+inputPath+'"')	
+					remove_safe(inputPath)	
 				else:
 					print('Error occured, failed to generate result video.')
 			else:
@@ -1990,7 +1991,7 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 	
 				
 		if os.path.splitext(inputPath)[1] != '.mp4':
-			os.system('del /q "'+os.path.splitext(inputPath)[0]+'.mp4'+'"')
+			remove_safe(os.path.splitext(inputPath)[0]+'.mp4')
 			
 		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
 	
@@ -1999,7 +2000,7 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		if delorginal == 'y':
 			if os.path.exists(res_video):
 				if os.path.getsize(res_video) > 0:
-					os.system('del /q "'+inputPath+'"')	
+					remove_safe(inputPath)	
 				else:
 					print('Error occured, failed to generate result video.')
 			else:
@@ -2158,7 +2159,7 @@ def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality
 				print('Save '+saved_size_str+' !')
 				print('')	
 				if delorginal == 'y':
-					os.system('del /q "'+inputPath+'"')
+					remove_safe(inputPath)
 				
 			print('-'*50)
 
@@ -2200,7 +2201,7 @@ def process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal
 				print('Save '+saved_size_str+' !')
 				print('')	
 				if delorginal == 'y':
-					os.system('del /q "'+inputPath+'"')
+					remove_safe(inputPath)
 				
 			print('-'*50)
 
@@ -3608,7 +3609,7 @@ class GifCompressThread (threading.Thread):
 			saved_size_str = str(saved_size)+'KB'
 			print('\n'+'Finished to compress '+inputPath+'\n')
 			if delorginal == 'y':
-				os.system('del /q "'+inputPath+'"')
+				remove_safe(inputPath)
 
 def Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal):
 	
@@ -3660,7 +3661,7 @@ class ImageCompressThread (threading.Thread):
 		else:
 			print('\n'+'Finished to compress '+inputPath+'\n')
 			if delorginal == 'y':
-				os.system('del /q "'+inputPath+'"')
+				remove_safe(inputPath)
 
 def Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality):
 	
@@ -3814,12 +3815,12 @@ def Read_ResizeFile():
 	
 #=============================== Benchmark =============================
 def Benchmark():
-	print('====================  Benchmark  ======================\n')
+	print('=============================  Benchmark  ===============================\n')
 	print(' 1: Tile size(for waifu2x-ncnn-vulkan)\n')
-	print(' 2: Number of threads(for waifu2x-converter) ( Beta )\n')
-	print(' 3: Number of threads(for Anime4K) ( Beta )\n')
+	print(' 2: Number of threads(for waifu2x-converter) ( Beta, may cause crash! )\n')
+	print(' 3: Number of threads(for Anime4K) ( Beta, may cause crash! )\n')
 	print(' R: Return to the main menu\n')
-	print('=======================================================')
+	print('=========================================================================')
 	print('( 1 / 2 / 3 / R )')
 	choice_ = input().strip(' ').lower()
 	if choice_ == '1':
@@ -4148,7 +4149,7 @@ def RecoverGifFiles(inputPathList):
 					old_path = path+'\\'+fname
 					new_path = inputPath+'\\'+fname
 					os.system('copy /y "'+old_path+'" "'+new_path+'"')
-					os.system('del /q "'+old_path+'"')
+					remove_safe(old_path)
 			if os.path.exists(inputPath+'\\protectfiles_waifu2x_extension') :
 				os.system('rd /s/q "'+inputPath+'\\protectfiles_waifu2x_extension'+'"')
 			break
@@ -4191,11 +4192,11 @@ def View_GPU_ID():
 		gpuId_str = ' -g '+str(gpuId)
 		
 		if os.path.exists(scaledFilePath) :
-			os.system("del /q \""+scaledFilePath+"\"")
+			remove_safe(scaledFilePath)
 		os.system("waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
 		if os.path.exists(scaledFilePath):
 			gpuId_list.append(gpuId)
-			os.system("del /q \""+scaledFilePath+"\"")
+			remove_safe(scaledFilePath)
 		else:
 			break
 		gpuId = gpuId+1
@@ -4343,7 +4344,7 @@ def Compatibility_Test_waifu2x_ncnn_vulkan():
 	gpuId_str = ''
 	
 	if os.path.exists(scaledFilePath):
-		os.system("del /q \""+scaledFilePath+"\"")
+		remove_safe(scaledFilePath)
 	
 	for x in range(0,10):
 		gpuId_str = ' -g '+str(gpuId)
@@ -4366,13 +4367,13 @@ def Compatibility_Test_waifu2x_converter():
 	
 	
 	if os.path.exists(scaledFilePath):
-		os.system("del /q \""+scaledFilePath+"\"")
+		remove_safe(scaledFilePath)
 		
 	os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+scaledFilePath+'" --scale_ratio '+'2'+' --noise_level '+'2'+' --model_dir waifu2x-converter\\models_rgb')
 	
 	if os.path.exists(scaledFilePath):
 		return True
-		os.system("del /q \""+scaledFilePath+"\"")
+		remove_safe(scaledFilePath)
 	else:
 		return False
 
@@ -4384,13 +4385,13 @@ def Compatibility_Test_Anime4k():
 	
 	
 	if os.path.exists(scaledFilePath):
-		os.system("del /q \""+scaledFilePath+"\"")
+		remove_safe(scaledFilePath)
 	
 	os.system('java -jar Anime4K\\Anime4K.jar "'+inputPath+'" "'+scaledFilePath+'" '+'2')
 	
 	if os.path.exists(scaledFilePath):
 		return True
-		os.system("del /q \""+scaledFilePath+"\"")
+		remove_safe(scaledFilePath)
 	else:
 		return False
 		
@@ -4577,19 +4578,22 @@ def ShutDown():
 	time.sleep(30)
 	os.system('shutdown -s')
 
+#========================== 删除冗余文件 ============================
+def Del_Temp():
+	
+	remove_safe('Error_file_not_del.bat')
+	remove_safe('update_bat.bat')
+	remove_safe('ResizeFile-waifu2xEX')
+	
+	return 0
+
 #==========================================  Init  ==================================================================
 
 def init():		#初始化函数
 	Window_Title('')	#更改控制台标题
 	ChangeColor_default()	#更改文字颜色
 	
-	#================= 删除冗余文件 ======================
-	if os.path.exists('Error_file_not_del.bat'):
-		remove_safe('Error_file_not_del.bat')
-	
-	if os.path.exists('update_bat.bat'):
-		remove_safe('update_bat.bat')
-	#=======================================================
+	Del_Temp()
 	
 	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
 	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
