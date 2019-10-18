@@ -31,6 +31,7 @@ Update log
 - Fix bugs
 - Some improvements
 - Improve stability
+- Improved permission detection
 
 ------------------------------------------------
 
@@ -359,7 +360,8 @@ def Image_Gif_Scale_Denoise():
 				print(' Error,input path is invalid !!')
 				print('-'*32)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 			
@@ -973,7 +975,8 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 				print(' Error,input path is invalid !!')
 				print('-'*32)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 			
@@ -1367,7 +1370,8 @@ def Scale_Denoise_Video_waifu2x_converter():
 				print(' Error,input path is invalid !!')
 				print('-'*32)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
@@ -1560,7 +1564,8 @@ def Scale_Denoise_Video():
 				print(' Error,input path is invalid !!')
 				print('-'*32)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
@@ -1839,7 +1844,8 @@ def Scale_Denoise_Video_Anime4K():
 				print(' Error,input path is invalid!!')
 				print('-'*31)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
@@ -2033,7 +2039,8 @@ def Compress_image_gif():
 				print(' Error,input path is invalid !!')
 				print('-'*32)
 			else:
-				inputPathError = False
+				if AdminTest_Path(inputPath):
+					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
@@ -3495,11 +3502,54 @@ def AdminTest():
 		if os.path.exists(tmp_dir) == False:
 			return False
 		else:
-			os.system('del /q "'+tmp_dir+'"')
+			remove_safe(tmp_dir)
 			return True
 	else:
-		os.system('del /q "'+tmp_dir+'"')
+		remove_safe(tmp_dir)
 		return True
+
+def AdminTest_Path(Path_):
+	Path_ = os.path.dirname(Path_)
+	tmp_dir = Path_+'\\'+'admintest.tmp'
+	if os.path.exists(tmp_dir) == False:
+		try:
+			with open(tmp_dir,'w+') as f:
+				f.write('0100000101100001011100100110111101101110')
+		except BaseException:
+			
+			print('-'*95)
+			print(' You need to grant this software administrator permission to access the currently entered path.')
+			print(' Do you want to restart the software and grant administrator privileges?')
+			print('-'*95)
+			re_admin = input('(Y/N): ').strip(' ').lower()
+			if re_admin == 'y':
+				# Re-run the program with admin rights
+				ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+			else:
+				print('-'*95)
+				return False
+			
+		if os.path.exists(tmp_dir) == False:
+			
+			print('-'*95)
+			print(' You need to grant this software administrator permission to access the currently entered path.')
+			print(' Do you want to restart the software and grant administrator privileges?')
+			print('-'*95)
+			re_admin = input('(Y/N): ').strip(' ').lower()
+			if re_admin == 'y':
+				# Re-run the program with admin rights
+				ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+			else:
+				print('-'*95)
+				return False
+			
+		else:
+			remove_safe(tmp_dir)
+			return True
+	else:
+		remove_safe(tmp_dir)
+		return True
+		
 #==================================================== Error_Log ==================================================
 
 def Error_Log():	#读取错误日志
