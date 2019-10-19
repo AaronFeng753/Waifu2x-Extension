@@ -105,7 +105,7 @@ Install the latest JDK and JRE
 
 # `Donate`
 
-## `If this extension helps you, please donate to support developers.`
+## If this extension helps you, please donate to support developers.
 
 ![donate](/donate.jpg)
 
