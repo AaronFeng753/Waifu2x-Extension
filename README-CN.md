@@ -62,7 +62,7 @@
 # 截图
 ![mainmenu](/screenshot/mainmenu-cn.png) 
 
-# 下载: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
+# `下载`: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
 # 演示
 ![Demonstration-cn](/screenshot/Demonstration-cn.gif) 
@@ -105,7 +105,7 @@
 - Icons made by : Freepik (https://www.flaticon.com/authors/freepik) From Flaticon : https://www.flaticon.com/
 
 
-# 捐赠
+# `捐赠`
 
 ## 如果这个扩展程序帮助了您, 欢迎您捐赠支持开发者. 
 
