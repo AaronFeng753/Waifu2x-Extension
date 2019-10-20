@@ -63,7 +63,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 
 # `Download:` https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
-# Demonstration
+# Demonstration(v3.5)
 ![Demonstration-en](/screenshot/Demonstration-en.gif) 
 
 # How to fix compatibility issue :
