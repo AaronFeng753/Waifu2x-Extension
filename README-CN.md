@@ -64,7 +64,7 @@
 
 # `下载`: https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 
-# 演示
+# 演示(v3.5)
 ![Demonstration-cn](/screenshot/Demonstration-cn.gif) 
 
 # 如何修复兼容性问题 :
