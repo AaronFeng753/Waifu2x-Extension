@@ -2917,6 +2917,7 @@ def checkUpdate():
 		if Version_current != Version_latest:
 			os.system('cls')
 			print('New update : '+Version_latest)
+			print('----------------------------------------')
 			while True:
 				download_update = input('Do you wanna download the update?(y/n): ')
 				if download_update in ['y','n','Y','N']:
@@ -2928,6 +2929,7 @@ def checkUpdate():
 		else:
 			os.system('cls')
 			print(' No new update')
+			print('------------------------------')
 			input(' Press [Enter] key to return')
 	except BaseException:
 		os.system('cls')
@@ -4372,8 +4374,8 @@ def Compatibility_Test_waifu2x_converter():
 	os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+scaledFilePath+'" --scale_ratio '+'2'+' --noise_level '+'2'+' --model_dir waifu2x-converter\\models_rgb')
 	
 	if os.path.exists(scaledFilePath):
-		return True
 		remove_safe(scaledFilePath)
+		return True
 	else:
 		return False
 
@@ -4390,8 +4392,8 @@ def Compatibility_Test_Anime4k():
 	os.system('java -jar Anime4K\\Anime4K.jar "'+inputPath+'" "'+scaledFilePath+'" '+'2')
 	
 	if os.path.exists(scaledFilePath):
-		return True
 		remove_safe(scaledFilePath)
+		return True
 	else:
 		return False
 		
