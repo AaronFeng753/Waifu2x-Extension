@@ -2894,7 +2894,7 @@ def checkUpdate():
 		if Version_current != Version_latest:
 			os.system('cls')
 			print(' 检测到新版本 : '+Version_latest)
-			print(' -----------------------------------------------------------')
+			print('-------------------------------')
 			while True:
 				download_update = input(' 你想现在下载更新吗?(y/n): ')
 				if download_update in ['y','n','Y','N']:
@@ -2906,6 +2906,7 @@ def checkUpdate():
 		else:
 			os.system('cls')
 			print(' 未检测到新版本')
+			print('------------------')
 			input(' 按下Enter返回')
 	except BaseException:
 		os.system('cls')
