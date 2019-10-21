@@ -52,6 +52,9 @@ https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 #### 8倍放大以及3级降噪后 3840x2400 (.jpg 525 KB):
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[3840x2400].jpg)
 
+#### 对比
+![Comparison](/Samples/image/Comparison.png)
+
 #### 原GIF 500 x 372 (493 KB):
 ![Original GIF](/Samples/gif/2_original.gif)
 
