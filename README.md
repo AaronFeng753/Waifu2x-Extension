@@ -51,6 +51,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 #### After 8x magnification, level 3 denoise and compress 3840x2400 (.jpg 525 KB):
 ![Scaled Imgae](/Samples/image/Waifu2x_8x_[3840x2400].jpg)
 
+#### Comparison
 ![Comparison](/Samples/image/Comparison.png)
 
 #### Original GIF 500 x 372 (493 KB):
