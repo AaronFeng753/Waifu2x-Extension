@@ -27,16 +27,12 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-
-- Fix bugs
-- Some improvements
-- Improve stability
-- Improved permission detection
+- Improved stability
 
 ------------------------------------------------
 
 To do:
--
+- 将重置启动器语言配置, 更改为重置配置并启动另一个语言的主程序
 
 '''
 
@@ -3759,6 +3755,7 @@ def Set_cols_lines(cols,lines):
 		json.dump(settings_values,f)
 	while Complete_ResizeWindow(cols,lines):
 		time.sleep(0.01)
+		Set_cols_lines(cols,lines)
 	return 0
 
 def Get_cols_lines():
@@ -3786,7 +3783,7 @@ def Complete_ResizeWindow(cols,lines):
 
 def Read_ResizeFile():
 	
-	default_values = {"cols_resize": 20, "lines_resize": 20}
+	default_values = {"cols_resize": 130, "lines_resize": 40}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'ResizeFile-waifu2xEX'
 	if os.path.exists(settingPath) == False:
