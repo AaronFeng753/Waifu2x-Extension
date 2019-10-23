@@ -27,7 +27,8 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- Improved stability
+- Improve stability
+- Performance optimization
 
 ------------------------------------------------
 
@@ -84,10 +85,6 @@ def MainMenu():
 	#=============================== 主菜单 初始化 ================================
 	
 	settings_values = ReadSettings()
-	
-	if settings_values['CheckUpdate'] == 'y':
-		thread_CheckUpdate=CheckUpdate_start_thread()
-		thread_CheckUpdate.start()
 	
 	tileSize = '[ '+settings_values['tileSize']+' ]'
 	
@@ -164,7 +161,7 @@ def MainMenu():
 		# 选项输入
 		mode = input(' ( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower() 
 			
-		Set_cols_lines(120,38) # 更改窗口大小到cmd默认大小
+		Set_cols_lines(120,40) # 更改窗口大小到cmd默认大小
 		
 		#================================ 选项判定 ====================================
 		
@@ -4614,7 +4611,15 @@ def init():		#初始化函数
 	thread_resizeWindow=ResizeWindow_Thread()
 	thread_resizeWindow.start()
 	
+	if settings_values['CheckUpdate'] == 'y':
+		thread_CheckUpdate=CheckUpdate_start_thread()
+		thread_CheckUpdate.start()
+	
 	MainMenu()
+	
+	if settings_values['CheckUpdate'] == 'y':
+		if thread_CheckUpdate.isAlive():
+			stop_thread(thread_CheckUpdate)
 	
 	if thread_resizeWindow.isAlive():
 		stop_thread(thread_resizeWindow)
