@@ -33,6 +33,8 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 
 更新日志
 - 提高稳定性
+- 优化性能
+- 修正文本错误
 
 ------------------------------------------------
 
@@ -88,10 +90,6 @@ Version_current='v3.6'
 def MainMenu():
 	
 	settings_values = ReadSettings()
-	
-	if settings_values['CheckUpdate'] == 'y':
-		thread_CheckUpdate=CheckUpdate_start_thread()
-		thread_CheckUpdate.start()
 	
 	tileSize = '[ '+settings_values['tileSize']+' ]'
 	
@@ -161,7 +159,7 @@ def MainMenu():
 		print('─'*65)
 		mode = input('( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower()
 		
-		Set_cols_lines(120,38)
+		Set_cols_lines(120,40)
 		
 		if mode == "1":
 			os.system('cls')
@@ -1154,7 +1152,6 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 			
 			thread_files = []
 	if thread_files != []:
-		#FinishedFileNum = TotalFileNum
 		Window_Title('  [放大图片]  文件: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')  预计完成时间: '+ETA)
 		for fname_ in thread_files:
 				thread1=waifu2x_converter_Thread_ImageModeC(fname_,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal)
@@ -2543,7 +2540,7 @@ def input_scale():
 			break
 		elif scale == 'help':
 			print('------------------------------------------')
-			print(' 放大比例 : 该值决定了要将图片放大几倍')
+			print(' 放大比例 : 该值决定了要将图像放大几倍')
 			print('------------------------------------------')
 			print('')
 		else:
@@ -2570,7 +2567,7 @@ def input_scale_Anime4k_waifu2x_converter():
 			break
 		elif scale == 'help':
 			print('------------------------------------------')
-			print(' 放大比例 : 该值决定了要将图片放大几倍')
+			print(' 放大比例 : 该值决定了要将图像放大几倍')
 			print('------------------------------------------')
 			print('')
 		else:
@@ -4611,10 +4608,18 @@ def init():		#初始化函数
 					
 	os.system('cls')
 	
+	if settings_values['CheckUpdate'] == 'y':
+		thread_CheckUpdate=CheckUpdate_start_thread()
+		thread_CheckUpdate.start()
+	
 	thread_resizeWindow=ResizeWindow_Thread()
 	thread_resizeWindow.start()
 	
 	MainMenu()
+	
+	if settings_values['CheckUpdate'] == 'y':
+		if thread_CheckUpdate.isAlive():
+			stop_thread(thread_CheckUpdate)
 	
 	if thread_resizeWindow.isAlive():
 		stop_thread(thread_resizeWindow)
