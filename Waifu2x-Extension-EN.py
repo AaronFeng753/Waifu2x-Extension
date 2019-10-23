@@ -32,7 +32,7 @@ Update log
 ------------------------------------------------
 
 To do:
-- 将重置启动器语言配置, 更改为重置配置并启动另一个语言的主程序
+- 
 
 '''
 
@@ -119,8 +119,8 @@ def MainMenu():
 	
 	while True:
 		
-		Set_cols_lines(65,35) #调整窗口大小
-		Set_cols_lines(66,36)
+		Set_cols_lines(65,37) #调整窗口大小
+		Set_cols_lines(66,38)
 		
 		Window_Title('') #重置窗口title
 		
@@ -157,10 +157,12 @@ def MainMenu():
 		print('│ 17 : Compatibility test   E : Exit.                          │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ D : Donate. (Alipay)      R : Report Bugs & Suggestions      │')
+		print('├──────────────────────────────────────────────────────────────┤')
+		print('│ Enter the option you want to execute and press [ Enter ].    │')
 		print('└──────────────────────────────────────────────────────────────┘')
 		
 		# 选项输入
-		mode = input('( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower() 
+		mode = input(' ( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower() 
 			
 		Set_cols_lines(120,38) # 更改窗口大小到cmd默认大小
 		
