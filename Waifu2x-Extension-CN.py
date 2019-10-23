@@ -37,7 +37,7 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 ------------------------------------------------
 
 To do:
-- 将重置启动器语言配置, 更改为重置配置并启动另一个语言的主程序
+- 
 
 '''
 
@@ -120,8 +120,8 @@ def MainMenu():
 	Error_log_clean()
 	
 	while True:
-		Set_cols_lines(66,35)
-		Set_cols_lines(67,36)
+		Set_cols_lines(66,37)
+		Set_cols_lines(67,38)
 		Window_Title('')
 		print('─'*65)
 		print('       Waifu2x-Extension  |  '+Version_current+'  |  作者: Aaron Feng')
@@ -156,6 +156,8 @@ def MainMenu():
 		print(' 17 : 兼容性测试         E : 退出.')
 		print('─'*65)
 		print(' D : 捐赠. (支付宝)      R : 提交反馈(Github)')
+		print('─'*65)
+		print(' 输入您想要执行的选项,然后按下 Enter 键.')
 		print('─'*65)
 		mode = input('( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower()
 		
