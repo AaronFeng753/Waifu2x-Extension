@@ -82,8 +82,11 @@ import traceback
 from playsound import playsound
 import struct
 import psutil
+import queue
 
-Version_current='v3.6'
+Version_current='v3.65'
+
+WindowSize_Queue = queue.Queue()
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -2198,14 +2201,18 @@ class PrograssBarThread (threading.Thread):
 
 
 def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
+	
 	ETA = 0
 	NewFileNum_Old=0
 	PrograssBar_len_old = 0
+	
 	if OldFileNum != 0:
+		
 		NewFileNum=0
 		time_start = time.time()
 		time.sleep(2.5)
 		print('\n')
+		
 		while NewFileNum <= OldFileNum and os.path.exists(ScalePath):
 			NewFileNum=0
 			if round_ > 1:
@@ -2220,7 +2227,7 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					for singleFile in files[2]:
 						if str(os.path.splitext(singleFile)[1]) in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
 							NewFileNum=NewFileNum+1
-				
+
 			if NewFileNum==0:
 				Percent = 0
 				BarStr = ''
@@ -2251,12 +2258,15 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"+"  "+"["+'Time Remaining: '+Seconds2hms(ETA)+" ] "+'[ETA: '+ETA_str+' ]'
 				
 				PrograssBar_len_new = len(PrograssBar)
-				current_cols = Get_cols_lines()[0]
+				cols_lines = Get_cols_lines()
+				current_cols = cols_lines[0]
+				current_lines = cols_lines[1]
 				if PrograssBar_len_new > current_cols:
-					Set_cols_lines(cols = PrograssBar_len_new,lines=38)
+					Set_cols_lines(cols = PrograssBar_len_new,lines=current_lines)
 				current_cols = Get_cols_lines()[0]
 				Add_len = current_cols-PrograssBar_len_new
-				
+				if Add_len < 0:
+					Add_len = 0
 				sys.stdout.write(PrograssBar+' '*Add_len)
 				sys.stdout.flush()
 					
@@ -2268,12 +2278,15 @@ def PrograssBar(OldFileNum,ScalePath,scale,round_,old_file_list_prograsssbar):
 					PrograssBar = "\r"+"Prograss("+str(NewFileNum)+"/"+str(OldFileNum)+"): "+BarStr+" "+str(Percent)+"%  ["+'Time Cost: '+timeCost_str+" ]"
 				
 				PrograssBar_len_new = len(PrograssBar)
-				current_cols = Get_cols_lines()[0]
+				cols_lines = Get_cols_lines()
+				current_cols = cols_lines[0]
+				current_lines = cols_lines[1]
 				if PrograssBar_len_new > current_cols:
-					Set_cols_lines(cols = PrograssBar_len_new,lines=38)
+					Set_cols_lines(cols = PrograssBar_len_new,lines=current_lines)
 				current_cols = Get_cols_lines()[0]
 				Add_len = current_cols-PrograssBar_len_new
-				
+				if Add_len < 0:
+					Add_len = 0
 				sys.stdout.write(PrograssBar+' '*Add_len)
 				sys.stdout.flush()
 			if NewFileNum == OldFileNum:
@@ -2312,9 +2325,12 @@ def Clock(TotalFileNum,FinishedFileNum):
 			Add_len = 0
 		clockStr_len_old = clockStr_len_new
 		
-		current_cols = Get_cols_lines()[0]
+		cols_lines = Get_cols_lines()
+		current_cols = cols_lines[0]
+		current_lines = cols_lines[1]
+		
 		if (clockStr_len_new+Add_len) > current_cols:
-			Set_cols_lines(cols = clockStr_len_new+Add_len+1,lines=38)		
+			Set_cols_lines(cols = clockStr_len_new+Add_len+1,lines=current_lines)
 		sys.stdout.write(clockStr+' '*Add_len)
 		sys.stdout.flush()
 		time.sleep(1)
@@ -3691,19 +3707,13 @@ class ResizeWindow_Thread(threading.Thread):
 		ResizeWindow()
 
 def ResizeWindow():
+	cols = 120
+	lines = 40
 	while True:
-		cols = 120
-		lines = 38
-		
-		try:
-			settings_values = Read_ResizeFile()
-			cols = settings_values['cols_resize']
-			lines = settings_values['lines_resize']
-		except BaseException:
-			time.sleep(0.02)
-			settings_values = Read_ResizeFile()
-			cols = settings_values['cols_resize']
-			lines = settings_values['lines_resize']
+		if WindowSize_Queue.empty()==False:
+			cols_lines = WindowSize_Queue.get()
+			cols=cols_lines[0]
+			lines=cols_lines[1]
 
 		h = ctypes.windll.kernel32.GetStdHandle(-12)
 		csbi = ctypes.create_string_buffer(22)
@@ -3718,70 +3728,54 @@ def ResizeWindow():
 				os.system('Resize-window.exe '+str(cols)+' '+str(lines))
 		else:
 			os.system('Resize-window.exe '+str(cols)+' '+str(lines))
-		time.sleep(0.05)
+		time.sleep(0.02)
 
 def Set_cols_lines(cols,lines):
-	settings_values = Read_ResizeFile()
-	settings_values['cols_resize'] = cols
-	settings_values['lines_resize'] = lines
-	with open('ResizeFile-waifu2xEX','w+') as f:
-		json.dump(settings_values,f)
+		
 	while Complete_ResizeWindow(cols,lines):
-		time.sleep(0.01)
-		Set_cols_lines(cols,lines)
+		while True:
+			WindowSize_Queue.put([cols,lines])
+			if WindowSize_Queue.empty()==False:
+				break
+		time.sleep(0.04)
+		
 	return 0
 
 def Get_cols_lines():
-	settings_values = Read_ResizeFile()
-	cols = settings_values['cols_resize']
-	lines = settings_values['lines_resize']
-	return [cols,lines]
+	
+	while True:
+		h = ctypes.windll.kernel32.GetStdHandle(-12)
+		csbi = ctypes.create_string_buffer(22)
+		res = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(h, csbi)
+		
+		if res:
+			(bufx, bufy, curx, cury, wattr,
+			 left, top, right, bottom, maxx, maxy) = struct.unpack("hhhhHhhhhhh", csbi.raw)
+			sizex = right - left + 1
+			sizey = bottom - top + 1
+			return [sizex,sizey]
+		else:
+			pass
 
 def Complete_ResizeWindow(cols,lines):
-	h = ctypes.windll.kernel32.GetStdHandle(-12)
-	csbi = ctypes.create_string_buffer(22)
-	res = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(h, csbi)
 	
-	if res:
-		(bufx, bufy, curx, cury, wattr,
-		 left, top, right, bottom, maxx, maxy) = struct.unpack("hhhhHhhhhhh", csbi.raw)
-		sizex = right - left + 1
-		sizey = bottom - top + 1
-		if sizex == cols and sizey == lines:
-			return False
-		else:
-			return True
-	else:
-		return True
-
-def Read_ResizeFile():
-	default_values = {"cols_resize": 130, "lines_resize": 40}
-	current_dir = os.path.dirname(os.path.abspath(__file__))
-	settingPath = current_dir+'\\'+'ResizeFile-waifu2xEX'
-	if os.path.exists(settingPath) == False:
-		with open(settingPath,'w+') as f:
-			json.dump(default_values,f)
-		return default_values
-	else:
-		settings_values = {}
+	
+	while True:
+		h = ctypes.windll.kernel32.GetStdHandle(-12)
+		csbi = ctypes.create_string_buffer(22)
+		res = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(h, csbi)
 		
-		try:
-			
-			with open(settingPath,'r+') as f:
-				settings_values = json.load(f)
-			
-		except BaseException:
-			
-			with open(settingPath,'w+') as f:
-				json.dump(default_values,f)
-			return default_values
-			
-		if len(settings_values) != len(default_values):
-			with open(settingPath,'w+') as f:
-				json.dump(default_values,f)
-			return default_values
+		if res:
+			(bufx, bufy, curx, cury, wattr,
+			 left, top, right, bottom, maxx, maxy) = struct.unpack("hhhhHhhhhhh", csbi.raw)
+			sizex = right - left + 1
+			sizey = bottom - top + 1
+			if sizex == cols and sizey == lines:
+				return False
+			else:
+				return True
 		else:
-			return settings_values
+			pass
 
 	
 	
@@ -4582,7 +4576,6 @@ def Del_Temp():
 	
 	remove_safe('Error_file_not_del.bat')
 	remove_safe('update_bat.bat')
-	remove_safe('ResizeFile-waifu2xEX')
 	
 	return 0
 
