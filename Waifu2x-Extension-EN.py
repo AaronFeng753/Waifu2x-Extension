@@ -27,8 +27,7 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- Improve stability
-- Performance optimization
+- 
 
 ------------------------------------------------
 
@@ -156,7 +155,7 @@ def MainMenu():
 		print('│                                                              │')
 		print('│ 17 : Compatibility test   E : Exit.                          │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print('│ D : Donate. (Alipay)      R : Report Bugs & Suggestions      │')
+		print('│ D : Donate.               R : Report Bugs & Suggestions      │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ Enter the option you want to execute and press [ Enter ].    │')
 		print('└──────────────────────────────────────────────────────────────┘')
