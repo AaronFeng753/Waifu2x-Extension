@@ -276,7 +276,6 @@ def MainMenu():
 		elif mode == "e":
 			os.system('cls')
 			ChangeColor_cmd_original()
-			Del_Temp()#退出时删除冗余文件
 			return 0
 		elif mode == "d":
 			os.system('cls')
@@ -3099,6 +3098,7 @@ def Settings():
 		
 		elif mode == '5':
 			os.system('cls')
+			print('当前仅在 "waifu2x-ncnn-vulkan" 模式下生效.')
 			print('─'*68)
 			print(' 如果您选择 不重命名 放大后的图片:')
 			print(' 生成的图片会保存在 输入路径\\scaled_waifu2x')
@@ -4582,7 +4582,7 @@ def init():		#初始化函数
 	Window_Title('')	#更改控制台标题
 	ChangeColor_default()	#更改文字颜色
 	
-	Del_Temp()#启动时删除冗余文件
+	Del_Temp()#删除冗余文件
 	
 	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
 	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
@@ -4608,12 +4608,18 @@ def init():		#初始化函数
 	
 	MainMenu()
 	
-	if settings_values['CheckUpdate'] == 'y':
+	Del_Temp()#删除冗余文件
+	
+	try:
+		
+		if thread_resizeWindow.isAlive():
+			stop_thread(thread_resizeWindow)
+		
 		if thread_CheckUpdate.isAlive():
 			stop_thread(thread_CheckUpdate)
 	
-	if thread_resizeWindow.isAlive():
-		stop_thread(thread_resizeWindow)
+	except BaseException:
+		return 0
 			
 
 #======================== Start ========================
