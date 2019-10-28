@@ -3117,6 +3117,7 @@ def Settings():
 		
 		elif mode == '5':
 			os.system('cls')
+			print('Currently only takes effect in "waifu2x-ncnn-vulkan" mode.')
 			print('------------------------------------------------------------------')
 			print('If the value of "Rename result images" == "n":')
 			print('The result images will stay in input-path\\scaled_waifu2x')
@@ -4602,12 +4603,18 @@ def init():		#初始化函数
 	
 	MainMenu()
 	
-	if settings_values['CheckUpdate'] == 'y':
+	Del_Temp()#删除冗余文件
+	
+	try:
+		
+		if thread_resizeWindow.isAlive():
+			stop_thread(thread_resizeWindow)
+		
 		if thread_CheckUpdate.isAlive():
 			stop_thread(thread_CheckUpdate)
 	
-	if thread_resizeWindow.isAlive():
-		stop_thread(thread_resizeWindow)
+	except BaseException:
+		return 0
 
 #======================== Start ========================
         
