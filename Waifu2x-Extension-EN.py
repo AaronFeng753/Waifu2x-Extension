@@ -28,14 +28,14 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 
 Update log
 - Add 1x magnification for Waifu2x-converter mode.
+- Add remaining time display for Waifu2x-converter mode.
 - Performance optimization.
 - Other improvements.
 
 ------------------------------------------------
 
 To do:
-- 测试更改文件夹后代码有没有出错
-- 利用队列, 实现converter和anime4k模式的剩余时间显示
+- 
 
 '''
 
