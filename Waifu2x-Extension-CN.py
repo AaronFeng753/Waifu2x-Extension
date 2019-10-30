@@ -32,16 +32,15 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 更新日志
-- Waifu2x-converter 模式加入 1x 放大支持(即不放大).
-- Waifu2x-converter 模式-视频放大加入剩余时间显示
+- 为 Waifu2x-converter 模式加入 1x 放大支持(即不放大).
+- 为 Waifu2x-converter 模式加入剩余时间显示.
 - 性能优化
 - 其他改进
 
 ------------------------------------------------
 
 To do:
-- 测试更改文件夹后代码有没有出错
-- 利用队列, 实现converter和anime4k模式的剩余时间显示
+- 
 
 '''
 
@@ -90,7 +89,7 @@ Version_current='v3.65'
 
 WindowSize_Queue = queue.Queue()
 
-
+#========= converter video ===============
 TimeRemaining_MainToSub_converter_video_Queue = queue.Queue()
 ETA_MainToSub_converter_video_Queue = queue.Queue()
 finished_num_MainToSub_converter_video_Queue = queue.Queue()
@@ -98,10 +97,19 @@ total_num_MainToSub_converter_video_Queue = queue.Queue()
 finished_frames_MainToSub_converter_video_Queue = queue.Queue()
 total_frames_MainToSub_converter_video_Queue = queue.Queue()
 
+#========= converter image ===============
 TimeRemaining_MainToSub_converter_image_Queue = queue.Queue()
 ETA_MainToSub_converter_image_Queue = queue.Queue()
 FinishedFileNum_MainToSub_converter_image_Queue = queue.Queue()
 TotalFileNum_MainToSub_converter_image_Queue = queue.Queue()
+
+#========= converter gif ===============
+TimeRemaining_MainToSub_converter_gif_Queue = queue.Queue()
+ETA_MainToSub_converter_gif_Queue = queue.Queue()
+finished_num_MainToSub_converter_gif_Queue = queue.Queue()
+total_num_MainToSub_converter_gif_Queue = queue.Queue()
+finished_frames_MainToSub_converter_gif_Queue = queue.Queue()
+total_frames_MainToSub_converter_gif_Queue = queue.Queue()
 
 #======================================================== MAIN MENU ==============================================================
 
@@ -1210,6 +1218,8 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 	
 	Set_cols_lines(150,40)
 	
+	Empty_Queue_gif_converter()
+	
 	settings_values = ReadSettings()
 	Gif_inputPathList_files = []
 	for inputPath in inputPathList_files:
@@ -1220,7 +1230,9 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			Gif_inputPathList_files.append(inputPath)
 	
 	Total_num = len(Gif_inputPathList_files)
-	finished_num = 1
+	
+	finished_num = 0
+	
 	for inputPath in Gif_inputPathList_files:
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
@@ -1243,8 +1255,15 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		input_folder = scaledFilePath+'_split'
 		output_folder = scaledFilePath+'_split\\scaled'
 		model_dir = 'waifu2x-converter\\models_rgb'
+		
+		total_num_MainToSub_converter_gif_Queue.put(str(Total_num))
+		thread_title = Time_Remaining_Title_converter_gif_Thread()
+		thread_title.start()
+		
 		for path,useless,fnames in os.walk(input_folder):
+			
 			total_frame = len(fnames)
+			total_frames_MainToSub_converter_gif_Queue.put(str(total_frame))
 			
 			max_threads = settings_values['Number_of_threads_Waifu2x_converter']
 			finished_frame = 0
@@ -1253,7 +1272,8 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			ETA = 'Null'
 			
 			for fname in fnames:
-				Window_Title('  [放大 GIF]  文件: '+'('+str(finished_num)+'/'+str(Total_num)+')  帧: ('+str(finished_frame)+'/'+str(total_frame)+')  预计完成时间: '+ETA)
+				#Window_Title('  [放大 GIF]  文件: '+'('+str(finished_num)+'/'+str(Total_num)+')  帧: ('+str(finished_frame)+'/'+str(total_frame)+')  预计完成时间: '+ETA)
+				
 				thread_files.append(fname)
 				if len(thread_files) == max_threads:
 					for fname_ in thread_files:
@@ -1262,17 +1282,24 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 					while True:
 						if thread1.isAlive()== False:
 							break
+							
 					finished_frame = finished_frame+len(thread_files)
+					finished_frames_MainToSub_converter_gif_Queue.put(str(finished_frame))
 					
 					remain_frames = total_frame - finished_frame
 					time_cost = time.time()-time_start_scale
+					
 					time_remain = (time_cost/finished_frame)*remain_frames
+					TimeRemaining_MainToSub_converter_gif_Queue.put(int(time_remain))
+					
 					ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
+					ETA_MainToSub_converter_gif_Queue.put(str(ETA))
 					
 					thread_files = []
 			if thread_files != []:
 				#finished_frame = total_frame
-				Window_Title('  [放大 GIF]  文件: '+'('+str(finished_num)+'/'+str(Total_num)+')  帧: ('+str(finished_frame)+'/'+str(total_frame)+')  预计完成时间: '+ETA)
+				#Window_Title('  [放大 GIF]  文件: '+'('+str(finished_num)+'/'+str(Total_num)+')  帧: ('+str(finished_frame)+'/'+str(total_frame)+')  预计完成时间: '+ETA)
+				
 				for fname_ in thread_files:
 					thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_,scale,noiseLevel)
 					thread1.start()
@@ -1286,7 +1313,10 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 				else:
 					time.sleep(0.02)
 			break
-			
+		
+		if thread_title.isAlive():
+			stop_thread(thread_title)
+		
 		print('')	
 		print(' 组装 Gif.....')
 		assembleGif(scaledFilePath,Duration_gif)
@@ -1309,7 +1339,6 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 				]
 				
 				Pop_up_window('Error_file_not_del','错误',list_Content,'')
-			
 		
 		if optimizeGif == 'y':
 			print(' 优化 gif....')
@@ -1318,7 +1347,10 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			print(' Gif 优化完成\n')
 		else:
 			print('')
+		
 		finished_num = finished_num+1
+		finished_num_MainToSub_converter_gif_Queue.put(str(finished_num))
+		
 	Window_Title('')
 
 #============================================== DelOldFileThread_4x ===========================================
@@ -4807,6 +4839,75 @@ def Empty_Queue_image_converter():
 	
 	if TotalFileNum_MainToSub_converter_image_Queue.empty()==False:
 		TotalFileNum = TotalFileNum_MainToSub_converter_image_Queue.get()
+		
+	return 0
+
+#===================================================== converter gif Title进度显示线程 =============================================
+class Time_Remaining_Title_converter_gif_Thread(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+        
+	def run(self):
+		ETA = 'null'
+		
+		TimeRemaining_str = 'null'
+		TimeRemaining=-1
+		
+		finished_num = '0'
+		total_num = 'null'
+		finished_frames = '0'
+		total_frames = 'null'
+		
+		while True:
+			if TimeRemaining_MainToSub_converter_gif_Queue.empty()==False:
+				TimeRemaining = TimeRemaining_MainToSub_converter_gif_Queue.get()
+				
+			if ETA_MainToSub_converter_gif_Queue.empty()==False:
+				ETA = ETA_MainToSub_converter_gif_Queue.get()
+				
+			if finished_num_MainToSub_converter_gif_Queue.empty()==False:
+				finished_num = finished_num_MainToSub_converter_gif_Queue.get()
+			
+			if total_num_MainToSub_converter_gif_Queue.empty()==False:
+				total_num = total_num_MainToSub_converter_gif_Queue.get()
+			
+			if finished_frames_MainToSub_converter_gif_Queue.empty()==False:
+				finished_frames = finished_frames_MainToSub_converter_gif_Queue.get()
+			
+			if total_frames_MainToSub_converter_gif_Queue.empty()==False:
+				total_frames = total_frames_MainToSub_converter_gif_Queue.get()
+			
+			if TimeRemaining>0:
+				TimeRemaining_str = Seconds2hms(TimeRemaining)
+			
+			Window_Title('  [放大GIF]  GIF: '+'('+finished_num+'/'+total_num+')  帧:('+finished_frames+'/'+total_frames+')  剩余时间: '+TimeRemaining_str+'  预计完成时间: '+ETA)
+			
+			if TimeRemaining>0:
+				TimeRemaining = TimeRemaining-1
+				if TimeRemaining<0:
+					TimeRemaining=0
+	
+			time.sleep(1)
+
+def Empty_Queue_gif_converter():
+	
+	if TimeRemaining_MainToSub_converter_gif_Queue.empty()==False:
+		TimeRemaining = TimeRemaining_MainToSub_converter_gif_Queue.get()
+		
+	if ETA_MainToSub_converter_gif_Queue.empty()==False:
+		ETA = ETA_MainToSub_converter_gif_Queue.get()
+		
+	if finished_num_MainToSub_converter_gif_Queue.empty()==False:
+		finished_num = finished_num_MainToSub_converter_gif_Queue.get()
+	
+	if total_num_MainToSub_converter_gif_Queue.empty()==False:
+		total_num = total_num_MainToSub_converter_gif_Queue.get()
+	
+	if finished_frames_MainToSub_converter_gif_Queue.empty()==False:
+		finished_frames = finished_frames_MainToSub_converter_gif_Queue.get()
+	
+	if total_frames_MainToSub_converter_gif_Queue.empty()==False:
+		total_frames = total_frames_MainToSub_converter_gif_Queue.get()
 		
 	return 0
 
