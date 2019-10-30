@@ -98,6 +98,11 @@ total_num_MainToSub_converter_video_Queue = queue.Queue()
 finished_frames_MainToSub_converter_video_Queue = queue.Queue()
 total_frames_MainToSub_converter_video_Queue = queue.Queue()
 
+TimeRemaining_MainToSub_converter_image_Queue = queue.Queue()
+ETA_MainToSub_converter_image_Queue = queue.Queue()
+FinishedFileNum_MainToSub_converter_image_Queue = queue.Queue()
+TotalFileNum_MainToSub_converter_image_Queue = queue.Queue()
+
 #======================================================== MAIN MENU ==============================================================
 
 def MainMenu():
@@ -1135,16 +1140,26 @@ class waifu2x_converter_Thread_ImageModeC(threading.Thread):
 #=============================================  Process_ImageModeC_waifu2x_converter  ======================================================
 
 def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal):
+	
+	Set_cols_lines(145,40)
+	
+	Empty_Queue_image_converter() # 清空队列
+	
 	settings_values = ReadSettings()
+	
 	TotalFileNum = len(inputPathList_Image)
+	TotalFileNum_MainToSub_converter_image_Queue.put(str(TotalFileNum))
+	
 	max_threads = settings_values['Number_of_threads_Waifu2x_converter']
 	FinishedFileNum = 0
 	thread_files = []
 	ETA = 'Null'
 	time_start_scale = time.time()
 	
+	thread_title = Time_Remaining_Title_converter_image_Thread()
+	thread_title.start()
+	
 	for inputPath in inputPathList_Image:
-		Window_Title('  [放大图片]  文件: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')  预计完成时间: '+ETA)
 		
 		thread_files.append(inputPath)
 		if len(thread_files) == max_threads:
@@ -1154,16 +1169,22 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 			while True:
 				if thread1.isAlive()== False:
 					break
+					
 			FinishedFileNum = FinishedFileNum+len(thread_files)
+			FinishedFileNum_MainToSub_converter_image_Queue.put(str(FinishedFileNum))
 			
 			remain_frames = TotalFileNum - FinishedFileNum
 			time_cost = time.time()-time_start_scale
+			
 			time_remain = (time_cost/FinishedFileNum)*remain_frames
+			TimeRemaining_MainToSub_converter_image_Queue.put(int(time_remain))
+			
 			ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
+			ETA_MainToSub_converter_image_Queue.put(str(ETA))
 			
 			thread_files = []
 	if thread_files != []:
-		Window_Title('  [放大图片]  文件: '+'('+str(FinishedFileNum)+'/'+str(TotalFileNum)+')  预计完成时间: '+ETA)
+
 		for fname_ in thread_files:
 				thread1=waifu2x_converter_Thread_ImageModeC(fname_,JpgQuality,noiseLevel,scale,saveAsJPG,delorginal)
 				thread1.start()
@@ -1178,10 +1199,17 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 		else:
 			time.sleep(0.02)
 	
+	if thread_title.isAlive():
+		stop_thread(thread_title)
+		
+	
 	Window_Title('')
 
 #==============================================  process_gif_scale_modeABC_waifu2x_converter =================================================
 def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel,optimizeGif,delorginal):
+	
+	Set_cols_lines(150,40)
+	
 	settings_values = ReadSettings()
 	Gif_inputPathList_files = []
 	for inputPath in inputPathList_files:
@@ -2953,6 +2981,7 @@ def input_sleepMode():
 
 #======================================================= Seconds 2 h:m:s =======================================================
 def Seconds2hms(seconds):
+	seconds = int(seconds)
 	if seconds > 59 and seconds < 3600:
 		minutes = int(seconds/60)
 		seconds = seconds - (60*minutes)
@@ -4723,6 +4752,61 @@ def Empty_Queue_video_converter():
 	
 	if total_frames_MainToSub_converter_video_Queue.empty()==False:
 		total_frames = total_frames_MainToSub_converter_video_Queue.get()
+		
+	return 0
+
+#===================================================== converter image Title进度显示线程 =============================================
+class Time_Remaining_Title_converter_image_Thread(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+        
+	def run(self):
+		ETA = 'null'
+		
+		TimeRemaining_str = 'null'
+		TimeRemaining=-1
+		
+		FinishedFileNum = '0'
+		TotalFileNum = 'null'
+		
+		while True:
+			if TimeRemaining_MainToSub_converter_image_Queue.empty()==False:
+				TimeRemaining = TimeRemaining_MainToSub_converter_image_Queue.get()
+				
+			if ETA_MainToSub_converter_image_Queue.empty()==False:
+				ETA = ETA_MainToSub_converter_image_Queue.get()
+				
+			if FinishedFileNum_MainToSub_converter_image_Queue.empty()==False:
+				FinishedFileNum = FinishedFileNum_MainToSub_converter_image_Queue.get()
+			
+			if TotalFileNum_MainToSub_converter_image_Queue.empty()==False:
+				TotalFileNum = TotalFileNum_MainToSub_converter_image_Queue.get()
+			
+			if TimeRemaining>0:
+				TimeRemaining_str = Seconds2hms(TimeRemaining)
+			
+			Window_Title('  [放大图片]  图片: '+'('+FinishedFileNum+'/'+TotalFileNum+')  剩余时间: '+TimeRemaining_str+'  预计完成时间: '+ETA)
+			
+			if TimeRemaining>0:
+				TimeRemaining = TimeRemaining-1
+				if TimeRemaining<0:
+					TimeRemaining=0
+	
+			time.sleep(1)
+
+def Empty_Queue_image_converter():
+	
+	if TimeRemaining_MainToSub_converter_image_Queue.empty()==False:
+		TimeRemaining = TimeRemaining_MainToSub_converter_image_Queue.get()
+		
+	if ETA_MainToSub_converter_image_Queue.empty()==False:
+		ETA = ETA_MainToSub_converter_image_Queue.get()
+		
+	if FinishedFileNum_MainToSub_converter_image_Queue.empty()==False:
+		FinishedFileNum = FinishedFileNum_MainToSub_converter_image_Queue.get()
+	
+	if TotalFileNum_MainToSub_converter_image_Queue.empty()==False:
+		TotalFileNum = TotalFileNum_MainToSub_converter_image_Queue.get()
 		
 	return 0
 
