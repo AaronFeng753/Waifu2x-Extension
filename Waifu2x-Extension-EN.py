@@ -30,12 +30,13 @@ Update log
 - Add 1x magnification for Waifu2x-converter mode.
 - Add remaining time display for Waifu2x-converter mode.
 - Performance optimization.
+- Fix bug.
 - Other improvements.
 
 ------------------------------------------------
 
 To do:
-- 
+- 检测重复路径
 
 '''
 
@@ -281,7 +282,7 @@ def MainMenu():
 			Settings()
 			settings_values = ReadSettings()
 			if settings_values['Video_scale_mode'] == 'anime4k':
-				Video_str = 'Scale Video.          '
+				Video_str = 'Scale Video.(Anime4k) '
 			else:
 				Video_str = 'Scale & Denoise Video.'
 				
@@ -4021,6 +4022,8 @@ def Benchmark_Anime4K():
 		os.system("rd /s/q \""+output_folder+"\"")
 	
 	for x in range(1,129):
+		
+		print(' Running....')
 		
 		os.mkdir(output_folder)
 		
