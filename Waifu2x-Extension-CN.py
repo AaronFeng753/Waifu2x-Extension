@@ -32,7 +32,7 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 更新日志
-- 为 Waifu2x-converter 模式加入 1x 放大支持(即不放大).
+- 为 Waifu2x-converter 模式加入 1x 放大支持.
 - 为 Waifu2x-converter 模式加入剩余时间显示.
 - 性能优化
 - 其他改进
@@ -84,8 +84,9 @@ from playsound import playsound
 import struct
 import psutil
 import queue
+import random
 
-Version_current='v3.65'
+Version_current='v3.7'
 
 WindowSize_Queue = queue.Queue()
 
@@ -523,6 +524,10 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 	Total_folder_num = len(inputPathList)
 	Finished_folder_num = 1
 	for inputPath in inputPathList:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		Window_Title('  [放大图片]  文件夹: ('+str(Finished_folder_num)+'/'+str(Total_folder_num)+')')
 		oldfilenumber=FileCount(inputPath)
 		scalepath = inputPath+"\\scaled_waifu2x\\"
@@ -722,6 +727,10 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 	TotalFileNum = len(inputPathList_Image)
 	FinishedFileNum = 1
 	for inputPath in inputPathList_Image:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		scaledFilePath = os.path.splitext(inputPath)[0]
 		fileNameAndExt=str(os.path.basename(inputPath))
 		
@@ -785,6 +794,10 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 	Total_num = len(Gif_inputPathList_files)
 	finished_num = 1
 	for inputPath in Gif_inputPathList_files:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		Window_Title('  [放大 GIF]  文件: '+'('+str(finished_num)+'/'+str(Total_num)+')')
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
@@ -1169,6 +1182,9 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 	
 	for inputPath in inputPathList_Image:
 		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		thread_files.append(inputPath)
 		if len(thread_files) == max_threads:
 			for fname_ in thread_files:
@@ -1234,6 +1250,10 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 	finished_num = 0
 	
 	for inputPath in Gif_inputPathList_files:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
 		Duration_gif=getDuration(inputPath)
@@ -1493,6 +1513,9 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 	
 	for inputPath in inputPathList_files:
 		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		total_num_MainToSub_converter_video_Queue.put(str(total_num))
 		
 		video2images(inputPath) #拆解视频
@@ -1717,6 +1740,10 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 	total_num = len(inputPathList_files)
 	finished_num = 1
 	for inputPath in inputPathList_files:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		Window_Title('  [放大视频]  视频: '+'('+str(finished_num)+'/'+str(total_num)+')')
 		video2images(inputPath) #拆解视频
 		
@@ -2024,6 +2051,10 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 	total_num = len(inputPathList_files)
 	finished_num = 1
 	for inputPath in inputPathList_files:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		Window_Title('  [放大视频]  视频: '+'('+str(finished_num)+'/'+str(total_num)+')')
 		video2images(inputPath) #拆解视频
 		
@@ -3086,6 +3117,11 @@ def CheckUpdate_start():
 		
 		if Version_current != Version_latest:
 			
+			Pop_up_window_folder = 'Pop_up_window_folder_waifu2xEX'
+			
+			if os.path.exists(Pop_up_window_folder)==False:
+				os.mkdir(Pop_up_window_folder)
+			
 			settings_values = ReadSettings()
 			
 			update_bat_str=[
@@ -3111,9 +3147,11 @@ def CheckUpdate_start():
 			'EXIT \n'
 			]
 			
-			with open('update_bat.bat','w+',encoding='ANSI') as f:
+			Bat_path = Pop_up_window_folder+'\\'+'update_bat.bat'
+			
+			with open(Bat_path,'w+',encoding='ANSI') as f:
 				f.writelines(update_bat_str)
-			os.system('start update_bat.bat')
+			os.system('start '+Bat_path)
 			
 			return 0
 			
@@ -4651,12 +4689,18 @@ def Remove_File_2_Folder(Dict_New_folder_Old_folder):
 
 #================================================ Pop-up window ====================================================================
 def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
+	
+	Pop_up_window_folder = 'Pop_up_window_folder_waifu2xEX'
+	
+	if os.path.exists(Pop_up_window_folder) == False:
+		os.mkdir(Pop_up_window_folder)
+	
 	settings_values = ReadSettings()
 	str_FileName = str_FileName.strip(' ')
 	start_bat_str=[
 		'@echo off \n',
 		'color '+settings_values['default_color']+' \n',
-		'title = Waifu2x-Extension '+Version_current+' 作者: Aaron Feng  [ '+str_Title+' ] \n',
+		'title = Waifu2x扩展 '+Version_current+' 作者: Aaron Feng  [ '+str_Title+' ] \n',
 		]
 	
 	end_bat_str=[
@@ -4676,10 +4720,16 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 	else:
 		Full_bat_str= start_bat_str+list_Content+wait_time_str
 	
-	with open(str_FileName+'.bat','w+',encoding='ANSI') as f:
+	window_path = ''
+	while True:
+		window_path = Pop_up_window_folder+'\\'+str_FileName+str(random.randint(10,10000))+'.bat'
+		if os.path.exists(window_path)==False:
+			break
+	
+	with open(window_path,'w+',encoding='ANSI') as f:
 		f.writelines(Full_bat_str)
 	
-	os.system('start '+str_FileName+'.bat')
+	os.system('start '+window_path)
 	
 	return 0 
 
@@ -4713,8 +4763,12 @@ def ShutDown():
 #===================================================== 删除冗余文件 =============================================
 def Del_Temp():
 	
-	remove_safe('Error_file_not_del.bat')
-	remove_safe('update_bat.bat')
+	Pop_up_window_folder = 'Pop_up_window_folder_waifu2xEX'
+	if os.path.exists(Pop_up_window_folder):
+		for path,useless,fnames in os.walk(Pop_up_window_folder):
+			for fname in fnames:
+				remove_safe(path+'\\'+fname)
+			break
 	
 	return 0
 
@@ -4910,6 +4964,23 @@ def Empty_Queue_gif_converter():
 		total_frames = total_frames_MainToSub_converter_gif_Queue.get()
 		
 	return 0
+	
+#=========================================== 检测文件是否存在并弹窗 =================================
+def Path_exists_self(path):
+	
+	if os.path.exists(path)== False:
+		list_Content=[
+			'echo -----------------------------------------\n',
+			'echo 发生错误,该路径:\n',
+			'echo '+path+'\n'
+			'echo 不存在或者无法访问.\n'
+			'echo -----------------------------------------\n'
+		]
+		
+		Pop_up_window('Error_path_does_not_exists','错误',list_Content,'')
+		return False
+	else:
+		return True
 
 #==========================================  Init  ==================================================================
 def init():		#初始化函数
