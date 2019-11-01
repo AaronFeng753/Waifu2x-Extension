@@ -78,11 +78,13 @@ from playsound import playsound
 import struct
 import psutil
 import queue
+import random
 
-Version_current='v3.65'
+Version_current='v3.7'
 
 WindowSize_Queue = queue.Queue()
 
+#========= converter video ===============
 TimeRemaining_MainToSub_converter_video_Queue = queue.Queue()
 ETA_MainToSub_converter_video_Queue = queue.Queue()
 finished_num_MainToSub_converter_video_Queue = queue.Queue()
@@ -90,11 +92,19 @@ total_num_MainToSub_converter_video_Queue = queue.Queue()
 finished_frames_MainToSub_converter_video_Queue = queue.Queue()
 total_frames_MainToSub_converter_video_Queue = queue.Queue()
 
+#========= converter image ===============
 TimeRemaining_MainToSub_converter_image_Queue = queue.Queue()
 ETA_MainToSub_converter_image_Queue = queue.Queue()
 FinishedFileNum_MainToSub_converter_image_Queue = queue.Queue()
 TotalFileNum_MainToSub_converter_image_Queue = queue.Queue()
 
+#========= converter gif ===============
+TimeRemaining_MainToSub_converter_gif_Queue = queue.Queue()
+ETA_MainToSub_converter_gif_Queue = queue.Queue()
+finished_num_MainToSub_converter_gif_Queue = queue.Queue()
+total_num_MainToSub_converter_gif_Queue = queue.Queue()
+finished_frames_MainToSub_converter_gif_Queue = queue.Queue()
+total_frames_MainToSub_converter_gif_Queue = queue.Queue()
 #======================================================== MAIN MENU ==============================================================
 
 def MainMenu():
@@ -310,7 +320,6 @@ def MainMenu():
 		elif mode == "e":
 			os.system('cls')
 			ChangeColor_cmd_original()
-			Del_Temp()
 			return 0
 		elif mode == "d":
 			os.system('cls')
@@ -531,6 +540,10 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 	Total_folder_num = len(inputPathList)
 	Finished_folder_num = 1
 	for inputPath in inputPathList:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		Window_Title('  [Scale Images]  Folder: ('+str(Finished_folder_num)+'/'+str(Total_folder_num)+')')
 		oldfilenumber=FileCount(inputPath)
 		scalepath = inputPath+"\\scaled_waifu2x\\"
@@ -729,6 +742,10 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 	TotalFileNum = len(inputPathList_Image)
 	FinishedFileNum = 1
 	for inputPath in inputPathList_Image:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		scaledFilePath = os.path.splitext(inputPath)[0]
 		fileNameAndExt=str(os.path.basename(inputPath))
 		
@@ -791,6 +808,10 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 	Total_num = len(Gif_inputPathList_files)
 	finished_num = 1
 	for inputPath in Gif_inputPathList_files:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')')
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
@@ -1177,6 +1198,9 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 	
 	for inputPath in inputPathList_Image:
 		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		thread_files.append(inputPath)
 		if len(thread_files) == max_threads:
 			for fname_ in thread_files:
@@ -1224,6 +1248,11 @@ def Process_ImageModeC_waifu2x_converter(inputPathList_Image,JpgQuality,noiseLev
 
 #==============================================  process_gif_scale_modeABC_waifu2x_converter =================================================
 def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel,optimizeGif,delorginal):
+	
+	Set_cols_lines(150,40)
+	
+	Empty_Queue_gif_converter()
+	
 	settings_values = ReadSettings()
 	Gif_inputPathList_files = []
 	for inputPath in inputPathList_files:
@@ -1234,14 +1263,19 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			Gif_inputPathList_files.append(inputPath)
 	
 	Total_num = len(Gif_inputPathList_files)
-	finished_num = 1
+	
+	finished_num = 0
+	
 	for inputPath in Gif_inputPathList_files:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
 		Duration_gif=getDuration(inputPath)
-		print('Split gif.....')
+		print(' Split GIF.....')
 		splitGif(inputPath,scaledFilePath)
-		
 		
 		time_start_scale = time.time()
 		
@@ -1253,13 +1287,20 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			os.system("rd /s/q \""+scaledFilePath+'_split\\scaled'+'"')
 		os.mkdir(scaledFilePath+'_split\\scaled')
 		
-		print('scale images.....')
+		print(' Scale images.....')
 		
 		input_folder = scaledFilePath+'_split'
 		output_folder = scaledFilePath+'_split\\scaled'
 		model_dir = 'waifu2x-converter\\models_rgb'
+		
+		total_num_MainToSub_converter_gif_Queue.put(str(Total_num))
+		thread_title = Time_Remaining_Title_converter_gif_Thread()
+		thread_title.start()
+		
 		for path,useless,fnames in os.walk(input_folder):
+			
 			total_frame = len(fnames)
+			total_frames_MainToSub_converter_gif_Queue.put(str(total_frame))
 			
 			max_threads = settings_values['Number_of_threads_Waifu2x_converter']
 			finished_frame = 0
@@ -1268,7 +1309,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 			ETA = 'Null'
 			
 			for fname in fnames:
-				Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')  Frames: ('+str(finished_frame)+'/'+str(total_frame)+')  ETA: '+ETA)
+				
 				thread_files.append(fname)
 				if len(thread_files) == max_threads:
 					for fname_ in thread_files:
@@ -1277,18 +1318,22 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 					while True:
 						if thread1.isAlive()== False:
 							break
+							
 					finished_frame = finished_frame+len(thread_files)
+					finished_frames_MainToSub_converter_gif_Queue.put(str(finished_frame))
 					
 					remain_frames = total_frame - finished_frame
 					time_cost = time.time()-time_start_scale
+					
 					time_remain = (time_cost/finished_frame)*remain_frames
+					TimeRemaining_MainToSub_converter_gif_Queue.put(int(time_remain))
+					
 					ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
+					ETA_MainToSub_converter_gif_Queue.put(str(ETA))
 					
 					thread_files = []
-					
 			if thread_files != []:
-				#finished_frame = total_frame
-				Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')  Frames: ('+str(finished_frame)+'/'+str(total_frame)+')  ETA: '+ETA)
+				
 				for fname_ in thread_files:
 					thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_,scale,noiseLevel)
 					thread1.start()
@@ -1296,17 +1341,20 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 					if thread1.isAlive()== False:
 						break
 				thread_files = []
-				while True:
-					if Process_exist('waifu2x-converter_x64.exe')== False:
-						break
-					else:
-						time.sleep(0.02)
+			while True:
+				if Process_exist('waifu2x-converter_x64.exe')== False:
+					break
+				else:
+					time.sleep(0.02)
 			break
 		
+		if thread_title.isAlive():
+			stop_thread(thread_title)
+		
 		print('')	
-		print('Assembling Gif.....')
+		print(' Assemble Gif.....')
 		assembleGif(scaledFilePath,Duration_gif)
-		print('Gif assembled')
+		print(' Gif assembled')
 		
 		os.system("rd /s/q \""+scaledFilePath+'_split"')
 		
@@ -1325,16 +1373,18 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 				]
 				
 				Pop_up_window('Error_file_not_del','Error',list_Content,'')
-			
 		
 		if optimizeGif == 'y':
-			print('Compressing gif....')
+			print(' Optimize gif....')
 			compress_gif(scaledFilePath+'_waifu2x.gif','1')
 			remove_safe(scaledFilePath+'_waifu2x.gif')
-			print('Gif compressed\n')
+			print(' Gif optimized\n')
 		else:
 			print('')
+		
 		finished_num = finished_num+1
+		finished_num_MainToSub_converter_gif_Queue.put(str(finished_num))
+		
 	Window_Title('')
 
 #============================================== DelOldFileThread_4x ===========================================
@@ -1477,6 +1527,9 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 	finished_num_MainToSub_converter_video_Queue.put(str(finished_num))
 	
 	for inputPath in inputPathList_files:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
 		
 		total_num_MainToSub_converter_video_Queue.put(str(total_num))
 		
@@ -1701,6 +1754,10 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 	total_num = len(inputPathList_files)
 	finished_num = 1
 	for inputPath in inputPathList_files:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
 		video2images(inputPath) #拆解视频
 		
@@ -2007,6 +2064,10 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 	total_num = len(inputPathList_files)
 	finished_num = 1
 	for inputPath in inputPathList_files:
+		
+		if Path_exists_self(inputPath)==False:
+			continue
+		
 		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
 		video2images(inputPath) #拆解视频
 		
@@ -3058,6 +3119,12 @@ def CheckUpdate_start():
 		
 		if Version_current != Version_latest:
 			
+			
+			Pop_up_window_folder = 'Pop_up_window_folder_waifu2xEX'
+			
+			if os.path.exists(Pop_up_window_folder)==False:
+				os.mkdir(Pop_up_window_folder)
+			
 			settings_values = ReadSettings()
 			
 			update_bat_str=[
@@ -3082,9 +3149,11 @@ def CheckUpdate_start():
 			'EXIT \n'
 			]
 			
-			with open('update_bat.bat','w+',encoding='ANSI') as f:
+			Bat_path = Pop_up_window_folder+'\\'+'update_bat.bat'
+			
+			with open(Bat_path,'w+',encoding='ANSI') as f:
 				f.writelines(update_bat_str)
-			os.system('start update_bat.bat')
+			os.system('start '+Bat_path)
 			
 			return 0
 			
@@ -4599,12 +4668,19 @@ def Remove_File_2_Folder(Dict_New_folder_Old_folder):
 
 #================================================ Pop-up window ===============================================
 def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
+	
+	
+	Pop_up_window_folder = 'Pop_up_window_folder_waifu2xEX'
+	
+	if os.path.exists(Pop_up_window_folder) == False:
+		os.mkdir(Pop_up_window_folder)
+	
 	settings_values = ReadSettings()
 	str_FileName = str_FileName.strip(' ')
 	start_bat_str=[
 		'@echo off \n',
 		'color '+settings_values['default_color']+' \n',
-		'title = Waifu2x扩展 '+Version_current+' 作者: Aaron Feng  [ '+str_Title+' ] \n',
+		'title = Waifu2x-Extension '+Version_current+' by Aaron Feng  [ '+str_Title+' ] \n',
 		]
 	
 	end_bat_str=[
@@ -4624,10 +4700,16 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 	else:
 		Full_bat_str= start_bat_str+list_Content+wait_time_str
 	
-	with open(str_FileName+'.bat','w+',encoding='ANSI') as f:
+	window_path = ''
+	while True:
+		window_path = Pop_up_window_folder+'\\'+str_FileName+str(random.randint(10,10000))+'.bat'
+		if os.path.exists(window_path)==False:
+			break
+	
+	with open(window_path,'w+',encoding='ANSI') as f:
 		f.writelines(Full_bat_str)
 	
-	os.system('start '+str_FileName+'.bat')
+	os.system('start '+window_path)
 	
 	return 0 
 
@@ -4661,8 +4743,12 @@ def ShutDown():
 #========================== 删除冗余文件 ============================
 def Del_Temp():
 	
-	remove_safe('Error_file_not_del.bat')
-	remove_safe('update_bat.bat')
+	Pop_up_window_folder = 'Pop_up_window_folder_waifu2xEX'
+	if os.path.exists(Pop_up_window_folder):
+		for path,useless,fnames in os.walk(Pop_up_window_folder):
+			for fname in fnames:
+				remove_safe(path+'\\'+fname)
+			break
 	
 	return 0
 
@@ -4789,6 +4875,95 @@ def Empty_Queue_image_converter():
 		TotalFileNum = TotalFileNum_MainToSub_converter_image_Queue.get()
 		
 	return 0
+
+#===================================================== converter gif Title进度显示线程 =============================================
+class Time_Remaining_Title_converter_gif_Thread(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+        
+	def run(self):
+		ETA = 'null'
+		
+		TimeRemaining_str = 'null'
+		TimeRemaining=-1
+		
+		finished_num = '0'
+		total_num = 'null'
+		finished_frames = '0'
+		total_frames = 'null'
+		
+		while True:
+			if TimeRemaining_MainToSub_converter_gif_Queue.empty()==False:
+				TimeRemaining = TimeRemaining_MainToSub_converter_gif_Queue.get()
+				
+			if ETA_MainToSub_converter_gif_Queue.empty()==False:
+				ETA = ETA_MainToSub_converter_gif_Queue.get()
+				
+			if finished_num_MainToSub_converter_gif_Queue.empty()==False:
+				finished_num = finished_num_MainToSub_converter_gif_Queue.get()
+			
+			if total_num_MainToSub_converter_gif_Queue.empty()==False:
+				total_num = total_num_MainToSub_converter_gif_Queue.get()
+			
+			if finished_frames_MainToSub_converter_gif_Queue.empty()==False:
+				finished_frames = finished_frames_MainToSub_converter_gif_Queue.get()
+			
+			if total_frames_MainToSub_converter_gif_Queue.empty()==False:
+				total_frames = total_frames_MainToSub_converter_gif_Queue.get()
+			
+			if TimeRemaining>0:
+				TimeRemaining_str = Seconds2hms(TimeRemaining)
+			
+			Window_Title('  [Scale GIF]  GIF: '+'('+finished_num+'/'+total_num+')  Frames:('+finished_frames+'/'+total_frames+')  Time Remaining: '+TimeRemaining_str+'  ETA: '+ETA)
+			
+			if TimeRemaining>0:
+				TimeRemaining = TimeRemaining-1
+				if TimeRemaining<0:
+					TimeRemaining=0
+	
+			time.sleep(1)
+
+def Empty_Queue_gif_converter():
+	
+	if TimeRemaining_MainToSub_converter_gif_Queue.empty()==False:
+		TimeRemaining = TimeRemaining_MainToSub_converter_gif_Queue.get()
+		
+	if ETA_MainToSub_converter_gif_Queue.empty()==False:
+		ETA = ETA_MainToSub_converter_gif_Queue.get()
+		
+	if finished_num_MainToSub_converter_gif_Queue.empty()==False:
+		finished_num = finished_num_MainToSub_converter_gif_Queue.get()
+	
+	if total_num_MainToSub_converter_gif_Queue.empty()==False:
+		total_num = total_num_MainToSub_converter_gif_Queue.get()
+	
+	if finished_frames_MainToSub_converter_gif_Queue.empty()==False:
+		finished_frames = finished_frames_MainToSub_converter_gif_Queue.get()
+	
+	if total_frames_MainToSub_converter_gif_Queue.empty()==False:
+		total_frames = total_frames_MainToSub_converter_gif_Queue.get()
+		
+	return 0
+
+#=========================================== 检测文件是否存在并弹窗 =================================
+def Path_exists_self(path):
+	
+	if os.path.exists(path)== False:
+		list_Content=[
+			'echo -----------------------------------------\n',
+			'echo Error occured, this path:\n',
+			'echo '+path+'\n'
+			'echo doesn\'t exists.\n'
+			'echo -----------------------------------------\n'
+		]
+		
+		Pop_up_window('Error_path_does_not_exists','ERROR',list_Content,'')
+		
+		return False
+	else:
+		return True
+		
+		
 
 #==========================================  Init  ==================================================================
 
