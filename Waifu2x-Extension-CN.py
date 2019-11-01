@@ -35,12 +35,13 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 - 为 Waifu2x-converter 模式加入 1x 放大支持.
 - 为 Waifu2x-converter 模式加入剩余时间显示.
 - 性能优化
+- 修复bug
 - 其他改进
 
 ------------------------------------------------
 
 To do:
-- 
+- 检测重复路径
 
 '''
 
@@ -4000,8 +4001,6 @@ def Benchmark_Anime4K():
 	
 	time.sleep(wait_to_cool_time)
 	
-	print(' 运行中....')
-	
 	settings_values = ReadSettings()
 	
 	current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -4025,6 +4024,8 @@ def Benchmark_Anime4K():
 		cpu_num = 1
 	
 	for x in range(1,cpu_num+1):
+		
+		print(' 运行中....')
 		
 		os.mkdir(output_folder)
 		
