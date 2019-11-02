@@ -27,16 +27,12 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- Add 1x magnification for Waifu2x-converter mode.
-- Add remaining time display for Waifu2x-converter mode.
-- Performance optimization.
-- Fix bug.
-- Other improvements.
+- Add repeat path detection
 
 ------------------------------------------------
 
 To do:
-- 检测重复路径
+-
 
 '''
 
@@ -198,7 +194,7 @@ def MainMenu():
 			os.system('cls')
 			settings_values = ReadSettings()
 			if settings_values['Image_GIF_scale_mode'] == 'waifu2x-ncnn-vulkan':
-				Image_Gif_Scale_Denoise()
+				Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan()
 			elif settings_values['Image_GIF_scale_mode'] == 'waifu2x-converter':
 				Image_Gif_Scale_Denoise_waifu2x_converter()
 			os.system('cls')
@@ -346,7 +342,7 @@ def MainMenu():
 			os.system('cls')
 
 #===================================================== Scale & Denoise Image & GIF ========================================
-def Image_Gif_Scale_Denoise():
+def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 	print(' Note: The input path must not contain special characters,')
 	print(' which will cause compatibility problems.')
 	print('─'*80)
@@ -380,7 +376,11 @@ def Image_Gif_Scale_Denoise():
 				break
 			elif inputPath == '' or os.path.exists(inputPath) == False:
 				print('-'*32)
-				print(' Error,input path is invalid !!')
+				print(' Error, input path is invalid !!')
+				print('-'*32)
+			elif inputPath in inputPathList:
+				print('-'*32)
+				print(' Error, the path has been entered !!')
 				print('-'*32)
 			else:
 				if AdminTest_Path(inputPath):
@@ -1009,6 +1009,10 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 				print('-'*32)
 				print(' Error,input path is invalid !!')
 				print('-'*32)
+			elif inputPath in inputPathList:
+				print('-'*32)
+				print(' Error, the path has been entered !!')
+				print('-'*32)
 			else:
 				if AdminTest_Path(inputPath):
 					inputPathError = False
@@ -1447,11 +1451,16 @@ def Scale_Denoise_Video_waifu2x_converter():
 				print('-'*32)
 				print(' Error,input path is invalid !!')
 				print('-'*32)
+			elif inputPath in inputPathList:
+				print('-'*32)
+				print(' Error, the path has been entered !!')
+				print('-'*32)
 			else:
 				if AdminTest_Path(inputPath):
 					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
+			
 	inputPathList = Deduplicate_list(inputPathList)
 	
 	pathlist_files_folder = Separate_files_folder(inputPathList)
@@ -1670,11 +1679,16 @@ def Scale_Denoise_Video():
 				print('-'*32)
 				print(' Error,input path is invalid !!')
 				print('-'*32)
+			elif inputPath in inputPathList:
+				print('-'*32)
+				print(' Error, the path has been entered !!')
+				print('-'*32)
 			else:
 				if AdminTest_Path(inputPath):
 					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
+			
 	inputPathList = Deduplicate_list(inputPathList)
 	
 	pathlist_files_folder = Separate_files_folder(inputPathList)
@@ -1954,11 +1968,16 @@ def Scale_Denoise_Video_Anime4K():
 				print('-'*31)
 				print(' Error,input path is invalid!!')
 				print('-'*31)
+			elif inputPath in inputPathList:
+				print('-'*32)
+				print(' Error, the path has been entered !!')
+				print('-'*32)
 			else:
 				if AdminTest_Path(inputPath):
 					inputPathError = False
 		if inputPathOver :
 			inputPathList.append(inputPath)
+			
 	inputPathList = Deduplicate_list(inputPathList)
 	
 	pathlist_files_folder = Separate_files_folder(inputPathList)
@@ -3169,7 +3188,7 @@ def CheckUpdate_start():
 def Settings():
 	while True:
 		Set_cols_lines(90,37)
-		Set_cols_lines(92,41)
+		Set_cols_lines(92,39)
 		
 		settings_values = ReadSettings()
 		
@@ -3195,8 +3214,7 @@ def Settings():
 		print(' 13: Change interface color.\n')
 		print(' 14: Reset error log.\n')
 		print(' 15: Reset settings.\n')
-		print(' 16: Reset language setting for launcher.\n')
-		print(' 17: Show settings_values.\n')
+		print(' 16: Show settings_values.\n')
 		print(' R: Return to the main menu.')
 		print('─'*90)
 		
@@ -3564,8 +3582,6 @@ def Settings():
 		elif mode == "15":
 			os.system('cls')
 			
-			remove_safe('config_waifu2xEX_start')
-			
 			remove_safe('waifu2x-extension-setting')
 			ReadSettings()
 			
@@ -3574,16 +3590,6 @@ def Settings():
 			os.system('cls')
 		
 		elif mode == "16":
-			os.system('cls')
-			
-			print('loading....')
-			remove_safe('config_waifu2xEX_start')
-			os.system('cls')
-			input(' Language setting reseted, press [Enter] key to return.')
-			
-			os.system('cls')
-		
-		elif mode == "17":
 			os.system('cls')
 			
 			for key,val in settings_values.items():
