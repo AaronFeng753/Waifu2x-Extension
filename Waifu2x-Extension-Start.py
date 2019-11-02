@@ -22,7 +22,7 @@ print(' =============')
 print(' |Starting...|')
 print(' =============')
 os.chdir('Waifu2x-Extension\\')
-os.system('start Waifu2x-Extension-EN.exe')
-while judgeprocess('Waifu2x-Extension-EN.exe'):
+os.system('start Waifu2x-Extension.exe')
+while judgeprocess('Waifu2x-Extension.exe'):
 	time.sleep(0.01)
 time.sleep(0.5)
