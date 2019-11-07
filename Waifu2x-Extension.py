@@ -29,8 +29,11 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 Update log
 - Now you can record running log.
 In order to protect your privacy,this new feature is disabled by default.
-You can enable it in settings.
-- Other improvements
+You can enable it in running log settings.
+Main Menu --> Running log.
+- Add error logging switch, now you can control whether to log the error log.
+Main Menu --> Settings --> Error log.
+- Other improvements.
 
 ------------------------------------------------
 
@@ -1009,7 +1012,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 #================================================= Image_Gif_Scale_Denoise_waifu2x_converter ===========================================
 def Image_Gif_Scale_Denoise_waifu2x_converter():
 	
-	Record_running_log('Enter [ Image_Gif_Scale_Denoise_waifu2x_converter ]')
+	Record_running_log('Enter [ Scale & Denoise Image & GIF - Waifu2x-converter ]')
 	
 	print(' Note: The input path must not contain special characters,')
 	print(' which will cause compatibility problems.')
@@ -1470,7 +1473,7 @@ class DelOldFileThread_4x(threading.Thread):
 #=============================================  Scale & Denoise Video_waifu2x_converter  ====================================
 def Scale_Denoise_Video_waifu2x_converter():
 	
-	Record_running_log('Enter [ Scale_Denoise_Video_waifu2x_converter ]')
+	Record_running_log('Enter [ Scale & Denoise Video - waifu2x-converter ]')
 	
 	print(' Note: The input path must not contain special characters,')
 	print(' which will cause compatibility problems.')
@@ -1710,7 +1713,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
 	
-	Record_running_log('Enter [ Scale_Denoise_Video ]')
+	Record_running_log('Enter [ Scale & Denoise Video - Waifu2x-ncnn-vulkan ]')
 	
 	print(' Note: The input path must not contain special characters,')
 	print(' which will cause compatibility problems.')
@@ -2014,7 +2017,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 #=============================================  Scale Video - Anime4K  ====================================
 def Scale_Denoise_Video_Anime4K():
 	
-	Record_running_log('Enter [ Scale_Denoise_Video_Anime4K ]')
+	Record_running_log('Enter [ Scale Video - Anime4K ]')
 	
 	print(' Note: The input path must not contain special characters,')
 	print(' which will cause compatibility problems.')
@@ -2231,6 +2234,9 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 
 #===================================================== Compress_image_gif ====================================================
 def Compress_image_gif():
+	
+	Record_running_log('Enter [ Compress image & gif ]')
+	
 	print(' Path and file name contains special characters may cause compatibility problems,')
 	print(' change the file name and folder name if something goes wrong.')
 	print('─'*83)
@@ -3288,6 +3294,7 @@ def CheckUpdate_start():
 		else:
 			return 0
 	except BaseException:
+		Record_running_log('Failed to check for updates at startup, unable to connect to the Github server.')
 		return 0
 	
 
@@ -3296,7 +3303,7 @@ def CheckUpdate_start():
 def Settings():
 	while True:
 		Set_cols_lines(90,37)
-		Set_cols_lines(92,41)
+		Set_cols_lines(92,40)
 		
 		settings_values = ReadSettings()
 		
@@ -3320,10 +3327,9 @@ def Settings():
 		print(' 12: Image & GIF scale mode. Current value: [ ',settings_values['Image_GIF_scale_mode'],' ]')
 		print('─'*90)
 		print(' 13: Change interface color.\n')
-		print(' 14: Reset error log.\n')
+		print(' 14: Error log.\n')
 		print(' 15: Reset settings.\n')
 		print(' 16: Show settings_values.\n')
-		print(' 17: Read error log.\n')
 		print(' R: Return to the main menu.')
 		print('─'*90)
 		
@@ -3677,14 +3683,7 @@ def Settings():
 		elif mode == "14":
 			os.system('cls')
 			
-			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
-				f.write('')
-				
-			with open('Error_Log_Waifu2x-Extension.log','a+') as f:
-				timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-				f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Error log reseted by user.\n')
-			
-			input('Error log reseted, press [Enter] key to return.')
+			Error_log_setting()
 			
 			os.system('cls')
 		
@@ -3707,11 +3706,6 @@ def Settings():
 			print('--------------------------------------')
 			input('press [Enter] key to return.')
 			
-			os.system('cls')
-		
-		elif mode == "17":
-			os.system('cls')
-			Error_Log()
 			os.system('cls')
 
 		elif mode == "r":
@@ -3742,7 +3736,7 @@ def ReadSettings():
 						'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
 						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1,
 						'Compatibility_waifu2x_ncnn_vulkan':True,'Compatibility_waifu2x_converter':True,'Compatibility_Anime4k':True,
-						'Record_running_log':'n'}
+						'Record_running_log':'n','Record_error_log':'y'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -3845,13 +3839,75 @@ def AdminTest_Path(Path_):
 		return True
 		
 #==================================================== Error_Log ==================================================
+def Error_log_setting():
+	while True:
+		os.system('cls')
+		settings_values = ReadSettings()
+		print('─'*33)
+		print(' Error log setting')
+		print('─'*33)
+		print(' 1.Record Error log: [ '+settings_values['Record_error_log']+' ]\n')
+		print(' 2.Read Error log.\n')
+		print(' 3.Reset Error log.\n')
+		print(' R.Return to the previous menu.')
+		print('─'*33)
+		choice = input('(1 / 2 / 3 / R): ').strip(' ').lower()
+		if choice == '1':
+			
+			os.system('cls')
+			
+			print('Loading...')
+			
+			if settings_values['Record_error_log'] == 'y':
+				settings_values['Record_error_log'] = 'n'
+				
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+				
+				if os.path.exists('Error_Log_Waifu2x-Extension.log'):
+					os.system('cls')
+					print('─'*65)
+					print(' Do you want to delete the logs that have already been recorded?')
+					print('─'*65)
+					if input('(Y/N): ').strip(' ').lower()=='y':
+						os.system('cls')
+						with open('Error_Log_Waifu2x-Extension.log','w+') as f:
+							f.write('')
+						input(' Error log deleted, press [Enter] key to return.')
+					
+			elif settings_values['Record_error_log'] == 'n':
+				settings_values['Record_error_log'] = 'y'
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+				
+		elif choice == '2':
+			
+			Read_Error_Log()
+			
+		elif choice == '3':
+			os.system('cls')
+			
+			with open('Error_Log_Waifu2x-Extension.log','w+') as f:
+				f.write('')
+				
+			with open('Error_Log_Waifu2x-Extension.log','a+') as f:
+				timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+				f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Error log reseted by user.\n')
+			
+			input('Error log reseted, press [Enter] key to return.')
+			
+			os.system('cls')
+			
+		elif choice == 'r':
+			return 0
 
-def Error_Log():	#读取错误日志
+
+def Read_Error_Log():	#读取错误日志
 	if os.path.exists('Error_Log_Waifu2x-Extension.log') :	#判断错误日志文件是否存在
 		webbrowser.open('Error_Log_Waifu2x-Extension.log')
 		log_size = round(os.path.getsize('Error_Log_Waifu2x-Extension.log')/1024)
-		if log_size > 200:
-			del_log = input('The error log is too large (>200KB). Do you want to reset the error log?(Y/N): ')
+		if log_size > 500:
+			del_log = input('The error log is too large (>500KB). Do you want to reset the error log?(Y/N): ')
 			if del_log.lower() == 'y':
 				with open('Error_Log_Waifu2x-Extension.log','w+') as f:
 					f.write('')
@@ -3868,7 +3924,7 @@ def Error_log_clean():
 		log_size = round(os.path.getsize('Error_Log_Waifu2x-Extension.log')/1024)
 		if log_size > 500:
 			os.system('cls')
-			del_log = input('错误日志文件过大 (>500KB). 你想要重置错误日志吗?(Y/N): ')
+			del_log = input('The error log is too large (>500KB). Do you want to reset the error log?(Y/N): ')
 			if del_log.lower() == 'y':
 				with open('Error_Log_Waifu2x-Extension.log','w+') as f:
 					f.write('')
@@ -4041,14 +4097,18 @@ def ResizeWindow():
 		time.sleep(0.02)
 
 def Set_cols_lines(cols,lines):
-		
+	
+	Record_running_log('Start to resize window.   cols:'+str(cols)+'  lines:'+str(lines))
+	
 	while Complete_ResizeWindow(cols,lines):
 		while True:
 			WindowSize_Queue.put([cols,lines])
 			if WindowSize_Queue.empty()==False:
 				break
 		time.sleep(0.04)
-		
+	
+	Record_running_log('Successfully resize the window.   cols:'+str(cols)+'  lines:'+str(lines))
+	
 	return 0
 
 def Get_cols_lines():
@@ -5151,12 +5211,22 @@ def Running_log_setting():
 						remove_safe('Running_Log_Waifu2x-Extension.log')
 						input(' Running log deleted, press [Enter] key to return.')
 					
-				
 			elif settings_values['Record_running_log'] == 'n':
-				settings_values['Record_running_log'] = 'y'
-				with open('waifu2x-extension-setting','w+') as f:
-					json.dump(settings_values,f)
-				Record_running_log('Start recording the running log, enabled by the user.')
+				os.system('cls')
+				print('''
+                              !! Attention !!
+--------------------------------------------------------------------------------
+ By enable running log recording, the software will records various operations 
+ during the run and saves the information in an unencrypted local file.
+ We respect your privacy, this log will not be uploaded to any server by us, 
+ but we still remind you that enabling this feature may leak your privacy.
+--------------------------------------------------------------------------------
+''')
+				if input(' Do you still want to enable this feature? (Y/N): ').strip(' ').lower()=='y':
+					settings_values['Record_running_log'] = 'y'
+					with open('waifu2x-extension-setting','w+') as f:
+						json.dump(settings_values,f)
+					Record_running_log('Start recording the running log, enabled by the user.')
 				
 		elif choice == '2':
 			
@@ -5169,25 +5239,35 @@ def Running_log_setting():
 		elif choice == '3':
 			os.system('cls')
 			remove_safe('Running_Log_Waifu2x-Extension.log')
+			Record_running_log('Running log reseted by user.')
 			input(' Running log reseted, press [Enter] key to return.')
 			
 		elif choice == 'r':
 			return 0
 
-def Record_running_log(log_string):
-
-	settings_values = ReadSettings()
+class Record_running_log_Thread(threading.Thread):
+	def __init__(self,log_string):
+		threading.Thread.__init__(self)
+		self.log_string = log_string
 	
-	if settings_values['Record_running_log'] == 'y':
+	def run(self):
 		
-		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-		W_string = '\n'+timeStr+'\n'+'='*len(timeStr)+'\n'+log_string+'\n'
+		log_string = self.log_string
 		
-		with open('Running_Log_Waifu2x-Extension.log','a+') as f:
-			f.write(W_string)
-		
-	else:
-		return 0
+		settings_values = ReadSettings()
+	
+		if settings_values['Record_running_log'] == 'y':
+			
+			timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+			W_string = '\n'+timeStr+'\n'+'='*len(timeStr)+'\n'+log_string+'\n'
+			
+			with open('Running_Log_Waifu2x-Extension.log','a+') as f:
+				f.write(W_string)
+
+def Record_running_log(log_string):
+	
+	thread_rec = Record_running_log_Thread(log_string)
+	thread_rec.start()
 
 #============================================== mkdir_self() ================================================
 def mkdir_self(Path_):
@@ -5201,14 +5281,15 @@ def init():		#初始化函数
 	Window_Title('')	#更改控制台标题
 	ChangeColor_default()	#更改文字颜色
 	
-	Del_Temp()
-	
-	sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
-	with open('Error_Log_Waifu2x-Extension.log','a+') as f:
-		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-		f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Start running\n')
-		
 	settings_values = ReadSettings()
+	
+	if settings_values['Record_error_log']=='y':
+		sys.stderr = Logger('Error_Log_Waifu2x-Extension.log', sys.stderr)
+		with open('Error_Log_Waifu2x-Extension.log','a+') as f:
+			timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+			f.write('\n--------------------------------\n'+timeStr+'\n--------------------------------\n'+'Start running\n')
+		
+	Del_Temp()
 		
 	if settings_values['First_Time_Boot_Up'] == 'y':
 		settings_values['First_Time_Boot_Up'] = 'n'
@@ -5258,10 +5339,6 @@ if __name__ == '__main__':
 			print('---------------------------------------------------')
 			ErrorStr = traceback.format_exc()
 			print(ErrorStr)
-			
-			with open('Error_Log_Waifu2x-Extension.log','a+') as f:
-				f.write(ErrorStr)
-			
 			print('---------------------------------------------------')
 			print('An error occurred, pls report this to the developer.')
 			print('')
@@ -5272,6 +5349,12 @@ if __name__ == '__main__':
 			print('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
 			print('-------------------------------------------')
 			print('Press [Enter] key to restart the software.')
+			
+			settings_values = ReadSettings()
+			if settings_values['Record_error_log']=='y':
+				with open('Error_Log_Waifu2x-Extension.log','a+') as f:
+					f.write(ErrorStr)
+			
 			input()
 			os.system('cls')
 			ChangeColor_default()
