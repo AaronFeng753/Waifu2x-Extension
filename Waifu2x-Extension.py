@@ -27,7 +27,11 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- Add repeat path detection
+- Add repeat path detection.
+- Now you can record running log.
+In order to protect your privacy,this new feature is disabled by default.
+You can enable it in settings.
+- Other improvements
 
 ------------------------------------------------
 
@@ -77,7 +81,7 @@ import psutil
 import queue
 import random
 
-Version_current='v3.7'
+Version_current='v3.75'
 
 WindowSize_Queue = queue.Queue()
 
@@ -151,7 +155,7 @@ def MainMenu():
 		print('│ Github: https://github.com/AaronFeng753/Waifu2x-Extension    │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print("│ Attention: This software's scale & denoise function is only  │")
-		print('│ designed for process Anime-style art (Image,GIF,Video).      │')
+		print('│ designed for process 2D Anime-style art (Image,GIF,Video).   │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ 1 : Scale & Denoise Image & GIF.  2 : '+Video_str+' │')
 		print('├──────────────────────────────────────────────────────────────┤')
@@ -182,9 +186,13 @@ def MainMenu():
 		print('│ Enter the option you want to execute and press [ Enter ].    │')
 		print('└──────────────────────────────────────────────────────────────┘')
 		
+		Record_running_log('Successfully loaded into the main menu.')
+		
 		# 选项输入
 		mode = input(' ( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower() 
-			
+		
+		Record_running_log('The user enters an option in the main menu:  '+mode)
+		
 		Set_cols_lines(120,40) # 更改窗口大小到cmd默认大小
 		
 		#================================ 选项判定 ====================================
@@ -343,6 +351,9 @@ def MainMenu():
 
 #===================================================== Scale & Denoise Image & GIF ========================================
 def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
+	
+	Record_running_log('Enter [ Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan ]')
+	
 	print(' Note: The input path must not contain special characters,')
 	print(' which will cause compatibility problems.')
 	print('─'*80)
@@ -368,6 +379,9 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 		while inputPathError:
 			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
+			
+			Record_running_log('User entered the path:  '+inputPath)
+			
 			if inputPath.lower() == 'r':
 				return 1
 			elif inputPath.lower() == 'o':
@@ -408,6 +422,9 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 					subfolders_list.append(str(dirs[0]))
 				break
 		inputPathList_folders = subfolders_list
+	
+	Record_running_log('Single file path entered by the user:  '+str(inputPathList_files))
+	Record_running_log('User input folder path:  '+str(inputPathList_folders))
 	
 	scale = input_scale()
 	if scale == 'r':
@@ -465,7 +482,11 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 		return 1
 	elif sleepMode == 'y':
 		load_proc_save_str = ' -j 1:1:1 '
-		
+	
+	Notification_Before_Start_Processing()
+	
+	Record_running_log('Start processing files.')
+	
 	print('-'*50)
 	
 	total_time_start=time.time()
@@ -980,6 +1001,9 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 
 #================================================= Image_Gif_Scale_Denoise_waifu2x_converter ===========================================
 def Image_Gif_Scale_Denoise_waifu2x_converter():
+	
+	Record_running_log('Enter [ Image_Gif_Scale_Denoise_waifu2x_converter ]')
+	
 	print(' Note: The input path must not contain special characters,')
 	print(' which will cause compatibility problems.')
 	print('─'*80)
@@ -999,6 +1023,9 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 		while inputPathError:
 			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
+			
+			Record_running_log('User entered the path:  '+inputPath)
+			
 			if inputPath.lower() == 'r':
 				return 1
 			elif inputPath.lower() == 'o':
@@ -1047,6 +1074,9 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 				inputPathList_files.append(path+'\\'+fname)
 			break
 			
+	Record_running_log('Single file path entered by the user:  '+str(inputPathList_files))
+	Record_running_log('User input folder path:  '+str(inputPathList_folders))
+			
 	
 	scale = input_scale_waifu2x_converter()
 	if scale == 'r':
@@ -1082,7 +1112,11 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	turnoff = input_turnoff()
 	if turnoff == 'r':
 		return 1
-		
+	
+	Notification_Before_Start_Processing()
+	
+	Record_running_log('Start processing files.')
+	
 	print('-'*50)
 	
 	total_time_start=time.time()
@@ -1422,6 +1456,9 @@ class DelOldFileThread_4x(threading.Thread):
 
 #=============================================  Scale & Denoise Video_waifu2x_converter  ====================================
 def Scale_Denoise_Video_waifu2x_converter():
+	
+	Record_running_log('Enter [ Scale_Denoise_Video_waifu2x_converter ]')
+	
 	print(' Note: The input path must not contain special characters,')
 	print(' which will cause compatibility problems.')
 	print('─'*83)
@@ -1440,6 +1477,8 @@ def Scale_Denoise_Video_waifu2x_converter():
 		while inputPathError:
 			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
+			
+			Record_running_log('User entered the path:  '+inputPath)
 			
 			if inputPath.lower() == 'o':
 				inputPathOver = False
@@ -1482,6 +1521,9 @@ def Scale_Denoise_Video_waifu2x_converter():
 				break
 		inputPathList_folders = subfolders_list
 	
+	Record_running_log('Single file path entered by the user:  '+str(inputPathList_files))
+	Record_running_log('User input folder path:  '+str(inputPathList_folders))
+	
 	scale = input_scale_waifu2x_converter()
 	if scale == 'r':
 		return 1
@@ -1498,7 +1540,10 @@ def Scale_Denoise_Video_waifu2x_converter():
 	if turnoff == 'r':
 		return 1
 	
-		
+	Notification_Before_Start_Processing()
+	
+	Record_running_log('Start processing files.')
+	
 	print('-'*50)
 	
 	total_time_start=time.time()
@@ -1649,6 +1694,9 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 
 #=============================================  Scale & Denoise Video  ====================================
 def Scale_Denoise_Video():
+	
+	Record_running_log('Enter [ Scale_Denoise_Video ]')
+	
 	print(' Note: The input path must not contain special characters,')
 	print(' which will cause compatibility problems.')
 	print('─'*83)
@@ -1668,6 +1716,8 @@ def Scale_Denoise_Video():
 		while inputPathError:
 			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
+			
+			Record_running_log('User entered the path:  '+inputPath)
 			
 			if inputPath.lower() == 'o':
 				inputPathOver = False
@@ -1710,6 +1760,9 @@ def Scale_Denoise_Video():
 				break
 		inputPathList_folders = subfolders_list
 	
+	Record_running_log('Single file path entered by the user:  '+str(inputPathList_files))
+	Record_running_log('User input folder path:  '+str(inputPathList_folders))
+	
 	scale = input_scale()
 	if scale == 'r':
 		return 1
@@ -1742,7 +1795,11 @@ def Scale_Denoise_Video():
 		return 1
 	elif sleepMode == 'y':
 		load_proc_save_str = ' -j 1:1:1 '
-		
+	
+	Notification_Before_Start_Processing()
+	
+	Record_running_log('Start processing files.')
+	
 	print('-'*50)
 	
 	total_time_start=time.time()
@@ -1939,6 +1996,9 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 
 #=============================================  Scale Video - Anime4K  ====================================
 def Scale_Denoise_Video_Anime4K():
+	
+	Record_running_log('Enter [ Scale_Denoise_Video_Anime4K ]')
+	
 	print(' Note: The input path must not contain special characters,')
 	print(' which will cause compatibility problems.')
 	print('─'*83)
@@ -1957,6 +2017,8 @@ def Scale_Denoise_Video_Anime4K():
 		while inputPathError:
 			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
+			
+			Record_running_log('User entered the path:  '+inputPath)
 			
 			if inputPath.lower() == 'o':
 				inputPathOver = False
@@ -1999,6 +2061,9 @@ def Scale_Denoise_Video_Anime4K():
 				break
 		inputPathList_folders = subfolders_list
 	
+	Record_running_log('Single file path entered by the user:  '+str(inputPathList_files))
+	Record_running_log('User input folder path:  '+str(inputPathList_folders))
+	
 	scale = input_scale_Anime4k()
 	if scale == 'r':
 		return 1
@@ -2010,7 +2075,11 @@ def Scale_Denoise_Video_Anime4K():
 	turnoff = input_turnoff()
 	if turnoff == 'r':
 		return 1
-		
+	
+	Notification_Before_Start_Processing()
+	
+	Record_running_log('Start processing files.')
+	
 	print('-'*50)
 	
 	total_time_start=time.time()
@@ -2162,6 +2231,8 @@ def Compress_image_gif():
 			inputPath = input(' Input path: ')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
+			Record_running_log('User entered the path:  '+inputPath)
+			
 			if inputPath.lower() == 'r':
 				return 1
 			elif inputPath.lower() == 'o':
@@ -2198,6 +2269,9 @@ def Compress_image_gif():
 				break
 		inputPathList_folders = subfolders_list
 	
+	Record_running_log('Single file path entered by the user:  '+str(inputPathList_files_input))
+	Record_running_log('User input folder path:  '+str(inputPathList_folders))
+	
 	image_exist = False
 	for file_ in inputPathList_files_input:
 		if os.path.splitext(file_)[1] in ['.jpg','.png','.jpeg','.tif','.tiff','.bmp','.tga']:
@@ -2227,7 +2301,12 @@ def Compress_image_gif():
 	delorginal = input_delorginal()
 	if delorginal == 'r':
 		return 1
+		
 	multiThread = settings_values['multiThread']
+	
+	Notification_Before_Start_Processing()
+	
+	Record_running_log('Start processing files.')
 	
 	print('-'*50)
 	
@@ -3188,7 +3267,7 @@ def CheckUpdate_start():
 def Settings():
 	while True:
 		Set_cols_lines(90,37)
-		Set_cols_lines(92,39)
+		Set_cols_lines(92,41)
 		
 		settings_values = ReadSettings()
 		
@@ -3215,6 +3294,7 @@ def Settings():
 		print(' 14: Reset error log.\n')
 		print(' 15: Reset settings.\n')
 		print(' 16: Show settings_values.\n')
+		print(' 17: Running log.\n')
 		print(' R: Return to the main menu.')
 		print('─'*90)
 		
@@ -3599,6 +3679,11 @@ def Settings():
 			input('press [Enter] key to return.')
 			
 			os.system('cls')
+		
+		elif mode == "17":
+			os.system('cls')
+			Running_log_setting()
+			os.system('cls')
 
 		elif mode == "r":
 			break
@@ -3620,14 +3705,15 @@ def ReadSettings():
 	cpu_num = int(cpu_count() / 2)
 	if cpu_num < 1 :
 		cpu_num = 1
-	default_values = {'SettingVersion':'10','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+	default_values = {'SettingVersion':'11','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
 						'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
 						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1,
-						'Compatibility_waifu2x_ncnn_vulkan':True,'Compatibility_waifu2x_converter':True,'Compatibility_Anime4k':True}
+						'Compatibility_waifu2x_ncnn_vulkan':True,'Compatibility_waifu2x_converter':True,'Compatibility_Anime4k':True,
+						'Record_running_log':'n'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -4971,8 +5057,77 @@ def Path_exists_self(path):
 		return False
 	else:
 		return True
+
+#====================================================== Notification Before Start Processing ==========================================
+def Notification_Before_Start_Processing():
+	print('''
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│ Do not make any changes to the files in the input path while the software is running. │
+├───────────────────────────────────────────────────────────────────────────────────────┤
+│                          Press [Enter] to start processing.                           │
+└───────────────────────────────────────────────────────────────────────────────────────┘
+''')
+	input()
+
+#==================================================== Running log ===============================================================
+def Running_log_setting():
+	while True:
+		os.system('cls')
+		settings_values = ReadSettings()
+		print('─'*90)
+		print(' Running log setting')
+		print('─'*90)
+		print(' 1.Record running log: [ '+settings_values['Record_running_log']+' ]\n')
+		print(' 2.Read running log.\n')
+		print(' 3.Reset running log.\n')
+		print(' R.Return to the previous menu.')
+		print('─'*90)
+		choice = input('(1 / 2 / 3 / R): ').strip(' ').lower()
+		if choice == '1':
+			
+			os.system('cls')
+			
+			print('Loading...')
+			
+			if settings_values['Record_running_log'] == 'y':
+				settings_values['Record_running_log'] = 'n'
+			elif settings_values['Record_running_log'] == 'n':
+				settings_values['Record_running_log'] = 'y'
+			
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+				
+		elif choice == '2':
+			
+			if os.path.exists('Running_Log_Waifu2x-Extension.log'):	#判断运行日志文件是否存在
+				webbrowser.open('Running_Log_Waifu2x-Extension.log')
+			else:
+				os.system('cls')
+				input(' !!ERROR!! Running log not found. Press [Enter] key to return.')
+			
+		elif choice == '3':
+			os.system('cls')
+			remove_safe('Running_Log_Waifu2x-Extension.log')
+			input(' Running log reseted, press [Enter] key to return.')
+			
+		elif choice == 'r':
+			return 0
+
+def Record_running_log(log_string):
+
+	settings_values = ReadSettings()
+	
+	if settings_values['Record_running_log'] == 'y':
 		
+		timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+		W_string = '\n'+timeStr+'\n'+'='*len(timeStr)+'\n'+log_string+'\n'
 		
+		with open('Running_Log_Waifu2x-Extension.log','a+') as f:
+			f.write(W_string)
+		
+	else:
+		return 0
+
 
 #==========================================  Init  ==================================================================
 
@@ -5022,6 +5177,9 @@ def init():		#初始化函数
 #======================== Start ========================
         
 if __name__ == '__main__':
+	
+	Record_running_log('Start running.')
+	
 	#检查所处文件夹是否需要管理员权限
 	if AdminTest():
 		try:
