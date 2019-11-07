@@ -54,7 +54,9 @@ print('''
 	|   __|   >   <       |  |     |   __|  |  . `  |     \   \    |  | |  |  |  | |  . `  | 
 	|  |____ /  .  \      |  |     |  |____ |  |\   | .----)   |   |  | |  `--'  | |  |\   | 
 	|_______/__/ \__\     |__|     |_______||__| \__| |_______/    |__|  \______/  |__| \__| 
-
+	
+                                           By Aaron Feng
+										 
                                            Loading.......
 ''')
 
@@ -174,7 +176,7 @@ def MainMenu():
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ 11 : Settings.            12 : Benchmark.                    │')
 		print('│                                                              │')
-		print('│ 13 : Read error log.      14 : Check update.                 │')
+		print('│ 13 : Running log.         14 : Check update.                 │')
 		print('│                                                              │')
 		print('│ 15 : Readme.              16 : License.                      │')
 		print('│                                                              │')
@@ -297,7 +299,7 @@ def MainMenu():
 			os.system('cls')
 		elif mode == "13":
 			os.system('cls')
-			Error_Log()
+			Running_log_setting()
 			os.system('cls')
 			
 		elif mode == "14":
@@ -3225,11 +3227,13 @@ class CheckUpdate_start_thread(threading.Thread):
 		threading.Thread.__init__(self)
         
 	def run(self):
+		Record_running_log('Start the background check update thread.')
 		CheckUpdate_start()
 
 		
 def CheckUpdate_start():
 	try:
+		Record_running_log('Check for updates at startup.')
 		headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
 		r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
 		
@@ -3241,7 +3245,6 @@ def CheckUpdate_start():
 		Version_latest = p_split_name.split(title)[1]
 		
 		if Version_current != Version_latest:
-			
 			
 			Pop_up_window_folder = 'Pop_up_window_folder_waifu2xEX'
 			
@@ -3277,6 +3280,8 @@ def CheckUpdate_start():
 			with open(Bat_path,'w+',encoding='ANSI') as f:
 				f.writelines(update_bat_str)
 			os.system('start '+Bat_path)
+			
+			Record_running_log('A new version is detected and a popup window is created.')
 			
 			return 0
 			
@@ -3318,7 +3323,7 @@ def Settings():
 		print(' 14: Reset error log.\n')
 		print(' 15: Reset settings.\n')
 		print(' 16: Show settings_values.\n')
-		print(' 17: Running log.\n')
+		print(' 17: Read error log.\n')
 		print(' R: Return to the main menu.')
 		print('─'*90)
 		
@@ -3706,7 +3711,7 @@ def Settings():
 		
 		elif mode == "17":
 			os.system('cls')
-			Running_log_setting()
+			Error_Log()
 			os.system('cls')
 
 		elif mode == "r":
@@ -5115,14 +5120,14 @@ def Running_log_setting():
 	while True:
 		os.system('cls')
 		settings_values = ReadSettings()
-		print('─'*90)
+		print('─'*33)
 		print(' Running log setting')
-		print('─'*90)
+		print('─'*33)
 		print(' 1.Record running log: [ '+settings_values['Record_running_log']+' ]\n')
 		print(' 2.Read running log.\n')
 		print(' 3.Reset running log.\n')
 		print(' R.Return to the previous menu.')
-		print('─'*90)
+		print('─'*33)
 		choice = input('(1 / 2 / 3 / R): ').strip(' ').lower()
 		if choice == '1':
 			
@@ -5138,11 +5143,13 @@ def Running_log_setting():
 				
 				if os.path.exists('Running_Log_Waifu2x-Extension.log'):
 					os.system('cls')
-					print('Do you want to delete the logs that have already been recorded?')
+					print('─'*65)
+					print(' Do you want to delete the logs that have already been recorded?')
+					print('─'*65)
 					if input('(Y/N): ').strip(' ').lower()=='y':
 						os.system('cls')
 						remove_safe('Running_Log_Waifu2x-Extension.log')
-						input(' Running log reseted, press [Enter] key to return.')
+						input(' Running log deleted, press [Enter] key to return.')
 					
 				
 			elif settings_values['Record_running_log'] == 'n':
