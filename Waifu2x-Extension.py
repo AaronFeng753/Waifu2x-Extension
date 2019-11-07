@@ -27,7 +27,6 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- Add repeat path detection.
 - Now you can record running log.
 In order to protect your privacy,this new feature is disabled by default.
 You can enable it in settings.
@@ -349,7 +348,7 @@ def MainMenu():
 			ChangeColor_default()
 			os.system('cls')
 
-#===================================================== Scale & Denoise Image & GIF ========================================
+#================================================================== Scale & Denoise Image & GIF =================================================
 def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 	
 	Record_running_log('Enter [ Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan ]')
@@ -556,7 +555,7 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 	
 	input('\npress [Enter] key to return to the menu')
 
-#========================================= Process_ImageModeAB =============================================
+#=========================================================== Process_ImageModeAB ===================================================================
 
 def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,delorginal):
 	Total_folder_num = len(inputPathList)
@@ -565,6 +564,8 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 		
 		if Path_exists_self(inputPath)==False:
 			continue
+		
+		Record_running_log('Start processing folder: '+str(inputPath))
 		
 		Window_Title('  [Scale Images]  Folder: ('+str(Finished_folder_num)+'/'+str(Total_folder_num)+')')
 		oldfilenumber=FileCount(inputPath)
@@ -578,7 +579,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 		
 		if os.path.exists(inputPath+"\\scaled_waifu2x\\") :
 			os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\\"+'"')
-		os.mkdir(inputPath+"\\scaled_waifu2x\\")
+		mkdir_self(inputPath+"\\scaled_waifu2x\\")
 		
 		if scale in ['4','8']:
 			thread1=PrograssBarThread(oldfilenumber,scalepath,scale,round_ = 1)
@@ -768,6 +769,8 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 		if Path_exists_self(inputPath)==False:
 			continue
 		
+		Record_running_log('Start processing file: '+str(inputPath))
+		
 		scaledFilePath = os.path.splitext(inputPath)[0]
 		fileNameAndExt=str(os.path.basename(inputPath))
 		
@@ -834,6 +837,8 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		if Path_exists_self(inputPath)==False:
 			continue
 		
+		Record_running_log('Start processing GIF: '+str(inputPath))
+		
 		Window_Title('  [Scale GIF]  Files: '+'('+str(finished_num)+'/'+str(Total_num)+')')
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
@@ -847,7 +852,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		
 		if os.path.exists(scaledFilePath+'_split\\scaled') :
 			os.system("rd /s/q \""+scaledFilePath+'_split\\scaled'+'"')
-		os.mkdir(scaledFilePath+'_split\\scaled')
+		mkdir_self(scaledFilePath+'_split\\scaled')
 		
 		print('scale images.....')
 		if scale in ['4','8']: 
@@ -1161,7 +1166,9 @@ class waifu2x_converter_Thread(threading.Thread):
 		outputPath = self.outputPath 
 		scale = self.scale 
 		noiseLevel = self.noiseLevel 
-
+		
+		Record_running_log('Start processing file: '+str(inputPath))
+		
 		model_dir = 'waifu2x-converter\\models_rgb'
 		os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+outputPath+'" --scale_ratio '+scale+' --noise_level '+noiseLevel+' --model_dir '+model_dir)
 
@@ -1186,6 +1193,8 @@ class waifu2x_converter_Thread_ImageModeC(threading.Thread):
 
 		scaledFilePath = os.path.splitext(inputPath)[0]
 		fileNameAndExt=str(os.path.basename(inputPath))
+		
+		Record_running_log('Start processing file: '+str(inputPath))
 		
 		model_dir = 'waifu2x-converter\\models_rgb'
 		os.system('waifu2x-converter\\waifu2x-converter_x64.exe -i "'+inputPath+'" -o "'+scaledFilePath+"_Waifu2x.png"+'" --scale_ratio '+scale+' --noise_level '+noiseLevel+' --model_dir '+model_dir)
@@ -1310,6 +1319,8 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		if Path_exists_self(inputPath)==False:
 			continue
 		
+		Record_running_log('Start processing GIF: '+str(inputPath))
+		
 		scaledFilePath = os.path.splitext(inputPath)[0]
 			
 		Duration_gif=getDuration(inputPath)
@@ -1324,7 +1335,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		
 		if os.path.exists(scaledFilePath+'_split\\scaled') :
 			os.system("rd /s/q \""+scaledFilePath+'_split\\scaled'+'"')
-		os.mkdir(scaledFilePath+'_split\\scaled')
+		mkdir_self(scaledFilePath+'_split\\scaled')
 		
 		print(' Scale images.....')
 		
@@ -1586,6 +1597,8 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		if Path_exists_self(inputPath)==False:
 			continue
 		
+		Record_running_log('Start processing video: '+str(inputPath))
+		
 		total_num_MainToSub_converter_video_Queue.put(str(total_num))
 		
 		video2images(inputPath) #拆解视频
@@ -1597,7 +1610,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		oldfilenumber=FileCount(frames_dir)
 		if os.path.exists(frames_dir+"\\scaled\\") :
 			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
-		os.mkdir(frames_dir+"\\scaled\\")
+		mkdir_self(frames_dir+"\\scaled\\")
 		
 		thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
 		thread_VideoDelFrameThread.start()
@@ -1829,6 +1842,8 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		
 		if Path_exists_self(inputPath)==False:
 			continue
+			
+		Record_running_log('Start processing video: '+str(inputPath))
 		
 		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
 		video2images(inputPath) #拆解视频
@@ -1838,7 +1853,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		oldfilenumber=FileCount(frames_dir)
 		if os.path.exists(frames_dir+"\\scaled\\") :
 			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
-		os.mkdir(frames_dir+"\\scaled\\")
+		mkdir_self(frames_dir+"\\scaled\\")
 		
 		if scale in ['4','8']:
 			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
@@ -2157,6 +2172,8 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		if Path_exists_self(inputPath)==False:
 			continue
 		
+		Record_running_log('Start processing video: '+str(inputPath))
+		
 		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
 		video2images(inputPath) #拆解视频
 		
@@ -2165,7 +2182,7 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		oldfilenumber=FileCount(frames_dir)
 		if os.path.exists(frames_dir+"\\scaled\\") :
 			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
-		os.mkdir(frames_dir+"\\scaled\\")
+		mkdir_self(frames_dir+"\\scaled\\")
 			
 		thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
 		thread2.start()
@@ -2348,6 +2365,8 @@ def Process_compress_image(inputPathList_files,delorginal,multiThread,JpgQuality
 			if file_ext == '.gif':
 				continue
 			
+			Record_running_log('Start compressing file: '+str(inputPath))
+			
 			scaledFilePath = os.path.splitext(inputPath)[0]
 			fileNameAndExt=str(os.path.basename(inputPath))
 			
@@ -2390,6 +2409,8 @@ def process_gif_compress_modeABC(inputPathList_files,gifCompresslevel,delorginal
 			
 			if file_ext != '.gif':
 				continue
+			
+			Record_running_log('Start compressing file: '+str(inputPath))
 			
 			scaledFilePath = os.path.splitext(inputPath)[0]
 			fileNameAndExt=str(os.path.basename(inputPath))
@@ -2642,7 +2663,7 @@ def splitGif(gifFileName,scaledFilePath):
 	
 	if os.path.exists(scaledFilePath+'_split') :
 			os.system("rd /s/q \""+scaledFilePath+'_split'+'"')
-	os.mkdir(scaledFilePath+'_split')
+	mkdir_self(scaledFilePath+'_split')
 	
 	os.system('ffmpeg -i "'+gifFileName+'" "'+scaledFilePath+'_split\\%0'+str(frames)+'d.png"')	
 	
@@ -2691,8 +2712,10 @@ def video2images(inputpath):
 	
 	if os.path.exists(frames_dir) :
 			os.system("rd /s/q \""+frames_dir+'"')
-	os.mkdir(frames_dir)
-
+	mkdir_self(frames_dir)
+	
+	Record_running_log('Start converting this video to images: '+video_path_filename+'.mp4')
+	
 	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+frames_dir+'%0'+str(frame_figures)+'d.png"')
 	
 	remove_safe(video_dir+'audio_waifu2x.wav')
@@ -2710,6 +2733,7 @@ def images2video(inputpath):
 	frame_counter = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_figures = len(str(frame_counter))
 	
+	Record_running_log('Start assemble video: '+video_path_filename+'_waifu2x'+video_ext)
 	
 	if os.path.exists(video_dir+'audio_waifu2x.wav'):
 		os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -i "'+video_dir+'audio_waifu2x.wav" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
@@ -3222,7 +3246,7 @@ def CheckUpdate_start():
 			Pop_up_window_folder = 'Pop_up_window_folder_waifu2xEX'
 			
 			if os.path.exists(Pop_up_window_folder)==False:
-				os.mkdir(Pop_up_window_folder)
+				mkdir_self(Pop_up_window_folder)
 			
 			settings_values = ReadSettings()
 			
@@ -3864,6 +3888,9 @@ class GifCompressThread (threading.Thread):
 		gifCompresslevel = self.gifCompresslevel
 		delorginal = self.delorginal
 		scaledFilePath = os.path.splitext(inputPath)[0]
+		
+		Record_running_log('Start compressing file: '+str(inputPath))
+		
 		compress_gif(inputPath,gifCompresslevel)
 		saved_size = round(os.path.getsize(inputPath)/1024) - round(os.path.getsize(scaledFilePath+"_compressed.gif")/1024)
 		if saved_size <= 0:
@@ -3915,6 +3942,8 @@ class ImageCompressThread (threading.Thread):
 		inputPath = self.inputPath
 		delorginal = self.delorginal
 		JpgQuality=self.JpgQuality
+		
+		Record_running_log('Start compressing file: '+str(inputPath))
 		
 		scaledFilePath = os.path.splitext(inputPath)[0]
 		imageio.imwrite(scaledFilePath+"_compressed.jpg", imageio.imread(inputPath), 'JPG', quality = JpgQuality)
@@ -3973,7 +4002,6 @@ def Play_Notification_Sound():
 		thread_Notification=Play_Notification_Sound_Thread()
 		thread_Notification.start()
 	
-
 #=================================================== Resize Window ===============================================
 
 class ResizeWindow_Thread(threading.Thread):
@@ -4117,7 +4145,7 @@ def Benchmark_Anime4K():
 		
 		print(' Running....')
 		
-		os.mkdir(output_folder)
+		mkdir_self(output_folder)
 		
 		Number_of_threads = x
 		
@@ -4193,7 +4221,7 @@ def Benchmark_converter():
 	
 	for x in range(1,129):
 		
-		os.mkdir(output_folder)
+		mkdir_self(output_folder)
 		
 		Number_of_threads = x
 		
@@ -4298,7 +4326,7 @@ def Benchmark_vulkan():
 		os.system("rd /s/q \""+scaledFilePath+"\"")
 	
 	for x in range(0,50):
-		os.mkdir(scaledFilePath)
+		mkdir_self(scaledFilePath)
 		time_start=time.time()
 		print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
 		os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
@@ -4369,7 +4397,7 @@ def MoveGifFiles(inputPathList):
 					path_gif_exist = True
 					old_path = path+'\\'+fname
 					if os.path.exists(inputPath+'\\protectfiles_waifu2x_extension') == False:
-						os.mkdir(inputPath+'\\protectfiles_waifu2x_extension')
+						mkdir_self(inputPath+'\\protectfiles_waifu2x_extension')
 					new_path = path+'\\protectfiles_waifu2x_extension\\'+fname
 					os.system('copy /y "'+old_path+'" "'+new_path+'"')
 					remove_safe(old_path)
@@ -4709,11 +4737,12 @@ def Set_default_color():
 #===================================================== MOVE FILE =========================================================
 def Move_file_org_new(org_path,new_path):
 	if os.path.exists(os.path.dirname(new_path)) == False:
-		os.mkdir(os.path.dirname(new_path))
+		mkdir_self(os.path.dirname(new_path))
 	remove_safe(new_path)
 	os.system('copy /y "'+org_path+'" "'+new_path+'"')
 	if os.path.exists(new_path):
 		remove_safe(org_path)
+		Record_running_log('Move '+org_path+' to '+new_path)
 	else:
 		print('Error: Move_file_org_new() -  new_path doesn\'t exists')
 
@@ -4768,7 +4797,7 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 	Pop_up_window_folder = 'Pop_up_window_folder_waifu2xEX'
 	
 	if os.path.exists(Pop_up_window_folder) == False:
-		os.mkdir(Pop_up_window_folder)
+		mkdir_self(Pop_up_window_folder)
 	
 	settings_values = ReadSettings()
 	str_FileName = str_FileName.strip(' ')
@@ -4804,6 +4833,8 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 	with open(window_path,'w+',encoding='ANSI') as f:
 		f.writelines(Full_bat_str)
 	
+	Record_running_log('Start pop up window: '+window_path)
+	
 	os.system('start '+window_path)
 	
 	return 0 
@@ -4825,14 +4856,17 @@ def Process_exist(str_processname):
 def remove_safe(path_):
 	if os.path.exists(path_):
 		os.remove(path_)
+		Record_running_log('Remove '+str(path_))
 
 #============================================== Shut Down ==============================
 def ShutDown():
-	shutdown_time_str = time.strftime('%H:%M:%S', time.localtime(time.time()+30))
+	shutdown_time_str = time.strftime('%H:%M:%S', time.localtime(time.time()+60))
 	print('-'*52)
 	print(' The computer will be turned off at '+shutdown_time_str+' ! !')
 	print('-'*52)
-	time.sleep(30)
+	Record_running_log('Start shutdown countdown.')
+	time.sleep(60)
+	Record_running_log('Turn off the computer.')
 	os.system('shutdown -s')
 
 #========================== 删除冗余文件 ============================
@@ -4844,6 +4878,8 @@ def Del_Temp():
 			for fname in fnames:
 				remove_safe(path+'\\'+fname)
 			break
+	
+	Record_running_log('Delete temporary files.')
 	
 	return 0
 
@@ -5044,6 +5080,9 @@ def Empty_Queue_gif_converter():
 def Path_exists_self(path):
 	
 	if os.path.exists(path)== False:
+		
+		Record_running_log(path+' doesn\'t exists.')
+		
 		list_Content=[
 			'echo -----------------------------------------\n',
 			'echo Error occured, this path:\n',
@@ -5051,6 +5090,8 @@ def Path_exists_self(path):
 			'echo doesn\'t exists.\n'
 			'echo -----------------------------------------\n'
 		]
+		
+		Record_running_log('Pop up the [Error_path_does_not_exists] pop-up window.')
 		
 		Pop_up_window('Error_path_does_not_exists','ERROR',list_Content,'')
 		
@@ -5091,11 +5132,24 @@ def Running_log_setting():
 			
 			if settings_values['Record_running_log'] == 'y':
 				settings_values['Record_running_log'] = 'n'
+				
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+				
+				if os.path.exists('Running_Log_Waifu2x-Extension.log'):
+					os.system('cls')
+					print('Do you want to delete the logs that have already been recorded?')
+					if input('(Y/N): ').strip(' ').lower()=='y':
+						os.system('cls')
+						remove_safe('Running_Log_Waifu2x-Extension.log')
+						input(' Running log reseted, press [Enter] key to return.')
+					
+				
 			elif settings_values['Record_running_log'] == 'n':
 				settings_values['Record_running_log'] = 'y'
-			
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+				Record_running_log('Start recording the running log, enabled by the user.')
 				
 		elif choice == '2':
 			
@@ -5128,7 +5182,12 @@ def Record_running_log(log_string):
 	else:
 		return 0
 
-
+#============================================== mkdir_self() ================================================
+def mkdir_self(Path_):
+	os.mkdir(Path_)
+	Record_running_log('Create folder: '+Path_)
+	
+	
 #==========================================  Init  ==================================================================
 
 def init():		#初始化函数
