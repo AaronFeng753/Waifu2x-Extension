@@ -36,11 +36,14 @@ Main Menu --> Settings --> Error log.
 - Other improvements.
 
 ------------------------------------------------
-
 To do:
+- 测试
+
+
+------------------------------------------------
+Next version:
 - 继续完善运行日志的记录
 - 分段放大视频,减少硬盘占用
-- 测试
 
 '''
 
@@ -3330,6 +3333,8 @@ def Settings():
 		print('─'*90)
 		
 		mode = input('( 1 / 2 / 3 /.../ R ): ').strip(' ').lower()
+		
+		Record_running_log('The user enters an option in the settings:  '+mode)
 		
 		if mode == "1":
 			os.system('cls')
