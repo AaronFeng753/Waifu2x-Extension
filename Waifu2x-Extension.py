@@ -39,7 +39,8 @@ Main Menu --> Settings --> Error log.
 
 To do:
 - 继续完善运行日志的记录
-- 设置自动清理 运行日志&错误日志
+- 分段放大视频,减少硬盘占用
+- 测试
 
 '''
 
@@ -144,8 +145,6 @@ def MainMenu():
 		Video_str = 'Scale & Denoise Video.'
 	
 	#============================== 主菜单 初始化完成 ============================
-	
-	Error_log_clean() # 检查错误日志大小, 判定是否需要提醒user重置日志
 	
 	while True:
 		
@@ -313,7 +312,7 @@ def MainMenu():
 		elif mode == "15":
 			os.system('cls')
 			print('Loading.......')
-			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README.md')
+			webbrowser_open_self('https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/README.md')
 			os.system('cls')
 		
 		elif mode == "16":
@@ -328,19 +327,20 @@ def MainMenu():
 			os.system('cls')
 			
 		elif mode == "e":
+			Record_running_log('Exit.')
 			os.system('cls')
 			ChangeColor_cmd_original()
 			return 0
 		elif mode == "d":
 			os.system('cls')
 			print('Loading.......')
-			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension#donate')
+			webbrowser_open_self('https://github.com/AaronFeng753/Waifu2x-Extension#donate')
 			os.system('cls')
 			print('                     Thank you!!!  :)')
 		elif mode == "r":
 			os.system('cls')
 			print('Loading.......')
-			webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/issues/new')
+			webbrowser_open_self('https://github.com/AaronFeng753/Waifu2x-Extension/issues/new')
 			os.system('cls')
 		elif mode == "":
 			os.system('cls')
@@ -359,8 +359,7 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 	
 	Record_running_log('Enter [ Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan ]')
 	
-	print(' Note: The input path must not contain special characters,')
-	print(' which will cause compatibility problems.')
+	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('─'*80)
 	print("               Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan")
 	print('─'*80)
@@ -584,7 +583,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 			break
 		
 		if os.path.exists(inputPath+"\\scaled_waifu2x\\") :
-			os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\\"+'"')
+			rd_self(inputPath+"\\scaled_waifu2x\\")
 		mkdir_self(inputPath+"\\scaled_waifu2x\\")
 		
 		if scale in ['4','8']:
@@ -761,7 +760,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 		print('Copy files...')
 		if Rename_result_images.lower() == 'y':
 			os.system("xcopy /s /i /q /y \""+inputPath+"\\scaled_waifu2x\\*.*\" \""+inputPath+"\"")
-			os.system("rd /s/q \""+inputPath+"\\scaled_waifu2x\"")
+			rd_self(inputPath+"\\scaled_waifu2x")
 		Finished_folder_num = Finished_folder_num + 1
 	Window_Title('')
 
@@ -857,7 +856,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		scalepath = scaledFilePath+'_split\\scaled\\'
 		
 		if os.path.exists(scaledFilePath+'_split\\scaled') :
-			os.system("rd /s/q \""+scaledFilePath+'_split\\scaled'+'"')
+			rd_self(scaledFilePath+'_split\\scaled')
 		mkdir_self(scaledFilePath+'_split\\scaled')
 		
 		print('scale images.....')
@@ -982,7 +981,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 		assembleGif(scaledFilePath,Duration_gif)
 		print('Gif assembled')
 		
-		os.system("rd /s/q \""+scaledFilePath+'_split"')
+		rd_self(scaledFilePath+'_split')
 		
 		if delorginal == 'y':
 			gif_name=scaledFilePath+'_waifu2x.gif'
@@ -1015,8 +1014,7 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	
 	Record_running_log('Enter [ Scale & Denoise Image & GIF - Waifu2x-converter ]')
 	
-	print(' Note: The input path must not contain special characters,')
-	print(' which will cause compatibility problems.')
+	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('─'*80)
 	print("                Scale & Denoise Image & GIF - Waifu2x-converter")
 	print('─'*80)
@@ -1340,7 +1338,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		scalepath = scaledFilePath+'_split\\scaled\\'
 		
 		if os.path.exists(scaledFilePath+'_split\\scaled') :
-			os.system("rd /s/q \""+scaledFilePath+'_split\\scaled'+'"')
+			rd_self(scaledFilePath+'_split\\scaled')
 		mkdir_self(scaledFilePath+'_split\\scaled')
 		
 		print(' Scale images.....')
@@ -1412,7 +1410,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 		assembleGif(scaledFilePath,Duration_gif)
 		print(' Gif assembled')
 		
-		os.system("rd /s/q \""+scaledFilePath+'_split"')
+		rd_self(scaledFilePath+'_split')
 		
 		if delorginal == 'y':
 			gif_name=scaledFilePath+'_waifu2x.gif'
@@ -1476,8 +1474,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 	
 	Record_running_log('Enter [ Scale & Denoise Video - waifu2x-converter ]')
 	
-	print(' Note: The input path must not contain special characters,')
-	print(' which will cause compatibility problems.')
+	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('─'*83)
 	print("                       Scale & Denoise Video - waifu2x-converter")
 	print('─'*83)
@@ -1615,7 +1612,7 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		
 		oldfilenumber=FileCount(frames_dir)
 		if os.path.exists(frames_dir+"\\scaled\\") :
-			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
+			rd_self(frames_dir+"\\scaled\\")
 		mkdir_self(frames_dir+"\\scaled\\")
 		
 		thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
@@ -1716,8 +1713,7 @@ def Scale_Denoise_Video():
 	
 	Record_running_log('Enter [ Scale & Denoise Video - Waifu2x-ncnn-vulkan ]')
 	
-	print(' Note: The input path must not contain special characters,')
-	print(' which will cause compatibility problems.')
+	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('─'*83)
 	print("                     Scale & Denoise Video - Waifu2x-ncnn-vulkan")
 	print('─'*83)
@@ -1858,7 +1854,7 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		
 		oldfilenumber=FileCount(frames_dir)
 		if os.path.exists(frames_dir+"\\scaled\\") :
-			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
+			rd_self(frames_dir+"\\scaled\\")
 		mkdir_self(frames_dir+"\\scaled\\")
 		
 		if scale in ['4','8']:
@@ -2020,8 +2016,7 @@ def Scale_Denoise_Video_Anime4K():
 	
 	Record_running_log('Enter [ Scale Video - Anime4K ]')
 	
-	print(' Note: The input path must not contain special characters,')
-	print(' which will cause compatibility problems.')
+	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('─'*83)
 	print("                              Scale Video - Anime4K")
 	print('─'*83)
@@ -2187,7 +2182,7 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		
 		oldfilenumber=FileCount(frames_dir)
 		if os.path.exists(frames_dir+"\\scaled\\") :
-			os.system("rd /s/q \""+frames_dir+"\\scaled\\"+'"')
+			rd_self(frames_dir+"\\scaled\\")
 		mkdir_self(frames_dir+"\\scaled\\")
 			
 		thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
@@ -2671,7 +2666,7 @@ def splitGif(gifFileName,scaledFilePath):
 	frames = get_frames_gif(gifFileName)
 	
 	if os.path.exists(scaledFilePath+'_split') :
-			os.system("rd /s/q \""+scaledFilePath+'_split'+'"')
+		rd_self(scaledFilePath+'_split')
 	mkdir_self(scaledFilePath+'_split')
 	
 	os.system('ffmpeg -i "'+gifFileName+'" "'+scaledFilePath+'_split\\%0'+str(frames)+'d.png"')	
@@ -2720,7 +2715,7 @@ def video2images(inputpath):
 	frame_figures = len(str(frame_counter))
 	
 	if os.path.exists(frames_dir) :
-			os.system("rd /s/q \""+frames_dir+'"')
+		rd_self(frames_dir)
 	mkdir_self(frames_dir)
 	
 	Record_running_log('Start converting this video to images: '+video_path_filename+'.mp4')
@@ -2751,7 +2746,7 @@ def images2video(inputpath):
 		os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+frames_scaled_dir+'%0'+str(frame_figures)+'d.png" -r '+str(fps)+' -pix_fmt yuv420p "'+video_path_filename+'_waifu2x'+video_ext+'"')
 	
 	
-	os.system('rd /s/q "'+video_dir+'frames_waifu2x'+'"')
+	rd_self(video_dir+'frames_waifu2x')
 
 class VideoDelFrameThread(threading.Thread):
 	def __init__(self,inputpath):
@@ -3217,7 +3212,7 @@ def checkUpdate():
 				else:
 					print('wrong input, pls input again')
 			if download_update.lower() == 'y':
-				webbrowser.open('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
+				webbrowser_open_self('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
 		else:
 			os.system('cls')
 			print(' No new update')
@@ -3850,11 +3845,12 @@ def AdminTest_Path(Path_):
 		
 #==================================================== Error_Log ==================================================
 def Error_log_setting():
+	Error_log_clean() # 检查错误日志大小, 判定是否需要提醒user重置日志
 	while True:
 		os.system('cls')
 		settings_values = ReadSettings()
 		print('─'*33)
-		print(' Error log setting')
+		print(' Error log settings')
 		print('─'*33)
 		print(' 1.Record Error log: [ '+settings_values['Record_error_log']+' ]\n')
 		print(' 2.Read Error log.\n')
@@ -3928,7 +3924,7 @@ def Error_log_setting():
 
 def Read_Error_Log():	#读取错误日志
 	if os.path.exists('Error_Log_Waifu2x-Extension.log') :	#判断错误日志文件是否存在
-		webbrowser.open('Error_Log_Waifu2x-Extension.log')
+		webbrowser_open_self('Error_Log_Waifu2x-Extension.log')
 		log_size = round(os.path.getsize('Error_Log_Waifu2x-Extension.log')/1024)
 		if log_size > 500:
 			del_log = input('The error log is too large (>500KB). Do you want to reset the error log?(Y/N): ')
@@ -3946,9 +3942,9 @@ def Read_Error_Log():	#读取错误日志
 def Error_log_clean():
 	if os.path.exists('Error_Log_Waifu2x-Extension.log') :	#判断错误日志文件是否存在
 		log_size = round(os.path.getsize('Error_Log_Waifu2x-Extension.log')/1024)
-		if log_size > 500:
+		if log_size > 1000:
 			os.system('cls')
-			del_log = input('The error log is too large (>500KB). Do you want to reset the error log?(Y/N): ')
+			del_log = input('The error log is too large (>1000KB). Do you want to reset the error log?(Y/N): ')
 			if del_log.lower() == 'y':
 				with open('Error_Log_Waifu2x-Extension.log','w+') as f:
 					f.write('')
@@ -4227,7 +4223,7 @@ def Benchmark_Anime4K():
 	old_Number_of_threads = 0
 	
 	if os.path.exists(output_folder):
-		os.system("rd /s/q \""+output_folder+"\"")
+		rd_self(output_folder)
 	
 	for x in range(1,129):
 		
@@ -4247,7 +4243,7 @@ def Benchmark_Anime4K():
 		Video_scale_Anime4K(input_folder,output_folder,scale)
 		
 		time_end=time.time()
-		os.system("rd /s/q \""+output_folder+"\"")
+		rd_self(output_folder)
 		new_time_cost = time_end - time_start
 		print('---------------------------------')
 		print('Number of threads: ',Number_of_threads)
@@ -4305,7 +4301,7 @@ def Benchmark_converter():
 	old_Number_of_threads = 0
 	
 	if os.path.exists(output_folder):
-		os.system("rd /s/q \""+output_folder+"\"")
+		rd_self(output_folder)
 	
 	for x in range(1,129):
 		
@@ -4350,7 +4346,7 @@ def Benchmark_converter():
 			break
 		
 		time_end=time.time()
-		os.system("rd /s/q \""+output_folder+"\"")
+		rd_self(output_folder)
 		new_time_cost = time_end - time_start
 		print('---------------------------------')
 		print('Number of threads: ',Number_of_threads)
@@ -4411,7 +4407,7 @@ def Benchmark_vulkan():
 	old_tileSize = 0
 	
 	if os.path.exists(scaledFilePath) :
-		os.system("rd /s/q \""+scaledFilePath+"\"")
+		rd_self(scaledFilePath)
 	
 	for x in range(0,50):
 		mkdir_self(scaledFilePath)
@@ -4419,7 +4415,7 @@ def Benchmark_vulkan():
 		print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
 		os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+inputPath+"\" -o \""+scaledFilePath+"\""+" -n "+noiseLevel+ " -s "+scale+" -t "+str(tileSize)+" -m "+models+gpuId_str+load_proc_save_str)
 		time_end=time.time()
-		os.system("rd /s/q \""+scaledFilePath+"\"")
+		rd_self(scaledFilePath)
 		new_time_cost = time_end - time_start
 		print('---------------------------------')
 		print('Tile size: ',tileSize)
@@ -4511,7 +4507,7 @@ def RecoverGifFiles(inputPathList):
 					os.system('copy /y "'+old_path+'" "'+new_path+'"')
 					remove_safe(old_path)
 			if os.path.exists(inputPath+'\\protectfiles_waifu2x_extension') :
-				os.system('rd /s/q "'+inputPath+'\\protectfiles_waifu2x_extension'+'"')
+				rd_self(inputPath+'\\protectfiles_waifu2x_extension')
 			break
 			
 def FindImageFiles(inputPathList):
@@ -4584,6 +4580,8 @@ def Compatibility_Test(Init):
 	print('----------------------------------------------')
 	print('  Running compatibility test, please wait...')
 	print('----------------------------------------------')
+	
+	Record_running_log('Start running compatibility test.')
 	
 	waifu2x_ncnn_vulkan_avaliable = Compatibility_Test_waifu2x_ncnn_vulkan()
 	waifu2x_converter_avaliable = Compatibility_Test_waifu2x_converter()
@@ -4875,7 +4873,7 @@ def Image_File_2_Folder(FileList):
 def Remove_File_2_Folder(Dict_New_folder_Old_folder):
 	for key,val in Dict_New_folder_Old_folder.items():
 		os.system('copy /y "'+key+"\\*.*\" \""+val+'"')
-		os.system("rd /s/q \""+key+'"')
+		rd_self(key)
 
 
 #================================================ Pop-up window ===============================================
@@ -5212,7 +5210,7 @@ def Running_log_setting():
 		os.system('cls')
 		settings_values = ReadSettings()
 		print('─'*50)
-		print(' Running log setting')
+		print(' Running log settings')
 		print('─'*50)
 		print(' 1.Record running log: [ '+settings_values['Record_running_log']+' ]\n')
 		print(' 2.Read running log.\n')
@@ -5276,7 +5274,7 @@ def Running_log_setting():
 		elif choice == '2':
 			
 			if os.path.exists('Running_Log_Waifu2x-Extension.log'):	#判断运行日志文件是否存在
-				webbrowser.open('Running_Log_Waifu2x-Extension.log')
+				webbrowser_open_self('Running_Log_Waifu2x-Extension.log')
 			else:
 				os.system('cls')
 				input(' !!ERROR!! Running log not found. Press [Enter] key to return.')
@@ -5337,7 +5335,15 @@ def Record_running_log(log_string):
 def mkdir_self(Path_):
 	os.mkdir(Path_)
 	Record_running_log('Create folder: '+Path_)
-	
+
+#=============================================== webbrowser_open_self() ==========================================
+def webbrowser_open_self(str_):
+	Record_running_log('Call an external browser to open: '+str_)
+	webbrowser.open(str_)
+#================================================= rd_self() =============================================
+def rd_self(str_):
+	Record_running_log('Remove Dir: '+str_)
+	os.system('rd /s/q "'+str_+'"')
 	
 #==========================================  Init  ==================================================================
 
