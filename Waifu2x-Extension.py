@@ -3725,6 +3725,15 @@ def Settings():
 			ChangeColor_default()
 			os.system('cls')
 
+# ~ def ReadSettings_Read_Only():
+	# ~ try:
+		# ~ with open('waifu2x-extension-setting','r') as f:
+			# ~ settings_values = json.load(f)
+		# ~ return settings_values
+	# ~ except BaseException:
+		# ~ settings_values = ReadSettings()
+		# ~ return settings_values
+		
 def ReadSettings():
 	cpu_num = int(cpu_count() / 2)
 	if cpu_num < 1 :
@@ -3737,7 +3746,7 @@ def ReadSettings():
 						'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
 						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1,
 						'Compatibility_waifu2x_ncnn_vulkan':True,'Compatibility_waifu2x_converter':True,'Compatibility_Anime4k':True,
-						'Record_running_log':'n','Record_error_log':'y'}
+						'Record_running_log':'n','Record_error_log':'y','Record_running_log_AC':'n'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -4054,6 +4063,7 @@ class Play_Notification_Sound_Thread (threading.Thread):
         
 	def run(self):
 		playsound('NotificationSound_waifu2xExtension.mp3')
+		Record_running_log('Play Notification Sound.')
 
 def Play_Notification_Sound():
 	
@@ -4099,8 +4109,6 @@ def ResizeWindow():
 
 def Set_cols_lines(cols,lines):
 	
-	Record_running_log('Start to resize window.   cols:'+str(cols)+'  lines:'+str(lines))
-	
 	while Complete_ResizeWindow(cols,lines):
 		while True:
 			WindowSize_Queue.put([cols,lines])
@@ -4108,7 +4116,7 @@ def Set_cols_lines(cols,lines):
 				break
 		time.sleep(0.04)
 	
-	Record_running_log('Successfully resize the window.   cols:'+str(cols)+'  lines:'+str(lines))
+	#Record_running_log('Resize the window.   cols:'+str(cols)+'  lines:'+str(lines))
 	
 	return 0
 
@@ -4945,6 +4953,14 @@ def Del_Temp():
 				remove_safe(path+'\\'+fname)
 			break
 	
+	settings_values = ReadSettings()
+	if settings_values['Record_running_log_AC'] == 'y':
+		if os.path.exists('Running_Log_Waifu2x-Extension.log'):
+			log_size = round(os.path.getsize('Running_Log_Waifu2x-Extension.log')/1024)
+			if log_size > 2000:
+				remove_safe('Running_Log_Waifu2x-Extension.log')
+				Record_running_log('Automatically clean up the run log.')
+				
 	Record_running_log('Delete temporary files.')
 	
 	return 0
@@ -5181,15 +5197,16 @@ def Running_log_setting():
 	while True:
 		os.system('cls')
 		settings_values = ReadSettings()
-		print('─'*33)
+		print('─'*50)
 		print(' Running log setting')
-		print('─'*33)
+		print('─'*50)
 		print(' 1.Record running log: [ '+settings_values['Record_running_log']+' ]\n')
 		print(' 2.Read running log.\n')
 		print(' 3.Reset running log.\n')
+		print(' 4.Automatically clean up the running log: [ '+settings_values['Record_running_log_AC']+' ]\n')
 		print(' R.Return to the previous menu.')
-		print('─'*33)
-		choice = input('(1 / 2 / 3 / R): ').strip(' ').lower()
+		print('─'*50)
+		choice = input('(1 / 2 / 3 / 4 / R): ').strip(' ').lower()
 		if choice == '1':
 			
 			os.system('cls')
@@ -5242,20 +5259,37 @@ def Running_log_setting():
 			remove_safe('Running_Log_Waifu2x-Extension.log')
 			Record_running_log('Running log reseted by user.')
 			input(' Running log reseted, press [Enter] key to return.')
+		
+		elif choice == '4':
 			
+			os.system('cls')
+			
+			print('Loading...')
+			
+			if settings_values['Record_running_log_AC'] == 'y':
+				settings_values['Record_running_log_AC'] = 'n'
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+				Record_running_log('Automatically clean up the running log: Disabled')
+					
+			elif settings_values['Record_running_log_AC'] == 'n':
+				settings_values['Record_running_log_AC'] = 'y'
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+				Record_running_log('Automatically clean up the running log: Enabled')
+		
 		elif choice == 'r':
 			return 0
 
 class Record_running_log_Thread(threading.Thread):
-	def __init__(self,log_string):
+	def __init__(self,log_string,settings_values):
 		threading.Thread.__init__(self)
 		self.log_string = log_string
-	
+		self.settings_values=settings_values
 	def run(self):
 		
 		log_string = self.log_string
-		
-		settings_values = ReadSettings()
+		settings_values = self.settings_values
 	
 		if settings_values['Record_running_log'] == 'y':
 			
@@ -5267,7 +5301,9 @@ class Record_running_log_Thread(threading.Thread):
 
 def Record_running_log(log_string):
 	
-	thread_rec = Record_running_log_Thread(log_string)
+	settings_values=ReadSettings()
+	
+	thread_rec = Record_running_log_Thread(log_string,settings_values)
 	thread_rec.start()
 
 #============================================== mkdir_self() ================================================
