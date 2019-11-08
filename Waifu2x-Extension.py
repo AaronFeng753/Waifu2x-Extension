@@ -3860,7 +3860,21 @@ def Error_log_setting():
 		print(' 2.Read Error log.\n')
 		print(' 3.Reset Error log.\n')
 		print(' R.Return to the previous menu.')
-		print('─'*33)
+		
+		if os.path.exists('Error_Log_Waifu2x-Extension.log'):
+			current_dir = os.path.dirname(os.path.abspath(__file__))
+			Log_location = ' Log file location:\n '+current_dir+'\\Error_Log_Waifu2x-Extension.log'
+			len_Log_location = len(' '+current_dir+'\\Error_Log_Waifu2x-Extension.log')
+			
+			if len_Log_location<len(' Log file location:'):
+				len_Log_location = len(' Log file location:')
+			
+			print('─'*len_Log_location)
+			print(Log_location)
+			print('─'*len_Log_location)
+		else:
+			print('─'*33)
+		
 		choice = input('(1 / 2 / 3 / R): ').strip(' ').lower()
 		if choice == '1':
 			
@@ -5205,7 +5219,20 @@ def Running_log_setting():
 		print(' 3.Reset running log.\n')
 		print(' 4.Automatically clean up the running log: [ '+settings_values['Record_running_log_AC']+' ]\n')
 		print(' R.Return to the previous menu.')
-		print('─'*50)
+	
+		if os.path.exists('Running_Log_Waifu2x-Extension.log'):
+			current_dir = os.path.dirname(os.path.abspath(__file__))
+			Log_location = ' Log file location:\n '+current_dir+'\\Running_Log_Waifu2x-Extension.log'
+			len_Log_location = len(' '+current_dir+'\\Running_Log_Waifu2x-Extension.log')
+			
+			if len_Log_location<len(' Log file location:'):
+				len_Log_location = len(' Log file location:')
+			
+			print('─'*len_Log_location)
+			print(Log_location)
+			print('─'*len_Log_location)
+		else:
+			print('─'*50)
 		choice = input('(1 / 2 / 3 / 4 / R): ').strip(' ').lower()
 		if choice == '1':
 			
@@ -5362,7 +5389,7 @@ def init():		#初始化函数
         
 if __name__ == '__main__':
 	
-	Record_running_log('Start running.')
+	Record_running_log('Start initialization.')
 	
 	#检查所处文件夹是否需要管理员权限
 	if AdminTest():
