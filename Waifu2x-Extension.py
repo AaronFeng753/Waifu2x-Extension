@@ -37,13 +37,15 @@ Main Menu --> Settings --> Error log.
 
 ------------------------------------------------
 To do:
-- 测试
+- 
 
 
 ------------------------------------------------
 Next version:
 - 继续完善运行日志的记录
+- 为自动清理运行日志加入说明
 - 分段放大视频,减少硬盘占用
+- 压缩线程数量设置
 
 '''
 
@@ -556,7 +558,7 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 			Process_ImageModeC(inputPathList_files_images,orginalFileNameAndFullname,JpgQuality,models,noiseLevel,scale,load_proc_save_str,tileSize,gpuId_str,saveAsJPG,delorginal)
 	total_time_end=time.time()
 	
-	print('\ntotal time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
+	print('\n Total time cost: ',Seconds2hms(round(total_time_end-total_time_start)),'\n')
 	if turnoff=='y':
 		ShutDown()
 	Play_Notification_Sound()
