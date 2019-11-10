@@ -35,6 +35,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 - Sleep mode
 - Notification sound
 - Compatibility test
+- Record running log.
 - And more
 
 # Samples
