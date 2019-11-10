@@ -27,25 +27,21 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- Now you can record running log.
-In order to protect your privacy,this new feature is disabled by default.
-You can enable it in running log settings.
-Main Menu --> Running log.
-- Add error logging switch, now you can control whether to log the error log.
-Main Menu --> Settings --> Error log.
+- 
 - Other improvements.
 
 ------------------------------------------------
 To do:
-- 
+- 继续完善运行日志的记录
+- 分段放大视频,减少硬盘占用
+- 压缩线程数量设置
+- 对齐 检查兼容性后提示启用converter的文本 input 那
+- 更新github 的 readme
 
 
 ------------------------------------------------
 Next version:
-- 继续完善运行日志的记录
-- 为自动清理运行日志加入说明
-- 分段放大视频,减少硬盘占用
-- 压缩线程数量设置
+
 
 '''
 
@@ -3194,7 +3190,9 @@ def Seconds2hms(seconds):
 		return str(seconds)+'s'
 #=========================================================== Check Update ============================================================
 def checkUpdate():
-	print('Checking update....')
+	print('┌─────────────────────┐')
+	print('│ Checking update.... │')
+	print('└─────────────────────┘')
 	try:
 		headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'}
 		r1=requests.get('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest',headers=headers)
@@ -3208,21 +3206,20 @@ def checkUpdate():
 		
 		if Version_current != Version_latest:
 			os.system('cls')
-			print('New update : '+Version_latest)
-			print('----------------------------------------')
-			while True:
-				download_update = input('Do you wanna download the update?(y/n): ')
-				if download_update in ['y','n','Y','N']:
-					break
-				else:
-					print('wrong input, pls input again')
+			print('┌───────────────────────────────────────┐')
+			print('│ New update : '+Version_latest+' '*(25-len(Version_latest))+'│')
+			print('└───────────────────────────────────────┘')
+			download_update = input('Do you wanna download the update?(y/n): ').strip(' ').lower()
 			if download_update.lower() == 'y':
 				webbrowser_open_self('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
 		else:
 			os.system('cls')
-			print(' No new update')
-			print('------------------------------')
-			input(' Press [Enter] key to return')
+			print('┌───────────────────────────────────────────┐')
+			print('│           No update avaliable.            │')
+			print('├───────────────────────────────────────────┤')
+			print('│ Press [Enter] to return to the main menu. │')
+			print('└───────────────────────────────────────────┘')
+			input('')
 	except BaseException:
 		os.system('cls')
 		print(' Failed to establish connection, pls check your internet or try again, press [Enter] key to return....\n')
