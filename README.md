@@ -4,7 +4,7 @@ https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 # What is Waifu2x-Extension?
 Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutional Neural Networks.
 
-Based on waifu2x-ncnn-vulkan (version 20190712) and Waifu2x-converter . 
+Based on `Waifu2x-ncnn-vulkan` (version 20190712) and `Waifu2x-converter` . 
 
 Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that support `Vulakn`, even Intel GPU. 
 
