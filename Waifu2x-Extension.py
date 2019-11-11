@@ -28,14 +28,17 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 
 Update log
 - Now you can customize the number of compression threads.
-`Main menu --> Settings --> Number of threads ( Compression)`
+`Main menu --> Settings --> Number of threads ( Compression )`
+- Segment processing video. `( Experimental )`
+This is an experimental feature that splits, enlarges, and assembles video by segmentation to save space. 
+This feature is `still in development`, although it can be used, there are still some bugs.
+`Main menu --> Settings --> Segment processing video.`
 - Fix bug.
 - Other improvements.
 
 ------------------------------------------------
 To do:
 - 继续完善运行日志的记录
-- 分段放大视频,减少硬盘占用
 
 
 ------------------------------------------------
@@ -1595,7 +1598,6 @@ def Scale_Denoise_Video_waifu2x_converter():
 	Play_Notification_Sound()
 	input('\n Press [Enter] key to exit')
 
-#======================================= process_video_modeABC_waifu2x_converter ============================
 def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel,delorginal):
 	
 	Set_cols_lines(150,40)
@@ -1620,105 +1622,434 @@ def process_video_modeABC_waifu2x_converter(inputPathList_files,scale,noiseLevel
 		
 		total_num_MainToSub_converter_video_Queue.put(str(total_num))
 		
-		video2images(inputPath) #拆解视频
+		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
 		
-		time_start_scale = time.time()
+		orginal_inputPath = inputPath
 		
-		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+		settings_values = ReadSettings()
 		
-		oldfilenumber=FileCount(frames_dir)
-		if os.path.exists(frames_dir+"\\scaled\\") :
-			rd_self(frames_dir+"\\scaled\\")
-		mkdir_self(frames_dir+"\\scaled\\")
-		
-		thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
-		thread_VideoDelFrameThread.start()
-		
-		input_folder = frames_dir
-		output_folder = frames_dir+"\\scaled"
-		model_dir = 'waifu2x-converter\\models_rgb'
-		for path,useless,fnames in os.walk(input_folder):
-			total_frames = len(fnames)
+		if settings_values['Segment_processing_video'] == 'y':
+			DurationTime = settings_values['Segmentation_duration_video']
+			time_remain_segment = get_Video_time(orginal_inputPath)
 			
-			total_frames_MainToSub_converter_video_Queue.put(str(total_frames))
+			if time_remain_segment>DurationTime:
+				original_video = orginal_inputPath
+				main_video = ''
+				sub_video = os.path.splitext(inputPath)[0]+'_main.mp4'
+				waifu2x_sub_video = os.path.splitext(inputPath)[0]+'_main_waifu2x.mp4'
+				StartTime = 0
+				FirstRound = True
+				round_ = 0
+				
+				while True:
+					
+					if time_remain_segment == 0 or time_remain_segment<DurationTime:
+						break
+					
+					outputVideo_str = os.path.splitext(inputPath)[0]+'_'+str(round_)+'.mp4'
+					
+					time_remain_segment = time_remain_segment-DurationTime
+					
+					Cut_video(original_video,sub_video,StartTime,DurationTime)
+					
+					inputPath = sub_video
+		
+					#============================================================================================================
+					video2images(inputPath) #拆解视频
+					
+					time_start_scale = time.time()
+					
+					frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+					
+					oldfilenumber=FileCount(frames_dir)
+					if os.path.exists(frames_dir+"\\scaled\\") :
+						rd_self(frames_dir+"\\scaled\\")
+					mkdir_self(frames_dir+"\\scaled\\")
+					
+					thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+					thread_VideoDelFrameThread.start()
+					
+					input_folder = frames_dir
+					output_folder = frames_dir+"\\scaled"
+					model_dir = 'waifu2x-converter\\models_rgb'
+					for path,useless,fnames in os.walk(input_folder):
+						total_frames = len(fnames)
+						
+						total_frames_MainToSub_converter_video_Queue.put(str(total_frames))
+						
+						max_threads = settings_values['Number_of_threads_Waifu2x_converter']
+						finished_frames = 0
+						thread_files = []
+						fnames = dict.fromkeys(fnames,'')
+						ETA = 'Null'
+						
+						thread_Title=Time_Remaining_Title_converter_video_Thread()
+						thread_Title.start()
+						
+						for fname in fnames:
+							thread_files.append(fname)
+							if len(thread_files) == max_threads:
+								for fname_ in thread_files:
+									thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
+									thread1.start()
+								while True:
+									if thread1.isAlive()== False:
+										break
+										
+								finished_frames = finished_frames+len(thread_files)
+								finished_frames_MainToSub_converter_video_Queue.put(str(finished_frames))
+								
+								remain_frames = total_frames - finished_frames
+								
+								time_cost = time.time()-time_start_scale
+								
+								time_remain = (time_cost/finished_frames)*remain_frames
+								TimeRemaining_MainToSub_converter_video_Queue.put(int(time_remain))
+								
+								ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
+								ETA_MainToSub_converter_video_Queue.put(str(ETA))
+								
+								thread_files = []
+							
+						if thread_files != []:
+							finished_frames = total_frames
+							finished_frames_MainToSub_converter_video_Queue.put(str(finished_frames))
+							for fname_ in thread_files:
+								thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
+								thread1.start()
+							while True:
+								if thread1.isAlive()== False:
+									break
+							thread_files = []
+						while True:
+							if Process_exist('waifu2x-converter_x64.exe')== False:
+								break
+							else:
+								time.sleep(0.02)
+						
+						break
+					
+					while thread_VideoDelFrameThread.isAlive():
+						time.sleep(1)
+					if thread_Title.isAlive():
+						stop_thread(thread_Title)
+					
+					for files in os.walk(frames_dir+"\\scaled"):
+						for fileNameAndExt in files[2]:
+							fileName=os.path.splitext(fileNameAndExt)[0]
+							os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					
+					images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+					#============================================================================================================
+					if FirstRound:
+						main_video = waifu2x_sub_video
+						remove_safe(sub_video)
+						sub_video = os.path.splitext(original_video)[0]+'_sub.mp4'
+						waifu2x_sub_video = os.path.splitext(original_video)[0]+'_sub_waifu2x.mp4'
+						FirstRound = False
+					else:
+						Assemble_video(main_video,waifu2x_sub_video,outputVideo_str)
+						round_ = round_+1
+						remove_safe(main_video)
+						remove_safe(waifu2x_sub_video)
+						remove_safe(sub_video)
+						main_video = outputVideo_str
+						
+					StartTime = StartTime+DurationTime
+						
+				if time_remain_segment>0:
+					DurationTime = time_remain_segment
+					
+					outputVideo_str = os.path.splitext(inputPath)[0]+'_'+str(round_)+'.mp4'
+					
+					Cut_video(original_video,sub_video,StartTime,DurationTime)
+					inputPath = sub_video
+					#============================================================================================================
+					video2images(inputPath) #拆解视频
+					
+					time_start_scale = time.time()
+					
+					frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+					
+					oldfilenumber=FileCount(frames_dir)
+					if os.path.exists(frames_dir+"\\scaled\\") :
+						rd_self(frames_dir+"\\scaled\\")
+					mkdir_self(frames_dir+"\\scaled\\")
+					
+					thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+					thread_VideoDelFrameThread.start()
+					
+					input_folder = frames_dir
+					output_folder = frames_dir+"\\scaled"
+					model_dir = 'waifu2x-converter\\models_rgb'
+					for path,useless,fnames in os.walk(input_folder):
+						total_frames = len(fnames)
+						
+						total_frames_MainToSub_converter_video_Queue.put(str(total_frames))
+						
+						max_threads = settings_values['Number_of_threads_Waifu2x_converter']
+						finished_frames = 0
+						thread_files = []
+						fnames = dict.fromkeys(fnames,'')
+						ETA = 'Null'
+						
+						thread_Title=Time_Remaining_Title_converter_video_Thread()
+						thread_Title.start()
+						
+						for fname in fnames:
+							thread_files.append(fname)
+							if len(thread_files) == max_threads:
+								for fname_ in thread_files:
+									thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
+									thread1.start()
+								while True:
+									if thread1.isAlive()== False:
+										break
+										
+								finished_frames = finished_frames+len(thread_files)
+								finished_frames_MainToSub_converter_video_Queue.put(str(finished_frames))
+								
+								remain_frames = total_frames - finished_frames
+								
+								time_cost = time.time()-time_start_scale
+								
+								time_remain = (time_cost/finished_frames)*remain_frames
+								TimeRemaining_MainToSub_converter_video_Queue.put(int(time_remain))
+								
+								ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
+								ETA_MainToSub_converter_video_Queue.put(str(ETA))
+								
+								thread_files = []
+							
+						if thread_files != []:
+							finished_frames = total_frames
+							finished_frames_MainToSub_converter_video_Queue.put(str(finished_frames))
+							for fname_ in thread_files:
+								thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
+								thread1.start()
+							while True:
+								if thread1.isAlive()== False:
+									break
+							thread_files = []
+						while True:
+							if Process_exist('waifu2x-converter_x64.exe')== False:
+								break
+							else:
+								time.sleep(0.02)
+						
+						break
+					
+					while thread_VideoDelFrameThread.isAlive():
+						time.sleep(1)
+					if thread_Title.isAlive():
+						stop_thread(thread_Title)
+					
+					for files in os.walk(frames_dir+"\\scaled"):
+						for fileNameAndExt in files[2]:
+							fileName=os.path.splitext(fileNameAndExt)[0]
+							os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					
+					images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+					#============================================================================================================
+					Assemble_video(main_video,waifu2x_sub_video,outputVideo_str)
+					
+					remove_safe(main_video)
+					remove_safe(waifu2x_sub_video)
+					remove_safe(sub_video)
+					
+				os.rename(outputVideo_str,res_video)
+			else:
+				#============================================================================================================
+					video2images(inputPath) #拆解视频
+					
+					time_start_scale = time.time()
+					
+					frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+					
+					oldfilenumber=FileCount(frames_dir)
+					if os.path.exists(frames_dir+"\\scaled\\") :
+						rd_self(frames_dir+"\\scaled\\")
+					mkdir_self(frames_dir+"\\scaled\\")
+					
+					thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+					thread_VideoDelFrameThread.start()
+					
+					input_folder = frames_dir
+					output_folder = frames_dir+"\\scaled"
+					model_dir = 'waifu2x-converter\\models_rgb'
+					for path,useless,fnames in os.walk(input_folder):
+						total_frames = len(fnames)
+						
+						total_frames_MainToSub_converter_video_Queue.put(str(total_frames))
+						
+						max_threads = settings_values['Number_of_threads_Waifu2x_converter']
+						finished_frames = 0
+						thread_files = []
+						fnames = dict.fromkeys(fnames,'')
+						ETA = 'Null'
+						
+						thread_Title=Time_Remaining_Title_converter_video_Thread()
+						thread_Title.start()
+						
+						for fname in fnames:
+							thread_files.append(fname)
+							if len(thread_files) == max_threads:
+								for fname_ in thread_files:
+									thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
+									thread1.start()
+								while True:
+									if thread1.isAlive()== False:
+										break
+										
+								finished_frames = finished_frames+len(thread_files)
+								finished_frames_MainToSub_converter_video_Queue.put(str(finished_frames))
+								
+								remain_frames = total_frames - finished_frames
+								
+								time_cost = time.time()-time_start_scale
+								
+								time_remain = (time_cost/finished_frames)*remain_frames
+								TimeRemaining_MainToSub_converter_video_Queue.put(int(time_remain))
+								
+								ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
+								ETA_MainToSub_converter_video_Queue.put(str(ETA))
+								
+								thread_files = []
+							
+						if thread_files != []:
+							finished_frames = total_frames
+							finished_frames_MainToSub_converter_video_Queue.put(str(finished_frames))
+							for fname_ in thread_files:
+								thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
+								thread1.start()
+							while True:
+								if thread1.isAlive()== False:
+									break
+							thread_files = []
+						while True:
+							if Process_exist('waifu2x-converter_x64.exe')== False:
+								break
+							else:
+								time.sleep(0.02)
+						
+						break
+					
+					while thread_VideoDelFrameThread.isAlive():
+						time.sleep(1)
+					if thread_Title.isAlive():
+						stop_thread(thread_Title)
+					
+					for files in os.walk(frames_dir+"\\scaled"):
+						for fileNameAndExt in files[2]:
+							fileName=os.path.splitext(fileNameAndExt)[0]
+							os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					
+					images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+					#============================================================================================================
+					
+		#=============================================================================
+		else:
+			#============================================================================================================
+			video2images(inputPath) #拆解视频
 			
-			max_threads = settings_values['Number_of_threads_Waifu2x_converter']
-			finished_frames = 0
-			thread_files = []
-			fnames = dict.fromkeys(fnames,'')
-			ETA = 'Null'
+			time_start_scale = time.time()
 			
-			thread_Title=Time_Remaining_Title_converter_video_Thread()
-			thread_Title.start()
+			frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
 			
-			for fname in fnames:
-				thread_files.append(fname)
-				if len(thread_files) == max_threads:
+			oldfilenumber=FileCount(frames_dir)
+			if os.path.exists(frames_dir+"\\scaled\\") :
+				rd_self(frames_dir+"\\scaled\\")
+			mkdir_self(frames_dir+"\\scaled\\")
+			
+			thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+			thread_VideoDelFrameThread.start()
+			
+			input_folder = frames_dir
+			output_folder = frames_dir+"\\scaled"
+			model_dir = 'waifu2x-converter\\models_rgb'
+			for path,useless,fnames in os.walk(input_folder):
+				total_frames = len(fnames)
+				
+				total_frames_MainToSub_converter_video_Queue.put(str(total_frames))
+				
+				max_threads = settings_values['Number_of_threads_Waifu2x_converter']
+				finished_frames = 0
+				thread_files = []
+				fnames = dict.fromkeys(fnames,'')
+				ETA = 'Null'
+				
+				thread_Title=Time_Remaining_Title_converter_video_Thread()
+				thread_Title.start()
+				
+				for fname in fnames:
+					thread_files.append(fname)
+					if len(thread_files) == max_threads:
+						for fname_ in thread_files:
+							thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
+							thread1.start()
+						while True:
+							if thread1.isAlive()== False:
+								break
+								
+						finished_frames = finished_frames+len(thread_files)
+						finished_frames_MainToSub_converter_video_Queue.put(str(finished_frames))
+						
+						remain_frames = total_frames - finished_frames
+						
+						time_cost = time.time()-time_start_scale
+						
+						time_remain = (time_cost/finished_frames)*remain_frames
+						TimeRemaining_MainToSub_converter_video_Queue.put(int(time_remain))
+						
+						ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
+						ETA_MainToSub_converter_video_Queue.put(str(ETA))
+						
+						thread_files = []
+					
+				if thread_files != []:
+					finished_frames = total_frames
+					finished_frames_MainToSub_converter_video_Queue.put(str(finished_frames))
 					for fname_ in thread_files:
 						thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
 						thread1.start()
 					while True:
 						if thread1.isAlive()== False:
 							break
-							
-					finished_frames = finished_frames+len(thread_files)
-					finished_frames_MainToSub_converter_video_Queue.put(str(finished_frames))
-					
-					remain_frames = total_frames - finished_frames
-					
-					time_cost = time.time()-time_start_scale
-					
-					time_remain = (time_cost/finished_frames)*remain_frames
-					TimeRemaining_MainToSub_converter_video_Queue.put(int(time_remain))
-					
-					ETA = time.strftime('%H:%M:%S', time.localtime(time.time()+time_remain))
-					ETA_MainToSub_converter_video_Queue.put(str(ETA))
-					
 					thread_files = []
-				
-			if thread_files != []:
-				finished_frames = total_frames
-				finished_frames_MainToSub_converter_video_Queue.put(str(finished_frames))
-				for fname_ in thread_files:
-					thread1=waifu2x_converter_Thread(path+'\\'+fname_,output_folder+'\\'+fname_+'.png',scale,noiseLevel)
-					thread1.start()
 				while True:
-					if thread1.isAlive()== False:
+					if Process_exist('waifu2x-converter_x64.exe')== False:
 						break
-				thread_files = []
-			while True:
-				if Process_exist('waifu2x-converter_x64.exe')== False:
-					break
-				else:
-					time.sleep(0.02)
+					else:
+						time.sleep(0.02)
+				
+				break
 			
-			break
+			while thread_VideoDelFrameThread.isAlive():
+				time.sleep(1)
+			if thread_Title.isAlive():
+				stop_thread(thread_Title)
+			
+			for files in os.walk(frames_dir+"\\scaled"):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+			
+			images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+			#============================================================================================================
+			
+			
+		if os.path.splitext(orginal_inputPath)[1] != '.mp4':
+			remove_safe(os.path.splitext(orginal_inputPath)[0]+'.mp4')
 		
-		while thread_VideoDelFrameThread.isAlive():
-			time.sleep(1)
-		if thread_Title.isAlive():
-			stop_thread(thread_Title)
-		
-		for files in os.walk(frames_dir+"\\scaled"):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-		
-		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
-		
-		if os.path.splitext(inputPath)[1] != '.mp4':
-			remove_safe(os.path.splitext(inputPath)[0]+'.mp4')
-		
-		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
-	
 		if delorginal == 'y':
 			if os.path.exists(res_video):
 				if os.path.getsize(res_video) > 0:
-					remove_safe(inputPath)
+					remove_safe(orginal_inputPath)	
 				else:
-					print(' Error occured, failed to generate result video.')
+					print('Error occured, failed to generate result video.')
 			else:
-				print(' Error occured, failed to generate result video.')
+				print('Error occured, failed to generate result video.')
+				
 		finished_num = finished_num+1
 		finished_num_MainToSub_converter_video_Queue.put(str(finished_num))
 	
@@ -1867,166 +2198,662 @@ def process_video_modeABC(inputPathList_files,models,scale,noiseLevel,load_proc_
 		Record_running_log('Start processing video: '+str(inputPath))
 		
 		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
-		video2images(inputPath) #拆解视频
 		
-		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
-		
-		oldfilenumber=FileCount(frames_dir)
-		if os.path.exists(frames_dir+"\\scaled\\") :
-			rd_self(frames_dir+"\\scaled\\")
-		mkdir_self(frames_dir+"\\scaled\\")
-		
-		if scale in ['4','8']:
-			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
-			thread2.start()
-			thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
-			thread_VideoDelFrameThread.start()
-			print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			time_wait_prograssbar = 0
-			while thread2.isAlive():
-				time_wait_prograssbar = time_wait_prograssbar+1
-				time.sleep(1.1)
-				if time_wait_prograssbar == 2:
-					break
-					
-			while thread_VideoDelFrameThread.isAlive():
-				time.sleep(1)
-			
-			for files in os.walk(frames_dir+"\\scaled"):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-			
-			video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
-			frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
-			frame_list = []
-			for path,useless,fnames in os.walk(frames_scaled_dir):
-				fnames = dict.fromkeys(fnames,'')
-				for fname in fnames:
-					f_name_ext = os.path.splitext(fname)[0]
-					f_name = os.path.splitext(fname)[0]
-					if f_name == f_name_ext:
-						frame_list.append(os.path.splitext(fname)[0])
-				break
-			
-			thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
-			thread_VideoDelFrameThread_4x.start()
-			
-			old_file_list_prograsssbar=[]
-			for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
-				fnames = dict.fromkeys(fnames,'')
-				for fname in fnames:
-					old_file_list_prograsssbar.append(fname)
-				break
-					
-			thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2,old_file_list_prograsssbar=old_file_list_prograsssbar)
-			thread2.start()
-			print('')
-			print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			time_wait_prograssbar = 0
-			while thread2.isAlive():
-				time_wait_prograssbar = time_wait_prograssbar+1
-				time.sleep(1.1)
-				if time_wait_prograssbar == 2:
-					break
-					
-			while thread_VideoDelFrameThread_4x.isAlive():
-				time.sleep(1)
-			
-			for files in os.walk(frames_dir+"\\scaled"):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-		if scale == '8':
-			video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
-			frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
-			frame_list = []
-			for path,useless,fnames in os.walk(frames_scaled_dir):
-				fnames = dict.fromkeys(fnames,'')
-				for fname in fnames:
-					f_name_ext = os.path.splitext(fname)[0]
-					f_name = os.path.splitext(fname)[0]
-					if f_name == f_name_ext:
-						frame_list.append(os.path.splitext(fname)[0])
-				break
-			
-			thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
-			thread_VideoDelFrameThread_4x.start()
-			
-			old_file_list_prograsssbar=[]
-			for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
-				fnames = dict.fromkeys(fnames,'')
-				for fname in fnames:
-					old_file_list_prograsssbar.append(fname)
-				break
-					
-			thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 3,old_file_list_prograsssbar=old_file_list_prograsssbar)
-			thread2.start()
-			print('')
-			print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			time_wait_prograssbar = 0
-			while thread2.isAlive():
-				time_wait_prograssbar = time_wait_prograssbar+1
-				time.sleep(1.1)
-				if time_wait_prograssbar == 2:
-					break
-					
-			while thread_VideoDelFrameThread_4x.isAlive():
-				time.sleep(1)
-			
-			for files in os.walk(frames_dir+"\\scaled"):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-			
-		if scale in ['2','1']:
-			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
-			thread2.start()
-			thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
-			thread_VideoDelFrameThread.start()
-			print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
-			
-			time_wait_prograssbar = 0
-			while thread2.isAlive():
-				time_wait_prograssbar = time_wait_prograssbar+1
-				time.sleep(1.1)
-				if time_wait_prograssbar == 2:
-					break
-			
-			while thread_VideoDelFrameThread.isAlive():
-				time.sleep(1)
-			
-			for files in os.walk(frames_dir+"\\scaled"):
-				for fileNameAndExt in files[2]:
-					fileName=os.path.splitext(fileNameAndExt)[0]
-					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-		
-		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
-		
-	
-				
-		if os.path.splitext(inputPath)[1] != '.mp4':
-			remove_safe(os.path.splitext(inputPath)[0]+'.mp4')
-			
+		#=============================================================================
 		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
-	
-		if os.path.splitext(inputPath)[1] != '.mp4':
-			remove_safe(os.path.splitext(inputPath)[0]+'.mp4')
+		
+		orginal_inputPath = inputPath
+		
+		settings_values = ReadSettings()
+		
+		if settings_values['Segment_processing_video'] == 'y':
+			DurationTime = settings_values['Segmentation_duration_video']
+			time_remain = get_Video_time(orginal_inputPath)
+			
+			if time_remain>DurationTime:
+				original_video = orginal_inputPath
+				main_video = ''
+				sub_video = os.path.splitext(inputPath)[0]+'_main.mp4'
+				waifu2x_sub_video = os.path.splitext(inputPath)[0]+'_main_waifu2x.mp4'
+				StartTime = 0
+				FirstRound = True
+				round_ = 0
+				
+				while True:
+					
+					if time_remain == 0 or time_remain<DurationTime:
+						break
+					
+					outputVideo_str = os.path.splitext(inputPath)[0]+'_'+str(round_)+'.mp4'
+					
+					time_remain = time_remain-DurationTime
+					
+					Cut_video(original_video,sub_video,StartTime,DurationTime)
+					
+					inputPath = sub_video
+					#===========================================================================================================================================
+					video2images(inputPath) #拆解视频
+					
+					frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+					
+					oldfilenumber=FileCount(frames_dir)
+					if os.path.exists(frames_dir+"\\scaled\\") :
+						rd_self(frames_dir+"\\scaled\\")
+					mkdir_self(frames_dir+"\\scaled\\")
+					
+					if scale in ['4','8']:
+						thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
+						thread2.start()
+						thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+						thread_VideoDelFrameThread.start()
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+								
+						while thread_VideoDelFrameThread.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+						
+						video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
+						frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+						frame_list = []
+						for path,useless,fnames in os.walk(frames_scaled_dir):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								f_name_ext = os.path.splitext(fname)[0]
+								f_name = os.path.splitext(fname)[0]
+								if f_name == f_name_ext:
+									frame_list.append(os.path.splitext(fname)[0])
+							break
+						
+						thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
+						thread_VideoDelFrameThread_4x.start()
+						
+						old_file_list_prograsssbar=[]
+						for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								old_file_list_prograsssbar.append(fname)
+							break
+								
+						thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2,old_file_list_prograsssbar=old_file_list_prograsssbar)
+						thread2.start()
+						print('')
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+								
+						while thread_VideoDelFrameThread_4x.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					if scale == '8':
+						video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
+						frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+						frame_list = []
+						for path,useless,fnames in os.walk(frames_scaled_dir):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								f_name_ext = os.path.splitext(fname)[0]
+								f_name = os.path.splitext(fname)[0]
+								if f_name == f_name_ext:
+									frame_list.append(os.path.splitext(fname)[0])
+							break
+						
+						thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
+						thread_VideoDelFrameThread_4x.start()
+						
+						old_file_list_prograsssbar=[]
+						for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								old_file_list_prograsssbar.append(fname)
+							break
+								
+						thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 3,old_file_list_prograsssbar=old_file_list_prograsssbar)
+						thread2.start()
+						print('')
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+								
+						while thread_VideoDelFrameThread_4x.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+						
+					if scale in ['2','1']:
+						thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+						thread2.start()
+						thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+						thread_VideoDelFrameThread.start()
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+						
+						while thread_VideoDelFrameThread.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					
+					images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+					#===========================================================================================================================================
+					if FirstRound:
+						main_video = waifu2x_sub_video
+						remove_safe(sub_video)
+						sub_video = os.path.splitext(original_video)[0]+'_sub.mp4'
+						waifu2x_sub_video = os.path.splitext(original_video)[0]+'_sub_waifu2x.mp4'
+						FirstRound = False
+					else:
+						Assemble_video(main_video,waifu2x_sub_video,outputVideo_str)
+						round_ = round_+1
+						remove_safe(main_video)
+						remove_safe(waifu2x_sub_video)
+						remove_safe(sub_video)
+						main_video = outputVideo_str
+						
+					StartTime = StartTime+DurationTime
+						
+				if time_remain>0:
+					DurationTime = time_remain
+					
+					outputVideo_str = os.path.splitext(inputPath)[0]+'_'+str(round_)+'.mp4'
+					
+					Cut_video(original_video,sub_video,StartTime,DurationTime)
+					inputPath = sub_video
+					#===========================================================================================================================================
+					video2images(inputPath) #拆解视频
+					
+					frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+					
+					oldfilenumber=FileCount(frames_dir)
+					if os.path.exists(frames_dir+"\\scaled\\") :
+						rd_self(frames_dir+"\\scaled\\")
+					mkdir_self(frames_dir+"\\scaled\\")
+					
+					if scale in ['4','8']:
+						thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
+						thread2.start()
+						thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+						thread_VideoDelFrameThread.start()
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+								
+						while thread_VideoDelFrameThread.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+						
+						video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
+						frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+						frame_list = []
+						for path,useless,fnames in os.walk(frames_scaled_dir):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								f_name_ext = os.path.splitext(fname)[0]
+								f_name = os.path.splitext(fname)[0]
+								if f_name == f_name_ext:
+									frame_list.append(os.path.splitext(fname)[0])
+							break
+						
+						thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
+						thread_VideoDelFrameThread_4x.start()
+						
+						old_file_list_prograsssbar=[]
+						for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								old_file_list_prograsssbar.append(fname)
+							break
+								
+						thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2,old_file_list_prograsssbar=old_file_list_prograsssbar)
+						thread2.start()
+						print('')
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+								
+						while thread_VideoDelFrameThread_4x.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					if scale == '8':
+						video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
+						frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+						frame_list = []
+						for path,useless,fnames in os.walk(frames_scaled_dir):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								f_name_ext = os.path.splitext(fname)[0]
+								f_name = os.path.splitext(fname)[0]
+								if f_name == f_name_ext:
+									frame_list.append(os.path.splitext(fname)[0])
+							break
+						
+						thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
+						thread_VideoDelFrameThread_4x.start()
+						
+						old_file_list_prograsssbar=[]
+						for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								old_file_list_prograsssbar.append(fname)
+							break
+								
+						thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 3,old_file_list_prograsssbar=old_file_list_prograsssbar)
+						thread2.start()
+						print('')
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+								
+						while thread_VideoDelFrameThread_4x.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+						
+					if scale in ['2','1']:
+						thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+						thread2.start()
+						thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+						thread_VideoDelFrameThread.start()
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+						
+						while thread_VideoDelFrameThread.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					
+					images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+					#===========================================================================================================================================
+					Assemble_video(main_video,waifu2x_sub_video,outputVideo_str)
+					
+					remove_safe(main_video)
+					remove_safe(waifu2x_sub_video)
+					remove_safe(sub_video)
+					
+				os.rename(outputVideo_str,res_video)
+			else:
+				#===========================================================================================================================================
+					video2images(inputPath) #拆解视频
+					
+					frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+					
+					oldfilenumber=FileCount(frames_dir)
+					if os.path.exists(frames_dir+"\\scaled\\") :
+						rd_self(frames_dir+"\\scaled\\")
+					mkdir_self(frames_dir+"\\scaled\\")
+					
+					if scale in ['4','8']:
+						thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
+						thread2.start()
+						thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+						thread_VideoDelFrameThread.start()
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+								
+						while thread_VideoDelFrameThread.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+						
+						video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
+						frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+						frame_list = []
+						for path,useless,fnames in os.walk(frames_scaled_dir):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								f_name_ext = os.path.splitext(fname)[0]
+								f_name = os.path.splitext(fname)[0]
+								if f_name == f_name_ext:
+									frame_list.append(os.path.splitext(fname)[0])
+							break
+						
+						thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
+						thread_VideoDelFrameThread_4x.start()
+						
+						old_file_list_prograsssbar=[]
+						for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								old_file_list_prograsssbar.append(fname)
+							break
+								
+						thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2,old_file_list_prograsssbar=old_file_list_prograsssbar)
+						thread2.start()
+						print('')
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+								
+						while thread_VideoDelFrameThread_4x.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					if scale == '8':
+						video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
+						frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+						frame_list = []
+						for path,useless,fnames in os.walk(frames_scaled_dir):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								f_name_ext = os.path.splitext(fname)[0]
+								f_name = os.path.splitext(fname)[0]
+								if f_name == f_name_ext:
+									frame_list.append(os.path.splitext(fname)[0])
+							break
+						
+						thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
+						thread_VideoDelFrameThread_4x.start()
+						
+						old_file_list_prograsssbar=[]
+						for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
+							fnames = dict.fromkeys(fnames,'')
+							for fname in fnames:
+								old_file_list_prograsssbar.append(fname)
+							break
+								
+						thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 3,old_file_list_prograsssbar=old_file_list_prograsssbar)
+						thread2.start()
+						print('')
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+								
+						while thread_VideoDelFrameThread_4x.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+						
+					if scale in ['2','1']:
+						thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+						thread2.start()
+						thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+						thread_VideoDelFrameThread.start()
+						print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+						
+						time_wait_prograssbar = 0
+						while thread2.isAlive():
+							time_wait_prograssbar = time_wait_prograssbar+1
+							time.sleep(1.1)
+							if time_wait_prograssbar == 2:
+								break
+						
+						while thread_VideoDelFrameThread.isAlive():
+							time.sleep(1)
+						
+						for files in os.walk(frames_dir+"\\scaled"):
+							for fileNameAndExt in files[2]:
+								fileName=os.path.splitext(fileNameAndExt)[0]
+								os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					
+					images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+					#===========================================================================================================================================
+		#=============================================================================
+		else:
+			video2images(inputPath) #拆解视频
+					
+			frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+			
+			oldfilenumber=FileCount(frames_dir)
+			if os.path.exists(frames_dir+"\\scaled\\") :
+				rd_self(frames_dir+"\\scaled\\")
+			mkdir_self(frames_dir+"\\scaled\\")
+			
+			if scale in ['4','8']:
+				thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 1)
+				thread2.start()
+				thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+				thread_VideoDelFrameThread.start()
+				print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+				os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+				
+				time_wait_prograssbar = 0
+				while thread2.isAlive():
+					time_wait_prograssbar = time_wait_prograssbar+1
+					time.sleep(1.1)
+					if time_wait_prograssbar == 2:
+						break
+						
+				while thread_VideoDelFrameThread.isAlive():
+					time.sleep(1)
+				
+				for files in os.walk(frames_dir+"\\scaled"):
+					for fileNameAndExt in files[2]:
+						fileName=os.path.splitext(fileNameAndExt)[0]
+						os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+				
+				video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
+				frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+				frame_list = []
+				for path,useless,fnames in os.walk(frames_scaled_dir):
+					fnames = dict.fromkeys(fnames,'')
+					for fname in fnames:
+						f_name_ext = os.path.splitext(fname)[0]
+						f_name = os.path.splitext(fname)[0]
+						if f_name == f_name_ext:
+							frame_list.append(os.path.splitext(fname)[0])
+					break
+				
+				thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
+				thread_VideoDelFrameThread_4x.start()
+				
+				old_file_list_prograsssbar=[]
+				for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
+					fnames = dict.fromkeys(fnames,'')
+					for fname in fnames:
+						old_file_list_prograsssbar.append(fname)
+					break
+						
+				thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 2,old_file_list_prograsssbar=old_file_list_prograsssbar)
+				thread2.start()
+				print('')
+				print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+				os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+				
+				time_wait_prograssbar = 0
+				while thread2.isAlive():
+					time_wait_prograssbar = time_wait_prograssbar+1
+					time.sleep(1.1)
+					if time_wait_prograssbar == 2:
+						break
+						
+				while thread_VideoDelFrameThread_4x.isAlive():
+					time.sleep(1)
+				
+				for files in os.walk(frames_dir+"\\scaled"):
+					for fileNameAndExt in files[2]:
+						fileName=os.path.splitext(fileNameAndExt)[0]
+						os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+			if scale == '8':
+				video_dir = os.path.dirname(inputPath)+'\\'.replace("\\\\", "\\")
+				frames_scaled_dir = video_dir+'frames_waifu2x\\scaled\\'
+				frame_list = []
+				for path,useless,fnames in os.walk(frames_scaled_dir):
+					fnames = dict.fromkeys(fnames,'')
+					for fname in fnames:
+						f_name_ext = os.path.splitext(fname)[0]
+						f_name = os.path.splitext(fname)[0]
+						if f_name == f_name_ext:
+							frame_list.append(os.path.splitext(fname)[0])
+					break
+				
+				thread_VideoDelFrameThread_4x = VideoDelFrameThread_4x (inputPath,frame_list)
+				thread_VideoDelFrameThread_4x.start()
+				
+				old_file_list_prograsssbar=[]
+				for path,useless,fnames in os.walk(video_dir+'frames_waifu2x\\scaled\\'):
+					fnames = dict.fromkeys(fnames,'')
+					for fname in fnames:
+						old_file_list_prograsssbar.append(fname)
+					break
+						
+				thread2 = PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 3,old_file_list_prograsssbar=old_file_list_prograsssbar)
+				thread2.start()
+				print('')
+				print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+				os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\\scaled"+"\" -o \""+frames_dir+"\\scaled\""+" -n "+'-1'+ " -s "+'2'+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+				
+				time_wait_prograssbar = 0
+				while thread2.isAlive():
+					time_wait_prograssbar = time_wait_prograssbar+1
+					time.sleep(1.1)
+					if time_wait_prograssbar == 2:
+						break
+						
+				while thread_VideoDelFrameThread_4x.isAlive():
+					time.sleep(1)
+				
+				for files in os.walk(frames_dir+"\\scaled"):
+					for fileNameAndExt in files[2]:
+						fileName=os.path.splitext(fileNameAndExt)[0]
+						os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+				
+			if scale in ['2','1']:
+				thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+				thread2.start()
+				thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+				thread_VideoDelFrameThread.start()
+				print("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+				os.system("waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe -i \""+frames_dir+"\" -o \""+frames_dir+"\\scaled\""+" -n "+noiseLevel+ " -s "+scale+" -t "+tileSize+" -m "+models+gpuId_str+load_proc_save_str)
+				
+				time_wait_prograssbar = 0
+				while thread2.isAlive():
+					time_wait_prograssbar = time_wait_prograssbar+1
+					time.sleep(1.1)
+					if time_wait_prograssbar == 2:
+						break
+				
+				while thread_VideoDelFrameThread.isAlive():
+					time.sleep(1)
+				
+				for files in os.walk(frames_dir+"\\scaled"):
+					for fileNameAndExt in files[2]:
+						fileName=os.path.splitext(fileNameAndExt)[0]
+						os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+			
+			images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+			#===========================================================================================================================================
+		
+				
+				
+		if os.path.splitext(orginal_inputPath)[1] != '.mp4':
+			remove_safe(os.path.splitext(orginal_inputPath)[0]+'.mp4')
+		
 		if delorginal == 'y':
 			if os.path.exists(res_video):
 				if os.path.getsize(res_video) > 0:
-					remove_safe(inputPath)	
+					remove_safe(orginal_inputPath)	
 				else:
 					print('Error occured, failed to generate result video.')
 			else:
 				print('Error occured, failed to generate result video.')
+				
 		finished_num = finished_num+1
 	Window_Title('')
 
@@ -2202,6 +3029,7 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		
 		#=============================================================================
 		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
+		
 		orginal_inputPath = inputPath
 		
 		settings_values = ReadSettings()
@@ -2286,6 +3114,7 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 					outputVideo_str = os.path.splitext(inputPath)[0]+'_'+str(round_)+'.mp4'
 					
 					Cut_video(original_video,sub_video,StartTime,DurationTime)
+					inputPath = sub_video
 					#================================================================================
 					video2images(inputPath) #拆解视频
 					
@@ -2867,15 +3696,6 @@ def assembleGif(scaledFilePath,Duration):
 	os.system('convert -delay '+str(Duration)+' -loop 0 "'+scaledFilePath+'_split\\scaled\\'+'*png" "'+gif_name+'"')
 	
 	
-# ~ def assembleGif(scaledFilePath,frames,gifFileName):
-	
-	# ~ cap = cv2.VideoCapture(gifFileName)
-	# ~ fps = int(round(cap.get(cv2.CAP_PROP_FPS)))
-	
-	# ~ gif_name=scaledFilePath+'_waifu2x.gif'
-	
-	# ~ os.system('ffmpeg -f image2 -framerate '+str(fps)+' -i "'+scaledFilePath+'_split\\scaled\\'+'%0'+str(frames)+'d.png" "'+gif_name+'"')
-	
 def compress_gif(inputpath,compress_level):
 	gif_path_filename = os.path.splitext(inputpath)[0]
 	if compress_level == '1':
@@ -3045,6 +3865,7 @@ def Seconds2ffmpegTime(seconds):
 		return str(hours)+':'+str(minutes)+':'+str(seconds)
 	else:
 		return str(seconds)
+
 
 #===================================================== input ====================================================
 def input_scale():
@@ -3547,7 +4368,7 @@ def Settings():
 		print(' 3: Default value of "Denoise Level". Current value: [ '+settings_values['noiseLevel']+' ]\n')
 		print(' 4: Delete original files when finished? Current default value: [ '+settings_values['delorginal']+' ]\n')
 		print(' 5: Rename result images. Current value: [ ',settings_values['Rename_result_images'],' ]\n')
-		print(' 66: Segment processing video.')
+		print(' 66: Segment processing video. (Experimental)')
 		print('─'*90)
 		print(' 6: Gif compress level. Current default value: [ '+settings_values['gifCompresslevel']+' ]\n')
 		print(' 7: Image quality ( When compress images ). Current default value: [ ',settings_values['image_quality'],' ]')
