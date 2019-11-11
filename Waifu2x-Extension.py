@@ -28,7 +28,7 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 
 Update log
 - Now you can customize the number of compression threads.
-Main menu --> Settings --> Number of threads ( Compression )
+`Main menu --> Settings --> Number of threads ( Compression)`
 - Fix bug.
 - Other improvements.
 
@@ -217,8 +217,7 @@ def MainMenu():
 				Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan()
 			elif settings_values['Image_GIF_scale_mode'] == 'waifu2x-converter':
 				Image_Gif_Scale_Denoise_waifu2x_converter()
-			os.system('cls')
-		
+			os.system('cls')		
 		# 2 - 放大与降噪视频
 		elif mode == "2":
 			os.system('cls')
@@ -2191,6 +2190,7 @@ def Video_scale_Anime4K(in_path,out_path,scale):
 def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 	total_num = len(inputPathList_files)
 	finished_num = 1
+	
 	for inputPath in inputPathList_files:
 		
 		if Path_exists_self(inputPath)==False:
@@ -2199,55 +2199,217 @@ def process_video_modeABC_Anime4K(inputPathList_files,scale,delorginal):
 		Record_running_log('Start processing video: '+str(inputPath))
 		
 		Window_Title('  [Scale Video]  Video: '+'('+str(finished_num)+'/'+str(total_num)+')')
-		video2images(inputPath) #拆解视频
 		
-		frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
-		
-		oldfilenumber=FileCount(frames_dir)
-		if os.path.exists(frames_dir+"\\scaled\\") :
-			rd_self(frames_dir+"\\scaled\\")
-		mkdir_self(frames_dir+"\\scaled\\")
-			
-		thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
-		thread2.start()
-		thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
-		thread_VideoDelFrameThread.start()
-		Video_scale_Anime4K(frames_dir,frames_dir+"\\scaled",scale)
-		
-		time_wait_prograssbar = 0
-		while thread2.isAlive():
-			time_wait_prograssbar = time_wait_prograssbar+1
-			time.sleep(1.1)
-			if time_wait_prograssbar == 2:
-				break
-		
-		while thread_VideoDelFrameThread.isAlive():
-			time.sleep(1)
-		
-		for files in os.walk(frames_dir+"\\scaled"):
-			for fileNameAndExt in files[2]:
-				fileName=os.path.splitext(fileNameAndExt)[0]
-				os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
-		
-		images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
-		
-	
-				
-		if os.path.splitext(inputPath)[1] != '.mp4':
-			remove_safe(os.path.splitext(inputPath)[0]+'.mp4')
-			
+		#=============================================================================
 		res_video = os.path.splitext(inputPath)[0]+'_waifu2x.mp4'
-	
-		if os.path.splitext(inputPath)[1] != '.mp4':
-			remove_safe(os.path.splitext(inputPath)[0]+'.mp4')
+		orginal_inputPath = inputPath
+		
+		settings_values = ReadSettings()
+		
+		if settings_values['Segment_processing_video'] == 'y':
+			DurationTime = settings_values['Segmentation_duration_video']
+			time_remain = get_Video_time(orginal_inputPath)
+			
+			if time_remain>DurationTime:
+				original_video = orginal_inputPath
+				main_video = ''
+				sub_video = os.path.splitext(inputPath)[0]+'_main.mp4'
+				waifu2x_sub_video = os.path.splitext(inputPath)[0]+'_main_waifu2x.mp4'
+				StartTime = 0
+				FirstRound = True
+				round_ = 0
+				
+				while True:
+					
+					if time_remain == 0 or time_remain<DurationTime:
+						break
+					
+					outputVideo_str = os.path.splitext(inputPath)[0]+'_'+str(round_)+'.mp4'
+					
+					time_remain = time_remain-DurationTime
+					
+					Cut_video(original_video,sub_video,StartTime,DurationTime)
+					
+					inputPath = sub_video
+					#================================================================================
+					video2images(inputPath) #拆解视频
+					
+					frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+					
+					oldfilenumber=FileCount(frames_dir)
+					if os.path.exists(frames_dir+"\\scaled\\") :
+						rd_self(frames_dir+"\\scaled\\")
+					mkdir_self(frames_dir+"\\scaled\\")
+						
+					thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+					thread2.start()
+					thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+					thread_VideoDelFrameThread.start()
+					Video_scale_Anime4K(frames_dir,frames_dir+"\\scaled",scale)
+					
+					time_wait_prograssbar = 0
+					while thread2.isAlive():
+						time_wait_prograssbar = time_wait_prograssbar+1
+						time.sleep(1.1)
+						if time_wait_prograssbar == 2:
+							break
+					
+					while thread_VideoDelFrameThread.isAlive():
+						time.sleep(1)
+					
+					for files in os.walk(frames_dir+"\\scaled"):
+						for fileNameAndExt in files[2]:
+							fileName=os.path.splitext(fileNameAndExt)[0]
+							os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					
+					images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+					#================================================================================
+					if FirstRound:
+						main_video = waifu2x_sub_video
+						remove_safe(sub_video)
+						sub_video = os.path.splitext(original_video)[0]+'_sub.mp4'
+						waifu2x_sub_video = os.path.splitext(original_video)[0]+'_sub_waifu2x.mp4'
+						FirstRound = False
+					else:
+						Assemble_video(main_video,waifu2x_sub_video,outputVideo_str)
+						round_ = round_+1
+						remove_safe(main_video)
+						remove_safe(waifu2x_sub_video)
+						remove_safe(sub_video)
+						main_video = outputVideo_str
+						
+					StartTime = StartTime+DurationTime
+						
+				if time_remain>0:
+					DurationTime = time_remain
+					
+					outputVideo_str = os.path.splitext(inputPath)[0]+'_'+str(round_)+'.mp4'
+					
+					Cut_video(original_video,sub_video,StartTime,DurationTime)
+					#================================================================================
+					video2images(inputPath) #拆解视频
+					
+					frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+					
+					oldfilenumber=FileCount(frames_dir)
+					if os.path.exists(frames_dir+"\\scaled\\") :
+						rd_self(frames_dir+"\\scaled\\")
+					mkdir_self(frames_dir+"\\scaled\\")
+						
+					thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+					thread2.start()
+					thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+					thread_VideoDelFrameThread.start()
+					Video_scale_Anime4K(frames_dir,frames_dir+"\\scaled",scale)
+					
+					time_wait_prograssbar = 0
+					while thread2.isAlive():
+						time_wait_prograssbar = time_wait_prograssbar+1
+						time.sleep(1.1)
+						if time_wait_prograssbar == 2:
+							break
+					
+					while thread_VideoDelFrameThread.isAlive():
+						time.sleep(1)
+					
+					for files in os.walk(frames_dir+"\\scaled"):
+						for fileNameAndExt in files[2]:
+							fileName=os.path.splitext(fileNameAndExt)[0]
+							os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+					
+					images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+					#================================================================================
+					Assemble_video(main_video,waifu2x_sub_video,outputVideo_str)
+					
+					remove_safe(main_video)
+					remove_safe(waifu2x_sub_video)
+					remove_safe(sub_video)
+					
+				os.rename(outputVideo_str,res_video)
+			else:
+				#================================================================================
+				video2images(inputPath) #拆解视频
+			
+				frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+				
+				oldfilenumber=FileCount(frames_dir)
+				if os.path.exists(frames_dir+"\\scaled\\") :
+					rd_self(frames_dir+"\\scaled\\")
+				mkdir_self(frames_dir+"\\scaled\\")
+					
+				thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+				thread2.start()
+				thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+				thread_VideoDelFrameThread.start()
+				Video_scale_Anime4K(frames_dir,frames_dir+"\\scaled",scale)
+				
+				time_wait_prograssbar = 0
+				while thread2.isAlive():
+					time_wait_prograssbar = time_wait_prograssbar+1
+					time.sleep(1.1)
+					if time_wait_prograssbar == 2:
+						break
+				
+				while thread_VideoDelFrameThread.isAlive():
+					time.sleep(1)
+				
+				for files in os.walk(frames_dir+"\\scaled"):
+					for fileNameAndExt in files[2]:
+						fileName=os.path.splitext(fileNameAndExt)[0]
+						os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+				
+				images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+				#================================================================================
+		
+		#=============================================================================
+		else:
+			
+			video2images(inputPath) #拆解视频
+			
+			frames_dir = os.path.dirname(inputPath)+'\\'+'frames_waifu2x'.replace("\\\\", "\\")
+			
+			oldfilenumber=FileCount(frames_dir)
+			if os.path.exists(frames_dir+"\\scaled\\") :
+				rd_self(frames_dir+"\\scaled\\")
+			mkdir_self(frames_dir+"\\scaled\\")
+				
+			thread2=PrograssBarThread(oldfilenumber,frames_dir+"\\scaled\\",scale,round_ = 0)
+			thread2.start()
+			thread_VideoDelFrameThread = VideoDelFrameThread (inputPath)
+			thread_VideoDelFrameThread.start()
+			Video_scale_Anime4K(frames_dir,frames_dir+"\\scaled",scale)
+			
+			time_wait_prograssbar = 0
+			while thread2.isAlive():
+				time_wait_prograssbar = time_wait_prograssbar+1
+				time.sleep(1.1)
+				if time_wait_prograssbar == 2:
+					break
+			
+			while thread_VideoDelFrameThread.isAlive():
+				time.sleep(1)
+			
+			for files in os.walk(frames_dir+"\\scaled"):
+				for fileNameAndExt in files[2]:
+					fileName=os.path.splitext(fileNameAndExt)[0]
+					os.rename(os.path.join(frames_dir+"\\scaled\\",fileNameAndExt),os.path.join(frames_dir+"\\scaled\\",fileName))
+			
+			images2video(os.path.splitext(inputPath)[0]+'.mp4')#合成视频	
+			
+		#=============================================================================
+					
+		if os.path.splitext(orginal_inputPath)[1] != '.mp4':
+			remove_safe(os.path.splitext(orginal_inputPath)[0]+'.mp4')
+		
 		if delorginal == 'y':
 			if os.path.exists(res_video):
 				if os.path.getsize(res_video) > 0:
-					remove_safe(inputPath)	
+					remove_safe(orginal_inputPath)	
 				else:
 					print('Error occured, failed to generate result video.')
 			else:
 				print('Error occured, failed to generate result video.')
+					
 		finished_num = finished_num+1
 	Window_Title('')
 
@@ -2836,7 +2998,54 @@ class VideoDelFrameThread_4x(threading.Thread):
 								frame_deled_list.append(f_name)
 				break
 			time.sleep(0.5)
+
+def Cut_video(inputName_str,outputName_str,startTime,durationTime): #Time example : 00:10
 	
+	startTime_str = Seconds2ffmpegTime(startTime)
+	durationTime_str = Seconds2ffmpegTime(durationTime)
+	
+	Record_running_log('ffmpeg -ss '+startTime_str+' -t '+durationTime_str+' -i "'+inputName_str+'" -c:v libx264 -c:a aac -strict experimental -b:a 98k "'+outputName_str+'"')
+	
+	os.system('ffmpeg -ss '+startTime_str+' -t '+durationTime_str+' -i "'+inputName_str+'" -c:v libx264 -c:a aac -strict experimental -b:a 98k "'+outputName_str+'"')
+
+def Assemble_video(mainVideo_str,subVideo_str,outputVideo_str):
+	
+	fList = 'videoFileList_ffmpeg_waifu2xEX.txt'
+	
+	with open(fList,'w+') as f:
+		f.write('')
+		
+	fList_str = ["file '"+mainVideo_str+"'\n","file '"+subVideo_str+"'"]
+	
+	with open(fList,'w+') as f:
+		f.writelines(fList_str)
+	
+	Record_running_log('ffmpeg -f concat -safe 0 -i "'+fList+'" -c copy "'+outputVideo_str+'"')
+	
+	os.system('ffmpeg -f concat -safe 0 -i "'+fList+'" -c copy "'+outputVideo_str+'"')
+
+def get_Video_time(path_):
+	cap = cv2.VideoCapture(path_)    
+	if cap.isOpened():
+		rate = cap.get(5)
+		FrameNumber = cap.get(7)
+		duration = FrameNumber/rate
+	return int(duration)
+
+def Seconds2ffmpegTime(seconds):
+	if seconds > 59 and seconds < 3600:
+		minutes = int(seconds/60)
+		seconds = seconds - (60*minutes)
+		return str(minutes)+':'+str(seconds)
+	elif seconds > 3599:
+		hours = int(seconds/3600)
+		seconds = seconds - (3600*hours)
+		minutes = int(seconds/60)
+		seconds = seconds - (60*minutes)
+		return str(hours)+':'+str(minutes)+':'+str(seconds)
+	else:
+		return str(seconds)
+
 #===================================================== input ====================================================
 def input_scale():
 	settings_values = ReadSettings()
@@ -3326,7 +3535,7 @@ def CheckUpdate_start():
 def Settings():
 	while True:
 		Set_cols_lines(90,40)
-		Set_cols_lines(92,41)
+		Set_cols_lines(92,43)
 		
 		settings_values = ReadSettings()
 		
@@ -3337,7 +3546,8 @@ def Settings():
 		print(' 2: Default value of "Scale ratio". Current value: [ '+settings_values['scale']+' ]\n')
 		print(' 3: Default value of "Denoise Level". Current value: [ '+settings_values['noiseLevel']+' ]\n')
 		print(' 4: Delete original files when finished? Current default value: [ '+settings_values['delorginal']+' ]\n')
-		print(' 5: Rename result images. Current value: [ ',settings_values['Rename_result_images'],' ]')
+		print(' 5: Rename result images. Current value: [ ',settings_values['Rename_result_images'],' ]\n')
+		print(' 66: Segment processing video.')
 		print('─'*90)
 		print(' 6: Gif compress level. Current default value: [ '+settings_values['gifCompresslevel']+' ]\n')
 		print(' 7: Image quality ( When compress images ). Current default value: [ ',settings_values['image_quality'],' ]')
@@ -3465,6 +3675,11 @@ def Settings():
 			settings_values['Rename_result_images']=Rename_result_images
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
+			os.system('cls')
+		
+		elif mode == '66':
+			os.system('cls')
+			Segment_processing_video_settings()
 			os.system('cls')
 		
 		elif mode== "6":
@@ -3794,7 +4009,7 @@ def ReadSettings():
 	cpu_num = int(cpu_count() / 2)
 	if cpu_num < 1 :
 		cpu_num = 1
-	default_values = {'SettingVersion':'12','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+	default_values = {'SettingVersion':'14','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
@@ -3802,7 +4017,8 @@ def ReadSettings():
 						'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
 						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1,
 						'Compatibility_waifu2x_ncnn_vulkan':True,'Compatibility_waifu2x_converter':True,'Compatibility_Anime4k':True,
-						'Record_running_log':'n','Record_error_log':'y','Record_running_log_AC':'n','Number_of_threads_Compress':2*cpu_num}
+						'Record_running_log':'n','Record_error_log':'y','Record_running_log_AC':'n','Number_of_threads_Compress':2*cpu_num,
+						'Segment_processing_video':'n','Segmentation_duration_video':20}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -5020,6 +5236,8 @@ def ShutDown():
 #========================== 删除冗余文件 ============================
 def Del_Temp():
 	
+	remove_safe('videoFileList_ffmpeg_waifu2xEX.txt')
+	
 	Pop_up_window_folder = 'Pop_up_window_folder_waifu2xEX'
 	if os.path.exists(Pop_up_window_folder):
 		for path,useless,fnames in os.walk(Pop_up_window_folder):
@@ -5406,6 +5624,59 @@ def webbrowser_open_self(str_):
 def rd_self(str_):
 	Record_running_log('Remove Dir: '+str_)
 	os.system('rd /s/q "'+str_+'"')
+
+#================================================= Segment_processing_video_settings =============================================
+def Segment_processing_video_settings():
+	while True:
+		os.system('cls')
+		settings_values = ReadSettings()
+		print('┌───────────────────────────────────────────────────────────────┐')
+		print('│ Segment processing video                                      │')
+		print('├───────────────────────────────────────────────────────────────┤')
+		print('│ 1.Enable segment processing video [ ',settings_values['Segment_processing_video'],' ]')
+		print('│                                                               │')
+		print('│ 2.Segmentation duration [ ',settings_values['Segmentation_duration_video'],'s ]')
+		print('│                                                               │')
+		print('│ R.Return to the previous menu.                                │')
+		print('└───────────────────────────────────────────────────────────────┘')
+		choice = input('(1 / 2 / R): ').strip(' ').lower()
+		if choice == '1':
+			os.system('cls')
+			print(' Loading....')
+			if settings_values['Segment_processing_video'] == 'y':
+				settings_values['Segment_processing_video'] = 'n'
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+				Record_running_log('Segment processing video: Disabled')
+					
+			elif settings_values['Segment_processing_video'] == 'n':
+				settings_values['Segment_processing_video'] = 'y'
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+				Record_running_log('Segment processing video: Enabled')
+				
+		elif choice == '2':
+			
+			os.system('cls')
+			while True:
+				Segmentation_duration_video = input('Segmentation duration ( 1/2/3/4/5... (Second) ): ').lower().strip(' ')
+				if Segmentation_duration_video.isdigit():
+					if int(Segmentation_duration_video) > 0:
+						Segmentation_duration_video = int(Segmentation_duration_video)
+						break
+					else:
+						print('Wrong input.')
+				elif Segmentation_duration_video == '':
+					Segmentation_duration_video = settings_values['Segmentation_duration_video']
+					break
+				else:
+					print('Wrong input.')
+			settings_values['Segmentation_duration_video']=Segmentation_duration_video
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+			
+		elif choice == 'r':
+			return 0
 	
 #==========================================  Init  ==================================================================
 
