@@ -27,21 +27,28 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- 
+- Now you can customize the number of compression threads.
+Main menu --> Settings --> Number of threads ( Compression )
+- Fix bug.
 - Other improvements.
 
 ------------------------------------------------
 To do:
 - 继续完善运行日志的记录
 - 分段放大视频,减少硬盘占用
-- 压缩线程数量设置
-- 对齐 检查兼容性后提示启用converter的文本 input 那
-- 更新github 的 readme
 
 
 ------------------------------------------------
 Next version:
+-
 
+-------------------------------------------------
+
+print('┌─────────────┐')
+print('│             │')
+print('├─────────────┤')
+print('│             │')
+print('└─────────────┘')
 
 '''
 
@@ -361,13 +368,15 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 	Record_running_log('Enter [ Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan ]')
 	
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
-	print('─'*80)
-	print("               Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan")
-	print('─'*80)
-	print(" Type 'r' to return to the previous menu.")
-	print(" Type 'o' to stop input more path, and input path must be a folder or a file.")
-	print(" Scaled images & gifs will be in the input path.")
-	print('─'*80)
+	print('┌────────────────────────────────────────────────────────────────────────────────┐')
+	print("│               Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan                │")
+	print('├────────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Type 'r' to return to the previous menu.                                       │")
+	print('│                                                                                │')
+	print("│ Type 'o' to stop input more path, and input path must be a folder or a file.   │")
+	print('│                                                                                │')
+	print("│ Scaled images & gifs will be in the input path.                                │")
+	print('└────────────────────────────────────────────────────────────────────────────────┘')
 	
 	settings_values = ReadSettings()
 	inputPathOver = True
@@ -383,6 +392,7 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input(' Input path: ')
+			print('')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			Record_running_log('User entered the path:  '+inputPath)
@@ -1016,13 +1026,15 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	Record_running_log('Enter [ Scale & Denoise Image & GIF - Waifu2x-converter ]')
 	
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
-	print('─'*80)
-	print("                Scale & Denoise Image & GIF - Waifu2x-converter")
-	print('─'*80)
-	print(" Type 'r' to return to the previous menu.")
-	print(" Type 'o' to stop input more path, and input path must be a folder or a file.")
-	print(" Scaled images & gifs will be in the input path.")
-	print('─'*80)
+	print('┌─────────────────────────────────────────────────────────────────────────────────┐')
+	print("│                Scale & Denoise Image & GIF - Waifu2x-converter                  │")
+	print('├─────────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Type 'r' to return to the previous menu.                                        │")
+	print('│                                                                                 │')
+	print("│ Type 'o' to stop input more path, and input path must be a folder or a file.    │")
+	print('│                                                                                 │')
+	print("│ Scaled images & gifs will be in the input path.                                 │")
+	print('└─────────────────────────────────────────────────────────────────────────────────┘')
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1032,6 +1044,7 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input(' Input path: ')
+			print('')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			Record_running_log('User entered the path:  '+inputPath)
@@ -1476,13 +1489,15 @@ def Scale_Denoise_Video_waifu2x_converter():
 	Record_running_log('Enter [ Scale & Denoise Video - waifu2x-converter ]')
 	
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
-	print('─'*83)
-	print("                       Scale & Denoise Video - waifu2x-converter")
-	print('─'*83)
-	print(" Type 'r' to return to the previous menu.")
-	print(" Type 'o' to stop input more path, and input path must be a folder or a video file.")
-	print(" Scaled files will be in the input-path.")
-	print('─'*83)
+	print('┌──────────────────────────────────────────────────────────────────────────────────────────┐')
+	print("│                         Scale & Denoise Video - waifu2x-converter                        │")
+	print('├──────────────────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Type 'r' to return to the previous menu.                                                 │")
+	print('│                                                                                          │')
+	print("│ Type 'o' to stop input more path, and input path must be a folder or a video file.       │")
+	print('│                                                                                          │')
+	print("│ Scaled files will be in the input-path.                                                  │")
+	print('└──────────────────────────────────────────────────────────────────────────────────────────┘')
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1491,6 +1506,7 @@ def Scale_Denoise_Video_waifu2x_converter():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input(' Input path: ')
+			print('')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			Record_running_log('User entered the path:  '+inputPath)
@@ -1715,13 +1731,15 @@ def Scale_Denoise_Video():
 	Record_running_log('Enter [ Scale & Denoise Video - Waifu2x-ncnn-vulkan ]')
 	
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
-	print('─'*83)
-	print("                     Scale & Denoise Video - Waifu2x-ncnn-vulkan")
-	print('─'*83)
-	print(" Type 'r' to return to the previous menu.")
-	print(" Type 'o' to stop input more path, and input path must be a folder or a video file.")
-	print(" Scaled files will be in the input-path.")
-	print('─'*83)
+	print('┌───────────────────────────────────────────────────────────────────────────────────────┐')
+	print("│                     Scale & Denoise Video - Waifu2x-ncnn-vulkan                       │")
+	print('├───────────────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Type 'r' to return to the previous menu.                                              │")
+	print('│                                                                                       │')
+	print("│ Type 'o' to stop input more path, and input path must be a folder or a video file.    │")
+	print('│                                                                                       │')
+	print("│ Scaled files will be in the input-path.                                               │")
+	print('└───────────────────────────────────────────────────────────────────────────────────────┘')
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -1731,6 +1749,7 @@ def Scale_Denoise_Video():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input(' Input path: ')
+			print('')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			Record_running_log('User entered the path:  '+inputPath)
@@ -2018,13 +2037,15 @@ def Scale_Denoise_Video_Anime4K():
 	Record_running_log('Enter [ Scale Video - Anime4K ]')
 	
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
-	print('─'*83)
-	print("                              Scale Video - Anime4K")
-	print('─'*83)
-	print(" Type 'r' to return to the previous menu.")
-	print(" Type 'o' to stop input more path, and input path must be a folder or a video file.")
-	print(" Scaled files will be in the input-path.")
-	print('─'*83)
+	print('┌─────────────────────────────────────────────────────────────────────────────────────────────┐')
+	print("│                                    Scale Video - Anime4K                                    │")
+	print('├─────────────────────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Type 'r' to return to the previous menu.                                                    │")
+	print('│                                                                                             │')
+	print("│ Type 'o' to stop input more path, and input path must be a folder or a video file.          │")
+	print('│                                                                                             │')
+	print("│ Scaled files will be in the input-path.                                                     │")
+	print('└─────────────────────────────────────────────────────────────────────────────────────────────┘')
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -2033,6 +2054,7 @@ def Scale_Denoise_Video_Anime4K():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input(' Input path: ')
+			print('')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			Record_running_log('User entered the path:  '+inputPath)
@@ -2236,13 +2258,15 @@ def Compress_image_gif():
 	
 	print(' Path and file name contains special characters may cause compatibility problems,')
 	print(' change the file name and folder name if something goes wrong.')
-	print('─'*83)
-	print("                                 Compress image & gif")
-	print('─'*83)
-	print(" Type 'r' to return to the previous menu.")
-	print(" Type 'o' to stop input more path, and input path must be a folder or a file.")
-	print(" Compressed images & gifs will be in the input-path.")
-	print('─'*83)
+	print('┌───────────────────────────────────────────────────────────────────────────────┐')
+	print("│                            Compress image & gif                               │")
+	print('├───────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Type 'r' to return to the previous menu.                                      │")
+	print('│                                                                               │')
+	print("│ Type 'o' to stop input more path, and input path must be a folder or a file.  │")
+	print('│                                                                               │')
+	print("│ Compressed images & gifs will be in the input-path.                           │")
+	print('└───────────────────────────────────────────────────────────────────────────────┘')
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
@@ -2251,6 +2275,7 @@ def Compress_image_gif():
 		inputPathError = True
 		while inputPathError:
 			inputPath = input(' Input path: ')
+			print('')
 			inputPath=inputPath.strip('"').strip('\\').strip(' ')
 			
 			Record_running_log('User entered the path:  '+inputPath)
@@ -3300,8 +3325,8 @@ def CheckUpdate_start():
 
 def Settings():
 	while True:
-		Set_cols_lines(90,37)
-		Set_cols_lines(92,40)
+		Set_cols_lines(90,40)
+		Set_cols_lines(92,41)
 		
 		settings_values = ReadSettings()
 		
@@ -3319,15 +3344,16 @@ def Settings():
 		print('─'*90)
 		print(' 8: Number of threads ( Scale & Denoise (Waifu2x-ncnn-vulkan) ). Current value: [ ',settings_values['Number_of_threads'],' ]\n')
 		print(' 9: Number of threads ( Scale Video (Anime4k) ). Current value: [ ',settings_values['Number_of_threads_Anime4k'],' ]\n')
-		print(' 10: Number of threads ( Scale & Denoise (Waifu2x-converter) ). Current value: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]')
+		print(' 10: Number of threads ( Scale & Denoise (Waifu2x-converter) ). Current value: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]\n')
+		print(' 11: Number of threads ( Compression ). Current value: [ ',settings_values['Number_of_threads_Compress'],' ]')
 		print('─'*90)
-		print(' 11: Video scale mode. Current value: [ ',settings_values['Video_scale_mode'],' ]\n')
-		print(' 12: Image & GIF scale mode. Current value: [ ',settings_values['Image_GIF_scale_mode'],' ]')
+		print(' 12: Video scale mode. Current value: [ ',settings_values['Video_scale_mode'],' ]\n')
+		print(' 13: Image & GIF scale mode. Current value: [ ',settings_values['Image_GIF_scale_mode'],' ]')
 		print('─'*90)
-		print(' 13: Change interface color.\n')
-		print(' 14: Error log.\n')
-		print(' 15: Reset settings.\n')
-		print(' 16: Show settings_values.\n')
+		print(' 14: Change interface color.\n')
+		print(' 15: Error log.\n')
+		print(' 16: Reset settings.\n')
+		print(' 17: Show settings_values.\n')
 		print(' R: Return to the main menu.')
 		print('─'*90)
 		
@@ -3558,6 +3584,33 @@ def Settings():
 			os.system('cls')
 		
 		elif mode == "11":
+			os.system('cls')
+			print('-----------------')
+			print('Default: '+str(cpu_count()))
+			print('-----------------')
+			while True:
+				Number_of_threads_Compress = input('Number of threads ( Compress ) (2/3/4...):').lower().strip(' ')
+				if Number_of_threads_Compress.isdigit():
+					if int(Number_of_threads_Compress) > 1:
+						Number_of_threads_Compress = int(Number_of_threads_Compress)
+						break
+					else:
+						print('┌──────────────┐')
+						print('│ Wrong input. │')
+						print('└──────────────┘')
+				elif Number_of_threads_Compress == '':
+					Number_of_threads_Compress = settings_values['Number_of_threads_Compress']
+					break
+				else:
+					print('┌──────────────┐')
+					print('│ Wrong input. │')
+					print('└──────────────┘')
+			settings_values['Number_of_threads_Compress']=Number_of_threads_Compress
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+			os.system('cls')
+		
+		elif mode == "12":
 			
 			vulkan_compat = '[Incompatible] '
 			converter_compat = '[Incompatible] '
@@ -3635,7 +3688,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode == '12':
+		elif mode == '13':
 			
 			vulkan_compat = '[Incompatible] '
 			converter_compat = '[Incompatible] '
@@ -3674,30 +3727,34 @@ def Settings():
 			os.system('cls')
 		
 		
-		elif mode == "13":
+		elif mode == "14":
 			os.system('cls')
 			Set_default_color()
 			os.system('cls')
 			
 
-		elif mode == "14":
+		elif mode == "15":
 			os.system('cls')
 			
 			Error_log_setting()
 			
 			os.system('cls')
 		
-		elif mode == "15":
+		elif mode == "16":
 			os.system('cls')
 			
 			remove_safe('waifu2x-extension-setting')
-			ReadSettings()
-			
+			settings_values = ReadSettings()
+			Compatibility_Test(True)
+			settings_values['First_Time_Boot_Up'] = 'n'
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+			os.system('cls')
 			input('Setting reseted, press [Enter] key to return.')
 			
 			os.system('cls')
 		
-		elif mode == "16":
+		elif mode == "17":
 			os.system('cls')
 			
 			for key,val in settings_values.items():
@@ -3737,7 +3794,7 @@ def ReadSettings():
 	cpu_num = int(cpu_count() / 2)
 	if cpu_num < 1 :
 		cpu_num = 1
-	default_values = {'SettingVersion':'11','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
+	default_values = {'SettingVersion':'12','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
 						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
@@ -3745,7 +3802,7 @@ def ReadSettings():
 						'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
 						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1,
 						'Compatibility_waifu2x_ncnn_vulkan':True,'Compatibility_waifu2x_converter':True,'Compatibility_Anime4k':True,
-						'Record_running_log':'n','Record_error_log':'y','Record_running_log_AC':'n'}
+						'Record_running_log':'n','Record_error_log':'y','Record_running_log_AC':'n','Number_of_threads_Compress':2*cpu_num}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -3989,7 +4046,9 @@ class GifCompressThread (threading.Thread):
 
 def Multi_thread_Gif_Compress(inputPathList_files,gifCompresslevel,delorginal):
 	
-	max_threads = cpu_count()
+	settings_values = ReadSettings()
+	
+	max_threads = settings_values['Number_of_threads_Compress']
 	file_ext = ''
 	thread_files = []
 	
@@ -4043,7 +4102,9 @@ class ImageCompressThread (threading.Thread):
 
 def Multi_thread_Image_Compress(inputPathList_files,delorginal,JpgQuality):
 	
-	max_threads = cpu_count()
+	settings_values = ReadSettings()
+	
+	max_threads = settings_values['Number_of_threads_Compress']
 	thread_files = []
 	file_ext = ''
 	
@@ -4677,12 +4738,9 @@ def Compatibility_Test(Init):
 		ChangeColor_default()
 		
 		if waifu2x_ncnn_vulkan_avaliable == False and waifu2x_converter_avaliable == True:
-			print('We have detected that waifu2x-converter is available on your computer, do you wanna enable it now??\n')
-			print('Waifu2x-converter can enlarge image,video,GIF')
-			print('')
-			print('(Y/N): ')
-			enable_waifu2x_converter = input().strip(' ').lower()
-			if enable_waifu2x_converter == 'y':
+			print('We have detected that waifu2x-converter is available on your computer, do you wanna enable it now??')
+			print('Waifu2x-converter can enlarge image,video,GIF.')
+			if input('(Y/N): ').strip(' ').lower() == 'y':
 				settings_values = ReadSettings()
 				settings_values['Video_scale_mode'] = 'waifu2x-converter'
 				settings_values['Image_GIF_scale_mode'] = 'waifu2x-converter'
