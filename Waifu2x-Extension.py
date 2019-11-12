@@ -29,21 +29,29 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 Update log
 - Now you can customize the number of compression threads.
 `Main menu --> Settings --> Number of threads ( Compression )`
+
 - Segment processing video. `( Experimental )`
-This is an experimental feature that splits, enlarges, and assembles video by segmentation to save space. 
+This is an experimental feature that process video by segmentation to save space.
 This feature is `still in development`, although it can be used, there are still some bugs.
+It's `disabled by default`
 `Main menu --> Settings --> Segment processing video.`
+
 - Fix bug.
+
+- Performance optimization.
+
 - Other improvements.
 
 ------------------------------------------------
 To do:
 - 继续完善运行日志的记录
+- 界面美化
+- 添加说明
 
 
 ------------------------------------------------
 Next version:
--
+- 完善 分段放大视频
 
 -------------------------------------------------
 
@@ -571,7 +579,7 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 		ShutDown()
 	Play_Notification_Sound()
 	
-	input('\npress [Enter] key to return to the menu')
+	input('\nPress [Enter] key to return to the menu')
 
 #=========================================================== Process_ImageModeAB ===================================================================
 
@@ -4368,23 +4376,23 @@ def Settings():
 		print(' 3: Default value of "Denoise Level". Current value: [ '+settings_values['noiseLevel']+' ]\n')
 		print(' 4: Delete original files when finished? Current default value: [ '+settings_values['delorginal']+' ]\n')
 		print(' 5: Rename result images. Current value: [ ',settings_values['Rename_result_images'],' ]\n')
-		print(' 66: Segment processing video. (Experimental)')
+		print(' 6: Segment processing video. (Experimental)')
 		print('─'*90)
-		print(' 6: Gif compress level. Current default value: [ '+settings_values['gifCompresslevel']+' ]\n')
-		print(' 7: Image quality ( When compress images ). Current default value: [ ',settings_values['image_quality'],' ]')
+		print(' 7: Gif compress level. Current default value: [ '+settings_values['gifCompresslevel']+' ]\n')
+		print(' 8: Image quality ( When compress images ). Current default value: [ ',settings_values['image_quality'],' ]')
 		print('─'*90)
-		print(' 8: Number of threads ( Scale & Denoise (Waifu2x-ncnn-vulkan) ). Current value: [ ',settings_values['Number_of_threads'],' ]\n')
-		print(' 9: Number of threads ( Scale Video (Anime4k) ). Current value: [ ',settings_values['Number_of_threads_Anime4k'],' ]\n')
-		print(' 10: Number of threads ( Scale & Denoise (Waifu2x-converter) ). Current value: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]\n')
-		print(' 11: Number of threads ( Compression ). Current value: [ ',settings_values['Number_of_threads_Compress'],' ]')
+		print(' 9: Number of threads ( Scale & Denoise (Waifu2x-ncnn-vulkan) ). Current value: [ ',settings_values['Number_of_threads'],' ]\n')
+		print(' 10: Number of threads ( Scale Video (Anime4k) ). Current value: [ ',settings_values['Number_of_threads_Anime4k'],' ]\n')
+		print(' 11: Number of threads ( Scale & Denoise (Waifu2x-converter) ). Current value: [ ',settings_values['Number_of_threads_Waifu2x_converter'],' ]\n')
+		print(' 12: Number of threads ( Compression ). Current value: [ ',settings_values['Number_of_threads_Compress'],' ]')
 		print('─'*90)
-		print(' 12: Video scale mode. Current value: [ ',settings_values['Video_scale_mode'],' ]\n')
-		print(' 13: Image & GIF scale mode. Current value: [ ',settings_values['Image_GIF_scale_mode'],' ]')
+		print(' 13: Video scale mode. Current value: [ ',settings_values['Video_scale_mode'],' ]\n')
+		print(' 14: Image & GIF scale mode. Current value: [ ',settings_values['Image_GIF_scale_mode'],' ]')
 		print('─'*90)
-		print(' 14: Change interface color.\n')
-		print(' 15: Error log.\n')
-		print(' 16: Reset settings.\n')
-		print(' 17: Show settings_values.\n')
+		print(' 15: Change interface color.\n')
+		print(' 16: Error log.\n')
+		print(' 17: Reset settings.\n')
+		print(' 18: Show settings_values.\n')
 		print(' R: Return to the main menu.')
 		print('─'*90)
 		
@@ -4394,12 +4402,12 @@ def Settings():
 		
 		if mode == "1":
 			os.system('cls')
-			print('------------------------------------------------------------------------------------------')
-			print(' The software\'s update strategy is to use multiple small updates')
-			print(' to continuously improve all aspects of the software,')
-			print(' rather than releasing a major update every once in a while.')
-			print(' So we recommend that you turn on automatic check for updates to improve your experience.')
-			print('------------------------------------------------------------------------------------------')
+			print('┌─────────────────────────────────────────────────────────────────────────────────────────┐')
+			print('│ The software\'s update strategy is to use multiple small updates                         │')
+			print('│ to continuously improve all aspects of the software,                                    │')
+			print('│ rather than releasing a major update every once in a while.                             │')
+			print('│ So we recommend that you turn on automatic check for updates to improve your experience.│')
+			print('└─────────────────────────────────────────────────────────────────────────────────────────┘')
 			while True:
 				value_ = input(' Check for updates at startup? (y/n): ').strip(' ').lower()
 				if value_ in ['y','n']:
@@ -4418,9 +4426,9 @@ def Settings():
 		
 		elif mode== "2":
 			os.system('cls')
-			
+			print('')
 			while True:
-				value_ = input('Default value of "Scale ratio" (1/2/4): ').strip(' ').lower()
+				value_ = input(' Default value of "Scale ratio" (1/2/4): ').strip(' ').lower()
 				if value_ in ['1','2','4']:
 					break
 				elif value_ == '':
@@ -4437,9 +4445,9 @@ def Settings():
 			
 		elif mode == "3":
 			os.system('cls')
-			
+			print('')
 			while True:
-				value_ = input('Default value of "Denoise Level" (-1/0/1/2/3): ').strip(' ').lower()
+				value_ = input(' Default value of "Denoise Level" (-1/0/1/2/3): ').strip(' ').lower()
 				if value_ in ['-1','0','1','2','3']:
 					break
 				elif value_ == '':
@@ -4458,7 +4466,7 @@ def Settings():
 			
 			os.system('cls')
 			
-			print('Loading...')
+			print(' Loading...')
 			
 			if settings_values['delorginal'] == 'y':
 				settings_values['delorginal'] = 'n'
@@ -4490,31 +4498,33 @@ def Settings():
 					Rename_result_images = settings_values['Rename_result_images']
 					break
 				else:
-					print('--------------')
-					print(' Wrong input.')
-					print('--------------')
+					print('┌──────────────┐')
+					print('│ Wrong input. │')
+					print('└──────────────┘')
 			settings_values['Rename_result_images']=Rename_result_images
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
 			os.system('cls')
 		
-		elif mode == '66':
+		elif mode == '6':
 			os.system('cls')
 			Segment_processing_video_settings()
 			os.system('cls')
 		
-		elif mode== "6":
+		elif mode== "7":
 			os.system('cls')
 			
 			while True:
-				value_ = input('Default value of gif compress level (1/2/3/4): ').strip(' ').lower()
+				value_ = input(' Default value of gif compress level (1/2/3/4): ').strip(' ').lower()
 				if value_ in ['1','2','3','4']:
 					break
 				elif value_ == '':
 					value_ = settings_values['gifCompresslevel']
 					break
 				else:
-					print('invalid value, pls input again')
+					print('┌─────────────────────────────────┐')
+					print('│ Invalid value, pls input again. │')
+					print('└─────────────────────────────────┘')
 					
 			settings_values['gifCompresslevel']=value_
 			with open('waifu2x-extension-setting','w+') as f:
@@ -4522,7 +4532,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode == "7":
+		elif mode == "8":
 			os.system('cls')
 			while True:
 				image_quality = input('Default value of image quality ( When compress images ) ( 100 ~ 1 ): ').strip(' ').lower()
@@ -4530,28 +4540,34 @@ def Settings():
 					if int(image_quality) >= 1 and int(image_quality) <= 100:
 						break
 					else:
-						print('wrong input, pls input again')
+						print('┌───────────────────────────────┐')
+						print('│ Wrong input, pls input again. │')
+						print('└───────────────────────────────┘')
 				elif image_quality == '':
 					image_quality = settings_values['image_quality']
 					break
 				else:
-					print('wrong input, pls input again')
+					print('┌───────────────────────────────┐')
+					print('│ Wrong input, pls input again. │')
+					print('└───────────────────────────────┘')
 			settings_values['image_quality']=int(image_quality)
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
 				
 			os.system('cls')
 		
-		elif mode== "8":
+		elif mode== "9":
 			os.system('cls')
 			Number_of_threads=''
-			print('-----------------------------------------------------------------')
-			print('Change this setting may cause performance issues.\n')
-			print('We recommend you to use the default setting.\n')
-			print('This setting option only takes effect in waifu2x-ncnn-vulkan mode')
-			print('-----------------------------------------------------------------')
+			print('┌─────────────────────────────────────────────────────────────────────┐')
+			print('│ Change this setting may cause performance issues.                   │')
+			print('│                                                                     │')
+			print('│ We recommend you to use the default setting.                        │')
+			print('│                                                                     │')
+			print('│ This setting option only takes effect in waifu2x-ncnn-vulkan mode.  │')
+			print('└─────────────────────────────────────────────────────────────────────┘')
 			while True:
-				Number_of_threads = input('Number of threads(Scale&Denoise) ( 2 / 3 / 4 /.... ; default = 2 ): ').strip(' ').lower()
+				Number_of_threads = input(' Number of threads(Scale & Denoise) ( 2 / 3 / 4 /... ; default = 2 ): ').strip(' ').lower()
 				if Number_of_threads.isdigit():
 					if int(Number_of_threads) >= 2:
 						break
@@ -4570,62 +4586,74 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode == "9":
+		elif mode == "10":
 			os.system('cls')
 			cpu_num = int(cpu_count() / 2)
 			if cpu_num < 1 :
 				cpu_num = 1
-			print('------------------------------')
-			print('Recommanded value:',cpu_num)
-			print('------------------------------')
+			print('┌────────────────────────────────┐')
+			print('│ Recommanded value:',cpu_num,' '*(10-len(str(cpu_num))),'│')
+			print('└────────────────────────────────┘')
 			while True:
-				Number_of_threads_Anime4k = input('Number of threads ( Scale Video (Anime4k) ) (1/2/3/4...):').lower().strip(' ')
+				Number_of_threads_Anime4k = input(' Number of threads ( Scale Video (Anime4k) ) (1/2/3/4...):').lower().strip(' ')
 				if Number_of_threads_Anime4k.isdigit():
 					if int(Number_of_threads_Anime4k) > 0:
 						Number_of_threads_Anime4k = int(Number_of_threads_Anime4k)
 						break
 					else:
-						print('Wrong input.')
+						print('┌──────────────┐')
+						print('│ Wrong input. │')
+						print('└──────────────┘')
 				elif Number_of_threads_Anime4k == '':
 					Number_of_threads_Anime4k = settings_values['Number_of_threads_Anime4k']
 					break
 				else:
-					print('Wrong input.')
+					print('┌──────────────┐')
+					print('│ Wrong input. │')
+					print('└──────────────┘')
 			settings_values['Number_of_threads_Anime4k']=Number_of_threads_Anime4k
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
-			os.system('cls')
-		
-		elif mode == "10":
-			os.system('cls')
-			print('-----------')
-			print('Default: 1')
-			print('-----------')
-			while True:
-				Number_of_threads_Waifu2x_converter = input('Number of threads ( Scale & Denoise (Waifu2x-converter) ) (1/2/3/4...):').lower().strip(' ')
-				if Number_of_threads_Waifu2x_converter.isdigit():
-					if int(Number_of_threads_Waifu2x_converter) > 0:
-						Number_of_threads_Waifu2x_converter = int(Number_of_threads_Waifu2x_converter)
-						break
-					else:
-						print('Wrong input.')
-				elif Number_of_threads_Waifu2x_converter == '':
-					Number_of_threads_Waifu2x_converter = settings_values['Number_of_threads_Waifu2x_converter']
-					break
-				else:
-					print('Wrong input.')
-			settings_values['Number_of_threads_Waifu2x_converter']=Number_of_threads_Waifu2x_converter
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
 			os.system('cls')
 		
 		elif mode == "11":
 			os.system('cls')
-			print('-----------------')
-			print('Default: '+str(cpu_count()))
-			print('-----------------')
+			
+			print('┌────────────┐')
+			print('│ Default: 2 │')
+			print('└────────────┘')
+
 			while True:
-				Number_of_threads_Compress = input('Number of threads ( Compress ) (2/3/4...):').lower().strip(' ')
+				Number_of_threads_Waifu2x_converter = input(' Number of threads ( Scale & Denoise (Waifu2x-converter) ) (1/2/3/4...):').lower().strip(' ')
+				if Number_of_threads_Waifu2x_converter.isdigit():
+					if int(Number_of_threads_Waifu2x_converter) > 0:
+						Number_of_threads_Waifu2x_converter = int(Number_of_threads_Waifu2x_converter)
+						break
+					else:
+						print('┌──────────────┐')
+						print('│ Wrong input. │')
+						print('└──────────────┘')
+				elif Number_of_threads_Waifu2x_converter == '':
+					Number_of_threads_Waifu2x_converter = settings_values['Number_of_threads_Waifu2x_converter']
+					break
+				else:
+					print('┌──────────────┐')
+					print('│ Wrong input. │')
+					print('└──────────────┘')
+			settings_values['Number_of_threads_Waifu2x_converter']=Number_of_threads_Waifu2x_converter
+			with open('waifu2x-extension-setting','w+') as f:
+				json.dump(settings_values,f)
+			os.system('cls')
+		
+		elif mode == "12":
+			os.system('cls')
+			cpu_count_str = str(cpu_count())
+			print('┌─────────────────────┐')
+			print('│ Default: '+cpu_count_str+' '*(10-len(cpu_count_str))+' │')
+			print('└─────────────────────┘')
+			
+			while True:
+				Number_of_threads_Compress = input(' Number of threads ( Compress ) (2/3/4...): ').lower().strip(' ')
 				if Number_of_threads_Compress.isdigit():
 					if int(Number_of_threads_Compress) > 1:
 						Number_of_threads_Compress = int(Number_of_threads_Compress)
@@ -4646,7 +4674,7 @@ def Settings():
 				json.dump(settings_values,f)
 			os.system('cls')
 		
-		elif mode == "12":
+		elif mode == "13":
 			
 			vulkan_compat = '[Incompatible] '
 			converter_compat = '[Incompatible] '
@@ -4724,7 +4752,7 @@ def Settings():
 				
 			os.system('cls')
 		
-		elif mode == '13':
+		elif mode == '14':
 			
 			vulkan_compat = '[Incompatible] '
 			converter_compat = '[Incompatible] '
@@ -4763,41 +4791,48 @@ def Settings():
 			os.system('cls')
 		
 		
-		elif mode == "14":
+		elif mode == "15":
 			os.system('cls')
 			Set_default_color()
 			os.system('cls')
 			
 
-		elif mode == "15":
+		elif mode == "16":
 			os.system('cls')
 			
 			Error_log_setting()
 			
 			os.system('cls')
 		
-		elif mode == "16":
-			os.system('cls')
-			
-			remove_safe('waifu2x-extension-setting')
-			settings_values = ReadSettings()
-			Compatibility_Test(True)
-			settings_values['First_Time_Boot_Up'] = 'n'
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
-			os.system('cls')
-			input('Setting reseted, press [Enter] key to return.')
-			
-			os.system('cls')
-		
 		elif mode == "17":
 			os.system('cls')
 			
+			print('┌────────────────────────────────────────────────────┐')
+			print('│                   !! Warning !!                    │')
+			print('├────────────────────────────────────────────────────┤')
+			print('│ Are you sure you want to clear all saved settings? │')
+			print('└────────────────────────────────────────────────────┘')
+			
+			if input('( Y / N ): ').strip(' ').lower() == 'y':
+				remove_safe('waifu2x-extension-setting')
+				settings_values = ReadSettings()
+				Compatibility_Test(True)
+				settings_values['First_Time_Boot_Up'] = 'n'
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+				os.system('cls')
+				input('Setting reseted, press [Enter] key to return.')
+			
+			os.system('cls')
+		
+		elif mode == "18":
+			os.system('cls')
+			
 			for key,val in settings_values.items():
-				print(str(key)+' : '+str(val))
-			print('')
-			print('--------------------------------------')
-			input('press [Enter] key to return.')
+				print(' '+str(key)+' : '+str(val))
+			#print('')
+			print('─'*90)
+			input(' Press [Enter] key to return to the previous menu.')
 			
 			os.system('cls')
 
@@ -4816,15 +4851,6 @@ def Settings():
 			input()
 			ChangeColor_default()
 			os.system('cls')
-
-# ~ def ReadSettings_Read_Only():
-	# ~ try:
-		# ~ with open('waifu2x-extension-setting','r') as f:
-			# ~ settings_values = json.load(f)
-		# ~ return settings_values
-	# ~ except BaseException:
-		# ~ settings_values = ReadSettings()
-		# ~ return settings_values
 		
 def ReadSettings():
 	cpu_num = int(cpu_count() / 2)
@@ -4836,10 +4862,10 @@ def ReadSettings():
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
 						'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
-						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':1,
+						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':2,
 						'Compatibility_waifu2x_ncnn_vulkan':True,'Compatibility_waifu2x_converter':True,'Compatibility_Anime4k':True,
 						'Record_running_log':'n','Record_error_log':'y','Record_running_log_AC':'n','Number_of_threads_Compress':2*cpu_num,
-						'Segment_processing_video':'n','Segmentation_duration_video':20}
+						'Segment_processing_video':'n','Segmentation_duration_video':30}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -5305,9 +5331,9 @@ def Benchmark_Anime4K():
 	wait_to_cool_time=int(input('How many seconds do you wanna wait to cool your computer during the test: '))
 	
 	Window_Title('[Running benchmark]')
-	print('-------------------------------------------------------')
-	print('This benchmark is gonna take a while, pls wait.....')
-	print('-------------------------------------------------------')
+	print('┌───────────────────────────────────────────────────┐')
+	print('│ This benchmark is gonna take a while, pls wait... │')
+	print('└───────────────────────────────────────────────────┘')
 	print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
 	
 	time.sleep(wait_to_cool_time)
@@ -5347,10 +5373,10 @@ def Benchmark_Anime4K():
 		time_end=time.time()
 		rd_self(output_folder)
 		new_time_cost = time_end - time_start
-		print('---------------------------------')
-		print('Number of threads: ',Number_of_threads)
-		print('Time cost: ',new_time_cost)
-		print('---------------------------------')
+		print('────────────────────────────────────────')
+		print(' Number of threads: ',Number_of_threads)
+		print(' Time cost: ',new_time_cost)
+		print('────────────────────────────────────────')
 		if new_time_cost <= old_time_cost:
 			old_time_cost = new_time_cost
 			old_Number_of_threads = Number_of_threads
@@ -5383,9 +5409,9 @@ def Benchmark_converter():
 	wait_to_cool_time=int(input('How many seconds do you wanna wait to cool your computer during the test: '))
 	
 	Window_Title('[Running benchmark]')
-	print('-------------------------------------------------------')
-	print('This benchmark is gonna take a while, pls wait.....')
-	print('-------------------------------------------------------')
+	print('┌───────────────────────────────────────────────────┐')
+	print('│ This benchmark is gonna take a while, pls wait... │')
+	print('└───────────────────────────────────────────────────┘')
 	print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
 	
 	time.sleep(wait_to_cool_time)
@@ -5450,10 +5476,10 @@ def Benchmark_converter():
 		time_end=time.time()
 		rd_self(output_folder)
 		new_time_cost = time_end - time_start
-		print('---------------------------------')
-		print('Number of threads: ',Number_of_threads)
-		print('Time cost: ',new_time_cost)
-		print('---------------------------------')
+		print('────────────────────────────────────────')
+		print(' Number of threads: ',Number_of_threads)
+		print(' Time cost: ',new_time_cost)
+		print('────────────────────────────────────────')
 		if new_time_cost <= old_time_cost:
 			old_time_cost = new_time_cost
 			old_Number_of_threads = Number_of_threads
@@ -5484,9 +5510,10 @@ def Benchmark_vulkan():
 	wait_to_cool_time=int(input('How many seconds do you wanna wait to cool your computer during the test: '))
 	
 	Window_Title('[Running benchmark]')
-	print('-------------------------------------------------------')
-	print('This benchmark is gonna take a while, pls wait.....')
-	print('-------------------------------------------------------')
+	print('┌───────────────────────────────────────────────────┐')
+	print('│ This benchmark is gonna take a while, pls wait... │')
+	print('└───────────────────────────────────────────────────┘')
+	
 	print('Wait '+str(wait_to_cool_time)+' seconds to cool the computer.')
 	time.sleep(wait_to_cool_time)
 	settings_values = ReadSettings()
@@ -5519,10 +5546,10 @@ def Benchmark_vulkan():
 		time_end=time.time()
 		rd_self(scaledFilePath)
 		new_time_cost = time_end - time_start
-		print('---------------------------------')
-		print('Tile size: ',tileSize)
-		print('Time cost: ',new_time_cost)
-		print('---------------------------------')
+		print('──────────────────────────────────')
+		print(' Tile size: ',tileSize)
+		print(' Time cost: ',new_time_cost)
+		print('──────────────────────────────────')
 		if new_time_cost <= old_time_cost:
 			old_time_cost = new_time_cost
 			old_tileSize = tileSize
@@ -6317,6 +6344,7 @@ def Running_log_setting():
 		print(' 2.Read running log.\n')
 		print(' 3.Reset running log.\n')
 		print(' 4.Automatically clean up the running log: [ '+settings_values['Record_running_log_AC']+' ]\n')
+		print(' 5.Help\n')
 		print(' R.Return to the previous menu.')
 	
 		if os.path.exists('Running_Log_Waifu2x-Extension.log'):
@@ -6332,7 +6360,7 @@ def Running_log_setting():
 			print('─'*len_Log_location)
 		else:
 			print('─'*50)
-		choice = input('(1 / 2 / 3 / 4 / R): ').strip(' ').lower()
+		choice = input('(1 / 2 / 3 / 4 / 5 / R): ').strip(' ').lower()
 		if choice == '1':
 			
 			os.system('cls')
@@ -6404,6 +6432,24 @@ def Running_log_setting():
 					json.dump(settings_values,f)
 				Record_running_log('Automatically clean up the running log: Enabled')
 		
+		elif choice == '5':
+			os.system('cls')
+			print('''
+ Record running log:
+ --------------------
+ After logging the running log is enabled, the software records in detail the operations performed by 
+ the user on the software and the operation of the external files during the internal operation of 
+ the software for review. The information will be recorded in an unencrypted text file, 
+ and won't be uploaded to any service by this software.
+ 
+ 
+ Automatically clean up the running log:
+ ---------------------------------------
+ Delete the running log when it reaches 2000kb.
+ 
+			''')
+			input(' Press [Enter] key to return to the menu')
+		
 		elif choice == 'r':
 			return 0
 
@@ -6451,16 +6497,20 @@ def Segment_processing_video_settings():
 	while True:
 		os.system('cls')
 		settings_values = ReadSettings()
+		
+		str_Segment_processing_video = str(settings_values['Segment_processing_video'])
+		str_Segmentation_duration_video = str(settings_values['Segmentation_duration_video'])
+		
 		print('┌───────────────────────────────────────────────────────────────┐')
 		print('│ Segment processing video                                      │')
 		print('├───────────────────────────────────────────────────────────────┤')
-		print('│ 1.Enable segment processing video [ ',settings_values['Segment_processing_video'],' ]')
+		print('│ 1.Enable segment processing video [ '+str_Segment_processing_video+' ]'+' '*(23-len(str_Segment_processing_video))+' │')
 		print('│                                                               │')
-		print('│ 2.Segmentation duration [ ',settings_values['Segmentation_duration_video'],'s ]')
+		print('│ 2.Segmentation duration [ '+str_Segmentation_duration_video+'s'+' ]'+' '*(32-len(str_Segmentation_duration_video))+' │')
 		print('│                                                               │')
 		print('│ R.Return to the previous menu.                                │')
 		print('└───────────────────────────────────────────────────────────────┘')
-		choice = input('(1 / 2 / R): ').strip(' ').lower()
+		choice = input('( 1 / 2 / R ): ').strip(' ').lower()
 		if choice == '1':
 			os.system('cls')
 			print(' Loading....')
@@ -6480,7 +6530,7 @@ def Segment_processing_video_settings():
 			
 			os.system('cls')
 			while True:
-				Segmentation_duration_video = input('Segmentation duration ( 1/2/3/4/5... (Second) ): ').lower().strip(' ')
+				Segmentation_duration_video = input('Segmentation duration ( 1/2/3/4/5... (Second) ; Default = 30 ): ').lower().strip(' ')
 				if Segmentation_duration_video.isdigit():
 					if int(Segmentation_duration_video) > 0:
 						Segmentation_duration_video = int(Segmentation_duration_video)
