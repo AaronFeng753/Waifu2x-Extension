@@ -36,6 +36,8 @@ This feature is `still in development`, although it can be used, there are still
 It's `disabled by default`
 `Main menu --> Settings --> Segment processing video.`
 
+- Improve running log.
+
 - Fix bug.
 
 - Performance optimization.
@@ -48,10 +50,11 @@ To do:
 - 界面美化
 - 添加说明
 
-
 ------------------------------------------------
 Next version:
 - 完善 分段放大视频
+- 继续完善运行日志的记录
+- 界面美化
 
 -------------------------------------------------
 
@@ -4845,9 +4848,9 @@ def Settings():
 		else:
 			os.system('cls')
 			ChangeColor_warning()
-			print(' ----------------------------------------------------')
-			print(' Error : wrong input,pls press [Enter] key to return')
-			print(' ----------------------------------------------------')
+			print('┌──────────────────────────────────────────────────────┐')
+			print('│ Error : wrong input,pls press [Enter] key to return. │')
+			print('└──────────────────────────────────────────────────────┘')
 			input()
 			ChangeColor_default()
 			os.system('cls')
@@ -6465,8 +6468,9 @@ class Record_running_log_Thread(threading.Thread):
 	
 		if settings_values['Record_running_log'] == 'y':
 			
-			timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-			W_string = '\n'+timeStr+'\n'+'='*len(timeStr)+'\n'+log_string+'\n'
+			timeStr = str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime()))
+			
+			W_string = '\n'+timeStr+'\n'+'─'*len(timeStr)+'\n'+log_string+'\n'
 			
 			with open('Running_Log_Waifu2x-Extension.log','a+') as f:
 				f.write(W_string)
