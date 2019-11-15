@@ -55,6 +55,24 @@ Next version:
 - 完善 分段放大视频
 - 继续完善运行日志的记录
 - 界面美化
+- 默认参数设置兼容converter和anime4k
+------------------------------------------------
+Test List:
+压缩 图片单文件+
+压缩 图片文件夹+
+压缩 图片文件混合文件夹+
+
+vulkan 图片单文件+
+vulkan 图片文件夹+
+vulkan 图片文件混合文件夹+
+vulkan 视频+
+
+converter 图片单文件+
+converter 图片文件夹+
+converter 图片文件混合文件夹+
+converter 视频+
+
+anime4k 视频+
 
 -------------------------------------------------
 
@@ -109,7 +127,7 @@ import psutil
 import queue
 import random
 
-Version_current='v3.75'
+Version_current='v3.8'
 
 WindowSize_Queue = queue.Queue()
 
