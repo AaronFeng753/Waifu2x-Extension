@@ -2,7 +2,12 @@
 # -*- coding: utf-8 -*- 
 
 '''
+Aaron Feng
 
+Github:
+https://github.com/AaronFeng753/Waifu2x-Extension
+
+---------------------------------------------
 What is Waifu2x-Extension ?
 
 Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutional Neural Networks.
@@ -27,52 +32,39 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- Now you can customize the number of compression threads.
-`Main menu --> Settings --> Number of threads ( Compression )`
-
-- Segment processing video. `( Experimental )`
-This is an experimental feature that process video by segmentation to save space.
-This feature is `still in development`, although it can be used, there are still some bugs.
-It's `disabled by default`
-`Main menu --> Settings --> Segment processing video.`
-
-- Improve running log.
-
-- Fix bug.
-
-- Performance optimization.
+- 
 
 - Other improvements.
 
 ------------------------------------------------
 To do:
-- 继续完善运行日志的记录
-- 界面美化
-- 添加说明
-
-------------------------------------------------
-Next version:
-- 完善 分段放大视频
+- 完善 分段放大视频, 修复卡顿问题
 - 继续完善运行日志的记录
 - 界面美化
 - 默认参数设置兼容converter和anime4k
+- 整一个user guide
+
+------------------------------------------------
+Next version:
+- 
+
 ------------------------------------------------
 Test List:
-压缩 图片单文件+
-压缩 图片文件夹+
-压缩 图片文件混合文件夹+
+压缩 图片单文件
+压缩 图片文件夹
+压缩 图片文件混合文件夹
 
-vulkan 图片单文件+
-vulkan 图片文件夹+
-vulkan 图片文件混合文件夹+
-vulkan 视频+
+vulkan 图片单文件
+vulkan 图片文件夹
+vulkan 图片文件混合文件夹
+vulkan 视频
 
-converter 图片单文件+
-converter 图片文件夹+
-converter 图片文件混合文件夹+
-converter 视频+
+converter 图片单文件
+converter 图片文件夹
+converter 图片文件混合文件夹
+converter 视频
 
-anime4k 视频+
+anime4k 视频
 
 -------------------------------------------------
 
@@ -309,6 +301,7 @@ def MainMenu():
 			settings_values = ReadSettings()
 			multiThread_Scale = '[ '+settings_values['multiThread_Scale']+' ]' 
 			os.system('cls')
+			
 		elif mode == "9":
 			os.system('cls')
 			input_saveAsJPG()
@@ -318,12 +311,14 @@ def MainMenu():
 			if settings_values['saveAsJPG'].lower() == 'y':
 				Compress = '   Compress: [ '+settings_values['Compress']+' ]' 
 			os.system('cls')
+			
 		elif mode == "10":
 			os.system('cls')
 			input_optimizeGif()
 			settings_values = ReadSettings()
 			optimizeGif = '[ '+settings_values['optimizeGif']+' ]' 
 			os.system('cls')
+			
 		elif mode == "11":
 			os.system('cls')
 			Settings()
@@ -5727,9 +5722,9 @@ def Compatibility_Test(Init):
 	Anime4k_avaliable = False
 	
 	os.system('cls')
-	print('----------------------------------------------')
-	print('  Running compatibility test, please wait...')
-	print('----------------------------------------------')
+	print('┌──────────────────────────────────────────────┐')
+	print('│  Running compatibility test, please wait...  │')
+	print('└──────────────────────────────────────────────┘')
 	
 	Record_running_log('Start running compatibility test.')
 	
@@ -5764,13 +5759,13 @@ def Compatibility_Test(Init):
 		str_Anime4k_avaliable = 'NO'
 		
 		
-	print('------------------------------------------------')
+	print('────────────────────────────────────────────────')
 	print('Compatible with waifu2x-ncnn-vulkan : ',str_waifu2x_ncnn_vulkan_avaliable)
 	print('')
 	print('Compatible with waifu2x-converter : ',str_waifu2x_converter_avaliable)
 	print('')
 	print('Compatible with Anime4k : ',str_Anime4k_avaliable)
-	print('------------------------------------------------')
+	print('────────────────────────────────────────────────')
 	print('')
 	if waifu2x_ncnn_vulkan_avaliable and waifu2x_converter_avaliable and Anime4k_avaliable:
 		if Init:
@@ -5779,53 +5774,55 @@ def Compatibility_Test(Init):
 			input('Press [Enter] key to continue.')
 	else:
 		ChangeColor_warning()
-		print('When waifu2x-ncnn-vulkan or waifu2x-converter is avaliable,')
-		print('You can use all the features in the software without fixing compatibility issues.')
-		print('---------------------------------------------------------------------------------')
-		print('Warning, there is a compatibility issue on the current computer.') 
-		print('Please follow the suggestions below to fix compatibility issues:')
-		print('----------------------------------------------------------------')
-		print('First of all, check update, make sure you are using the latest Waifu2x-Extension.')
+		print(' When waifu2x-ncnn-vulkan or waifu2x-converter is avaliable,')
+		print(' You can use all the features in the software without fixing compatibility issues.')
+		print('──────────────────────────────────────────────────────────────────────────────────')
+		print(' Warning, there is a compatibility issue on the current computer.') 
+		print(' Please follow the suggestions below to fix compatibility issues:')
+		print('─────────────────────────────────────────────────────────────────')
+		print(' First of all, check update, make sure you are using the latest Waifu2x-Extension.')
 		if waifu2x_ncnn_vulkan_avaliable == False:
 			print('')
-			print('-------------------------------------------------')
-			print('Waifu2x-ncnn-vulkan:')
-			print('Re-install gpu driver or update it to the latest.')
-			print('And make sure your GPU support Vulkan.')
-			print('-------------------------------------------------')
+			print('───────────────────────────────────────────────────')
+			print(' Waifu2x-ncnn-vulkan:')
+			print(' Re-install gpu driver or update it to the latest.')
+			print(' And make sure your GPU support Vulkan.')
+			print('───────────────────────────────────────────────────')
 			print('')
 			
 		if waifu2x_converter_avaliable == False:
 			print('')
-			print('-------------------------------------------------------------------')
-			print('Waifu2x-converter:')
-			print('Check update, make sure you are using the latest Waifu2x-Extension.')
-			print('If this won\'t fix the problem, then buy a new computer.')
-			print('-------------------------------------------------------------------')
+			print('─────────────────────────────────────────────────────────────────────')
+			print(' Waifu2x-converter:')
+			print(' Check update, make sure you are using the latest Waifu2x-Extension.')
+			print(' If this won\'t fix the problem, then buy a new computer.')
+			print('─────────────────────────────────────────────────────────────────────')
 			print('')
 			
 		if Anime4k_avaliable == False:
 			print('')
-			print('------------------------------')
-			print('Anime4k:')
-			print('Install the latest JDK and JRE')
-			print('------------------------------')
+			print('────────────────────────────────')
+			print(' Anime4k:')
+			print(' Install the latest JDK and JRE')
+			print('────────────────────────────────')
 			print('')
 		
 		
-		print('If the compatibility issue is still not resolved, enable the compatible components in the settings.')
+		print(' If the compatibility issue is still not resolved, enable the compatible components in the settings.')
 		print('')
-		print('-------------------------------')
-		print('Press [Enter] key to continue.')
-		print('-------------------------------')
+		print('────────────────────────────────')
+		print(' Press [Enter] key to continue. ')
+		print('────────────────────────────────')
 		input()
 		os.system('cls')
 		ChangeColor_default()
 		
 		if waifu2x_ncnn_vulkan_avaliable == False and waifu2x_converter_avaliable == True:
-			print('We have detected that waifu2x-converter is available on your computer, do you wanna enable it now??')
-			print('Waifu2x-converter can enlarge image,video,GIF.')
-			if input('(Y/N): ').strip(' ').lower() == 'y':
+			print(' We have detected that waifu2x-converter is available')
+			print(' on your computer, do you wanna enable it now??')
+			print(' Waifu2x-converter can enlarge image,video,GIF.')
+			print('─────────────────────────────────────────────────────')
+			if input(' (Y/N): ').strip(' ').lower() == 'y':
 				settings_values = ReadSettings()
 				settings_values['Video_scale_mode'] = 'waifu2x-converter'
 				settings_values['Image_GIF_scale_mode'] = 'waifu2x-converter'
@@ -6530,9 +6527,11 @@ def Segment_processing_video_settings():
 		print('│                                                               │')
 		print('│ 2.Segmentation duration [ '+str_Segmentation_duration_video+'s'+' ]'+' '*(32-len(str_Segmentation_duration_video))+' │')
 		print('│                                                               │')
+		print('│ H.Help                                                        │')
+		print('│                                                               │')
 		print('│ R.Return to the previous menu.                                │')
 		print('└───────────────────────────────────────────────────────────────┘')
-		choice = input('( 1 / 2 / R ): ').strip(' ').lower()
+		choice = input('( 1 / 2 / H / R ): ').strip(' ').lower()
 		if choice == '1':
 			os.system('cls')
 			print(' Loading....')
@@ -6552,7 +6551,7 @@ def Segment_processing_video_settings():
 			
 			os.system('cls')
 			while True:
-				Segmentation_duration_video = input('Segmentation duration ( 1/2/3/4/5... (Second) ; Default = 30 ): ').lower().strip(' ')
+				Segmentation_duration_video = input(' Segmentation duration ( 1/2/3/4/5... (Second) ; Default = 30 ): ').lower().strip(' ')
 				if Segmentation_duration_video.isdigit():
 					if int(Segmentation_duration_video) > 0:
 						Segmentation_duration_video = int(Segmentation_duration_video)
@@ -6567,7 +6566,23 @@ def Segment_processing_video_settings():
 			settings_values['Segmentation_duration_video']=Segmentation_duration_video
 			with open('waifu2x-extension-setting','w+') as f:
 				json.dump(settings_values,f)
-			
+		
+		elif choice == 'h':
+			os.system('cls')
+			print('''
+ 1.Segment processing video
+ After the segmentation processing video is enabled, the program will segment the video, 
+ then process it, and finally stitch the result video together. Which can greatly save 
+ the hard disk space required for the program to run. However, it may also affect the 
+ smoothness of the video and slow down the processing speed.
+ 
+ 2.Segmentation duration
+ This value determines the duration of each segment, when the program segments the video.
+			''')
+			print('──────────────────────────────────────')
+			print(' Press [Enter] to return to the menu. ')
+			input()
+		
 		elif choice == 'r':
 			return 0
 	
