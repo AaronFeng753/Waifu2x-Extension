@@ -32,16 +32,24 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- 
+- Fix bug.
 
 - Other improvements.
 
 ------------------------------------------------
 To do:
 - 完善 分段放大视频, 修复卡顿问题
+
+实现思路: 
+转换成帧内编码  ffmpeg -i [input] -strict -2  -qscale 0 -intra [output]
+切割 ffmpeg -i [input] -ss 00:00 -t 2 -vcodec copy -acodec copy [output]
+正常合并
+合并后转换 ffmpeg -i [input] -c:v libx264 -c:a aac -strict experimental -b:a 98k [output]
+
 - 继续完善运行日志的记录
 - 界面美化
-- 默认参数设置兼容converter和anime4k
+- 默认参数设置兼容converter和anime4k(弄个菜单)
+- 设置输出文件夹
 - 整一个user guide
 
 ------------------------------------------------
@@ -119,7 +127,7 @@ import psutil
 import queue
 import random
 
-Version_current='v3.8'
+Version_current='v3.9'
 
 WindowSize_Queue = queue.Queue()
 
@@ -3757,6 +3765,7 @@ def video2images(inputpath):
 	remove_safe(video_dir+'audio_waifu2x.wav')
 	
 	os.system('ffmpeg -i "'+video_path_filename+'.mp4'+'" "'+video_dir+'audio_waifu2x.wav"')
+	
 
 def images2video(inputpath):
 	video_path_filename = os.path.splitext(inputpath)[0]
@@ -3848,9 +3857,11 @@ def Cut_video(inputName_str,outputName_str,startTime,durationTime): #Time exampl
 	startTime_str = Seconds2ffmpegTime(startTime)
 	durationTime_str = Seconds2ffmpegTime(durationTime)
 	
-	Record_running_log('ffmpeg -ss '+startTime_str+' -t '+durationTime_str+' -i "'+inputName_str+'" -c:v libx264 -c:a aac -strict experimental -b:a 98k "'+outputName_str+'"')
+	ffmpeg_cmd = 'ffmpeg -ss '+startTime_str+' -t '+durationTime_str+' -i "'+inputName_str+'" -c:v libx264 -c:a aac -strict experimental -b:a 98k "'+outputName_str+'"'
 	
-	os.system('ffmpeg -ss '+startTime_str+' -t '+durationTime_str+' -i "'+inputName_str+'" -c:v libx264 -c:a aac -strict experimental -b:a 98k "'+outputName_str+'"')
+	Record_running_log(ffmpeg_cmd)
+	
+	os.system(ffmpeg_cmd)
 
 def Assemble_video(mainVideo_str,subVideo_str,outputVideo_str):
 	
@@ -5313,30 +5324,36 @@ def Complete_ResizeWindow(cols,lines):
 	
 #=============================== Benchmark =============================
 def Benchmark():
-	print('=============================  Benchmark  ===============================\n')
-	print(' 1: Tile size(for waifu2x-ncnn-vulkan)\n')
-	print(' 2: Number of threads(for waifu2x-converter) ( Beta, may cause crash! )\n')
-	print(' 3: Number of threads(for Anime4K) ( Beta, may cause crash! )\n')
-	print(' R: Return to the main menu\n')
-	print('=========================================================================')
-	print('( 1 / 2 / 3 / R )')
-	choice_ = input().strip(' ').lower()
-	if choice_ == '1':
+	while True:
 		os.system('cls')
-		Benchmark_vulkan()
-		os.system('cls')
-	elif choice_ == '2':
-		os.system('cls')
-		Benchmark_converter()
-		os.system('cls')
-	elif choice_ == '3':
-		os.system('cls')
-		Benchmark_Anime4K()
-		os.system('cls')
-	elif choice_ == 'r':
-		return 0
-	else:
-		os.system('cls')
+		print('┌─────────────────────────────────────────────────────────────────────────┐')
+		print('│                               Benchmark                                 │')
+		print('├─────────────────────────────────────────────────────────────────────────┤')
+		print('│ 1: Tile size(for waifu2x-ncnn-vulkan)                                   │')
+		print('│                                                                         │')
+		print('│ 2: Number of threads(for waifu2x-converter) ( Beta, may cause crash! )  │')
+		print('│                                                                         │')
+		print('│ 3: Number of threads(for Anime4K) ( Beta, may cause crash! )            │')
+		print('│                                                                         │')
+		print('│ R: Return to the main menu                                              │')
+		print('└─────────────────────────────────────────────────────────────────────────┘')
+		choice_ = input('( 1 / 2 / 3 / R ): ').strip(' ').lower()
+		if choice_ == '1':
+			os.system('cls')
+			Benchmark_vulkan()
+			os.system('cls')
+		elif choice_ == '2':
+			os.system('cls')
+			Benchmark_converter()
+			os.system('cls')
+		elif choice_ == '3':
+			os.system('cls')
+			Benchmark_Anime4K()
+			os.system('cls')
+		elif choice_ == 'r':
+			return 0
+		else:
+			os.system('cls')
 
 def Benchmark_Anime4K():
 	print('This benchmark will help you to determine the right number of threads for Anime4K.')
@@ -5672,9 +5689,9 @@ def FindImageFiles(inputPathList):
 
 #======================================= View_GPU_ID() ==================================
 def View_GPU_ID():
-	print('----------------------------')
-	print('        Loading....')
-	print('----------------------------')
+	print('┌────────────────────────────┐')
+	print('│          Loading...        │')
+	print('└────────────────────────────┘')
 	gpuId = 0
 	gpuId_list = []
 	
@@ -5703,14 +5720,14 @@ def View_GPU_ID():
 		gpuId = gpuId+1
 	os.system('cls')
 	if len(gpuId_list) > 0:
-		print('---------------------------------------------------------')
+		print('-----------------------------------------------------------')
 		print(' Available GPU ID for waifu2x-ncnn-vulkan: ',gpuId_list)
-		print('---------------------------------------------------------')
+		print('-----------------------------------------------------------')
 	else:
-		print('------------------------------------------')
-		print(' No GPU availabel for waifu2x-ncnn-vulkan.')
-		print(' Pls upgrade or reinstall your GPU driver.')
-		print('------------------------------------------')
+		print('┌───────────────────────────────────────────┐')
+		print('│ No GPU availabel for waifu2x-ncnn-vulkan. │')
+		print('│ Pls upgrade or reinstall your GPU driver. │')
+		print('└───────────────────────────────────────────┘')
 	return gpuId_list
 
 #======================================================  Compatibility_Test =============================================================
