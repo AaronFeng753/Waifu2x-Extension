@@ -48,7 +48,6 @@ To do:
 
 - 继续完善运行日志的记录
 - 界面美化
-- 默认参数设置兼容converter和anime4k(弄个菜单)
 - 设置输出文件夹
 - 整一个user guide
 
@@ -3905,7 +3904,7 @@ def Seconds2ffmpegTime(seconds):
 #===================================================== input ====================================================
 def input_scale():
 	settings_values = ReadSettings()
-	default_value = settings_values['scale']
+	default_value = settings_values['scale_waifu2x_ncnn_vulkan']
 
 	while True:
 		scale = input(' Scale ratio(1/2/4/8/help, default='+default_value+'): ').strip(' ').lower()
@@ -3928,7 +3927,7 @@ def input_scale():
 
 def input_scale_waifu2x_converter():
 	settings_values = ReadSettings()
-	default_value = settings_values['scale']
+	default_value = settings_values['scale_waifu2x_converter']
 
 	while True:
 		scale = input(' Scale ratio(1/2/3/4/.../help, default='+default_value+'): ').strip(' ').lower()
@@ -3960,7 +3959,7 @@ def input_scale_waifu2x_converter():
 
 def input_scale_Anime4k():
 	settings_values = ReadSettings()
-	default_value = settings_values['scale']
+	default_value = settings_values['scale_anime4k']
 
 	while True:
 		scale = input(' Scale ratio(2/3/4/.../help, default='+default_value+'): ').strip(' ').lower()
@@ -4027,7 +4026,7 @@ def input_tileSize():
 	
 def input_noiseLevel():
 	settings_values = ReadSettings()
-	default_value = settings_values['noiseLevel']
+	default_value = settings_values['noiseLevel_waifu2x_ncnn_vulkan']
 	while True:
 		noiseLevel = input(' Denoise level(-1/0/1/2/3/help, default='+default_value+'): ').strip(' ').lower()
 		if noiseLevel in ['-1','0','1','2','3','','r']:
@@ -4046,8 +4045,9 @@ def input_noiseLevel():
 
 def input_noiseLevel_waifu2x_converter():
 	settings_values = ReadSettings()
+	default_value = settings_values['noiseLevel_waifu2x_converter']
 	while True:
-		noiseLevel = input(' Denoise level(1/2, default= 2): ').strip(' ').lower()
+		noiseLevel = input(' Denoise level(1/2, default= '+default_value+'): ').strip(' ').lower()
 		if noiseLevel in ['1','2','','r']:
 			break
 		elif noiseLevel == 'help':
@@ -4059,7 +4059,7 @@ def input_noiseLevel_waifu2x_converter():
 			print('wrong input, pls input again')
 	
 	if noiseLevel == '':
-		noiseLevel = '2'
+		noiseLevel = default_value
 	return noiseLevel
 		
 def input_delorginal():
@@ -4399,8 +4399,8 @@ def Settings():
 		print(' '*41+'Settings')
 		print('─'*90)
 		print(' 1: Check for updates at startup. Current value: [ '+settings_values['CheckUpdate']+' ]\n')
-		print(' 2: Default value of "Scale ratio". Current value: [ '+settings_values['scale']+' ]\n')
-		print(' 3: Default value of "Denoise Level". Current value: [ '+settings_values['noiseLevel']+' ]\n')
+		print(' 2: Default value of "Scale ratio".\n')
+		print(' 3: Default value of "Denoise Level".\n')
 		print(' 4: Delete original files when finished? Current default value: [ '+settings_values['delorginal']+' ]\n')
 		print(' 5: Rename result images. Current value: [ ',settings_values['Rename_result_images'],' ]\n')
 		print(' 6: Segment processing video. (Experimental)')
@@ -4453,39 +4453,15 @@ def Settings():
 		
 		elif mode== "2":
 			os.system('cls')
-			print('')
-			while True:
-				value_ = input(' Default value of "Scale ratio" (1/2/4): ').strip(' ').lower()
-				if value_ in ['1','2','4']:
-					break
-				elif value_ == '':
-					value_ = settings_values['scale']
-					break
-				else:
-					print('invalid value, pls input again')
-					
-			settings_values['scale']=value_
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
+			
+			Default_scale_ratio_settings()
 				
 			os.system('cls')
 			
 		elif mode == "3":
 			os.system('cls')
-			print('')
-			while True:
-				value_ = input(' Default value of "Denoise Level" (-1/0/1/2/3): ').strip(' ').lower()
-				if value_ in ['-1','0','1','2','3']:
-					break
-				elif value_ == '':
-					value_ = settings_values['noiseLevel']
-					break
-				else:
-					print('invalid value, pls input again')
-					
-			settings_values['noiseLevel']=value_
-			with open('waifu2x-extension-setting','w+') as f:
-				json.dump(settings_values,f)
+			
+			Default_denoise_level_settings()
 				
 			os.system('cls')
 			
@@ -4883,8 +4859,9 @@ def ReadSettings():
 	cpu_num = int(cpu_count() / 2)
 	if cpu_num < 1 :
 		cpu_num = 1
-	default_values = {'SettingVersion':'14','CheckUpdate':'y','scale':'2','First_Time_Boot_Up':'y',
-						'noiseLevel':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
+	default_values = {'SettingVersion':'15','CheckUpdate':'y','scale_waifu2x_ncnn_vulkan':'2','First_Time_Boot_Up':'y',
+						'scale_waifu2x_converter':'2','scale_anime4k':'2','noiseLevel_waifu2x_converter':'2',
+						'noiseLevel_waifu2x_ncnn_vulkan':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
 						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
@@ -6379,7 +6356,7 @@ def Running_log_setting():
 		print(' 2.Read running log.\n')
 		print(' 3.Reset running log.\n')
 		print(' 4.Automatically clean up the running log: [ '+settings_values['Record_running_log_AC']+' ]\n')
-		print(' 5.Help\n')
+		print(' H.Help\n')
 		print(' R.Return to the previous menu.')
 	
 		if os.path.exists('Running_Log_Waifu2x-Extension.log'):
@@ -6395,7 +6372,7 @@ def Running_log_setting():
 			print('─'*len_Log_location)
 		else:
 			print('─'*50)
-		choice = input('(1 / 2 / 3 / 4 / 5 / R): ').strip(' ').lower()
+		choice = input('(1 / 2 / 3 / 4 / H / R): ').strip(' ').lower()
 		if choice == '1':
 			
 			os.system('cls')
@@ -6467,15 +6444,15 @@ def Running_log_setting():
 					json.dump(settings_values,f)
 				Record_running_log('Automatically clean up the running log: Enabled')
 		
-		elif choice == '5':
+		elif choice == 'h':
 			os.system('cls')
 			print('''
  Record running log:
  --------------------
  After logging the running log is enabled, the software records in detail the operations performed by 
  the user on the software and the operation of the external files during the internal operation of 
- the software for review. The information will be recorded in an unencrypted text file, 
- and won't be uploaded to any service by this software.
+ the software for review. The information will be recorded in an unencrypted text file, and won't be 
+ uploaded to any server by this software.
  
  
  Automatically clean up the running log:
@@ -6602,7 +6579,93 @@ def Segment_processing_video_settings():
 		
 		elif choice == 'r':
 			return 0
+
+#============================================== Default_scale_ratio_settings()====================================
+
+def Default_scale_ratio_settings():
+	while True:
+		os.system('cls')
+		settings_values = ReadSettings()
+		print('┌──────────────────────────────────┐')
+		print('│ Default value of "Scale ratio"   │')
+		print('├──────────────────────────────────┤')
+		print('│ 1.Waifu2x-ncnn-vulkan            │')
+		print('│                                  │')
+		print('│ 2.Waifu2x-converter              │')
+		print('│                                  │')
+		print('│ 3.Anime4k                        │')
+		print('│                                  │')
+		print('│ R.Return to the previous menu.   │')
+		print('└──────────────────────────────────┘')
+		choice = input('( 1 / 2 / 3 / R ): ').strip(' ').lower()
+		if choice == '1':
+			os.system('cls')
+			scale = input_scale()
+			if scale != 'r':
+				settings_values['scale_waifu2x_ncnn_vulkan']=scale
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+			
+			
+		if choice == '2':
+			os.system('cls')
+			scale = input_scale_waifu2x_converter()
+			if scale != 'r':
+				settings_values['scale_waifu2x_converter']=scale
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+			
+		if choice == '3':
+			os.system('cls')
+			scale = input_scale_Anime4k()
+			if scale != 'r':
+				settings_values['scale_anime4k']=scale
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+		
+		elif choice == 'r':
+			os.system('cls')
+			return 0
+
+#============================================== Default_denoise_level_settings() ====================================
+
+def Default_denoise_level_settings():
+	while True:
+		os.system('cls')
+		settings_values = ReadSettings()
+		print('┌──────────────────────────────────┐')
+		print('│ Default value of "Denoise Level" │')
+		print('├──────────────────────────────────┤')
+		print('│ 1.Waifu2x-ncnn-vulkan            │')
+		print('│                                  │')
+		print('│ 2.Waifu2x-converter              │')
+		print('│                                  │')
+		print('│ R.Return to the previous menu.   │')
+		print('└──────────────────────────────────┘')
+		choice = input('( 1 / 2 / R ): ').strip(' ').lower()
+		if choice == '1':
+			os.system('cls')
+			denoise = input_noiseLevel()
+			if denoise != 'r':
+				settings_values['noiseLevel_waifu2x_ncnn_vulkan']=denoise
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+			
+			
+		if choice == '2':
+			os.system('cls')
+			denoise = input_noiseLevel_waifu2x_converter()
+			if denoise != 'r':
+				settings_values['noiseLevel_waifu2x_converter']=denoise
+				with open('waifu2x-extension-setting','w+') as f:
+					json.dump(settings_values,f)
+		
+		elif choice == 'r':
+			os.system('cls')
+			return 0
 	
+		
+
 #==========================================  Init  ==================================================================
 
 def init():		#初始化函数
@@ -6689,12 +6752,16 @@ if __name__ == '__main__':
 			python = sys.executable
 			os.execl(python, python, * sys.argv)
 	else:
+		ChangeColor_warning()
 		os.system('cls')
-		print('--------------------------------------------------------------------------------------------------------------')
-		print('We have detected that the current directory of the software is causing the software to apply for administrator\n privileges to continue normal operation.')
-		print('We recommend that you move the software to another directory or give software administrator privileges.')
-		print('--------------------------------------------------------------------------------------------------------------')
-		print('Press [Enter] key to Re-run the program with admin rights. ')
+		print('┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐')
+		print('│ We have detected that the current directory of the software is causing the software to apply for        │')
+		print('│ administrator privileges to continue normal operation.                                                  │')
+		print('│                                                                                                         │')
+		print('│ We recommend that you move the software to another directory or give software administrator privileges. │')
+		print('├─────────────────────────────────────────────────────────────────────────────────────────────────────────┤')
+		print('│ Press [Enter] key to Re-run the program with admin rights.                                              │')
+		print('└─────────────────────────────────────────────────────────────────────────────────────────────────────────┘')
 		input()
 		# Re-run the program with admin rights
 		ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
