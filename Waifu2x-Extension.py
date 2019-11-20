@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*- 
 
 '''
-Aaron Feng
+By Aaron Feng
 
-Github:
-https://github.com/AaronFeng753/Waifu2x-Extension
+Github: https://github.com/AaronFeng753/Waifu2x-Extension
 
 ---------------------------------------------
 What is Waifu2x-Extension ?
@@ -32,7 +31,9 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- Fix bug.
+- 
+
+- Fix multiple bugs.
 
 - Other improvements.
 
@@ -48,7 +49,9 @@ To do:
 
 - 继续完善运行日志的记录
 - 界面美化
+
 - 设置输出文件夹
+
 - 整一个user guide
 
 ------------------------------------------------
@@ -3992,16 +3995,19 @@ def input_scale_Anime4k():
 def input_tileSize():
 	settings_values = ReadSettings()
 	default_value = '200'
-	print('You can run the benchmark to determine the best value of "tile size" for your computer.')
-	print('--------------------------------------------------------------------------------------')
+	print('┌─────────────────────────────────────────────────────────────────────────────────────────┐')
+	print('│ You can run the benchmark to determine the best value of "tile size" for your computer. │')
+	print('└─────────────────────────────────────────────────────────────────────────────────────────┘')
 	while True:
 		tileSize = input(' Tile size(for waifu2x-ncnn-vulkan)( >=32 / help, default='+default_value+'): ').strip(' ').lower()
 		if tileSize.isdigit():
-			if int(tileSize) > 0:
+			if int(tileSize) >= 32:
 				break
 			else:
 				os.system('cls')
-				print('wrong input, pls input again')
+				print('┌───────────────────────────────┐')
+				print('│ Wrong input, pls input again. │')
+				print('└───────────────────────────────┘')
 		elif tileSize == '':
 			break
 		elif tileSize == 'help':
