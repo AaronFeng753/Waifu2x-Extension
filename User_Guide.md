@@ -26,3 +26,5 @@ After entering a path, you need to press the Enter key to confirm the entry, and
 Of course, you can also type 'r' and press Enter to return to the main menu.
 
 After completing the input path, you can set various parameters, and finally the software will process all the pictures(video) in the input path according to the parameters you set.
+
+
