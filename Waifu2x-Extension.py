@@ -31,7 +31,8 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 -----------------------------------------------
 
 Update log
-- 
+
+- User guide
 
 - Fix multiple bugs.
 
@@ -39,18 +40,6 @@ Update log
 
 ------------------------------------------------
 To do:
-- 完善 分段放大视频, 修复卡顿问题
-
-实现思路: 
-转换成帧内编码  ffmpeg -i [input] -strict -2  -qscale 0 -intra [output]
-切割 ffmpeg -i [input] -ss 00:00 -t 2 -vcodec copy -acodec copy [output]
-正常合并
-合并后转换 ffmpeg -i [input] -c:v libx264 -c:a aac -strict experimental -b:a 98k [output]
-
-- 继续完善运行日志的记录
-- 界面美化
-
-- 设置输出文件夹
 
 - 整一个user guide
 
@@ -129,7 +118,7 @@ import psutil
 import queue
 import random
 
-Version_current='v3.9'
+Version_current='v3.85'
 
 WindowSize_Queue = queue.Queue()
 
