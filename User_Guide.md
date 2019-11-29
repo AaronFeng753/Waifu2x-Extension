@@ -1,5 +1,6 @@
 # Waifu2x-Extension User Guide
-## Main Menu
+### Main Menu
+----
 
 `mainmenu.png`
 
@@ -14,8 +15,10 @@ The following is the explanation of some main menu interface options:
 - 6.Save as .jpg?(Scale & Denoise): This determines whether to save the picture as a .jpg file after processing the picture. If set to 'n', it will be saved as .png. Saving as .jpg will cause a slight loss of picture quality, but will save a lot of space .
 
 - 7.Optimize .gif?(Scale & Denoise): This decides whether to optimize the GIF after processing it, the image quality will be slightly lost after optimization, but it will save a lot of space.
+----
 
-## [Scale & Denoise Image & GIF] & [Scale & Denoise Video.] & [Compress image & gif]
+### [Scale & Denoise Image & GIF] & [Scale & Denoise Video.] & [Compress image & gif]
+----
 
 `process.png`
 
