@@ -1,8 +1,7 @@
 # Waifu2x-Extension User Guide
 ### Main Menu
 ----
-
-`mainmenu.png`
+![mainmenu Imgae](/User_Guide_Pics/mainmenu.png)
 
 In the main menu and other interfaces, you can interacting with software by entering options and pressing the `Enter` key.
 
@@ -20,7 +19,7 @@ The following is the explanation of some main menu interface options:
 ### [Scale & Denoise Image & GIF] & [Scale & Denoise Video.] & [Compress image & gif]
 ----
 
-`process.png`
+![process Imgae](/User_Guide_Pics/process.png)
 
 You can directly type the path of the files and folders you want to work on, or you can drag it directly into the program window, and the program will automatically fill the path.
 
