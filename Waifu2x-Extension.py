@@ -49,21 +49,21 @@ Next version:
 
 ------------------------------------------------
 Test List:
-压缩 图片单文件
-压缩 图片文件夹
-压缩 图片文件混合文件夹
+压缩 图片单文件-
+压缩 图片文件夹-
+压缩 图片文件混合文件夹-
 
-vulkan 图片单文件
-vulkan 图片文件夹
-vulkan 图片文件混合文件夹
-vulkan 视频
+vulkan 图片单文件-
+vulkan 图片文件夹-
+vulkan 图片文件混合文件夹-
+vulkan 视频-
 
-converter 图片单文件
-converter 图片文件夹
-converter 图片文件混合文件夹
-converter 视频
+converter 图片单文件-
+converter 图片文件夹-
+converter 图片文件混合文件夹-
+converter 视频-
 
-anime4k 视频
+anime4k 视频-
 
 -------------------------------------------------
 
@@ -4162,7 +4162,7 @@ def input_gpuId():
 	for id_ in gpuId_list:
 		gpuId_list_str = gpuId_list_str+'/'+str(id_)
 	while True:
-		gpuId = input(' GPU ID (auto (Automatic)'+gpuId_list_str+', default='+default_value+'): ').strip(' ').lower()
+		gpuId = input(' GPU ID (waifu2x-ncnn-vulkan) (auto (Automatic)'+gpuId_list_str+', default='+default_value+'): ').strip(' ').lower()
 		if gpuId.isdigit():
 			if int(gpuId) in gpuId_list:
 				break
