@@ -32,11 +32,11 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 
 Update log
 
-- User guide
+-修复特殊情况下gif帧顺序出错的问题
 
-- Fix multiple bugs.
+- 改进运行日志记录
 
-- Other improvements.
+- 修复bug
 
 ------------------------------------------------
 To do:
@@ -790,7 +790,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 					'echo will not be deleted.\n'
 					'echo ------------------------------------------------------------------------------\n'
 				]
-				
+				Record_running_log('Error occured, in order to save your files, the original file: '+inputPath+' will not be deleted.')
 				Pop_up_window('Error_file_not_del','Error',list_Content,'')
 
 		print('Copy files...')
@@ -857,7 +857,7 @@ def Process_ImageModeC(inputPathList_Image,orginalFileNameAndFullname,JpgQuality
 					'echo will not be deleted.\n'
 					'echo --------------------------------------------------------------\n'
 				]
-				
+				Record_running_log('Error occured, in order to save your files, the original file: '+inputPath+' will not be deleted.')
 				Pop_up_window('Error_file_not_del','Error',list_Content,'')
 		FinishedFileNum = FinishedFileNum+1
 		
@@ -1032,7 +1032,7 @@ def process_gif_scale_modeABC(inputPathList_files,orginalFileNameAndFullname,mod
 					'echo will not be deleted.\n'
 					'echo --------------------------------------------------------------\n'
 				]
-				
+				Record_running_log('Error occured, in order to save your files, the original file: '+inputPath+' will not be deleted.')
 				Pop_up_window('Error_file_not_del','Error',list_Content,'')
 			
 		if optimizeGif == 'y':
@@ -1260,7 +1260,7 @@ class waifu2x_converter_Thread_ImageModeC(threading.Thread):
 					'echo will not be deleted.\n'
 					'echo --------------------------------------------------------------\n'
 				]
-				
+				Record_running_log('Error occured, in order to save your files, the original file: '+inputPath+' will not be deleted.')
 				Pop_up_window('Error_file_not_del','Error',list_Content,'')
 		return 0
 
@@ -1464,7 +1464,7 @@ def process_gif_scale_modeABC_waifu2x_converter(inputPathList_files,scale,noiseL
 					'echo will not be deleted.\n'
 					'echo --------------------------------------------------------------\n'
 				]
-				
+				Record_running_log('Error occured, in order to save your files, the original file: '+inputPath+' will not be deleted.')
 				Pop_up_window('Error_file_not_del','Error',list_Content,'')
 		
 		if optimizeGif == 'y':
@@ -3696,9 +3696,12 @@ def get_frames_gif(FILENAME):
 	except EOFError:
 	    pass
 	
+	frame_current = frame_current+1 #此处frame_current会默认比准确值少1,故加上
+	
 	frames = len(str(frame_current))
 	if frames == 0 :
 		frames=1
+	
 	return frames
 
 def splitGif(gifFileName,scaledFilePath):
@@ -6049,7 +6052,7 @@ def Pop_up_window(str_FileName,str_Title,list_Content,str_wait_time):
 		if os.path.exists(window_path)==False:
 			break
 	
-	with open(window_path,'w+',encoding='ANSI') as f:
+	with open(window_path,'w+',encoding='ANSI',errors='ignore') as f:
 		f.writelines(Full_bat_str)
 	
 	Record_running_log('Start pop up window: '+window_path)
@@ -6476,7 +6479,7 @@ class Record_running_log_Thread(threading.Thread):
 			
 			W_string = '\n'+timeStr+'\n'+'─'*len(timeStr)+'\n'+log_string+'\n'
 			
-			with open('Running_Log_Waifu2x-Extension.log','a+') as f:
+			with open('Running_Log_Waifu2x-Extension.log','a+',errors='ignore') as f:
 				f.write(W_string)
 
 def Record_running_log(log_string):
