@@ -32,16 +32,14 @@ ImageMagick 7.0.8-68 Q16 x64 2019-10-05
 
 Update log
 
--修复特殊情况下gif帧顺序出错的问题
+- Fix multiple bugs.
 
-- 改进运行日志记录
-
-- 修复bug
+- Other improvements.
 
 ------------------------------------------------
 To do:
 
-- 整一个user guide
+- 
 
 ------------------------------------------------
 Next version:
@@ -118,7 +116,7 @@ import psutil
 import queue
 import random
 
-Version_current='v3.85'
+Version_current='v3.86'
 
 WindowSize_Queue = queue.Queue()
 
