@@ -87,7 +87,7 @@ Buy a new computer.
 Install the latest JDK and JRE
 
 # Integrated component(In releases):
-- waifu2x-ncnn-vulkan version 20190712
+- waifu2x-ncnn-vulkan version Nov 4, 2019
 
 - Anime4K Java v0.9 Beta
 
