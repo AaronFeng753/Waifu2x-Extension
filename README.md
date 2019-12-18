@@ -57,10 +57,10 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 ![Comparison](/Samples/image/Comparison.png)
 
 #### Original 3D Real-life Imgae 800x535 (.jpg 81.4 KB):
-![Original Imgae](/Samples/image/deer.jpg.jpg)
+![Original Imgae](/Samples/image/deer.jpg)
 
 #### After 4x magnification, level 2 denoise and compress 3200x2140 (.jpg 881 KB):
-![Scaled Imgae](/Samples/image/deer_Waifu2x.jpg.jpg)
+![Scaled Imgae](/Samples/image/deer_Waifu2x.jpg)
 
 #### Original GIF 500 x 372 (493 KB):
 ![Original GIF](/Samples/gif/2_original.gif)
