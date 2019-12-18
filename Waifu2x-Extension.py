@@ -16,7 +16,7 @@ Already been tested on AMD RX 550, NVIDIA GeForce GTX 1070 and Intel UHD 620.
 
 -----------------------------------------------
 
-waifu2x-ncnn-vulkan version 20190712
+waifu2x-ncnn-vulkan version Nov 4, 2019
 
 Anime4K Java v0.9 Beta
 
@@ -116,7 +116,7 @@ import psutil
 import queue
 import random
 
-Version_current='v3.86'
+Version_current='v4.0'
 
 WindowSize_Queue = queue.Queue()
 
@@ -173,6 +173,13 @@ def MainMenu():
 	else:
 		Video_str = 'Scale & Denoise Video.'
 	
+	str_Image_style = ''
+	
+	if settings_values['Image_style'] == '2D':
+		str_Image_style = '[ 2D Anime ]    '
+	else:
+		str_Image_style = '[ 3D Real-life ]'
+	
 	#============================== 主菜单 初始化完成 ============================
 	
 	while True:
@@ -187,8 +194,7 @@ def MainMenu():
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ Github: https://github.com/AaronFeng753/Waifu2x-Extension    │')
 		print('├──────────────────────────────────────────────────────────────┤')
-		print("│ Attention: This software's scale & denoise function is only  │")
-		print('│ designed for process 2D Anime-style art (Image,GIF,Video).   │')
+		print("│ 0 : Image style: "+str_Image_style+"                            │")
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ 1 : Scale & Denoise Image & GIF.  2 : '+Video_str+' │')
 		print('├──────────────────────────────────────────────────────────────┤')
@@ -222,7 +228,7 @@ def MainMenu():
 		Record_running_log('Successfully loaded into the main menu.')
 		
 		# 选项输入
-		mode = input(' ( 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower() 
+		mode = input(' ( 0 / 1 / 2 / 3 /.../ E / D / R ): ').strip(' ').lower() 
 		
 		Record_running_log('The user enters an option in the main menu:  '+mode)
 		
@@ -230,14 +236,29 @@ def MainMenu():
 		
 		#================================ 选项判定 ====================================
 		
+		if mode == "0":
+			os.system('cls')
+			
+			Image_style_settings()
+			
+			settings_values = ReadSettings()
+			if settings_values['Image_style'] == '2D':
+				str_Image_style = '[ 2D Anime ]    '
+			else:
+				str_Image_style = '[ 3D Real-life ]'
+				
+			os.system('cls')
+		
 		# 1 - 放大与降噪图片&gif
-		if mode == "1":
+		elif mode == "1":
 			os.system('cls')
 			settings_values = ReadSettings()
+			
 			if settings_values['Image_GIF_scale_mode'] == 'waifu2x-ncnn-vulkan':
 				Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan()
 			elif settings_values['Image_GIF_scale_mode'] == 'waifu2x-converter':
 				Image_Gif_Scale_Denoise_waifu2x_converter()
+				
 			os.system('cls')		
 		# 2 - 放大与降噪视频
 		elif mode == "2":
@@ -320,10 +341,16 @@ def MainMenu():
 			os.system('cls')
 			Settings()
 			settings_values = ReadSettings()
+			
 			if settings_values['Video_scale_mode'] == 'anime4k':
 				Video_str = 'Scale Video.(Anime4k) '
 			else:
 				Video_str = 'Scale & Denoise Video.'
+				
+			if settings_values['Image_style'] == '2D':
+				str_Image_style = '[ 2D Anime ]    '
+			else:
+				str_Image_style = '[ 3D Real-life ]'
 				
 			os.system('cls')
 			
@@ -355,6 +382,12 @@ def MainMenu():
 		elif mode == "17":
 			os.system('cls')
 			Compatibility_Test(False)
+			
+			if settings_values['Image_style'] == '2D':
+				str_Image_style = '[ 2D Anime ]    '
+			else:
+				str_Image_style = '[ 3D Real-life ]'
+			
 			os.system('cls')
 			
 		elif mode == "e":
@@ -406,7 +439,12 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 	inputPathList = []
 	orginalFileNameAndFullname = {}
 	JpgQuality=100
-	models = 'waifu2x-ncnn-vulkan\\models-upconv_7_anime_style_art_rgb'
+	
+	if settings_values['Image_style'] == '2D':
+		models = 'waifu2x-ncnn-vulkan\\models-upconv_7_anime_style_art_rgb'
+	else:
+		models = 'waifu2x-ncnn-vulkan\\models-upconv_7_photo'
+		
 	Image_GIF_scale_mode = settings_values['Image_GIF_scale_mode']
 	inputPathError = True
 	inputPath = ''
@@ -2094,7 +2132,11 @@ def Scale_Denoise_Video():
 	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
-	models = 'waifu2x-ncnn-vulkan\\models-upconv_7_anime_style_art_rgb'
+	
+	if settings_values['Image_style'] == '2D':
+		models = 'waifu2x-ncnn-vulkan\\models-upconv_7_anime_style_art_rgb'
+	else:
+		models = 'waifu2x-ncnn-vulkan\\models-upconv_7_photo'
 
 	while inputPathOver:
 		inputPathError = True
@@ -3898,20 +3940,38 @@ def Seconds2ffmpegTime(seconds):
 def input_scale():
 	settings_values = ReadSettings()
 	default_value = settings_values['scale_waifu2x_ncnn_vulkan']
-
-	while True:
-		scale = input(' Scale ratio(1/2/4/8/help, default='+default_value+'): ').strip(' ').lower()
-		if scale in ['1','2','4','8','','r']:
-			break
-		elif scale == 'help':
-			print('------------------------------------------')
-			print(' Scale ratio : Magnification of the image')
-			print('------------------------------------------')
-			print('')
-		else:
-			print('------------------------------------------')
-			print(' Error : wrong input, pls input again')
-			print('------------------------------------------')
+	
+	if default_value == '1' and settings_values['Image_style'] == '3D':
+		default_value = '2'
+	
+	if settings_values['Image_style'] == '2D':
+		while True:
+			scale = input(' Scale ratio(1/2/4/8/help, default='+default_value+'): ').strip(' ').lower()
+			if scale in ['1','2','4','8','','r']:
+				break
+			elif scale == 'help':
+				print('------------------------------------------')
+				print(' Scale ratio : Magnification of the image')
+				print('------------------------------------------')
+				print('')
+			else:
+				print('------------------------------------------')
+				print(' Error : wrong input, pls input again')
+				print('------------------------------------------')
+	else:
+		while True:
+			scale = input(' Scale ratio(2/4/8/help, default='+default_value+'): ').strip(' ').lower()
+			if scale in ['2','4','8','','r']:
+				break
+			elif scale == 'help':
+				print('------------------------------------------')
+				print(' Scale ratio : Magnification of the image')
+				print('------------------------------------------')
+				print('')
+			else:
+				print('------------------------------------------')
+				print(' Error : wrong input, pls input again')
+				print('------------------------------------------')
 	
 	if scale == '':
 		scale = default_value
@@ -4707,8 +4767,10 @@ def Settings():
 					if value_ == '1':
 						value_ = 'waifu2x-ncnn-vulkan'
 					elif value_ == '2':
+						settings_values['Image_style']='2D'
 						value_ = 'waifu2x-converter'
 					elif value_ == '3':
+						settings_values['Image_style']='2D'
 						value_ = 'anime4k'
 					break
 				elif value_ == '':
@@ -4777,6 +4839,7 @@ def Settings():
 					if Image_GIF_scale_mode == '1':
 						Image_GIF_scale_mode = 'waifu2x-ncnn-vulkan'
 					elif Image_GIF_scale_mode == '2':
+						settings_values['Image_style']='2D'
 						Image_GIF_scale_mode = 'waifu2x-converter'
 					break
 				elif Image_GIF_scale_mode=='':
@@ -4865,7 +4928,7 @@ def ReadSettings():
 						'Rename_result_images':'y','Image_GIF_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Waifu2x_converter':2,
 						'Compatibility_waifu2x_ncnn_vulkan':True,'Compatibility_waifu2x_converter':True,'Compatibility_Anime4k':True,
 						'Record_running_log':'n','Record_error_log':'y','Record_running_log_AC':'n','Number_of_threads_Compress':2*cpu_num,
-						'Segment_processing_video':'n','Segmentation_duration_video':30}
+						'Segment_processing_video':'n','Segmentation_duration_video':30,'Image_style':'2D'}
 	current_dir = os.path.dirname(os.path.abspath(__file__))
 	settingPath = current_dir+'\\'+'waifu2x-extension-setting'
 	if os.path.exists(settingPath) == False:
@@ -5816,6 +5879,7 @@ def Compatibility_Test(Init):
 				settings_values = ReadSettings()
 				settings_values['Video_scale_mode'] = 'waifu2x-converter'
 				settings_values['Image_GIF_scale_mode'] = 'waifu2x-converter'
+				settings_values['Image_style']='2D'
 				with open('waifu2x-extension-setting','w+') as f:
 					json.dump(settings_values,f)
 			os.system('cls')
@@ -6648,7 +6712,7 @@ def Default_denoise_level_settings():
 					json.dump(settings_values,f)
 			
 			
-		if choice == '2':
+		elif choice == '2':
 			os.system('cls')
 			denoise = input_noiseLevel_waifu2x_converter()
 			if denoise != 'r':
@@ -6659,7 +6723,43 @@ def Default_denoise_level_settings():
 		elif choice == 'r':
 			os.system('cls')
 			return 0
+
+#======================================================= Image_style_settings() =======================================================
+def Image_style_settings():
 	
+	settings_values = ReadSettings()
+	
+	if settings_values['Compatibility_waifu2x_ncnn_vulkan'] == False:
+		os.system('cls')
+		print('──────────────────────────────────────────────────────────────────')
+		print(' Sorry, your computer is not compatible with waifu2x-ncnn-vulkan,')
+		print(' so you cannot switch Image style.')
+		print('──────────────────────────────────────────────────────────────────')
+		input(' Press [Enter] to return to the main menu.')
+		
+		os.system('cls')
+		return 0
+	
+	if settings_values['Image_style'] == '2D':
+		os.system('cls')
+		print('loading...')
+		
+		settings_values['Image_style']='3D'
+		settings_values['Image_GIF_scale_mode']='waifu2x-ncnn-vulkan'
+		settings_values['Video_scale_mode']='waifu2x-ncnn-vulkan'
+		
+		with open('waifu2x-extension-setting','w+') as f:
+			json.dump(settings_values,f)
+		os.system('cls')
+		return 0
+	else:
+		os.system('cls')
+		print('loading...')
+		settings_values['Image_style']='2D'
+		with open('waifu2x-extension-setting','w+') as f:
+			json.dump(settings_values,f)
+		os.system('cls')
+		return 0
 		
 
 #==========================================  Init  ==================================================================
