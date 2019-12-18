@@ -4,7 +4,7 @@ https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 ## User Guide
 https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/User_Guide.md
 # What is Waifu2x-Extension?
-Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutional Neural Networks.
+Image & GIF & Video Super-Resolution using Deep Convolutional Neural Networks.
 
 Based on `Waifu2x-ncnn-vulkan` (version 20190712) and `Waifu2x-converter` . 
 
@@ -47,7 +47,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 
 ### **`GIF`** : https://github.com/AaronFeng753/Waifu2x-Extension/tree/master/Samples/gif
 
-#### Original Imgae 480x300 (.jpg 93.2 KB):
+#### Original 2D Anime Imgae 480x300 (.jpg 93.2 KB):
 ![Original Imgae](/Samples/image/Original_[480x300].jpg)
 
 #### After 8x magnification, level 3 denoise and compress 3840x2400 (.jpg 525 KB):
@@ -55,6 +55,12 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 
 #### Comparison
 ![Comparison](/Samples/image/Comparison.png)
+
+#### Original 3D Real-life Imgae 800x535 (.jpg 81.4 KB):
+![Original Imgae](/Samples/image/deer.jpg.jpg)
+
+#### After 4x magnification, level 2 denoise and compress 3200x2140 (.jpg 881 KB):
+![Scaled Imgae](/Samples/image/deer_Waifu2x.jpg.jpg)
 
 #### Original GIF 500 x 372 (493 KB):
 ![Original GIF](/Samples/gif/2_original.gif)
