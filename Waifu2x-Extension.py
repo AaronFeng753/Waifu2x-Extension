@@ -9,7 +9,7 @@ Github: https://github.com/AaronFeng753/Waifu2x-Extension
 ---------------------------------------------
 What is Waifu2x-Extension ?
 
-Image & GIF & Video Super-Resolution for Anime-style art using Deep Convolutional Neural Networks.
+Image & GIF & Video Super-Resolution using Deep Convolutional Neural Networks.
 Based on waifu2x-ncnn-vulkan (version 20190712).
 Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that support Vulakn, even Intel GPU.
 Already been tested on AMD RX 550, NVIDIA GeForce GTX 1070 and Intel UHD 620.
@@ -47,21 +47,21 @@ Next version:
 
 ------------------------------------------------
 Test List:
-压缩 图片单文件-
-压缩 图片文件夹-
-压缩 图片文件混合文件夹-
+压缩 图片单文件
+压缩 图片文件夹
+压缩 图片文件混合文件夹
 
-vulkan 图片单文件-
-vulkan 图片文件夹-
-vulkan 图片文件混合文件夹-
-vulkan 视频-
+vulkan 图片单文件
+vulkan 图片文件夹
+vulkan 图片文件混合文件夹
+vulkan 视频
 
-converter 图片单文件-
-converter 图片文件夹-
-converter 图片文件混合文件夹-
-converter 视频-
+converter 图片单文件
+converter 图片文件夹
+converter 图片文件混合文件夹
+converter 视频
 
-anime4k 视频-
+anime4k 视频
 
 -------------------------------------------------
 
@@ -116,7 +116,7 @@ import psutil
 import queue
 import random
 
-Version_current='v4.0'
+Version_current='v4.1'
 
 WindowSize_Queue = queue.Queue()
 
@@ -423,9 +423,18 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 	
 	Record_running_log('Enter [ Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan ]')
 	
+	settings_values = ReadSettings()
+	
+	if settings_values['Image_style'] == '2D':
+		str_Image_style = '[ 2D Anime ]    '
+	else:
+		str_Image_style = '[ 3D Real-life ]'
+	
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('┌────────────────────────────────────────────────────────────────────────────────┐')
 	print("│               Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan                │")
+	print('├────────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Image style: "+str_Image_style+"                                                  │")
 	print('├────────────────────────────────────────────────────────────────────────────────┤')
 	print("│ Type 'r' to return to the previous menu.                                       │")
 	print('│                                                                                │')
@@ -434,7 +443,6 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 	print("│ Scaled images & gifs will be in the input path.                                │")
 	print('└────────────────────────────────────────────────────────────────────────────────┘')
 	
-	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
 	orginalFileNameAndFullname = {}
@@ -1090,6 +1098,8 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	print('┌─────────────────────────────────────────────────────────────────────────────────┐')
 	print("│                Scale & Denoise Image & GIF - Waifu2x-converter                  │")
 	print('├─────────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Image style: [ 2D Anime ]                                                       │")
+	print('├─────────────────────────────────────────────────────────────────────────────────┤')
 	print("│ Type 'r' to return to the previous menu.                                        │")
 	print('│                                                                                 │')
 	print("│ Type 'o' to stop input more path, and input path must be a folder or a file.    │")
@@ -1552,6 +1562,8 @@ def Scale_Denoise_Video_waifu2x_converter():
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('┌──────────────────────────────────────────────────────────────────────────────────────────┐')
 	print("│                         Scale & Denoise Video - waifu2x-converter                        │")
+	print('├──────────────────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Image style: [ 2D Anime ]                                                                │")
 	print('├──────────────────────────────────────────────────────────────────────────────────────────┤')
 	print("│ Type 'r' to return to the previous menu.                                                 │")
 	print('│                                                                                          │')
@@ -2119,9 +2131,18 @@ def Scale_Denoise_Video():
 	
 	Record_running_log('Enter [ Scale & Denoise Video - Waifu2x-ncnn-vulkan ]')
 	
+	settings_values = ReadSettings()
+	
+	if settings_values['Image_style'] == '2D':
+		str_Image_style = '[ 2D Anime ]    '
+	else:
+		str_Image_style = '[ 3D Real-life ]'
+	
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('┌───────────────────────────────────────────────────────────────────────────────────────┐')
 	print("│                     Scale & Denoise Video - Waifu2x-ncnn-vulkan                       │")
+	print('├───────────────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Image style: "+str_Image_style+"                                                         │")
 	print('├───────────────────────────────────────────────────────────────────────────────────────┤')
 	print("│ Type 'r' to return to the previous menu.                                              │")
 	print('│                                                                                       │')
@@ -2129,7 +2150,7 @@ def Scale_Denoise_Video():
 	print('│                                                                                       │')
 	print("│ Scaled files will be in the input-path.                                               │")
 	print('└───────────────────────────────────────────────────────────────────────────────────────┘')
-	settings_values = ReadSettings()
+	
 	inputPathOver = True
 	inputPathList = []
 	
@@ -2928,6 +2949,8 @@ def Scale_Denoise_Video_Anime4K():
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('┌─────────────────────────────────────────────────────────────────────────────────────────────┐')
 	print("│                                    Scale Video - Anime4K                                    │")
+	print('├─────────────────────────────────────────────────────────────────────────────────────────────┤')
+	print("│ Image style: [ 2D Anime ]                                                                   │")
 	print('├─────────────────────────────────────────────────────────────────────────────────────────────┤')
 	print("│ Type 'r' to return to the previous menu.                                                    │")
 	print('│                                                                                             │')
@@ -6745,19 +6768,39 @@ def Image_style_settings():
 		print('loading...')
 		
 		settings_values['Image_style']='3D'
+		
+		if settings_values['Image_GIF_scale_mode']!='waifu2x-ncnn-vulkan' or settings_values['Video_scale_mode']!='waifu2x-ncnn-vulkan':
+			os.system('cls')
+			print('──────────────────────────────────────────────────────────────────')
+			print(' In order to switch image style to [3D Real-life],')
+			print(' the "Video scale mode"&"Image & GIF scale mode" is switching to')
+			print(' "Waifu2x-ncnn-vulkan".')
+			print('──────────────────────────────────────────────────────────────────')
+			input(' Press [Enter] to continue.')
+			Record_running_log('The "Video scale mode"&"Image & GIF scale mode" is switching to "Waifu2x-ncnn-vulkan".')
+		
 		settings_values['Image_GIF_scale_mode']='waifu2x-ncnn-vulkan'
 		settings_values['Video_scale_mode']='waifu2x-ncnn-vulkan'
 		
+		
+		
 		with open('waifu2x-extension-setting','w+') as f:
 			json.dump(settings_values,f)
+		
+		Record_running_log('Switch image style to 3D.')
+		
 		os.system('cls')
 		return 0
+		
 	else:
 		os.system('cls')
 		print('loading...')
 		settings_values['Image_style']='2D'
 		with open('waifu2x-extension-setting','w+') as f:
 			json.dump(settings_values,f)
+			
+		Record_running_log('Switch image style to 2D.')
+		
 		os.system('cls')
 		return 0
 		
