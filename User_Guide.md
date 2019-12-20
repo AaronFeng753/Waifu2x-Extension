@@ -37,7 +37,10 @@ After completing the input path, you can set various parameters, and finally the
 There are two image style : `2D Anime` and `3D Real-life`, you can choose the appropriate image style based on the type of image you want to process.
 
 For example, if you want to process the image (anime) as shown below, you can set the image style to `2D Anime`.
+![2d_anime](/User_Guide_Pics/2d_anime.jpg)
 
 However, when you want to process two kinds of images as shown below, we recommend that you switch the image style to `3D Real-life`.
+![3D_image](/User_Guide_Pics/3D_image.jpg)
+![Real-life](/User_Guide_Pics/Real-life.jpg)
 
 It should be noted that only `waifu2x-ncnn-vulkan` mode supports switching the image style to `3D Real-life`, and other modes only support the default `2D Anime`.
