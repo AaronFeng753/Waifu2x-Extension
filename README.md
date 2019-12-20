@@ -1,5 +1,5 @@
 # Waifu2x-Extension
-## Download
+## [Download](https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest)
 https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 ## User Guide
 https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/User_Guide.md
