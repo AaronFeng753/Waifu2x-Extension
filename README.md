@@ -30,7 +30,7 @@ Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 6
 - Display processing progress and remaining time
 - Smart selection of models
 - `Gif compression & image compression` (multi-threading and multiple compression levels)
-- Benchmark (to get the tile size value for your computer)
+- Benchmark 
 - Multi-threaded mode
 - Protect Gif files
 - Error catching
