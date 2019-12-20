@@ -29,4 +29,15 @@ Of course, you can also type 'r' and press Enter to return to the main menu.
 
 After completing the input path, you can set various parameters, and finally the software will process all the pictures(video) in the input path according to the parameters you set.
 
+----
 
+### Image Style
+----
+
+There are two image style : `2D Anime` and `3D Real-life`, you can choose the appropriate image style based on the type of image you want to process.
+
+For example, if you want to process the image (anime) as shown below, you can set the image style to `2D Anime`.
+
+However, when you want to process two kinds of images as shown below, we recommend that you switch the image style to `3D Real-life`.
+
+It should be noted that only `waifu2x-ncnn-vulkan` mode supports switching the image style to `3D Real-life`, and other modes only support the default `2D Anime`.
