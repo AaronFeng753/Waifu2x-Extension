@@ -79,12 +79,9 @@ If your gpu doesn't support vulkan, you can use Waifu2x-converter, which is also
 ![Demonstration-en](/screenshot/Demonstration-en.gif) 
 
 # How to fix compatibility issue :
-#### waifu2x-ncnn-vulkan:
-Re-install gpu driver or update it to the latest.
-#### waifu2x-converter:
-Buy a new computer.
-#### Anime4k:
-Install the latest JDK and JRE
+#### waifu2x-ncnn-vulkan: Re-install gpu driver or update it to the latest.
+#### waifu2x-converter: Buy a new computer.
+#### Anime4k: Install the latest JDK and JRE
 
 # Integrated component(In releases):
 - waifu2x-ncnn-vulkan version Nov 4, 2019
