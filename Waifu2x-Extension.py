@@ -2,16 +2,22 @@
 # -*- coding: utf-8 -*- 
 
 '''
+---------------------------------------------
+
+Waifu2x-Extension
+
 By Aaron Feng
 
 Github: https://github.com/AaronFeng753/Waifu2x-Extension
 
 ---------------------------------------------
+
 What is Waifu2x-Extension ?
 
 Image & GIF & Video Super-Resolution using Deep Convolutional Neural Networks.
-Based on waifu2x-ncnn-vulkan (version 20190712).
-Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that support Vulakn, even Intel GPU.
+Based on Waifu2x-ncnn-vulkan and Waifu2x-converter .
+Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that support Vulkan, even Intel GPU.
+If your gpu doesn't support vulkan, you can use Waifu2x-converter, which is also intergrated into the Waifu2x-Extension.
 Already been tested on AMD RX 550, NVIDIA GeForce GTX 1070 and Intel UHD 620.
 
 -----------------------------------------------
@@ -26,13 +32,13 @@ gifsicle version 1.92
 
 Waifu2x-converter version: 2015-11-30T02:17:24
 
-ImageMagick 7.0.8-68 Q16 x64 2019-10-05
+ImageMagick-7.0.9-12-portable-Q16-x64
 
 -----------------------------------------------
 
 Update log
 
-- Fix multiple bugs.
+- Update ImageMagick (7.0.9-12-portable-Q16-x64)
 
 - Other improvements.
 
@@ -91,7 +97,7 @@ print('''
 	
                                            By Aaron Feng
 										 
-                                           Loading.......
+                                           Loading......
 ''')
 
 import os
@@ -4378,7 +4384,7 @@ def checkUpdate():
 			print('┌───────────────────────────────────────┐')
 			print('│ New update : '+Version_latest+' '*(25-len(Version_latest))+'│')
 			print('└───────────────────────────────────────┘')
-			download_update = input('Do you wanna download the update?(y/n): ').strip(' ').lower()
+			download_update = input(' Do you wanna download the update?(y/n): ').strip(' ').lower()
 			if download_update.lower() == 'y':
 				webbrowser_open_self('https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest')
 		else:
