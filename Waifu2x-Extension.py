@@ -53,6 +53,7 @@ Next version:
 
 ------------------------------------------------
 Test List:
+
 压缩 图片单文件
 压缩 图片文件夹
 压缩 图片文件混合文件夹
@@ -214,9 +215,9 @@ def MainMenu():
 		print('│                                                              │')
 		print('│ 8 : Multithreading(Scale & denoise): '+multiThread_Scale+'                   │')
 		print('│                                                              │')
-		print('│ 9 : Save as .jpg?(Scale & Denoise): '+saveAsJPG+Compress+' '*(19-len(Compress))+' │')
+		print('│ 9 : Save as .jpg(Scale & Denoise): '+saveAsJPG+Compress+' '*(19-len(Compress))+'  │')
 		print('│                                                              │')
-		print('│ 10 : Optimize .gif?(Scale & Denoise): '+optimizeGif+'                  │')
+		print('│ 10 : Optimize .gif(Scale & Denoise): '+optimizeGif+'                   │')
 		print('├──────────────────────────────────────────────────────────────┤')
 		print('│ 11 : Settings.            12 : Benchmark.                    │')
 		print('│                                                              │')
@@ -436,11 +437,22 @@ def Image_Gif_Scale_Denoise_waifu2x_ncnn_vulkan():
 	else:
 		str_Image_style = '[ 3D Real-life ]'
 	
+	saveAsJPG = '[ '+settings_values['saveAsJPG']+' ]' 
+	Compress = ''
+	if settings_values['saveAsJPG'].lower() == 'y':
+		Compress = '   Compress: [ '+settings_values['Compress']+' ]' 
+		
+	optimizeGif = '[ '+settings_values['optimizeGif']+' ]' 
+	
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('┌────────────────────────────────────────────────────────────────────────────────┐')
 	print("│               Scale & Denoise Image & GIF - Waifu2x-ncnn-vulkan                │")
 	print('├────────────────────────────────────────────────────────────────────────────────┤')
 	print("│ Image style: "+str_Image_style+"                                                  │")
+	print('│                                                                                │')
+	print('│ Save as .jpg: '+saveAsJPG+Compress+' '*(40-len(Compress))+'                    │')
+	print('│                                                                                │')
+	print('│ Optimize .gif: '+optimizeGif+'                                                           │')
 	print('├────────────────────────────────────────────────────────────────────────────────┤')
 	print("│ Type 'r' to return to the previous menu.                                       │")
 	print('│                                                                                │')
@@ -800,6 +812,7 @@ def Process_ImageModeAB(inputPathList,orginalFileNameAndFullname,JpgQuality,mode
 					jpgFile = path+'\\'+fname+'.jpg'
 					imageio.imwrite(jpgFile, imageio.imread(pngFile), 'JPG', quality = JpgQuality)
 					remove_safe(pngFile)
+					
 		settings_values = ReadSettings()
 		Rename_result_images = settings_values['Rename_result_images']
 		if Rename_result_images.lower() == 'y':
@@ -1100,11 +1113,24 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	
 	Record_running_log('Enter [ Scale & Denoise Image & GIF - Waifu2x-converter ]')
 	
+	settings_values = ReadSettings()
+	
+	saveAsJPG = '[ '+settings_values['saveAsJPG']+' ]' 
+	Compress = ''
+	if settings_values['saveAsJPG'].lower() == 'y':
+		Compress = '   Compress: [ '+settings_values['Compress']+' ]' 
+		
+	optimizeGif = '[ '+settings_values['optimizeGif']+' ]' 
+	
 	print(' Note: The input path must not contain special characters, which will cause compatibility problems.')
 	print('┌─────────────────────────────────────────────────────────────────────────────────┐')
 	print("│                Scale & Denoise Image & GIF - Waifu2x-converter                  │")
 	print('├─────────────────────────────────────────────────────────────────────────────────┤')
 	print("│ Image style: [ 2D Anime ]                                                       │")
+	print('│                                                                                 │')
+	print('│ Save as .jpg: '+saveAsJPG+Compress+' '*(40-len(Compress))+'                     │')
+	print('│                                                                                 │')
+	print('│ Optimize .gif: '+optimizeGif+'                                                            │')
 	print('├─────────────────────────────────────────────────────────────────────────────────┤')
 	print("│ Type 'r' to return to the previous menu.                                        │")
 	print('│                                                                                 │')
@@ -1112,7 +1138,6 @@ def Image_Gif_Scale_Denoise_waifu2x_converter():
 	print('│                                                                                 │')
 	print("│ Scaled images & gifs will be in the input path.                                 │")
 	print('└─────────────────────────────────────────────────────────────────────────────────┘')
-	settings_values = ReadSettings()
 	inputPathOver = True
 	inputPathList = []
 	JpgQuality=100
@@ -3376,6 +3401,7 @@ def Compress_image_gif():
 			else:
 				if AdminTest_Path(inputPath):
 					inputPathError = False
+					
 		if inputPathOver :
 			inputPathList.append(inputPath)
 	inputPathList = Deduplicate_list(inputPathList)
