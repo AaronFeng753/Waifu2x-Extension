@@ -148,6 +148,10 @@ finished_num_MainToSub_converter_gif_Queue = queue.Queue()
 total_num_MainToSub_converter_gif_Queue = queue.Queue()
 finished_frames_MainToSub_converter_gif_Queue = queue.Queue()
 total_frames_MainToSub_converter_gif_Queue = queue.Queue()
+
+#================================
+ResizeWindow_bool = True
+
 #======================================================== MAIN MENU ==============================================================
 
 def MainMenu():
@@ -4976,7 +4980,7 @@ def ReadSettings():
 	default_values = {'SettingVersion':'15','CheckUpdate':'y','scale_waifu2x_ncnn_vulkan':'2','First_Time_Boot_Up':'y',
 						'scale_waifu2x_converter':'2','scale_anime4k':'2','noiseLevel_waifu2x_converter':'2',
 						'noiseLevel_waifu2x_ncnn_vulkan':'2','saveAsJPG':'y','tileSize':'200','default_color':'0b',
-						'Compress':'y','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
+						'Compress':'n','delorginal':'n','optimizeGif':'y','gifCompresslevel':'1',
 						'multiThread':'y','gpuId':'auto','notificationSound':'y','multiThread_Scale':'y',
 						'image_quality':95,'load_proc_save_str':' -j 2:2:2 ','Number_of_threads':'2',
 						'Video_scale_mode':'waifu2x-ncnn-vulkan','Number_of_threads_Anime4k':cpu_num,
@@ -5337,7 +5341,8 @@ class ResizeWindow_Thread(threading.Thread):
 		threading.Thread.__init__(self)
         
 	def run(self):
-		ResizeWindow()
+		if ResizeWindow_bool:
+			ResizeWindow()
 
 def ResizeWindow():
 	cols = 120
@@ -5365,12 +5370,13 @@ def ResizeWindow():
 
 def Set_cols_lines(cols,lines):
 	
-	while Complete_ResizeWindow(cols,lines):
-		while True:
-			WindowSize_Queue.put([cols,lines])
-			if WindowSize_Queue.empty()==False:
-				break
-		time.sleep(0.04)
+	if ResizeWindow_bool:
+		while Complete_ResizeWindow(cols,lines):
+			while True:
+				WindowSize_Queue.put([cols,lines])
+				if WindowSize_Queue.empty()==False:
+					break
+			time.sleep(0.04)
 	
 	#Record_running_log('Resize the window.   cols:'+str(cols)+'  lines:'+str(lines))
 	
@@ -6888,6 +6894,37 @@ def init():		#初始化函数
 if __name__ == '__main__':
 	
 	Record_running_log('Start initialization.')
+	
+	#========== 检测是否开启自动调整窗口 ===============================
+	default_values = {'ResizeWindow_bool':True}
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	ResizeSettingPath = current_dir+'\\'+'ResizeWinSetting'
+	
+	if os.path.exists(ResizeSettingPath):
+		ResizeWinSetting_values = {}
+		
+		try:
+			with open(ResizeSettingPath,'r+') as f:
+				ResizeWinSetting_values = json.load(f)
+			ResizeWindow_bool=ResizeWinSetting_values['ResizeWindow_bool']
+				
+		except BaseException:
+			with open(ResizeSettingPath,'w+') as f:
+				json.dump(default_values,f)
+			ResizeWindow_bool = True
+			
+		if len(ResizeWinSetting_values) != len(default_values):
+			with open(ResizeSettingPath,'w+') as f:
+				json.dump(default_values,f)
+			ResizeWindow_bool = True
+
+	else:
+		with open(ResizeSettingPath,'w+') as f:
+			json.dump(default_values,f)
+		ResizeWindow_bool = True
+	
+	#===============================================================
 	
 	#检查所处文件夹是否需要管理员权限
 	if AdminTest():
