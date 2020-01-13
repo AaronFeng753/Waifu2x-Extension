@@ -12,9 +12,9 @@ Thanks to waifu2x-ncnn-vulkan, Waifu2x-Extension could use any kind of gpu that 
 
 If your gpu doesn't support vulkan, you can use Waifu2x-converter, which is also intergrated into the Waifu2x-Extension.
 
-![mainmenu](/screenshot/mainmenu.png) 
-
 #### Already been tested on `AMD` RX 550, `NVIDIA` GeForce GTX 1070 and `Intel` UHD 620.
+
+![mainmenu](/screenshot/mainmenu.png) 
 
 # Features
 ### New features brought by this extension:
