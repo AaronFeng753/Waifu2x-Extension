@@ -4,7 +4,7 @@ https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 ## [User Guide](https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/User_Guide.md)
 https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/User_Guide.md
 # What is Waifu2x-Extension?
-Image & GIF & Video Super-Resolution using Deep Convolutional Neural Networks.
+`Image` & `GIF` & `Video` Super-Resolution using Deep Convolutional Neural Networks.
 
 Based on `Waifu2x-ncnn-vulkan` and `Waifu2x-converter` . 
 
