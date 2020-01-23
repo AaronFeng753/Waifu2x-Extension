@@ -1,5 +1,5 @@
+# New GUI version : https://github.com/AaronFeng753/Waifu2x-Extension-GUI
 # Waifu2x-Extension
-## This project will not be updated anymore, I am developing a QT-based GUI version, coming soon.😉
 ## [Download](https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest)
 https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
 ## [User Guide](https://github.com/AaronFeng753/Waifu2x-Extension/blob/master/User_Guide.md)
