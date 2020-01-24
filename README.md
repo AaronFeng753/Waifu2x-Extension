@@ -1,4 +1,6 @@
-# New version with GUI 🥳 : https://github.com/AaronFeng753/Waifu2x-Extension-GUI
+# New version with GUI is avaliable now ! 🥳
+# Waifu2x-Extension-GUI
+# https://github.com/AaronFeng753/Waifu2x-Extension-GUI
 # Waifu2x-Extension
 ## [Download](https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest)
 https://github.com/AaronFeng753/Waifu2x-Extension/releases/latest
