@@ -1,12 +1,12 @@
-# [New version with GUI is avaliable now ! 🥳](https://github.com/AaronFeng753/Waifu2x-Extension-GUI)
-# [Waifu2x-Extension-GUI](https://github.com/AaronFeng753/Waifu2x-Extension-GUI)
-# https://github.com/AaronFeng753/Waifu2x-Extension-GUI
+# [New version with GUI is avaliable now ! 🎉🥳🎉](https://github.com/AaronFeng753/Waifu2x-Extension-GUI)
+# [🌟Waifu2x-Extension-GUI🌟](https://github.com/AaronFeng753/Waifu2x-Extension-GUI)
+# 🔗https://github.com/AaronFeng753/Waifu2x-Extension-GUI
 
 ![.](https://raw.githubusercontent.com/AaronFeng753/Waifu2x-Extension-GUI/master/Screenshot/mainwindow.jpg)
 
-# [Download Waifu2x-Extension-GUI NOW](https://github.com/AaronFeng753/Waifu2x-Extension-GUI/releases/latest)
+# [💾Download Waifu2x-Extension-GUI NOW ❗❗](https://github.com/AaronFeng753/Waifu2x-Extension-GUI/releases/latest)
 
-# https://github.com/AaronFeng753/Waifu2x-Extension-GUI/releases/latest
+# 🔗https://github.com/AaronFeng753/Waifu2x-Extension-GUI/releases/latest
 
 ---
 # Waifu2x-Extension
